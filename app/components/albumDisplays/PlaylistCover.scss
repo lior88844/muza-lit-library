@@ -10,6 +10,7 @@ icon-playlist {
   gap: 4px;
   cursor: pointer;
   width: 100%;
+  min-width: 0;
 
   &__image-container {
     position: relative;
@@ -64,6 +65,7 @@ icon-playlist {
     flex-direction: column;
     gap: 0;
     width: 100%;
+    min-width: 0;
   }
 
   &__title {
@@ -76,6 +78,7 @@ icon-playlist {
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    min-width: 0;
   }
 
   &__details {
@@ -89,10 +92,13 @@ icon-playlist {
     line-height: 20px;
     color: #6b7280;
     letter-spacing: 0.25px;
+    width: 100%;
+    min-width: 0;
   }
 
   &__songs-count {
     white-space: nowrap;
+    flex-shrink: 0;
   }
 
   &__separator {
