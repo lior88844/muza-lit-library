@@ -29,7 +29,8 @@
 
   /* Generic main content area - pages should override with specific styling */
   main {
-    padding: var(--muza-spacing-xl);
+    position: relative;
+    padding: var(--muza-spacing-xl, 24px);
     padding-bottom: 160px; /* for the music player */
   }
 }
