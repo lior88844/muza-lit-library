@@ -1,31 +1,33 @@
 .playlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(192px, 1fr));
-  gap: var(--muza-spacing-lg, 16px);
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(var(--muza-spacing-lg, 16px) * 2) var(--muza-spacing-lg, 16px); // row-gap column-gap
   padding: var(--muza-spacing-lg, 16px) 0;
 
-  // Ensure consistent item sizing
   > * {
-    width: 192px;
     justify-self: start;
+    min-width: 0; // Prevent grid items from expanding beyond their allocated space
+    width: 100%; // Ensure items take full width of their grid cell
   }
 
   // Responsive breakpoints
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--muza-spacing-md, 12px);
-
-    > * {
-      width: 160px;
-    }
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(5, 1fr);
   }
 
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: var(--muza-spacing-sm, 8px);
+  @media (max-width: 1023px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
 
-    > * {
-      width: 140px;
-    }
+  @media (max-width: 891px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 599px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
