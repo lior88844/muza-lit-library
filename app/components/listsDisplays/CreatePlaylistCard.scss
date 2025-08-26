@@ -47,8 +47,11 @@
 
     .plus-icon {
       color: var(--colors_background_light, #ffffff);
-      width: 24px;
-      height: 24px;
+      width: var(--muza-spacing-xxl, 36px);
+      height: var(--muza-spacing-xxl, 36px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -62,55 +65,6 @@
     max-width: 162px;
   }
 
-  // Responsive breakpoints to scale icon and text proportionally
-  @media (max-width: 891px) {
-    .plus-icon-circle {
-      width: 48px;
-      height: 48px;
+  
 
-      .plus-icon {
-        width: 20px;
-        height: 20px;
-      }
-    }
-
-    .create-playlist-text {
-      font-size: 13px;
-      max-width: 140px;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .plus-icon-circle {
-      width: 40px;
-      height: 40px;
-
-      .plus-icon {
-        width: 18px;
-        height: 18px;
-      }
-    }
-
-    .create-playlist-text {
-      font-size: 12px;
-      max-width: 120px;
-    }
-  }
-
-  @media (max-width: 599px) {
-    .plus-icon-circle {
-      width: 36px;
-      height: 36px;
-
-      .plus-icon {
-        width: 16px;
-        height: 16px;
-      }
-    }
-
-    .create-playlist-text {
-      font-size: 11px;
-      max-width: 100px;
-    }
-  }
 }
