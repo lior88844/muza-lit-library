@@ -6,14 +6,15 @@
   height: 100vh;
   background-color: var(--colors_background_light, #ffffff);
   border-right: 1px solid var(--colors_sidebar_border_light, #e5e7eb);
-  position: relative;
   transition: width 0.3s ease;
   box-sizing: border-box;
+
   &.collapsed {
     width: 64px;
     display: flex;
     flex-direction: column;
     gap: var(--muza-spacing-lg, 16px);
+
     .menu-item {
       border-radius: 9999px;
     }
@@ -54,6 +55,7 @@
   height: 100%;
   padding: 0px 12px;
   gap: var(--muza-spacing-xl, 24px);
+
   &.collapsed {
     padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-xs, 4px);
   }
@@ -71,6 +73,7 @@
   gap: var(--muza-spacing-sm, 8px);
   flex-wrap: wrap;
   align-content: center;
+
   .section-title {
     font-size: var(--muza-primary-font-size, 14px);
     font-weight: var(--muza-font-weight-bold, 600);
@@ -139,14 +142,9 @@
       padding: var(--muza-spacing-sm, 8px);
       justify-content: center;
       margin: 0 var(--muza-spacing-xs, 4px);
-
+      aspect-ratio: 1/1;
       i {
         margin-right: 0;
-        width: 24px;
-        height: 24px;
-      }
-
-      svg {
         width: var(--muza-spacing-lg, 16px);
         height: var(--muza-spacing-lg, 16px);
       }
@@ -189,10 +187,12 @@
       font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
       padding: 0 var(--muza-spacing-lg, 16px);
     }
+
     i {
       display: flex;
       align-items: center;
       justify-content: center;
+
       svg {
         width: var(--muza-spacing-lg, 16px);
         height: var(--muza-spacing-lg, 16px);
@@ -205,12 +205,14 @@
     flex-direction: column;
     gap: var(--muza-spacing-xs, 4px);
     overflow-y: auto;
+
     .playlist-item {
       display: flex;
       align-items: center;
       gap: var(--muza-spacing-sm, 8px);
       padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
       cursor: pointer;
+
       span {
         white-space: nowrap;
         overflow: hidden;
@@ -237,7 +239,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--muza-border-radius-md, 8px);
   background-color: transparent;
   border: none;
   cursor: pointer;
