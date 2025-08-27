@@ -9,6 +9,7 @@ import { useTranslation } from "~/lib/i18n/translations";
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
+import "./home.scss";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -18,19 +19,19 @@ export default function Home() {
   const navigate = useNavigate();
 
   const onAlbumClick = (album: Album) => {
-    navigate("/routes/album", { state: { album } });
+    navigate("/album", { state: { album } });
   };
 
   const handleShowAll = (sectionTitle: string) => {
     switch (sectionTitle) {
       case t("section.newReleases"):
-        navigate("/routes/albums");
+        navigate("/albums");
         break;
       case t("section.recentlyPlayed"):
-        navigate("/routes/songs");
+        navigate("/songs");
         break;
       case t("section.artists"):
-        navigate("/routes/artists");
+        navigate("/artists");
         break;
       default:
         break;
@@ -56,45 +57,48 @@ export default function Home() {
   ];
 
   return (
-    <main>
-      <h1>{t("page.home")}</h1>
-      <hr />
-
-      {sections.map((section, index) => (
-        <div key={section.title}>
-          {section.type === "album" && (
-            <MusicListSectionComponent
-              title={section.title}
-              type="album"
-              list={section.albums}
-              onShowAll={handleShowAll}
-              onAlbumClick={onAlbumClick}
-              albums={section.albums}
-            />
-          )}
-          {section.type === "artist" && (
-            <MusicListSectionComponent
-              title={section.title}
-              type="artist"
-              list={[]}
-              onShowAll={handleShowAll}
-              artists={section.artists}
-            />
-          )}
-          {section.type === "song" && (
-            <MusicListSectionComponent
-              title={section.title}
-              type="song"
-              list={[]}
-              onShowAll={handleShowAll}
-              songs={section.songs}
-              onSongClick={setSelectedSong}
-              selectedSong={selectedSong || undefined}
-            />
-          )}
-          <hr />
-        </div>
-      ))}
-    </main>
+    <div className="home-page">
+      <div className="page-header">
+        <h1>{t("page.home")}</h1>
+      </div>
+      <div className="sections-container">
+        <hr className="section-divider" />
+        {sections.map((section, index) => (
+          <div key={section.title} className="section-wrapper">
+            {section.type === "album" && (
+              <MusicListSectionComponent
+                title={section.title}
+                type="album"
+                list={section.albums}
+                onShowAll={handleShowAll}
+                onAlbumClick={onAlbumClick}
+                albums={section.albums}
+              />
+            )}
+            {section.type === "artist" && (
+              <MusicListSectionComponent
+                title={section.title}
+                type="artist"
+                list={[]}
+                onShowAll={handleShowAll}
+                artists={section.artists}
+              />
+            )}
+            {section.type === "song" && (
+              <MusicListSectionComponent
+                title={section.title}
+                type="song"
+                list={[]}
+                onShowAll={handleShowAll}
+                songs={section.songs}
+                onSongClick={setSelectedSong}
+                selectedSong={selectedSong || undefined}
+              />
+            )}
+            {index < sections.length - 1 && <hr className="section-divider" />}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
