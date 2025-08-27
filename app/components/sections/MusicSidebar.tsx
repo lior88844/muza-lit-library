@@ -98,7 +98,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
           onClick={handleSidebarToggle}
           aria-label="Toggle sidebar"
         >
-          <MuzaIcon iconName="Close" />
+          <MuzaIcon iconName="PanelLeftClose" />
         </button>
       </div>
     </div>
