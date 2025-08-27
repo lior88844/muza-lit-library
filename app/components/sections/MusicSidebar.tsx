@@ -78,21 +78,25 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         <img src={logoSrc} alt={logoAlt} />
       </div>
       
-      {sections.map(renderSection)}
-      
-      {playlists.length > 0 && !isCollapsed && (
-        <div className="playlists-section">
-          <div className="playlists-header">
-            <div className="playlists-title">{t("nav.playlists")}</div>
-            <button className="add-button">
-              <MuzaIcon iconName="plus" />
-            </button>
-          </div>
-          <div className="playlists-list">
-            {playlists.map(renderPlaylist)}
-          </div>
+      <div className="sidebar-content">
+        <div className="nav-sections">
+          {sections.map(renderSection)}
         </div>
-      )}
+        
+        {playlists.length > 0 && !isCollapsed && (
+          <div className="playlists-section">
+            <div className="playlists-header">
+              <div className="playlists-title">{t("nav.playlists")}</div>
+              <button className="add-button">
+                <MuzaIcon iconName="plus" />
+              </button>
+            </div>
+            <div className="playlists-list">
+              {playlists.map(renderPlaylist)}
+            </div>
+          </div>
+        )}
+      </div>
       
       <div className="sidebar-footer">
         <button 
