@@ -1,6 +1,7 @@
 .create-playlist-card {
-  width: 192px;
-  height: 192px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
   background: var(--colors_muted_light, #f9fafb);
   border: 1px solid var(--colors_border_light, #e5e7eb);
   border-radius: var(--muza-border-radius-sm, 4px);
@@ -46,8 +47,11 @@
 
     .plus-icon {
       color: var(--colors_background_light, #ffffff);
-      width: 24px;
-      height: 24px;
+      width: var(--muza-spacing-xxl, 36px);
+      height: var(--muza-spacing-xxl, 36px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
