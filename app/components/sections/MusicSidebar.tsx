@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./MusicSidebar.scss";
 import MuzaIcon from "~/icons/MuzaIcon";
+import CreatePlaylistModal from "~/components/ui/CreatePlaylistModal";
 import type { MenuItem, Section, MusicPlaylist } from "~/appData/models";
 import { useNavigate } from "react-router";
 import { useTranslation } from "~/lib/i18n/translations";
+import { useMusicLibraryStore } from "~/appData/musicStore";
 
 interface MusicSidebarProps {
   logoSrc: string;
@@ -20,7 +22,9 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { createPlaylist } = useMusicLibraryStore();
   const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed by default
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleItemClick = (item: MenuItem) => {
     if (item.action) {
@@ -37,6 +41,32 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 
   const handleSidebarToggle = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const handleCreatePlaylist = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCreatePlaylistSubmit = (name: string, visibility: string) => {
+    // Create the new playlist
+    const newPlaylist = {
+      id: Date.now().toString(), // Simple ID generation
+      title: name,
+      name,
+      visibility,
+      songs: [],
+      suggestions: [],
+      imageSrc: "", // Will be set when songs are added
+      createdAt: new Date().toISOString(),
+    };
+
+    // Add to store
+    createPlaylist(newPlaylist);
+    setIsModalOpen(false);
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => {
@@ -64,7 +94,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   const renderPlaylist = (playlist: MusicPlaylist, index: number) => (
     <div
       key={playlist.id || index}
-      className="menu-item"
+      className="playlist-item"
       onClick={() => handlePlaylistClick(playlist)}
     >
       <MuzaIcon iconName="playlist" />
@@ -85,12 +115,12 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         
         {playlists.length > 0 && !isCollapsed && (
           <div className="playlists-section">
-            <div className="playlists-header">
-              <div className="playlists-title">{t("nav.playlists")}</div>
-              <button className="add-button">
-                <MuzaIcon iconName="plus" />
-              </button>
-            </div>
+                      <div className="playlists-header">
+            <div className="playlists-title">{t("nav.playlists")}</div>
+            <button className="add-button" onClick={handleCreatePlaylist}>
+              <MuzaIcon iconName="plus" />
+            </button>
+          </div>
             <div className="playlists-list">
               {playlists.map(renderPlaylist)}
             </div>
@@ -107,6 +137,12 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
           <MuzaIcon iconName={isCollapsed ? "PanelLeftOpen" : "PanelLeftClose"} />
         </button>
       </div>
+
+      <CreatePlaylistModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onCreatePlaylist={handleCreatePlaylistSubmit}
+      />
     </div>
   );
 };
