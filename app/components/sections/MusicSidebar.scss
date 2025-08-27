@@ -1,30 +1,45 @@
 .music-sidebar {
-  display: block;
-  width: 180px;
+  position:relative;
+  display: flex;
+  flex-direction: column;
+  width: var(--muza-sidebar-width, 208px);
   height: 100vh;
-  padding: 20px 0;
-  border-right: 1px solid #ededed;
-
-  @media (max-width: 892px) {
-    width: 54px;
-    padding: 10px 4px;
+  background-color: var(--colors_background_light, #ffffff);
+  border-right: 1px solid var(--colors_sidebar_border_light, #e5e7eb);
+  position: relative;
+  transition: width 0.3s ease;
+  box-sizing: border-box;
+  &.collapsed {
+    width: 64px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--muza-spacing-lg, 16px);
+    button{
+      border-radius: 9999px;
+    }
+    .menu-item{
+      border-radius: 9999px;
+    }
   }
 }
 
 .logo {
-  padding: 25px var(--muza-spacing-lg) var(--muza-spacing-lg);
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--muza-spacing-sm, 8px) * 0.5);
+  align-items: center;
+  justify-content: center;
+  padding: var(--muza-spacing-xl, 24px) 0;
+  width: 100%;
+  box-sizing: border-box;
 
   img {
-    width: 120px;
+    width: 80px;
     height: auto;
   }
 
-  @media (max-width: 892px) {
-    padding: 10px 4px;
+  .collapsed & {
+    padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-xs, 4px);
     text-align: center;
 
     img {
@@ -34,54 +49,97 @@
   }
 }
 
+.sidebar-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  padding: 0px 12px;
+  &.collapsed {
+    padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-xs, 4px);
+  }
+}
+
+.nav-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-lg, 16px);
+}
+
 .section {
-  padding: var(--muza-spacing-lg, 16px);
-  margin: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
 
   .section-title {
     font-size: var(--muza-primary-font-size, 14px);
-    font-weight: 600;
-    color: var(--secondary-text-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-
-    @media (max-width: 892px) {
-      display: none;
-    }
+    font-weight: var(--muza-font-weight-bold, 600);
+    color: var(--muza-primary-text-color, #333333);
+    line-height: 16px;
+    padding: 0 var(--muza-spacing-lg, 16px);
+    margin: 0;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
   }
 
   .menu-item {
     display: flex;
     align-items: center;
-    padding: 8px 0px;
-    color: #444;
+    gap: var(--muza-spacing-sm, 8px);
+    padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+    color: var(--muza-primary-text-color, #333333);
     text-decoration: none;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: var(--muza-border-radius-md);
+    font-size: var(--muza-primary-font-size, 14px);
+    font-weight: var(--muza-font-weight-medium, 500);
+    border-radius: var(--muza-border-radius-md, 8px);
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    transition: background-color 0.2s ease;
 
     &:hover {
-      background: #f9fafb;
+      background-color: var(--muza-hover-background, #eeeeee);
+    }
+
+    &.active {
+      background-color: var(--muza-hover-background, #eeeeee);
     }
 
     i {
-      margin-right: 10px;
-      width: 20px;
-      text-align: center;
-      color: #666;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muza-primary-text-color, #333333);
+      flex-shrink: 0;
     }
 
-    @media (max-width: 892px) {
-      padding: 10px;
-      justify-content: center;
-      margin: 0 4px;
+    span {
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
+      line-height: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 
-      span {
-        display: none;
-      }
+  .collapsed & {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-lg, 16px);
+
+    .section-title {
+      display: none;
+    }
+
+    .menu-item {
+      padding: var(--muza-spacing-sm, 8px);
+      justify-content: center;
+      margin: 0 var(--muza-spacing-xs, 4px);
 
       i {
         margin-right: 0;
@@ -95,25 +153,85 @@
       }
     }
   }
-
-  @media (max-width: 892px) {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
 }
 
 .add-button {
   cursor: pointer;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 9999px;
+  background-color: transparent;
+  transition: opacity 0.2s ease;
 
   &:hover {
     opacity: 0.8;
+  }
+}
+
+.playlists-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-md, 12px);
+  padding: 0 var(--muza-spacing-xl, 24px);
+  overflow-y: auto;
+
+  .playlists-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin-bottom: var(--muza-spacing-sm, 8px);
+
+    .playlists-title {
+      font-size: var(--muza-primary-font-size, 14px);
+      font-weight: var(--muza-font-weight-bold, 600);
+      color: var(--muza-primary-text-color, #333333);
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
+    }
+  }
+
+  .playlists-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xs, 4px);
+  }
+}
+
+.sidebar-footer {
+  height: 40px;
+  background-color: var(--colors_background_light, #ffffff);
+  border-top: 1px solid var(--colors_sidebar_border_light, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--muza-spacing-sm, 8px);
+}
+
+.sidebar-header-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--muza-border-radius-md, 8px);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: var(--muza-primary-text-color, #333333);
+
+  &:hover {
+    background-color: var(--muza-hover-background, #eeeeee);
+  }
+
+  i {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
