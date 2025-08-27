@@ -39,7 +39,7 @@
   .collapsed & {
     padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-xs, 4px);
     text-align: center;
-
+    margin-top: var(--muza-spacing-sm, 8px);
     img {
       width: 40px;
       margin-left: 0;
