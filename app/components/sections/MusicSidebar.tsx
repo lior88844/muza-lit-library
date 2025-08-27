@@ -103,38 +103,38 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   );
 
   return (
-    <div className={`music-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+    <div className={`music-sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="logo">
         <img src={logoSrc} alt={logoAlt} />
       </div>
-      
+
       <div className="sidebar-content">
-        <div className="nav-sections">
-          {sections.map(renderSection)}
-        </div>
-        
+        <div className="nav-sections">{sections.map(renderSection)}</div>
+
         {playlists.length > 0 && !isCollapsed && (
           <div className="playlists-section">
-                      <div className="playlists-header">
-            <div className="playlists-title">{t("nav.playlists")}</div>
-            <button className="add-button" onClick={handleCreatePlaylist}>
-              <MuzaIcon iconName="plus" />
-            </button>
-          </div>
+            <div className="playlists-header">
+              <div className="playlists-title">{t("nav.playlists")}</div>
+              <button className="add-button" onClick={handleCreatePlaylist}>
+                <MuzaIcon iconName="plus" />
+              </button>
+            </div>
             <div className="playlists-list">
               {playlists.map(renderPlaylist)}
             </div>
           </div>
         )}
       </div>
-      
+
       <div className="sidebar-footer">
-        <button 
+        <button
           className="sidebar-header-button"
           onClick={handleSidebarToggle}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <MuzaIcon iconName={isCollapsed ? "PanelLeftOpen" : "PanelLeftClose"} />
+          <MuzaIcon
+            iconName={isCollapsed ? "PanelLeftOpen" : "PanelLeftClose"}
+          />
         </button>
       </div>
 

@@ -45,9 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = useMusicLibraryStore(
     (state) => state.sidebarSections,
   );
-  const playlists = useMusicLibraryStore(
-    (state) => state.playlists,
-  );
+  const playlists = useMusicLibraryStore((state) => state.playlists);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

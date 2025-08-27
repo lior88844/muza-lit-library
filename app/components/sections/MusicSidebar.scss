@@ -1,5 +1,5 @@
 .music-sidebar {
-  position:relative;
+  position: relative;
   display: flex;
   flex-direction: column;
   width: var(--muza-sidebar-width, 208px);
@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--muza-spacing-lg, 16px);
-    .menu-item{
+    .menu-item {
       border-radius: 9999px;
     }
   }
@@ -56,7 +56,6 @@
   gap: var(--muza-spacing-xl, 24px);
   &.collapsed {
     padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-xs, 4px);
-    
   }
 }
 
@@ -79,7 +78,7 @@
     line-height: 16px;
     padding: 0 var(--muza-spacing-lg, 16px);
     margin: 0;
-    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
+    font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
   }
 
   .menu-item {
@@ -117,7 +116,7 @@
     }
 
     span {
-      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
+      font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
       line-height: 20px;
       white-space: nowrap;
       overflow: hidden;
@@ -187,10 +186,10 @@
       font-size: var(--muza-primary-font-size, 14px);
       font-weight: var(--muza-font-weight-bold, 600);
       color: var(--muza-primary-text-color, #333333);
-      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
+      font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
       padding: 0 var(--muza-spacing-lg, 16px);
     }
-    i{
+    i {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -199,7 +198,6 @@
         height: var(--muza-spacing-lg, 16px);
       }
     }
-
   }
 
   .playlists-list {
@@ -207,21 +205,20 @@
     flex-direction: column;
     gap: var(--muza-spacing-xs, 4px);
     overflow-y: auto;
-    .playlist-item{
+    .playlist-item {
       display: flex;
       align-items: center;
       gap: var(--muza-spacing-sm, 8px);
       padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
       cursor: pointer;
-    span{
-      white-space: nowrap;
-      overflow: hidden;
-      width: 100%;
-      font-size: var(--muza-primary-font-size, 14px);
-    }
+      span {
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100%;
+        font-size: var(--muza-primary-font-size, 14px);
+      }
     }
   }
-
 }
 
 .sidebar-footer {
