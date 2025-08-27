@@ -20,7 +20,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed by default
 
   const handleItemClick = (item: MenuItem) => {
     if (item.action) {
