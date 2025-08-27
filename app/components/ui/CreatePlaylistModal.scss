@@ -173,6 +173,8 @@
 
   // Modal-specific input styling to match Figma design
   .input-wrapper {
+    margin: 0;
+
     label {
       margin-bottom: var(--muza-spacing-sm, 8px);
       font-size: 14px;
@@ -237,7 +239,6 @@
       font-weight: var(--muza-font-weight-medium, 500);
       cursor: pointer;
       transition: background-color 0.15s ease;
-      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -258,7 +259,6 @@
       font-weight: var(--muza-font-weight-medium, 500);
       cursor: pointer;
       transition: background-color 0.15s ease;
-      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
