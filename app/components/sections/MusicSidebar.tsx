@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./MusicSidebar.scss";
 import MuzaIcon from "~/icons/MuzaIcon";
 import type { MenuItem, Section, MusicPlaylist } from "~/appData/models";
@@ -20,6 +20,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleItemClick = (item: MenuItem) => {
     if (item.action) {
@@ -35,8 +36,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   };
 
   const handleSidebarToggle = () => {
-    // Handle sidebar collapse/expand functionality
-    console.log("Sidebar toggle clicked");
+    setIsCollapsed(!isCollapsed);
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => {
@@ -47,14 +47,16 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         onClick={() => handleItemClick(item)}
       >
         <MuzaIcon iconName={item.svg} />
-        <span>{t(item.text)}</span>
+        {!isCollapsed && <span>{t(item.text)}</span>}
       </a>
     );
   };
 
   const renderSection = (section: Section, index: number) => (
     <div key={index} className="section">
-      {section.title && <div className="section-title">{t(section.title)}</div>}
+      {section.title && !isCollapsed && (
+        <div className="section-title">{t(section.title)}</div>
+      )}
       {section.items.map(renderMenuItem)}
     </div>
   );
@@ -66,19 +68,19 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
       onClick={() => handlePlaylistClick(playlist)}
     >
       <MuzaIcon iconName="playlist" />
-      <span>{playlist.title}</span>
+      {!isCollapsed && <span>{playlist.title}</span>}
     </div>
   );
 
   return (
-    <div className="music-sidebar">
+    <div className={`music-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="logo">
         <img src={logoSrc} alt={logoAlt} />
       </div>
       
       {sections.map(renderSection)}
       
-      {playlists.length > 0 && (
+      {playlists.length > 0 && !isCollapsed && (
         <div className="playlists-section">
           <div className="playlists-header">
             <div className="playlists-title">{t("nav.playlists")}</div>
@@ -96,9 +98,9 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         <button 
           className="sidebar-header-button"
           onClick={handleSidebarToggle}
-          aria-label="Toggle sidebar"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <MuzaIcon iconName="PanelLeftClose" />
+          <MuzaIcon iconName={isCollapsed ? "PanelLeftOpen" : "PanelLeftClose"} />
         </button>
       </div>
     </div>
