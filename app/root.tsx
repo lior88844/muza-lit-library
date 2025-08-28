@@ -45,6 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = useMusicLibraryStore(
     (state) => state.sidebarSections,
   );
+  const playlists = useMusicLibraryStore((state) => state.playlists);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,6 +126,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             logoAlt={t("library.musicLibrary")}
             logoSrc="/icons/muza.svg"
             sections={sidebarSections}
+            playlists={playlists}
           />
 
           <div className="content">
