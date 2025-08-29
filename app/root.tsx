@@ -41,7 +41,7 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
-  const { setIsPlaying } = useCurrentPlayerStore();
+  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
   const sidebarSections = useMusicLibraryStore(
     (state) => state.sidebarSections,
   );

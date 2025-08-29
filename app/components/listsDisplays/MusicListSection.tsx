@@ -36,13 +36,12 @@ const MusicListSectionComponent: React.FC<
   artists,
 }) => {
   const { t } = useTranslation();
-  const {
-    selectedSong: globalSelectedSong,
-    setSelectedSong,
-    setIsPlaying,
-    isPlaying,
-    togglePlayPause,
-  } = useCurrentPlayerStore();
+  // Selective store subscriptions - only subscribe to what we need
+  const globalSelectedSong = useCurrentPlayerStore(state => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
+  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
+  const togglePlayPause = useCurrentPlayerStore(state => state.togglePlayPause);
 
   const handleShowAll = () => {
     if (onShowAll) {

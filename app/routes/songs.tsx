@@ -12,14 +12,14 @@ import "./songs.scss";
 
 export default function Songs() {
   const { t } = useTranslation();
-  const { setSelectedSong, selectedSong } = useCurrentPlayerStore();
+  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
   const { recentlyPlayed } = useMusicLibraryStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeSongId, setActiveSongId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate loading state
     const timer = setTimeout(() => {
       setLoading(false);
     }, 100);

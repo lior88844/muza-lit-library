@@ -16,7 +16,9 @@ const AlbumDetails: React.FC<AlbumDetailsProps> = ({
   details,
   onAlbumClick,
 }) => {
-  const { isPlaying, setIsPlaying } = useCurrentPlayerStore();
+  // Selective store subscriptions - only subscribe to what we need
+  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
+  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handlePlayPause = (e: React.MouseEvent) => {

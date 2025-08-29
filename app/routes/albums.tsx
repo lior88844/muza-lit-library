@@ -1,62 +1,55 @@
-import "../components/sections/MusicSidebar";
-import type { Album, SongDetails } from "~/appData/models";
+import { useEffect, useState } from "react";
 import AlbumDetails from "~/components/albumDisplays/AlbumDetails";
+import type { Album } from "~/appData/models";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useNavigate } from "react-router";
 import { useTranslation } from "~/lib/i18n/translations";
 
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
+import "./albums.scss";
 
 export default function Albums() {
   const { t } = useTranslation();
-  const { setSelectedSong } = useCurrentPlayerStore();
-  const { newReleases, featured, recommended } = useMusicLibraryStore();
+  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const { newReleases, recentlyPlayed } = useMusicLibraryStore();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 100);
 
-  const onAlbumClick = (album: Album) => {
-    navigate("/album", { state: { album } });
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleAlbumClick = (album: Album) => {
+    if (album.songs && album.songs.length > 0) {
+      const songIndex = album.songs[0] - 1;
+      if (songIndex >= 0 && songIndex < recentlyPlayed.length) {
+        setSelectedSong(recentlyPlayed[songIndex]);
+      }
+    }
   };
 
+  if (loading) return <p>{t("general.loading")}</p>;
+  if (error)
+    return <p>{t("general.errorWithMessage").replace("{error}", error)}</p>;
+
   return (
-    <main>
-      <h1>{t("page.albums")}</h1>
-
-      <hr />
-      <h2>{t("section.featuredAlbums")}</h2>
-      <div className="album-list">
-        {featured.map((a: Album) => (
-          <AlbumDetails
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
-          />
-        ))}
+    <main className="albums-page">
+      <div className="page-header">
+        <h1>{t("page.albums")}</h1>
       </div>
 
-      <hr />
-      <h2>{t("section.newReleases")}</h2>
-      <div className="album-list">
-        {newReleases.map((a: Album) => (
+      <div className="albums-grid">
+        {newReleases.map((album) => (
           <AlbumDetails
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
-          />
-        ))}
-      </div>
-
-      <hr />
-      <h2>{t("section.recommendedAlbums")}</h2>
-      <div className="album-list">
-        {recommended.map((a: Album) => (
-          <AlbumDetails
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
+            key={album.id}
+            details={album}
+            onAlbumClick={() => handleAlbumClick(album)}
           />
         ))}
       </div>

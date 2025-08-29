@@ -11,18 +11,15 @@ import { toast } from "react-toastify";
 import AlbumInfoModal from "~/components/albumDisplays/AlbumInfoModal";
 import { useTranslation } from "~/lib/i18n/translations";
 
-// Import remaining sub-components
 import MediaCover from "./components/MediaCover/MediaCover";
 import MediaMetadata from "./components/MediaMetadata/MediaMetadata";
 import MuzaButton from "~/controls/MuzaButton";
 import { FaPause, FaPlay } from "react-icons/fa";
 
 interface MediaHeaderProps {
-  // Generic media object that works for albums, playlists, etc.
   media: Album | MusicPlaylist | Artist;
   songs: SongDetails[];
   mediaType: "album" | "playlist" | "artist";
-  // Optional customization
   showBackButton?: boolean;
   customActions?: React.ReactNode;
 }
@@ -35,13 +32,11 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   customActions,
 }) => {
   const { t } = useTranslation();
-  const {
-    selectedSong,
-    setSelectedSong,
-    setSelectedPlaListOrAlbum,
-    isPlaying,
-    setIsPlaying,
-  } = useCurrentPlayerStore();
+  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const setSelectedPlaListOrAlbum = useCurrentPlayerStore(state => state.setSelectedPlaListOrAlbum);
+  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
+  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const addToLibrary = () => {
@@ -53,10 +48,8 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
 
   const handlePlayPause = () => {
     if (isPlaying) {
-      // If currently playing, pause
       setIsPlaying(false);
     } else {
-      // If not playing, start playing the media
       if (songs.length > 0) {
         setSelectedSong(songs[0]);
         setSelectedPlaListOrAlbum(media);
@@ -69,7 +62,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     window.history.back();
   };
 
-  // Helper function to safely get title
   const getMediaTitle = () => {
     if (mediaType === "artist") {
       return (media as Artist).name || "";
@@ -77,7 +69,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     return (media as Album | MusicPlaylist).title || "";
   };
 
-  // Helper function to safely get image
   const getMediaImageSrc = () => {
     if (mediaType === "artist") {
       return (media as Artist).imageUrl || "";
@@ -85,7 +76,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     return (media as Album | MusicPlaylist).imageSrc || "";
   };
 
-  // Dynamic content based on media type
   const getCreatorInfo = () => {
     switch (mediaType) {
       case "album":
@@ -96,146 +86,71 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           label: t("common.by"),
         };
       case "artist":
-        return { creator: "", label: "" }; // Artists don't have creators
+        return { creator: "", label: "" };
       default:
         return { creator: "", label: "" };
     }
   };
 
-  const getMetadataProps = () => {
-    switch (mediaType) {
-      case "album":
-        const album = media as Album;
-        return {
-          type: "album" as const,
-          year: album.year,
-          songCount: songs.length,
-        };
-      case "playlist":
-        const playlist = media as MusicPlaylist;
-        return {
-          type: "playlist" as const,
-          songCount: songs.length,
-          isPublic: playlist.visibility === "public",
-        };
-      case "artist":
-        const artist = media as Artist;
-        return {
-          type: "artist" as const,
-          followerCount: 0, // Would need to be added to Artist interface
-        };
-      default:
-        return {
-          type: "album" as const,
-          songCount: songs.length,
-        };
+  const getSongCount = () => {
+    if (mediaType === "artist") {
+      return (media as Artist).albumsCount;
     }
+    return songs.length;
   };
 
-  const getPlayButtonText = () => {
-    const action = isPlaying ? "pause" : "play";
-    switch (mediaType) {
-      case "album":
-        return isPlaying ? t("common.pause") : t("common.playAlbum");
-      case "playlist":
-        return isPlaying ? t("common.pause") : t("common.playPlaylist");
-      case "artist":
-        return isPlaying ? t("common.pause") : t("common.playArtist");
-      default:
-        return isPlaying ? t("common.pause") : t("common.play");
+  const getSongCountLabel = () => {
+    if (mediaType === "artist") {
+      return t("common.albums");
     }
+    return t("common.songs");
   };
-
-  const { creator, label } = getCreatorInfo();
-  const metadataProps = getMetadataProps();
 
   return (
-    <>
-      <div
-        className={`media-header-layout ${showBackButton ? "has-back-button" : ""}`}
-      >
+    <div className="media-header">
+      <div className="media-header-content">
         {showBackButton && (
-          <div className="back-close-section" data-name="back & close">
-            <MuzaButton
-              iconName="ChevronDown"
-              onClick={goBack}
-              size="small"
-              className="back-button"
-              data-name="back"
-            />
-          </div>
+          <button className="back-button" onClick={goBack}>
+            ← {t("action.back")}
+          </button>
         )}
 
-        <div className="media-header" data-name="Media-Header">
-          <div className="media-content-section media-content-section--horizontal">
-            <MediaCover
-              imageSrc={getMediaImageSrc()}
-              title={getMediaTitle()}
-              mediaType={mediaType}
-            />
+        <div className="media-info">
+          <MediaCover
+            imageSrc={getMediaImageSrc()}
+            title={getMediaTitle()}
+            mediaType={mediaType}
+          />
 
-            <div className="info-section">
-              <div className="titles-section" data-name="Titles">
-                <div className="title-metadata-group">
-                  {/* MediaInfo content inlined */}
-                  <div className="title-info title-info--left">
-                    <div className="album-title">{getMediaTitle()}</div>
-                    {creator && (
-                      <div className="creator-name">
-                        {label && `${label} `}
-                        {creator}
-                      </div>
-                    )}
-                  </div>
+          <MediaMetadata
+            title={getMediaTitle()}
+            creatorInfo={getCreatorInfo()}
+            songCount={getSongCount()}
+            songCountLabel={getSongCountLabel()}
+          />
+        </div>
 
-                  <MediaMetadata {...metadataProps} />
-                </div>
+        <div className="media-actions">
+          <MuzaButton
+            variant="primary"
+            size="large"
+            onClick={handlePlayPause}
+            className="play-button"
+          >
+            {isPlaying ? <FaPause /> : <FaPlay />}
+            {isPlaying ? t("player.pause") : t("player.play")}
+          </MuzaButton>
 
-                <div className="actions-section">
-                  {/* PlayButton content inlined */}
-                  <div className="ctas-section" data-name="CTAs">
-                    <button
-                      className="play-album-button"
-                      onClick={handlePlayPause}
-                      disabled={songs.length === 0}
-                      data-name="Button"
-                    >
-                      <div className="play-icon">
-                        {isPlaying ? <FaPause /> : <FaPlay />}
-                      </div>
-                      <span className="play-text">{getPlayButtonText()}</span>
-                    </button>
-                  </div>
+          <MuzaButton
+            variant="secondary"
+            size="medium"
+            onClick={addToLibrary}
+            className="add-to-library-button"
+          >
+            {t("action.addToLibrary")}
+          </MuzaButton>
 
-                  {/* ActionButtonGroup content inlined */}
-                  <div className="action-buttons action-buttons--end action-buttons--gap-medium">
-                    {customActions || (
-                      <>
-                        <MuzaButton
-                          iconName="plus"
-                          onClick={addToLibrary}
-                          size="medium"
-                          data-name="Add-Download Button"
-                        />
-                        <MuzaButton
-                          iconName="info"
-                          onClick={() => setModalOpen(true)}
-                          size="medium"
-                          data-name="Info Button"
-                        />
-                        <MuzaButton
-                          iconName="ellipsis"
-                          onClick={() => {}}
-                          size="medium"
-                          data-name="Menu Button"
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {customActions}
         </div>
       </div>
 
@@ -243,7 +158,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
       />
-    </>
+    </div>
   );
 };
 

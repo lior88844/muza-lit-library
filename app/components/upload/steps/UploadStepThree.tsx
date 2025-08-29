@@ -1,119 +1,150 @@
-import React from "react";
-import type { UploadFormData, TrackMetadata } from "~/appData/uploadStore";
-import type { Album, SongDetails } from "~/appData/models";
-import MediaHeader from "~/components/MediaHeader";
-import UploadSongLine from "~/components/upload/UploadSongLine";
-import AlbumHeader from "~/components/albumDisplays/AlbumHeader";
-import SongLine from "~/components/songLineDisplays/SongLine";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
+import React, { useState } from "react";
 import "./UploadStepThree.scss";
+import type { SongDetails } from "~/appData/models";
+import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
+import { useMusicLibraryStore } from "~/appData/musicStore";
+import MuzaButton from "~/controls/MuzaButton";
+import { useNavigate } from "react-router";
+import { useTranslation } from "~/lib/i18n/translations";
 
 interface UploadStepThreeProps {
-  formData: UploadFormData;
-  trackMetadata: TrackMetadata[];
-  coverImage: File | null;
-  onSave?: () => void;
-  onPublish?: () => void;
+  trackMetadata: SongDetails[];
+  onBack: () => void;
+  onComplete: () => void;
 }
 
 const UploadStepThree: React.FC<UploadStepThreeProps> = ({
-  formData,
   trackMetadata,
-  coverImage,
-  onSave,
-  onPublish,
+  onBack,
+  onComplete,
 }) => {
-  const {
-    selectedSong,
-    setSelectedSong,
-    setIsPlaying,
-    isPlaying,
-    togglePlayPause,
-  } = useCurrentPlayerStore();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
+  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
+  const togglePlayPause = useCurrentPlayerStore(state => state.togglePlayPause);
+  const { createPlaylist } = useMusicLibraryStore();
 
-  const getCoverImageUrl = () => {
-    if (coverImage) {
-      return URL.createObjectURL(coverImage);
+  const [playlistName, setPlaylistName] = useState("");
+  const [playlistVisibility, setPlaylistVisibility] = useState("public");
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreatePlaylist = async () => {
+    if (!playlistName.trim()) return;
+
+    setIsCreating(true);
+    try {
+      const newPlaylist = {
+        id: Date.now().toString(),
+        title: playlistName,
+        name: playlistName,
+        visibility: playlistVisibility,
+        songs: trackMetadata,
+        suggestions: [],
+        imageSrc: trackMetadata[0]?.imageSrc || "",
+        createdAt: new Date().toISOString(),
+      };
+
+      createPlaylist(newPlaylist);
+      onComplete();
+    } catch (error) {
+      console.error("Error creating playlist:", error);
+    } finally {
+      setIsCreating(false);
     }
-    return "/art/muza.png"; // Fallback image
   };
 
-  // Transform upload data into Album format
-  const transformToAlbum = (): Album => {
-    return {
-      id: `upload-preview-${Date.now()}`,
-      imageSrc: getCoverImageUrl(),
-      title: formData.albumTitle || "Untitled Album",
-      subTitle: `Album • ${trackMetadata.length} Song${trackMetadata.length !== 1 ? "s" : ""}`,
-      artist: formData.mainArtist || "Unknown Artist",
-      songs: trackMetadata.map((_, index) => index + 1),
-    };
+  const handlePlayAll = () => {
+    if (trackMetadata.length > 0) {
+      setSelectedSong(trackMetadata[0]);
+      setIsPlaying(true);
+    }
   };
 
-  // Transform track metadata into SongDetails format
-  const transformToSongDetails = (): SongDetails[] => {
-    return trackMetadata.map((track, index) => {
-      // Parse duration string to seconds
-      const parseDuration = (durationStr: string): number => {
-        if (!durationStr || durationStr === "0:00") return 0;
-        const parts = durationStr.split(":");
-        if (parts.length === 2) {
-          const minutes = parseInt(parts[0]) || 0;
-          const seconds = parseInt(parts[1]) || 0;
-          return minutes * 60 + seconds;
-        }
-        return 0;
-      };
-
-      return {
-        id: track.id,
-        index: index + 1,
-        title: track.songName || "Untitled",
-        artist: track.composer || formData.mainArtist || "Unknown Artist",
-        album: formData.albumTitle || "Untitled Album",
-        time: parseDuration(track.duration),
-        year: new Date().getFullYear(),
-        imageSrc: getCoverImageUrl(),
-        audioUrl: track.file ? URL.createObjectURL(track.file) : undefined,
-      };
-    });
+  const handleSongClick = (song: SongDetails) => {
+    if (selectedSong?.id === song.id) {
+      togglePlayPause();
+    } else {
+      setSelectedSong(song);
+      setIsPlaying(true);
+    }
   };
-
-  const album = transformToAlbum();
-  const songDetails = transformToSongDetails();
 
   return (
     <div className="upload-step-three">
-      <div className="album-preview">
-        <MediaHeader
-          media={album}
-          songs={songDetails}
-          mediaType="album"
-          showBackButton={false}
-        />
-        {/* Use existing AlbumHeader component */}
-        <AlbumHeader album={album} songs={songDetails} />
+      <div className="step-header">
+        <h2>{t("upload.stepThree.title")}</h2>
+        <p>{t("upload.stepThree.description")}</p>
+      </div>
 
-        <hr />
+      <div className="playlist-creation">
+        <div className="form-group">
+          <label htmlFor="playlist-name">{t("upload.playlistName")}</label>
+          <input
+            id="playlist-name"
+            type="text"
+            value={playlistName}
+            onChange={(e) => setPlaylistName(e.target.value)}
+            placeholder={t("upload.playlistNamePlaceholder")}
+            className="playlist-name-input"
+          />
+        </div>
 
-        {/* Use SongLine components with simpler design */}
-        <div className="album-song-list">
-          {songDetails.map((song: SongDetails) => (
-            <SongLine
-              key={song.id}
-              details={song}
-              onClick={() => {
-                if (selectedSong?.id === song.id) {
-                  togglePlayPause();
-                } else {
-                  setSelectedSong(song);
-                  setIsPlaying(true);
-                }
-              }}
-              isPlaying={song.id === selectedSong?.id && !!isPlaying}
-            />
+        <div className="form-group">
+          <label htmlFor="playlist-visibility">{t("upload.visibility")}</label>
+          <select
+            id="playlist-visibility"
+            value={playlistVisibility}
+            onChange={(e) => setPlaylistVisibility(e.target.value)}
+            className="visibility-select"
+          >
+            <option value="public">{t("upload.public")}</option>
+            <option value="private">{t("upload.private")}</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="tracks-preview">
+        <div className="tracks-header">
+          <h3>{t("upload.tracksPreview")}</h3>
+          <MuzaButton onClick={handlePlayAll} content={t("upload.playAll")} />
+        </div>
+
+        <div className="tracks-list">
+          {trackMetadata.map((track, index) => (
+            <div
+              key={track.id || index}
+              className={`track-item ${
+                selectedSong?.id === track.id && isPlaying ? "playing" : ""
+              }`}
+              onClick={() => handleSongClick(track)}
+            >
+              <div className="track-info">
+                <span className="track-number">{index + 1}</span>
+                <div className="track-details">
+                  <span className="track-title">{track.title}</span>
+                  <span className="track-artist">{track.artist}</span>
+                </div>
+              </div>
+              <div className="track-actions">
+                <span className="track-duration">
+                  {track.time ? `${Math.floor(track.time / 60)}:${String(track.time % 60).padStart(2, "0")}` : "0:00"}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
+      </div>
+
+      <div className="step-actions">
+        <MuzaButton onClick={onBack} content={t("action.back")} />
+        <MuzaButton
+          onClick={handleCreatePlaylist}
+          disabled={!playlistName.trim() || isCreating}
+          content={isCreating ? t("upload.creating") : t("upload.createPlaylist")}
+        />
       </div>
     </div>
   );

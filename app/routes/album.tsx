@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import type { Album, SongDetails } from "~/appData/models";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import MediaHeader from "~/components/MediaHeader";
-import { MusicPlayer } from "~/components/sections/MusicPlayer";
-import MusicSidebar from "~/components/sections/MusicSidebar";
-import MusicTopbar from "~/components/sections/MusicTopbar";
-import SongLine from "~/components/songLineDisplays/SongLine";
 import { useLocation } from "react-router";
+import SongLine from "~/components/songLineDisplays/SongLine";
+import MediaHeader from "~/components/MediaHeader/MediaHeader";
+import type { Album, SongDetails } from "~/appData/models";
+import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
+import { useMusicLibraryStore } from "~/appData/musicStore";
 
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
@@ -18,13 +15,11 @@ interface AlbumPageState {
 }
 
 export default function AlbumPage() {
-  const {
-    selectedSong,
-    setSelectedSong,
-    setIsPlaying,
-    isPlaying,
-    togglePlayPause,
-  } = useCurrentPlayerStore();
+  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
+  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
+  const togglePlayPause = useCurrentPlayerStore(state => state.togglePlayPause);
   const { recentlyPlayed } = useMusicLibraryStore();
 
   const [albumSongsDetails, setAlbumSongsDetails] = useState<SongDetails[]>([]);
