@@ -15,11 +15,15 @@ interface AlbumPageState {
 }
 
 export default function AlbumPage() {
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
-  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
-  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
-  const togglePlayPause = useCurrentPlayerStore(state => state.togglePlayPause);
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
+  const setIsPlaying = useCurrentPlayerStore((state) => state.setIsPlaying);
+  const isPlaying = useCurrentPlayerStore((state) => state.isPlaying);
+  const togglePlayPause = useCurrentPlayerStore(
+    (state) => state.togglePlayPause,
+  );
   const { recentlyPlayed } = useMusicLibraryStore();
 
   const [albumSongsDetails, setAlbumSongsDetails] = useState<SongDetails[]>([]);

@@ -12,7 +12,9 @@ import "./albums.scss";
 
 export default function Albums() {
   const { t } = useTranslation();
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
   const { newReleases, recentlyPlayed } = useMusicLibraryStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

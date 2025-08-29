@@ -14,8 +14,10 @@ import "./home.scss";
 export default function Home() {
   const { t } = useTranslation();
   // Selective store subscriptions - only subscribe to what we need
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
   const { recentlyPlayed, newReleases, artists } = useMusicLibraryStore();
 
   const navigate = useNavigate();

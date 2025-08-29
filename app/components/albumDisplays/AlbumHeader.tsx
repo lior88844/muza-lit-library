@@ -15,11 +15,15 @@ interface AlbumHeaderProps {
 
 const AlbumHeader: React.FC<AlbumHeaderProps> = ({ album, songs }) => {
   const { t } = useTranslation();
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
-  const setSelectedPlaListOrAlbum = useCurrentPlayerStore(state => state.setSelectedPlaListOrAlbum);
-  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
-  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
+  const setSelectedPlaListOrAlbum = useCurrentPlayerStore(
+    (state) => state.setSelectedPlaListOrAlbum,
+  );
+  const isPlaying = useCurrentPlayerStore((state) => state.isPlaying);
+  const setIsPlaying = useCurrentPlayerStore((state) => state.setIsPlaying);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const GetRandomSong = () => {

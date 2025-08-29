@@ -5,12 +5,18 @@ import { MusicPlayer } from "../sections/MusicPlayer";
 
 export default function MuzaMusicPlayer() {
   const { recentlyPlayed, incrementPlayCount } = useMusicLibraryStore();
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
-  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
-  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
-  const playCountIncremented = useCurrentPlayerStore(state => state.playCountIncremented);
-  const setPlayCountIncremented = useCurrentPlayerStore(state => state.setPlayCountIncremented);
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
+  const isPlaying = useCurrentPlayerStore((state) => state.isPlaying);
+  const setIsPlaying = useCurrentPlayerStore((state) => state.setIsPlaying);
+  const playCountIncremented = useCurrentPlayerStore(
+    (state) => state.playCountIncremented,
+  );
+  const setPlayCountIncremented = useCurrentPlayerStore(
+    (state) => state.setPlayCountIncremented,
+  );
 
   const getCurrentSongIndex = () => {
     if (!selectedSong || !selectedSong.id) return -1;

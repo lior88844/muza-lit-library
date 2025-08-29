@@ -32,11 +32,15 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   customActions,
 }) => {
   const { t } = useTranslation();
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
-  const setSelectedPlaListOrAlbum = useCurrentPlayerStore(state => state.setSelectedPlaListOrAlbum);
-  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
-  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
+  const setSelectedPlaListOrAlbum = useCurrentPlayerStore(
+    (state) => state.setSelectedPlaListOrAlbum,
+  );
+  const isPlaying = useCurrentPlayerStore((state) => state.isPlaying);
+  const setIsPlaying = useCurrentPlayerStore((state) => state.setIsPlaying);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const addToLibrary = () => {

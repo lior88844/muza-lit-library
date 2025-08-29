@@ -12,8 +12,10 @@ import "./songs.scss";
 
 export default function Songs() {
   const { t } = useTranslation();
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
   const { recentlyPlayed } = useMusicLibraryStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

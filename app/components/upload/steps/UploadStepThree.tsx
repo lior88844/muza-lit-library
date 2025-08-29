@@ -20,11 +20,15 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const selectedSong = useCurrentPlayerStore(state => state.selectedSong);
-  const setSelectedSong = useCurrentPlayerStore(state => state.setSelectedSong);
-  const setIsPlaying = useCurrentPlayerStore(state => state.setIsPlaying);
-  const isPlaying = useCurrentPlayerStore(state => state.isPlaying);
-  const togglePlayPause = useCurrentPlayerStore(state => state.togglePlayPause);
+  const selectedSong = useCurrentPlayerStore((state) => state.selectedSong);
+  const setSelectedSong = useCurrentPlayerStore(
+    (state) => state.setSelectedSong,
+  );
+  const setIsPlaying = useCurrentPlayerStore((state) => state.setIsPlaying);
+  const isPlaying = useCurrentPlayerStore((state) => state.isPlaying);
+  const togglePlayPause = useCurrentPlayerStore(
+    (state) => state.togglePlayPause,
+  );
   const { createPlaylist } = useMusicLibraryStore();
 
   const [playlistName, setPlaylistName] = useState("");
@@ -130,7 +134,9 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
               </div>
               <div className="track-actions">
                 <span className="track-duration">
-                  {track.time ? `${Math.floor(track.time / 60)}:${String(track.time % 60).padStart(2, "0")}` : "0:00"}
+                  {track.time
+                    ? `${Math.floor(track.time / 60)}:${String(track.time % 60).padStart(2, "0")}`
+                    : "0:00"}
                 </span>
               </div>
             </div>
@@ -143,7 +149,9 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
         <MuzaButton
           onClick={handleCreatePlaylist}
           disabled={!playlistName.trim() || isCreating}
-          content={isCreating ? t("upload.creating") : t("upload.createPlaylist")}
+          content={
+            isCreating ? t("upload.creating") : t("upload.createPlaylist")
+          }
         />
       </div>
     </div>
