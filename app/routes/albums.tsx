@@ -8,7 +8,7 @@ import { useTranslation } from "~/lib/i18n/translations";
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
-import "./albums.scss";
+
 
 export default function Albums() {
   const { t } = useTranslation();
