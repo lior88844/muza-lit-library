@@ -59,7 +59,10 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
       // If not playing, start playing the media
       if (songs.length > 0) {
         setSelectedSong(songs[0]);
-        setSelectedPlaListOrAlbum(media);
+        // Only set album context for albums, not playlists
+        if (mediaType === "album") {
+          setSelectedPlaListOrAlbum(media as Album);
+        }
         setIsPlaying(true);
       }
     }
@@ -77,10 +80,14 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     return (media as Album | MusicPlaylist).title || "";
   };
 
-  // Helper function to safely get image
   const getMediaImageSrc = () => {
     if (mediaType === "artist") {
       return (media as Artist).imageUrl || "";
+    }
+    if (mediaType === "playlist") {
+      // For playlists, return array of first 4 song images for collage
+      const playlistImages = songs.slice(0, 4).map(song => song.imageSrc || "/art/imag_1.jpg");
+      return playlistImages.length >= 4 ? playlistImages : (media as MusicPlaylist).imageSrc || "";
     }
     return (media as Album | MusicPlaylist).imageSrc || "";
   };

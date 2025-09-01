@@ -1,0 +1,142 @@
+@import "../../styles/variables.scss";
+
+.playlist-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-xl, 24px);
+  padding-bottom: 70px; // Space for player
+  padding-left: 213px; // Space for sidebar 
+  padding-right: 0;
+  padding-top: var(--muza-spacing-lg, 16px);
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xl, 24px);
+    width: 100%;
+  }
+
+  &__song-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-sm, 8px);
+    height: 503px; // Match figma height
+    padding: 0 var(--muza-spacing-xl, 24px);
+    overflow-y: auto;
+    
+    /* Custom scrollbar styling */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: var(--muza-section-scrollbar-track-bg, #c2c2c2);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--muza-section-scrollbar-thumb-bg, #5f5f5f);
+      border-radius: 3px;
+      
+      &:hover {
+        background: var(--muza-primary-text-color, #333333);
+      }
+    }
+  }
+
+  &__song-item {
+    background: #ffffff;
+    border-radius: var(--muza-border-radius-sm, 4px);
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: var(--muza-hover-background, #eeeeee);
+    }
+
+    // Currently playing song styling
+    &.playing {
+      background: var(--muza-section-background, #f7f7f7);
+      border: 1px solid var(--muza-light-border-color, #e5e7eb);
+    }
+  }
+
+  // Custom actions styling for playlist
+  .playlist-actions {
+    display: flex;
+    gap: var(--muza-spacing-lg, 16px);
+    align-items: center;
+    justify-content: flex-start;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .playlist-detail {
+    padding-left: 0;
+    padding-right: var(--muza-spacing-md, 12px);
+    padding-left: var(--muza-spacing-md, 12px);
+
+    &__song-list {
+      padding: 0 var(--muza-spacing-md, 12px);
+    }
+  }
+}
+
+// Ensure proper layout with MediaHeader
+.playlist-detail .media-header-layout {
+  padding-left: 0;
+  padding-right: var(--muza-spacing-lg, 16px);
+}
+
+// Override SongLineWithCover styling for playlist context
+.playlist-detail {
+  .song-line-with-cover {
+    border-radius: var(--muza-border-radius-sm, 4px);
+    margin: 1px 0; // Small margin for visual separation
+    
+    &__content {
+      padding-left: var(--muza-spacing-sm, 8px);
+      padding-right: 0;
+    }
+
+    // Right section gradient styling to match figma
+    &__actions {
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 4.815%,
+        rgba(255, 255, 255, 1) 19.261%
+      );
+      padding-left: var(--muza-spacing-xl, 24px);
+      padding-right: var(--muza-spacing-sm, 8px);
+    }
+
+    // Playing state gradient
+    &.playing &__actions {
+      background: linear-gradient(
+        to left,
+        rgba(249, 250, 251, 1) 82.412%,
+        rgba(249, 250, 251, 0) 95.192%
+      );
+    }
+  }
+}
+
+// Preview badge styling
+.playlist-detail .song-line-with-cover {
+  .preview-badge {
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.5);
+    border: 0.5px solid var(--muza-border-color, #a9a9a9);
+    border-radius: var(--muza-border-radius-sm, 4px);
+    padding: 2px var(--muza-spacing-sm, 8px);
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muza-primary-text-color, #333333);
+    margin-right: var(--muza-spacing-sm, 8px);
+  }
+}

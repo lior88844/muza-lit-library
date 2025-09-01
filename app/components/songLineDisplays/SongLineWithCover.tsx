@@ -8,6 +8,8 @@ interface SongLineProps {
   details: SongDetails;
   onClick: MouseEventHandler<HTMLDivElement>;
   isPlaying: boolean;
+  showPreview?: boolean; // Add preview badge option
+  showHoverActions?: boolean; // Control hover action visibility
 }
 
 const formatDuration = (seconds: number): string => {
@@ -26,6 +28,8 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   details,
   onClick,
   isPlaying,
+  showPreview = false,
+  showHoverActions = true,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -97,6 +101,11 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
           </div>
 
           <div className="song-line-with-cover__details-row">
+            {showPreview && (
+              <div className="preview-badge">
+                Preview
+              </div>
+            )}
             <div className="song-details">
               <span className="artist-name">{details.artist}</span>
               <span className="separator">•</span>
@@ -113,7 +122,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
 
         {/* Right Section with Gradient */}
         <div className="song-line-with-cover__actions">
-          {isHovered && (
+          {showHoverActions && isHovered && (
             <button
               className="ellipsis-btn"
               title="More options"
@@ -126,16 +135,18 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             </button>
           )}
 
-          <button
-            className="add-btn"
-            title="Add to library"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle add to library
-            }}
-          >
-            <MuzaIcon iconName="plus" />
-          </button>
+          {showHoverActions && (
+            <button
+              className="add-btn"
+              title="Add to library"
+              onClick={(e) => {
+                e.stopPropagation();
+                // Handle add to library
+              }}
+            >
+              <MuzaIcon iconName="plus" />
+            </button>
+          )}
 
           <span className="duration">
             {details.time ? formatDuration(details.time) : "00:00"}
