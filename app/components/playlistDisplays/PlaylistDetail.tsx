@@ -14,9 +14,16 @@ interface PlaylistDetailProps {
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
   const { t } = useTranslation();
-  const { selectedSong, setSelectedSong, setSelectedPlaListOrAlbum, isPlaying, setIsPlaying, togglePlayPause } = useCurrentPlayerStore();
+  const {
+    selectedSong,
+    setSelectedSong,
+    setSelectedPlaListOrAlbum,
+    isPlaying,
+    setIsPlaying,
+    togglePlayPause,
+  } = useCurrentPlayerStore();
   const { recentlyPlayed } = useMusicLibraryStore();
-  
+
   // For demo purposes, use some songs from recentlyPlayed as playlist songs
   // In a real app, the playlist would have its own songs array
   const playlistSongs = recentlyPlayed.slice(0, 8);
@@ -66,11 +73,11 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
           {playlistSongs.map((song, index) => {
             // Show preview badge for first, fourth, sixth, seventh and eighth songs per Figma
             const showPreview = [3].includes(index);
-            
+
             return (
-              <div 
-                key={song.id} 
-                className={`playlist-detail__song-item ${isCurrentSongPlaying(song) ? 'playing' : ''}`}
+              <div
+                key={song.id}
+                className={`playlist-detail__song-item ${isCurrentSongPlaying(song) ? "playing" : ""}`}
               >
                 <SongLineWithCover
                   details={{ ...song, index: index + 1 }}

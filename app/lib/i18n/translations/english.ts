@@ -82,16 +82,16 @@ const english = {
 
   // Album Header
   "album.addedToLibrary": "Album added successfully to your library",
-  
+
   // Playlist Header
   "playlist.addedToLibrary": "Playlist added successfully to your library",
-  
-  // Artist Header  
+
+  // Artist Header
   "artist.addedToLibrary": "Artist added successfully to your library",
 
   // Media Header
   "common.playAlbum": "Play Album",
-  "common.playPlaylist": "Play Playlist", 
+  "common.playPlaylist": "Play Playlist",
   "common.playArtist": "Play Artist",
   "common.pause": "Pause",
   "common.backToPlaylists": "Back to Playlists",
@@ -159,7 +159,7 @@ const english = {
   "general.notFound": "404",
   "general.networkError": "Network response was not ok",
   "general.loading": "Loading...",
-  
+
   // Error Messages
   "error.playlistNotFound": "Playlist not found",
   "general.errorWithMessage": "Error: {error}",

@@ -87,8 +87,12 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     }
     if (mediaType === "playlist") {
       // For playlists, return array of first 4 song images for collage
-      const playlistImages = songs.slice(0, 4).map(song => song.imageSrc || "/art/imag_1.jpg");
-      return playlistImages.length >= 4 ? playlistImages : (media as MusicPlaylist).imageSrc || "";
+      const playlistImages = songs
+        .slice(0, 4)
+        .map((song) => song.imageSrc || "/art/imag_1.jpg");
+      return playlistImages.length >= 4
+        ? playlistImages
+        : (media as MusicPlaylist).imageSrc || "";
     }
     return (media as Album | MusicPlaylist).imageSrc || "";
   };
@@ -196,25 +200,22 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   </div>
 
                   <MediaMetadata {...metadataProps} />
-                     {/* Visibility Badge - separate from metadata per Figma */}
-                     {mediaType === "playlist" && (
-                  <div className="visibility-badge-section">
-                    <div className="visibility-badge" data-name="Badge">
-                      <div className="badge-icon">
-                        <MuzaIcon iconName="globe" />
+                  {/* Visibility Badge - separate from metadata per Figma */}
+                  {mediaType === "playlist" && (
+                    <div className="visibility-badge-section">
+                      <div className="visibility-badge" data-name="Badge">
+                        <div className="badge-icon">
+                          <MuzaIcon iconName="globe" />
+                        </div>
+                        <span className="badge-text">
+                          {(media as MusicPlaylist).visibility === "private"
+                            ? t("common.private")
+                            : t("common.public")}
+                        </span>
                       </div>
-                      <span className="badge-text">
-                        {(media as MusicPlaylist).visibility === "private" 
-                          ? t("common.private") 
-                          : t("common.public")
-                        }
-                      </span>
                     </div>
-                  </div>
-                )}
+                  )}
                 </div>
-
-           
 
                 <div className="actions-section">
                   {/* PlayButton content inlined */}

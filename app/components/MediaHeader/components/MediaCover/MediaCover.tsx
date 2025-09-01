@@ -19,33 +19,38 @@ const MediaCover: React.FC<MediaCoverProps> = ({
     if (Array.isArray(imageSrc) && imageSrc.length >= 4) {
       return (
         <div className="playlist-collage" data-name="Playlist Collage">
-          <div 
+          <div
             className="collage-item collage-item--top-left"
             style={{ backgroundImage: `url('${imageSrc[0]}')` }}
           />
-          <div 
+          <div
             className="collage-item collage-item--top-right"
             style={{ backgroundImage: `url('${imageSrc[1]}')` }}
           />
-          <div 
+          <div
             className="collage-item collage-item--bottom-left"
             style={{ backgroundImage: `url('${imageSrc[2]}')` }}
           />
-          <div 
+          <div
             className="collage-item collage-item--bottom-right"
             style={{ backgroundImage: `url('${imageSrc[3]}')` }}
           />
         </div>
       );
     }
-    
+
     // For single images (albums, artists, or playlists without enough songs)
-    const singleImageSrc = Array.isArray(imageSrc) ? imageSrc[0] || "/art/imag_1.jpg" : imageSrc;
+    const singleImageSrc = Array.isArray(imageSrc)
+      ? imageSrc[0] || "/art/imag_1.jpg"
+      : imageSrc;
     return <img src={singleImageSrc} alt={title} />;
   };
 
   return (
-    <div className={`cover-section cover-section--${size} cover-section--${mediaType}`} data-name="cover">
+    <div
+      className={`cover-section cover-section--${size} cover-section--${mediaType}`}
+      data-name="cover"
+    >
       <div className="cover-frame" data-name="cover frame">
         {renderCoverContent()}
         <div className="overlay" data-name="Overlay" />

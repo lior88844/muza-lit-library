@@ -101,11 +101,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
           </div>
 
           <div className="song-line-with-cover__details-row">
-            {showPreview && (
-              <div className="preview-badge">
-                Preview
-              </div>
-            )}
+            {showPreview && <div className="preview-badge">Preview</div>}
             <div className="song-details">
               <span className="artist-name">{details.artist}</span>
               <span className="separator">•</span>
