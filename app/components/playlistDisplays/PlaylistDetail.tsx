@@ -60,7 +60,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
         <div className="playlist-detail__song-list" data-name="Song List">
           {playlistSongs.map((song, index) => {
             // Show preview badge for first, fourth, sixth, seventh and eighth songs per Figma
-            const showPreview = [0, 3, 5, 6, 7].includes(index);
+            const showPreview = [3].includes(index);
             
             return (
               <div 
