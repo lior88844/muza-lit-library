@@ -14,7 +14,7 @@ interface PlaylistDetailProps {
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
   const { t } = useTranslation();
-  const { selectedSong, setSelectedSong, setSelectedPlaListOrAlbum } = useCurrentPlayerStore();
+  const { selectedSong, setSelectedSong, setSelectedPlaListOrAlbum, isPlaying, setIsPlaying, togglePlayPause } = useCurrentPlayerStore();
   const { recentlyPlayed } = useMusicLibraryStore();
   
   // For demo purposes, use some songs from recentlyPlayed as playlist songs
@@ -22,13 +22,18 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
   const playlistSongs = recentlyPlayed.slice(0, 8);
 
   const handleSongClick = (song: SongDetails) => {
-    setSelectedSong(song);
-    // Note: setSelectedPlaListOrAlbum is designed for albums only
-    // For playlists, we just set the song and let it play
+    if (selectedSong?.id === song.id) {
+      // If the same song is clicked, toggle play/pause
+      togglePlayPause();
+    } else {
+      // If a different song is clicked, select it and start playing
+      setSelectedSong(song);
+      setIsPlaying(true);
+    }
   };
 
   const isCurrentSongPlaying = (song: SongDetails) => {
-    return selectedSong?.id === song.id;
+    return selectedSong?.id === song.id && !!isPlaying;
   };
 
   return (
