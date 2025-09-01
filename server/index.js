@@ -280,7 +280,6 @@ async function initializeApp() {
 
     // Health check endpoint
     app.get("/health", (req, res) => {
-      console.log("GET /health - Serving OK");
       res.send("OK");
     });
 
