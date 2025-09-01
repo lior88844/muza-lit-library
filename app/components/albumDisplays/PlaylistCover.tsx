@@ -1,12 +1,15 @@
 import React from "react";
 import "./PlaylistCover.scss";
 import HoverOverlay from "~/components/ui/HoverOverlay";
+import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
+import type { MusicPlaylist } from "~/appData/models";
 
 interface PlaylistCoverProps {
-  albumImages: string[]; // Array of 4 album cover images
+  albumImages: string[]; 
   title: string;
   songsCount: string;
   userName: string;
+  playlist?: MusicPlaylist; 
   onSelect?: (data: {
     title: string;
     songsCount: string;
@@ -20,10 +23,21 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   title,
   songsCount,
   userName,
+  playlist,
   onSelect,
 }) => {
+  const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } = useCurrentPlayerStore();
+
   const handleClick = () => {
     onSelect?.({ title, songsCount, albumImages, userName });
+  };
+
+  const handlePlayPlaylist = () => {
+    if (playlist && playlist.songs && playlist.songs.length > 0) {
+      setSelectedSong(playlist.songs[0]);
+      setSelectedPlaListOrAlbum(playlist as any);
+      setIsPlaying(true);
+    }
   };
 
   // Ensure we have 4 images, pad with first image if needed
@@ -58,7 +72,7 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
           showPlayButton={true}
           onPlayPause={(e) => {
             e.stopPropagation();
-            handleClick();
+            handlePlayPlaylist();
           }}
           actions={[
             {
