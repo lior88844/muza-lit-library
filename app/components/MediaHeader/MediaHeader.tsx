@@ -15,6 +15,7 @@ import { useTranslation } from "~/lib/i18n/translations";
 import MediaCover from "./components/MediaCover/MediaCover";
 import MediaMetadata from "./components/MediaMetadata/MediaMetadata";
 import MuzaButton from "~/controls/MuzaButton";
+import MuzaIcon from "~/icons/MuzaIcon";
 import { FaPause, FaPlay } from "react-icons/fa";
 
 interface MediaHeaderProps {
@@ -119,11 +120,10 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           songCount: songs.length,
         };
       case "playlist":
-        const playlist = media as MusicPlaylist;
         return {
           type: "playlist" as const,
           songCount: songs.length,
-          isPublic: playlist.visibility === "public",
+          // Note: visibility is now handled as separate badge
         };
       case "artist":
         const artist = media as Artist;
@@ -196,7 +196,25 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   </div>
 
                   <MediaMetadata {...metadataProps} />
+                     {/* Visibility Badge - separate from metadata per Figma */}
+                     {mediaType === "playlist" && (
+                  <div className="visibility-badge-section">
+                    <div className="visibility-badge" data-name="Badge">
+                      <div className="badge-icon">
+                        <MuzaIcon iconName="globe" />
+                      </div>
+                      <span className="badge-text">
+                        {(media as MusicPlaylist).visibility === "private" 
+                          ? t("common.private") 
+                          : t("common.public")
+                        }
+                      </span>
+                    </div>
+                  </div>
+                )}
                 </div>
+
+           
 
                 <div className="actions-section">
                   {/* PlayButton content inlined */}

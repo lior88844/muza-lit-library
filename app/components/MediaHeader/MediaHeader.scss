@@ -342,3 +342,52 @@
     font-size: 14px;
   }
 }
+
+.visibility-badge-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: var(--muza-spacing-sm, 8px);
+  width: 100%;
+
+  .visibility-badge {
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.5);
+    border: 0.5px solid var(--muza-border-color, #a9a9a9);
+    border-radius: var(--muza-border-radius-sm, 4px);
+    display: flex;
+    align-items: center;
+    gap: var(--muza-spacing-xs, 4px);
+    padding: 2px var(--muza-spacing-sm, 8px) 4px;
+    flex-shrink: 0;
+
+    .badge-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 12px;
+      height: 12px;
+
+      i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        svg {
+          width: 12px;
+          height: 12px;
+          color: var(--muza-primary-text-color, #333333);
+        }
+      }
+    }
+
+    .badge-text {
+      font-family: "Founders Grotesk", sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1;
+      color: var(--muza-primary-text-color, #333333);
+      white-space: nowrap;
+    }
+  }
+}
