@@ -5,11 +5,11 @@ import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import type { MusicPlaylist } from "~/appData/models";
 
 interface PlaylistCoverProps {
-  albumImages: string[]; 
+  albumImages: string[];
   title: string;
   songsCount: string;
   userName: string;
-  playlist?: MusicPlaylist; 
+  playlist?: MusicPlaylist;
   onSelect?: (data: {
     title: string;
     songsCount: string;
@@ -26,7 +26,8 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   playlist,
   onSelect,
 }) => {
-  const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } = useCurrentPlayerStore();
+  const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } =
+    useCurrentPlayerStore();
 
   const handleClick = () => {
     onSelect?.({ title, songsCount, albumImages, userName });
