@@ -31,7 +31,7 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({
         <img src={imageSrc} alt={title} />
         <HoverOverlay
           showPlayButton={true}
-          onPlayPause={(e) => {
+          onPlayPause={e => {
             e.stopPropagation();
             handleClick();
           }}

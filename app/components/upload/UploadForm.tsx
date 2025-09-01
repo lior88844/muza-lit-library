@@ -7,11 +7,11 @@ interface UploadFormProps {
   formData: UploadFormData;
   musicians: Musician[];
   onFormDataChange: (
-    field: string,
+    field: string
   ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onMusicianChange: (
     index: number,
-    field: keyof Musician,
+    field: keyof Musician
   ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddMusician: () => void;
 }

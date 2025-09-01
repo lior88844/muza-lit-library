@@ -38,7 +38,7 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
   const [value, setValue] = useState<string>(String(propValue ?? ""));
   const [validationMessage, setValidationMessage] = useState<string>("");
   const [inputState, setInputState] = useState<"default" | "success" | "error">(
-    "default",
+    "default"
   );
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
   }, [propValue]);
 
   const validateInput = (
-    val: string,
+    val: string
   ): { isValid: boolean; message: string } => {
     for (const rule of validationRules) {
       switch (rule.type) {

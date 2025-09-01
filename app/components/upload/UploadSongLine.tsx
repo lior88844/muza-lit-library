@@ -1,5 +1,4 @@
 import React, { type MouseEventHandler, useState } from "react";
-import "./UploadSongLine.scss";
 import type { SongDetails } from "../../appData/models";
 import { formatSongNumber } from "../../appData/utils";
 import MuzaIcon from "~/icons/MuzaIcon";

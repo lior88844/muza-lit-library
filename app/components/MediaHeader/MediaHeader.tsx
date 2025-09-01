@@ -104,26 +104,29 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
 
   const getMetadataProps = () => {
     switch (mediaType) {
-      case "album":
+      case "album": {
         const album = media as Album;
         return {
           type: "album" as const,
           year: album.year,
           songCount: songs.length,
         };
-      case "playlist":
+      }
+      case "playlist": {
         const playlist = media as MusicPlaylist;
         return {
           type: "playlist" as const,
           songCount: songs.length,
           isPublic: playlist.visibility === "public",
         };
-      case "artist":
+      }
+      case "artist": {
         const artist = media as Artist;
         return {
           type: "artist" as const,
           followerCount: 0, // Would need to be added to Artist interface
         };
+      }
       default:
         return {
           type: "album" as const,

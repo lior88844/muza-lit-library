@@ -56,14 +56,14 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
         </div>
         <HoverOverlay
           showPlayButton={true}
-          onPlayPause={(e) => {
+          onPlayPause={e => {
             e.stopPropagation();
             handleClick();
           }}
           actions={[
             {
               icon: "ellipsis",
-              onClick: (e) => e.stopPropagation(),
+              onClick: e => e.stopPropagation(),
               title: "More options",
             },
           ]}

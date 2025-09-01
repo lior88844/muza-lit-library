@@ -197,7 +197,7 @@ function LanguageSwitcher() {
   return (
     <select
       value={currentLanguage}
-      onChange={(e) => changeLanguage(e.target.value)}
+      onChange={e => changeLanguage(e.target.value)}
     >
       <option value="english">English</option>
       <option value="hebrew">עברית</option>

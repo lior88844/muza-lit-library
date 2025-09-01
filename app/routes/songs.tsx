@@ -44,7 +44,7 @@ export default function Songs() {
 
       <div className="songs-list-container">
         <div className="songs-list">
-          {recentlyPlayed.map((song) => (
+          {recentlyPlayed.map(song => (
             <SongDetails
               key={song.id}
               details={song}

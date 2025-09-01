@@ -54,7 +54,7 @@ type UploadStore = {
   updateTrackMetadata: (
     trackId: string,
     field: keyof Omit<TrackMetadata, "id" | "file">,
-    value: string,
+    value: string
   ) => void;
   deleteTrack: (trackId: string) => void;
   reorderTracks: (fromIndex: number, toIndex: number) => void;
@@ -124,7 +124,7 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
         );
       case 2:
         return trackMetadata.every(
-          (track) => !!(track.songName && track.composer),
+          track => !!(track.songName && track.composer)
         );
       default:
         return true;
@@ -133,25 +133,25 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
 
   // Form data actions
   updateFormData: (field: keyof UploadFormData, value: string) =>
-    set((state) => ({
+    set(state => ({
       formData: { ...state.formData, [field]: value },
     })),
 
   // Musicians actions
   updateMusician: (index: number, field: keyof Musician, value: string) =>
-    set((state) => ({
+    set(state => ({
       musicians: state.musicians.map((musician, i) =>
-        i === index ? { ...musician, [field]: value } : musician,
+        i === index ? { ...musician, [field]: value } : musician
       ),
     })),
 
   addMusician: () =>
-    set((state) => ({
+    set(state => ({
       musicians: [...state.musicians, { name: "", instruments: "" }],
     })),
 
   removeMusician: (index: number) =>
-    set((state) => ({
+    set(state => ({
       musicians: state.musicians.filter((_, i) => i !== index),
     })),
 
@@ -169,29 +169,29 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
   updateTrackMetadata: (
     trackId: string,
     field: keyof Omit<TrackMetadata, "id" | "file">,
-    value: string,
+    value: string
   ) =>
-    set((state) => ({
-      trackMetadata: state.trackMetadata.map((track) =>
-        track.id === trackId ? { ...track, [field]: value } : track,
+    set(state => ({
+      trackMetadata: state.trackMetadata.map(track =>
+        track.id === trackId ? { ...track, [field]: value } : track
       ),
     })),
 
   deleteTrack: (trackId: string) =>
-    set((state) => {
-      const trackToDelete = state.trackMetadata.find((t) => t.id === trackId);
+    set(state => {
+      const trackToDelete = state.trackMetadata.find(t => t.id === trackId);
       return {
         trackMetadata: state.trackMetadata.filter(
-          (track) => track.id !== trackId,
+          track => track.id !== trackId
         ),
         audioFiles: state.audioFiles.filter(
-          (file) => file !== trackToDelete?.file,
+          file => file !== trackToDelete?.file
         ),
       };
     }),
 
   reorderTracks: (fromIndex: number, toIndex: number) =>
-    set((state) => {
+    set(state => {
       const newTracks = [...state.trackMetadata];
       const [movedTrack] = newTracks.splice(fromIndex, 1);
       newTracks.splice(toIndex, 0, movedTrack);
@@ -200,9 +200,9 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
 
   generateTrackMetadata: (files: File[], mainArtist: string) => {
     const { trackMetadata } = get();
-    const existingFileNames = trackMetadata.map((track) => track.fileName);
+    const existingFileNames = trackMetadata.map(track => track.fileName);
     const newFiles = files.filter(
-      (file) => !existingFileNames.includes(file.name),
+      file => !existingFileNames.includes(file.name)
     );
 
     if (newFiles.length > 0) {
@@ -215,7 +215,7 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
         file: file,
       }));
 
-      set((state) => ({
+      set(state => ({
         trackMetadata: [...state.trackMetadata, ...newMetadata],
       }));
     }

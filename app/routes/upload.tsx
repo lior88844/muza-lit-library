@@ -70,7 +70,7 @@ export default function Upload() {
       const albumData = getUploadData();
       console.log("Album data ready for upload:", albumData);
       alert(
-        `Upload complete! Album: "${formData.albumTitle}" with ${trackMetadata.length} tracks`,
+        `Upload complete! Album: "${formData.albumTitle}" with ${trackMetadata.length} tracks`
       );
       resetUpload();
       navigate("/");

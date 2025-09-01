@@ -26,7 +26,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
         onCoverUpload(file);
       }
     },
-    [onCoverUpload],
+    [onCoverUpload]
   );
 
   const {
@@ -47,19 +47,19 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
     (acceptedFiles: File[]) => {
       // Filter out duplicate files (same name and size)
       const newFiles = acceptedFiles.filter(
-        (newFile) =>
+        newFile =>
           !uploadedFiles.some(
-            (existingFile) =>
+            existingFile =>
               existingFile.name === newFile.name &&
-              existingFile.size === newFile.size,
-          ),
+              existingFile.size === newFile.size
+          )
       );
 
       // Add new files to existing files
       const combinedFiles = [...uploadedFiles, ...newFiles];
       onFileUpload(combinedFiles);
     },
-    [onFileUpload, uploadedFiles],
+    [onFileUpload, uploadedFiles]
   );
 
   const {
@@ -106,7 +106,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
             />
             <button
               type="button"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 removeCover();
               }}
@@ -165,7 +165,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     removeFile(index);
                   }}

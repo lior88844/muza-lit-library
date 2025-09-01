@@ -53,7 +53,7 @@ const MusicListSectionComponent: React.FC<
   const renderContent = () => {
     switch (type) {
       case "album":
-        return albums!.map((album) => (
+        return albums!.map(album => (
           <AlbumDetails
             key={album.id}
             details={album}
@@ -83,7 +83,7 @@ const MusicListSectionComponent: React.FC<
           />
         ));
       case "song":
-        return songs!.map((song) => (
+        return songs!.map(song => (
           <SongLineWithCover
             key={song.id}
             details={song}
