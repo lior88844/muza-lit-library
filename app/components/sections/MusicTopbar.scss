@@ -81,6 +81,8 @@
             }
 
             &:focus {
+              border: none;
+              box-shadow: none;
               color: var(--colors_foreground_light, #030712);
             }
           }
@@ -107,7 +109,7 @@
       border-radius: 999px;
       font-size: 16px;
       padding: 8px 16px;
-      background-color: var(--colors_secondary_light, #f3f4f6);
+      // background-color: var(--colors_secondary_light, #f3f4f6);
       border-radius: var(--muza-border-radius-sm);
       font-size: var(--muza-songline-title-font-size, 16px);
       padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
