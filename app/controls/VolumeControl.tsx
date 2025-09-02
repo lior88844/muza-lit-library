@@ -108,7 +108,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
           ></i>
         </>
       )}
-      <div className="slider" ref={sliderRef} onClick={handleSliderClick}>
+      <div className="volume-slider" ref={sliderRef} onClick={handleSliderClick}>
         <svg viewBox="0 0 100 24">
           <line className="track" x1="2" y1="12" x2="98" y2="12" />
           <line
