@@ -123,13 +123,13 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           year: album.year,
           songCount: songs.length,
         };
+      }
       case "playlist":
         return {
           type: "playlist" as const,
           songCount: songs.length,
           // Note: visibility is now handled as separate badge
         };
-      }
       case "artist": {
         const artist = media as Artist;
         return {
