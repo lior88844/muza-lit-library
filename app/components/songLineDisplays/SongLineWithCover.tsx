@@ -135,7 +135,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             <button
               className="add-btn"
               title="Add to library"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 // Handle add to library
               }}
