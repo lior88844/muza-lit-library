@@ -76,7 +76,7 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
                 label={t("playlist.title")}
                 placeholder={t("playlist.titlePlaceholder")}
                 value={playlistName}
-                onChange={(e) => setPlaylistName(e.target.value)}
+                onChange={e => setPlaylistName(e.target.value)}
               />
             </div>
 

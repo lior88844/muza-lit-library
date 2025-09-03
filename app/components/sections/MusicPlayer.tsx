@@ -12,7 +12,7 @@ type MusicPlayerProps = {
   onNext?: () => void;
   onUpdate?: (details: PlayerDetails) => void;
   onSongEnded?: () => void;
-  setIsPlaying: (b: Boolean) => void;
+  setIsPlaying: (b: boolean) => void;
   onPlayCountIncrement?: () => void;
 };
 
@@ -59,7 +59,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.play().catch((err) => {
+    audio.play().catch(err => {
       console.error("Error playing audio:", err);
       setIsPlaying(false);
       onUpdate?.({ ...details });

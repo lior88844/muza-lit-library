@@ -42,10 +42,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { setIsPlaying } = useCurrentPlayerStore();
-  const sidebarSections = useMusicLibraryStore(
-    (state) => state.sidebarSections,
-  );
-  const playlists = useMusicLibraryStore((state) => state.playlists);
+  const sidebarSections = useMusicLibraryStore(state => state.sidebarSections);
+  const playlists = useMusicLibraryStore(state => state.playlists);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,10 +72,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
     const { selectedSong, setSelectedSong } = useCurrentPlayerStore.getState();
 
     fetch("/staticData/allData.json")
-      .then((response) => {
+      .then(response => {
         if (!response.ok) {
           console.log("response not ok");
-          fetch("./staticData/allData.json").then((response) => {
+          fetch("./staticData/allData.json").then(response => {
             if (!response.ok) throw new Error(t("general.networkError"));
             return response.json();
           });
@@ -85,13 +83,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
           return response.json();
         }
       })
-      .then((data) => {
+      .then(data => {
         setFeatured(data.albums.featured || []);
         setNewReleases(data.albums.newReleases.slice(0, 5) || []);
         setRecommended(data.albums.recommended || []);
         setArtists(data.artists);
         setRecentlyPlayed(data.songs);
-        setPlaylists(data.playlists || []);
+
+        const processedPlaylists = (data.playlists || []).map(
+          (playlist: any) => {
+            const playlistSongs = playlist.songs
+              .map((songId: number) =>
+                data.songs.find((song: any) => parseInt(song.id) === songId),
+              )
+              .filter((song: any) => song !== undefined);
+
+            const playlistSuggestions = (playlist.suggestions || [])
+              .map((songId: number) =>
+                data.songs.find((song: any) => parseInt(song.id) === songId),
+              )
+              .filter((song: any) => song !== undefined);
+
+            return {
+              ...playlist,
+              songs: playlistSongs,
+              suggestions: playlistSuggestions,
+              author: playlist.userName,
+            };
+          },
+        );
+
+        setPlaylists(processedPlaylists);
         setSidebarSections(data.sidebar.sections);
 
         if (data.songs.length > 0 && !selectedSong) {
@@ -99,7 +121,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         }
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(err => {
         setError(err.message);
         setLoading(false);
       });
