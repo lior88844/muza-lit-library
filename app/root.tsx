@@ -89,7 +89,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
         setRecommended(data.albums.recommended || []);
         setArtists(data.artists);
         setRecentlyPlayed(data.songs);
-        setPlaylists(data.playlists || []);
+
+        const processedPlaylists = (data.playlists || []).map(
+          (playlist: any) => {
+            const playlistSongs = playlist.songs
+              .map((songId: number) =>
+                data.songs.find((song: any) => parseInt(song.id) === songId)
+              )
+              .filter((song: any) => song !== undefined);
+
+            const playlistSuggestions = (playlist.suggestions || [])
+              .map((songId: number) =>
+                data.songs.find((song: any) => parseInt(song.id) === songId)
+              )
+              .filter((song: any) => song !== undefined);
+
+            return {
+              ...playlist,
+              songs: playlistSongs,
+              suggestions: playlistSuggestions,
+              author: playlist.userName,
+            };
+          }
+        );
+
+        setPlaylists(processedPlaylists);
         setSidebarSections(data.sidebar.sections);
 
         if (data.songs.length > 0 && !selectedSong) {

@@ -13,89 +13,92 @@
   padding: 20px;
 }
 
-// Modal content container
-.modal-container {
-  width: 350px;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  font-family: "Helvetica Neue", sans-serif;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-}
+// Album info modal container
+.album-info-modal {
+  // Modal content container
+  .modal-container {
+    width: 350px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    font-family: "Helvetica Neue", sans-serif;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-/* Header with image background */
-.modal-header {
-  position: relative;
-  background: black;
-  color: white;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  background-image: url("ballads.jpg"); /* Fallback */
-  background-size: cover;
-  background-position: center;
-  height: 180px;
-}
+  /* Header with image background */
+  .modal-header {
+    position: relative;
+    background: black;
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-image: url("ballads.jpg"); /* Fallback */
+    background-size: cover;
+    background-position: center;
+    height: 180px;
+  }
 
-/* Album info */
-.album-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
+  /* Album info */
+  .album-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
 
-.artist-name {
-  margin: 0;
-  font-size: 1rem;
-  opacity: 0.8;
-}
+  .artist-name {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.8;
+  }
 
-/* Close button */
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  font-size: 1.4rem;
-  line-height: 1;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  /* Close button */
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 1.4rem;
+    line-height: 1;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-/* Scrollable content */
-.modal-content {
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 1rem 1.5rem;
-  background-color: white;
-}
+  /* Scrollable content */
+  .modal-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 1rem 1.5rem;
+    background-color: white;
+  }
 
-/* Grid layout for labels/values */
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  row-gap: 1rem;
-  column-gap: 1.2rem;
-}
+  /* Grid layout for labels/values */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1rem;
+    column-gap: 1.2rem;
+  }
 
-.info-label {
-  color: #777;
-  font-size: 0.9rem;
-}
+  .info-label {
+    color: #777;
+    font-size: 0.9rem;
+  }
 
-.info-value {
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: #222;
+  .info-value {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #222;
+  }
 }

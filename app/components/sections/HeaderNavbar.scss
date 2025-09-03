@@ -135,7 +135,7 @@
         font-size: 16px;
         font-weight: 500;
         line-height: 20px;
-        color: var(--colors_foreground_light);
+        color: var(--muza-primary-text-color, #333333);
         white-space: pre;
         letter-spacing: 0.25px;
       }
