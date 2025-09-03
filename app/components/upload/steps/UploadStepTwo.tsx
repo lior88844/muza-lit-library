@@ -25,7 +25,7 @@ interface UploadStepTwoProps {
   onTrackMetadataChange: (
     trackId: string,
     field: keyof Omit<TrackMetadata, "id" | "file">,
-    value: string,
+    value: string
   ) => void;
   onDeleteTrack: (trackId: string) => void;
   onReorderTracks: (fromIndex: number, toIndex: number) => void;
@@ -42,7 +42,7 @@ interface SortableTrackRowProps {
   onTrackMetadataChange: (
     trackId: string,
     field: keyof Omit<TrackMetadata, "id" | "file">,
-    value: string,
+    value: string
   ) => void;
   onDeleteTrack: (trackId: string) => void;
   playbackState: PlaybackState;
@@ -119,7 +119,7 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
         <input
           type="text"
           value={track.songName}
-          onChange={(e) =>
+          onChange={e =>
             onTrackMetadataChange(track.id, "songName", e.target.value)
           }
           className="editable-field"
@@ -132,7 +132,7 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
         <input
           type="text"
           value={track.composer}
-          onChange={(e) =>
+          onChange={e =>
             onTrackMetadataChange(track.id, "composer", e.target.value)
           }
           className="editable-field"
@@ -175,11 +175,11 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   const handlePlayPause = (trackId: string) => {
-    const track = trackMetadata.find((t) => t.id === trackId);
+    const track = trackMetadata.find(t => t.id === trackId);
     if (!track) return;
 
     if (playbackState.currentTrackId === trackId && playbackState.isPlaying) {
@@ -204,7 +204,7 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
         .then(() => {
           setPlaybackState({ currentTrackId: trackId, isPlaying: true });
         })
-        .catch((error) => {
+        .catch(error => {
           console.error("Error playing audio:", error);
         });
 
@@ -219,12 +219,8 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = trackMetadata.findIndex(
-        (track) => track.id === active.id,
-      );
-      const newIndex = trackMetadata.findIndex(
-        (track) => track.id === over?.id,
-      );
+      const oldIndex = trackMetadata.findIndex(track => track.id === active.id);
+      const newIndex = trackMetadata.findIndex(track => track.id === over?.id);
 
       onReorderTracks(oldIndex, newIndex);
     }
@@ -260,7 +256,7 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={trackMetadata.map((track) => track.id)}
+            items={trackMetadata.map(track => track.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="table-body">

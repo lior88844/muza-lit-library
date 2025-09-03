@@ -17,7 +17,7 @@ export default function MuzaMusicPlayer() {
   const getCurrentSongIndex = () => {
     if (!selectedSong || !selectedSong.id) return -1;
     return recentlyPlayed.findIndex(
-      (song: SongDetails) => song.id === selectedSong.id,
+      (song: SongDetails) => song.id === selectedSong.id
     );
   };
 
@@ -69,7 +69,7 @@ export default function MuzaMusicPlayer() {
             id: selectedSong.id,
           }}
           setIsPlaying={setIsPlaying}
-          onUpdate={(updatedDetails) => {
+          onUpdate={updatedDetails => {
             setSelectedSong({
               ...selectedSong,
               audioUrl: updatedDetails.audioUrl,

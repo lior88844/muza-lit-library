@@ -4,9 +4,9 @@ import type { Album, SongDetails } from "./models";
 type currentPlayerStore = {
   selectedSong: SongDetails | null;
   selectedPlaListOrAlbum: Album | null;
-  isPlaying: Boolean;
+  isPlaying: boolean;
   playCountIncremented: boolean;
-  setIsPlaying: (isPlaying: Boolean) => void;
+  setIsPlaying: (isPlaying: boolean) => void;
   setSelectedSong: (song: SongDetails) => void;
   setSelectedPlaListOrAlbum: (album: Album) => void;
   togglePlayPause: () => void;
@@ -21,7 +21,7 @@ export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
 
   setSelectedSong: (song: SongDetails) =>
     set({ selectedSong: song, playCountIncremented: false }),
-  setIsPlaying: (play: Boolean) => set({ isPlaying: play }),
+  setIsPlaying: (play: boolean) => set({ isPlaying: play }),
 
   setSelectedPlaListOrAlbum: (album: Album) =>
     set({ selectedPlaListOrAlbum: album }),

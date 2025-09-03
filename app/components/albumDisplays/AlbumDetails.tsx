@@ -34,12 +34,12 @@ const AlbumDetails: React.FC<AlbumDetailsProps> = ({
           actions={[
             {
               icon: "ellipsis",
-              onClick: (e) => e.stopPropagation(),
+              onClick: e => e.stopPropagation(),
               title: "More options",
             },
             {
               icon: "info",
-              onClick: (e) => {
+              onClick: e => {
                 e.stopPropagation();
                 setModalOpen(true);
               },
@@ -47,7 +47,7 @@ const AlbumDetails: React.FC<AlbumDetailsProps> = ({
             },
             {
               icon: "plus",
-              onClick: (e) => {
+              onClick: e => {
                 e.stopPropagation();
                 addToLibrary();
               },

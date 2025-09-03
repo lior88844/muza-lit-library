@@ -13,7 +13,7 @@ const AlbumInfoModal: React.FC<AlbumInfoProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="modal" onClick={onClose}>
-      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-container" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <img
             className="album-cover"

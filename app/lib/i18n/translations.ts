@@ -13,18 +13,20 @@ let translations: Translations = {};
 const loadTranslations = async (language: string): Promise<Translations> => {
   try {
     switch (language) {
-      case "english":
+      case "english": {
         const englishModule = await import("./translations/english");
         return englishModule.default;
-      default:
+      }
+      default: {
         // Fallback to english for unknown languages
         const fallbackModule = await import("./translations/english");
         return fallbackModule.default;
+      }
     }
   } catch (error) {
     console.error(
       `Failed to load translations for language: ${language}`,
-      error,
+      error
     );
     return {};
   }

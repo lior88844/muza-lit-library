@@ -99,7 +99,7 @@ const SongDetails: React.FC<SongDetailsProps> = ({
                 type="checkbox"
                 className="song-checkbox"
                 checked={isSelected}
-                onChange={(e) => setIsSelected(e.target.checked)}
+                onChange={e => setIsSelected(e.target.checked)}
               />
             </div>
           </div>

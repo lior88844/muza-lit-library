@@ -81,7 +81,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             <div className="play-overlay">
               <button
                 className="play-button"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   // Create a synthetic event that matches the expected type
                   const syntheticEvent = e as any;
@@ -122,7 +122,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             <button
               className="ellipsis-btn"
               title="More options"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 // Handle more options
               }}

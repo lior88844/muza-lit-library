@@ -30,6 +30,7 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({
           title={playlist.title || playlist.name}
           songsCount={playlist.songs?.length?.toString() || "0"}
           userName={playlist.userName || playlist.author || t("common.unknown")}
+          playlist={playlist}
           onSelect={() => onPlaylistClick(playlist)}
         />
       ))}

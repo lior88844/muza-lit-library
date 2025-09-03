@@ -73,7 +73,7 @@ export type MusicPlaylist = {
 export type PlayerDetails = {
   audioUrl?: string;
   imageSrc?: string;
-  isPlaying: Boolean;
+  isPlaying: boolean;
   title?: string;
   artist?: string;
   album?: string;

@@ -239,9 +239,15 @@
 
     .add-btn {
       opacity: 1; // Always visible per Figma annotation
+
+      // On smaller screens (< 1024px), hide by default and show on hover
+      @media (max-width: 1023px) {
+        opacity: 0;
+      }
     }
 
     .duration {
+      width: 36px;
       font-family:
         var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
       font-size: 14px;

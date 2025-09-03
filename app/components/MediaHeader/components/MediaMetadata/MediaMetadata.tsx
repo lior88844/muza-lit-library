@@ -41,7 +41,7 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
       items.push(
         <span key="songCount">
           {songCount} {t("common.songs")}
-        </span>,
+        </span>
       );
     }
 
@@ -59,7 +59,7 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
       items.push(
         <span key="followers">
           {followerCount.toLocaleString()} {t("common.followers")}
-        </span>,
+        </span>
       );
     }
 

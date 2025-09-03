@@ -33,9 +33,9 @@ export default function AlbumPage() {
 
   useEffect(() => {
     const allSongsDetails = recentlyPlayed;
-    let details: SongDetails[] = [];
-    album?.songs?.map((songIndex) =>
-      details.push(allSongsDetails[songIndex - 1]),
+    const details: SongDetails[] = [];
+    album?.songs?.map(songIndex =>
+      details.push(allSongsDetails[songIndex - 1])
     );
     setAlbumSongsDetails(details);
   }, [album]);

@@ -9,11 +9,11 @@ interface UploadStepOneProps {
   musicians: Musician[];
   audioFiles: File[]; // Add audioFiles prop
   onFormDataChange: (
-    field: string,
+    field: string
   ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onMusicianChange: (
     index: number,
-    field: keyof Musician,
+    field: keyof Musician
   ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddMusician: () => void;
   onCoverUpload: (file: File) => void;
