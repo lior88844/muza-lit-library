@@ -3,13 +3,13 @@
 // Radix DropdownMenu Content
 .dropdown-menu {
   min-width: 160px;
-  background: var(--colors_background_light);
-  border: 1px solid var(--muza-light-border-color);
-  border-radius: var(--muza-border-radius-sm);
+  background: var(--colors_background_light, #ffffff);
+  border: 1px solid var(--muza-light-border-color, #e5e7eb);
+  border-radius: var(--muza-border-radius-sm, 4px);
   box-shadow:
     0px 4px 6px -1px rgba(0, 0, 0, 0.1),
     0px 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: var(--muza-spacing-xs) 0;
+  padding: var(--muza-spacing-xs, 4px) 0;
   z-index: 1000;
 
   // Radix animations
@@ -22,57 +22,57 @@
   }
 
   &__title {
-    font-family: var(--typography_font_family_font_sans);
-    font-size: var(--muza-primary-font-size);
-    font-weight: var(--muza-font-weight-medium);
-    color: var(--muza-primary-text-color);
-    padding: var(--muza-spacing-sm) var(--muza-spacing-lg);
-    margin-bottom: var(--muza-spacing-xs);
+    font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
+    font-size: var(--muza-primary-font-size, 14px);
+    font-weight: var(--muza-font-weight-medium, 500);
+    color: var(--muza-primary-text-color, #333333);
+    padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+    margin-bottom: var(--muza-spacing-xs, 4px);
   }
 
   &__separator {
-    background-color: var(--muza-light-border-color);
+    background-color: var(--muza-light-border-color, #e5e7eb);
     height: 1px;
-    margin: var(--muza-spacing-sm) 0;
+    margin: var(--muza-spacing-sm, 8px) 0;
   }
 
   &__item {
     display: flex;
     align-items: center;
-    padding: var(--muza-spacing-sm) var(--muza-spacing-lg);
-    margin: 0 var(--muza-spacing-xs);
+    padding: 6px 8px;
+    margin: 0 var(--muza-spacing-xs, 4px);
     border: none;
     background: none;
-    border-radius: var(--muza-border-radius-sm);
+    border-radius: var(--muza-border-radius-sm, 4px);
     cursor: pointer;
     transition: background-color 0.15s ease;
-    font-family: var(--typography_font_family_font_sans);
+    font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
     font-size: 16px;
-    font-weight: var(--muza-font-weight-normal);
+    font-weight: var(--muza-font-weight-normal, 400);
     line-height: 20px;
     letter-spacing: 0.25px;
-    color: var(--muza-primary-text-color);
+    color: var(--muza-primary-text-color, #333333);
     text-align: left;
     outline: none;
 
     // Radix focus states
     &[data-highlighted] {
-      background-color: var(--muza-hover-background);
+      background-color: var(--muza-hover-background, #eeeeee);
     }
 
     &:hover {
-      background-color: var(--muza-hover-background);
+      background-color: var(--muza-hover-background, #eeeeee);
     }
 
     &:focus {
-      background-color: var(--muza-hover-background);
+      background-color: var(--muza-hover-background, #eeeeee);
     }
 
     &--destructive {
-      color: var(--colors_destructive_light);
+      color: var(--colors_destructive_light, #dc2626);
 
       .dropdown-menu__item-icon {
-        color: var(--colors_destructive_light);
+        color: var(--colors_destructive_light, #dc2626);
       }
 
       &:hover,
@@ -84,8 +84,8 @@
     &-icon {
       width: 16px;
       height: 16px;
-      margin-right: var(--muza-spacing-lg);
-      color: var(--colors_muted_foreground_light);
+      margin-right: var(--muza-spacing-lg, 16px);
+      color: var(--colors_muted_foreground_light, #6b7280);
       flex-shrink: 0;
     }
 
