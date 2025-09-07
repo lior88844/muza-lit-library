@@ -79,8 +79,10 @@ const english = {
   "albumInfo.impulseRecords": "Impulse Records",
   "albumInfo.balladsCover": "Ballads album cover",
 
-  // Album Header
+  // Media Actions
   "album.addedToLibrary": "Album added successfully to your library",
+  "song.addedToLibrary": "Song added successfully to your library",
+  "playlist.addedToLibrary": "Playlist added successfully to your library",
 
   // Media Header
   "common.playAlbum": "Play Album",

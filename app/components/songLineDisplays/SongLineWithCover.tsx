@@ -3,11 +3,14 @@ import "./SongLineWithCover.scss";
 import type { SongDetails } from "../../appData/models";
 import { formatSongNumber } from "../../appData/utils";
 import MuzaIcon from "~/icons/MuzaIcon";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../lib/i18n/translations";
 
 interface SongLineProps {
   details: SongDetails;
   onClick: MouseEventHandler<HTMLDivElement>;
   isPlaying: boolean;
+  mediaType?: "song" | "album";
 }
 
 const formatDuration = (seconds: number): string => {
@@ -26,8 +29,17 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   details,
   onClick,
   isPlaying,
+  mediaType = "song",
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslation();
+
+  const addToLibrary = () => {
+    toast(t(`${mediaType}.addedToLibrary`), {
+      position: "bottom-center",
+      hideProgressBar: true,
+    });
+  };
 
   const renderIcon = () => {
     if (isPlaying && isHovered) {
@@ -131,7 +143,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             title="Add to library"
             onClick={e => {
               e.stopPropagation();
-              // Handle add to library
+              addToLibrary();
             }}
           >
             <MuzaIcon iconName="plus" />

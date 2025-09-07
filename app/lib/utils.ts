@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function addToLibrary() {
-  toast("Album added succssefuly to your library", {
+export function addToLibrary(mediaType: string = "Album") {
+  toast(`${mediaType} added successfully to your library`, {
     position: "bottom-center",
     hideProgressBar: true,
   });
