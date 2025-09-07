@@ -1,6 +1,7 @@
 import React from "react";
 import "./AlbumInfoModal.scss";
 import { useTranslation } from "~/lib/i18n/translations";
+import MuzaIcon from "~/icons/MuzaIcon";
 
 interface AlbumInfoProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ const AlbumInfoModal: React.FC<AlbumInfoProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
           <button className="album-info-modal__close" onClick={onClose}>
-            ×
+            <MuzaIcon iconName="Close" />
           </button>
         </div>
 
