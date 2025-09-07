@@ -15,7 +15,7 @@
   padding: var(--song-line-padding);
   cursor: default;
   border-radius: var(--muza-border-radius-md);
-
+  cursor: pointer;
   &:hover,
   &.hovered {
     background: var(--hover-background);
