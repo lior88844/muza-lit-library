@@ -49,35 +49,23 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     console.log("Share playlist:", title);
   };
 
-  const handleMakePrivate = () => {
-    // TODO: Implement make private functionality
-    console.log("Make private playlist:", title);
-  };
-
-  const handleDeletePlaylist = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete playlist:", title);
+  const handleRemoveFromLibrary = () => {
+    // TODO: Implement remove from library functionality
+    console.log("Remove from library:", title);
   };
 
   const dropdownMenuItems: DropdownMenuItem[] = [
     {
       id: "share",
       title: "Share",
-      icon: "globe",
+      icon: "share",
       onClick: handleShare,
     },
     {
-      id: "make-private",
-      title: "Make private",
-      icon: "lock",
-      onClick: handleMakePrivate,
-    },
-    {
-      id: "delete",
-      title: "Delete playlist",
-      icon: "trash",
-      onClick: handleDeletePlaylist,
-      destructive: true,
+      id: "remove-from-library",
+      title: "Remove from library",
+      icon: "minus",
+      onClick: handleRemoveFromLibrary,
     },
   ];
 
