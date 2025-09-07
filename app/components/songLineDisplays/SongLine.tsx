@@ -11,6 +11,7 @@ interface SongLineProps {
   onClick: MouseEventHandler<HTMLDivElement>;
   isPlaying: boolean;
   mediaType?: "song" | "album";
+  showPreview?: boolean;
 }
 
 const formatDuration = (seconds: number): string => {
@@ -19,11 +20,22 @@ const formatDuration = (seconds: number): string => {
   return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 };
 
+const formatPlayCount = (plays: number): string => {
+  if (plays < 1000) return plays.toString();
+  if (plays < 1000000) {
+    const thousands = (plays / 1000).toFixed(3);
+    return thousands.replace(/\.?0+$/, ""); // Remove trailing zeros
+  }
+  const millions = (plays / 1000000).toFixed(3);
+  return `${millions.replace(/\.?0+$/, "")}M`; // Remove trailing zeros
+};
+
 const SongLine: React.FC<SongLineProps> = ({
   details,
   onClick,
   isPlaying,
   mediaType = "song",
+  showPreview = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { t } = useTranslation();
@@ -36,6 +48,14 @@ const SongLine: React.FC<SongLineProps> = ({
   };
 
   const renderIcon = () => {
+    if (isPlaying && isHovered) {
+      return (
+        <span className="pause-icon">
+          <MuzaIcon iconName="pause" />
+        </span>
+      );
+    }
+
     if (isPlaying) {
       return (
         <div className="wave-container">
@@ -68,8 +88,29 @@ const SongLine: React.FC<SongLineProps> = ({
       <div className="song-container">
         <div className="track-info">
           <div className="track-icon">{renderIcon()}</div>
-          <span className="track-title">{details.title}</span>
-          <span className="track-artist">{details.artist}</span>
+          <div className="track-details">
+            <div className="track-title-row">
+              <span className="track-title">{details.title}</span>
+              {showPreview && <span className="preview-badge">Preview</span>}
+            </div>
+            <div className="track-meta-row">
+              <span className="track-artist">{details.artist}</span>
+              {details.album && (
+                <>
+                  <span className="separator">•</span>
+                  <span className="track-album">{details.album}</span>
+                </>
+              )}
+              {details.plays && (
+                <>
+                  <span className="separator">•</span>
+                  <span className="track-plays">
+                    {formatPlayCount(details.plays)} Plays
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
         <div className="track-actions">
           {isHovered && (
