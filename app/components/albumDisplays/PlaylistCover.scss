@@ -113,11 +113,10 @@ icon-playlist {
     min-width: 0;
   }
 
-  // Hover effects - now handled by HoverOverlay component
-  &:hover {
-    .playlist-cover__image-container {
-      transform: scale(1.02);
-      transition: transform 0.2s ease;
-    }
+  // Hover effects - controlled by CSS hover and Radix dropdown state
+  &:hover .playlist-cover__image-container,
+  &:has([data-state="open"]) .playlist-cover__image-container {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
   }
 }

@@ -1,6 +1,9 @@
 import React from "react";
 import "./PlaylistCover.scss";
 import HoverOverlay from "~/components/ui/HoverOverlay";
+import DropdownMenu from "~/components/ui/DropdownMenu";
+import type { DropdownMenuItem } from "~/components/ui/DropdownMenu";
+import MuzaIcon from "~/icons/MuzaIcon";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import type { MusicPlaylist } from "~/appData/models";
 
@@ -41,6 +44,43 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     }
   };
 
+  const handleShare = () => {
+    // TODO: Implement share functionality
+    console.log("Share playlist:", title);
+  };
+
+  const handleMakePrivate = () => {
+    // TODO: Implement make private functionality
+    console.log("Make private playlist:", title);
+  };
+
+  const handleDeletePlaylist = () => {
+    // TODO: Implement delete functionality
+    console.log("Delete playlist:", title);
+  };
+
+  const dropdownMenuItems: DropdownMenuItem[] = [
+    {
+      id: "share",
+      title: "Share",
+      icon: "globe",
+      onClick: handleShare,
+    },
+    {
+      id: "make-private",
+      title: "Make private",
+      icon: "lock",
+      onClick: handleMakePrivate,
+    },
+    {
+      id: "delete",
+      title: "Delete playlist",
+      icon: "trash",
+      onClick: handleDeletePlaylist,
+      destructive: true,
+    },
+  ];
+
   // Ensure we have 4 images, pad with first image if needed
   const safeAlbumImages = Array.isArray(albumImages) ? albumImages : [];
   const paddedImages = [...safeAlbumImages];
@@ -80,6 +120,20 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
               icon: "ellipsis",
               onClick: e => e.stopPropagation(),
               title: "More options",
+              customComponent: (
+                <DropdownMenu
+                  trigger={
+                    <button
+                      className="hover-overlay-btn"
+                      onClick={e => e.stopPropagation()}
+                      title="More options"
+                    >
+                      <MuzaIcon iconName="ellipsis" />
+                    </button>
+                  }
+                  items={dropdownMenuItems}
+                />
+              ),
             },
           ]}
         />
