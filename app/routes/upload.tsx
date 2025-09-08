@@ -10,6 +10,7 @@ import UploadFooter from "~/components/upload/UploadFooter";
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
+import "../components/upload/steps/UploadStepOne.scss";
 
 export default function Upload() {
   const navigate = useNavigate();
@@ -56,6 +57,18 @@ export default function Upload() {
       updateMusician(index, field, e.target.value);
     };
 
+  const handleFindAlbumDetails = () => {
+    // TODO: Implement album details search functionality
+    console.log(
+      "Finding album details for:",
+      formData.albumTitle,
+      "by",
+      formData.mainArtist
+    );
+    // This could call an API to search for album information
+    // and populate the form fields automatically
+  };
+
   const handleFileUpload = (files: File[]) => {
     setAudioFiles(files);
   };
@@ -96,6 +109,7 @@ export default function Upload() {
             onAddMusician={addMusician}
             onCoverUpload={handleCoverUpload}
             onFileUpload={handleFileUpload}
+            onFindAlbumDetails={handleFindAlbumDetails}
           />
         );
       case 2:

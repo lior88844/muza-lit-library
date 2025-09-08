@@ -1,116 +1,307 @@
-.upload-form {
-  .form-section {
-    margin-bottom: 24px;
+@import "../../styles/variables.scss";
 
-    .upload-section-header {
+.upload-form {
+  background-color: var(--colors_muted_light, #f9fafb);
+  padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 32px)
+    var(--muza-spacing-sm, 8px) var(--muza-spacing-xxl, 32px);
+  border-right: 1px solid var(--colors_border_light, #e5e7eb);
+  overflow-y: auto;
+  box-sizing: border-box;
+  height: 100%;
+
+  .upload-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xl, 24px);
+    width: 100%;
+  }
+
+  .form-card {
+    background-color: var(--colors_background_light, #ffffff);
+    border: 1px solid var(--colors_border_light, #e5e7eb);
+    border-radius: var(--muza-border-radius-md, 8px);
+    padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-lg, 16px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-lg, 16px);
+
+    .form-card-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: var(--muza-spacing-lg, 16px);
 
-      .upload-section-title {
-        font-size: 14px;
-        color: var(--colors_muted_foreground_light);
+      .form-card-title {
+        font-family:
+          var(--typography_font_family_font_sans, "Founders Grotesk"),
+          sans-serif;
+        font-size: var(--muza-primary-font-size, 14px);
+        font-weight: var(--muza-font-weight-normal, 400);
+        color: var(--colors_muted_foreground_light, #6b7280);
+        line-height: 16px;
+        white-space: nowrap;
+      }
+    }
+
+    .detailed-info-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--muza-spacing-lg, 16px);
+
+      .section-description-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        .section-description {
+          font-family:
+            var(--typography_font_family_font_sans, "Founders Grotesk"),
+            sans-serif;
+          font-size: var(--muza-primary-font-size, 14px);
+          font-weight: var(--muza-font-weight-normal, 400);
+          color: var(--colors_muted_foreground_light, #6b7280);
+          line-height: 16px;
+          flex: 1;
+        }
+
+        .find-album-button {
+          background-color: #1d4ed8; // blue-700 from Figma design
+          color: var(--colors_primary_foreground_light, #f9fafb);
+          border: none;
+          border-radius: 9999px;
+          padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-md, 12px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--muza-spacing-sm, 8px);
+          font-family:
+            var(--typography_font_family_font_sans, "Founders Grotesk"),
+            sans-serif;
+          font-size: var(--muza-primary-font-size, 14px);
+          font-weight: var(--muza-font-weight-medium, 500);
+          line-height: 16px;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          white-space: nowrap;
+
+          &:hover {
+            background-color: #2563eb; // Slightly lighter blue on hover
+          }
+
+          .sparkles-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+          }
+
+          span {
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      gap: var(--muza-spacing-lg, 16px);
+      width: 100%;
+
+      .section-title {
+        font-family:
+          var(--typography_font_family_font_sans, "Founders Grotesk"),
+          sans-serif;
+        font-size: var(--muza-primary-font-size, 14px);
+        font-weight: var(--muza-font-weight-normal, 400);
+        color: var(--colors_muted_foreground_light, #6b7280);
+        line-height: 16px;
         white-space: nowrap;
       }
 
-      .upload-section-divider {
+      .section-divider {
         flex: 1;
         height: 1px;
-        background-color: var(--colors_border_light);
+        background-color: var(--colors_border_light, #e5e7eb);
       }
     }
 
     .form-fields {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--muza-spacing-lg, 16px);
+    }
+
+    .musicians-section,
+    .additional-info-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--muza-spacing-lg, 16px);
+    }
+
+    .musicians-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--muza-spacing-lg, 16px);
+
+      .musician-fields {
+        display: flex;
+        flex-direction: column;
+        gap: var(--muza-spacing-lg, 16px);
+      }
+
+      .add-musician-container {
+        display: flex;
+        justify-content: flex-start;
+
+        .add-musician-button {
+          background: rgba(
+            255,
+            255,
+            255,
+            0
+          ); // Transparent background from Figma
+          color: var(
+            --colors_foreground_light,
+            #030712
+          ); // text-gray-950 from Figma
+          border: none;
+          border-radius: 9999px;
+          padding: 10px var(--muza-spacing-md, 12px) 8px
+            var(--muza-spacing-md, 12px); // pb-2.5 pt-2 px-3 from Figma
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--muza-spacing-sm, 8px);
+          font-family:
+            var(--typography_font_family_font_sans, "Founders Grotesk"),
+            sans-serif;
+          font-size: var(--muza-primary-font-size, 14px);
+          font-weight: var(--muza-font-weight-medium, 500);
+          line-height: 16px;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          white-space: nowrap;
+
+          &:hover {
+            background-color: var(--colors_secondary_light, #f3f4f6);
+          }
+
+          .plus-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+          }
+
+          span {
+            flex-shrink: 0;
+          }
+        }
+      }
     }
 
     .textarea-field {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: var(--muza-spacing-sm, 8px);
 
       label {
-        font-size: 14px;
-        font-weight: var(--muza-font-weight-medium);
-        color: var(--colors_foreground_light);
+        font-family:
+          var(--typography_font_family_font_sans, "Founders Grotesk"),
+          sans-serif;
+        font-size: var(--muza-primary-font-size, 14px);
+        font-weight: var(--muza-font-weight-medium, 500);
+        color: var(--colors_foreground_light, #030712);
+        line-height: 1;
       }
 
       textarea {
-        padding: 8px 12px;
-        border: 1px solid var(--colors_border_light);
-        border-radius: 8px;
-        font-family: inherit;
+        padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-md, 12px);
+        border: 1px solid var(--colors_border_light, #e5e7eb);
+        border-radius: var(--muza-border-radius-md, 8px);
+        font-family:
+          var(--typography_font_family_font_sans, "Founders Grotesk"),
+          sans-serif;
         font-size: 16px;
-        color: var(--colors_foreground_light);
-        background-color: white;
+        color: var(--colors_foreground_light, #030712);
+        background-color: var(--colors_background_light, #ffffff);
         resize: vertical;
         min-height: 60px;
+        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 
         &:focus {
           outline: none;
-          border-color: var(--colors_primary_light);
-          box-shadow: 0 0 0 1px var(--colors_primary_light);
+          border-color: var(--colors_primary_light, #1d4ed8);
+          box-shadow: 0 0 0 1px var(--colors_primary_light, #1d4ed8);
         }
 
         &::placeholder {
-          color: var(--colors_muted_foreground_light);
+          color: var(--colors_muted_foreground_light, #6b7280);
         }
       }
     }
   }
 
-  .musicians-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    .musician-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .add-musician-container {
-      display: flex;
-      justify-content: flex-end;
-
-      .add-musician-button {
-        background: none;
-        border: none;
-        color: var(--colors_foreground_light);
-        font-size: 14px;
-        font-weight: var(--muza-font-weight-medium);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border-radius: 9999px;
-        transition: background-color 0.2s;
-
-        &:hover {
-          background-color: var(--colors_secondary_light);
-        }
-
-        .plus-icon {
-          width: 16px;
-          height: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-        }
-      }
-    }
-  }
-
-  // Override MuzaInputField styles specifically for upload form
+  // Override MuzaInputField styles for upload form
   .input-wrapper {
-    input {
-      border-radius: 999px !important;
+    margin-bottom: 0;
+
+    label {
+      font-family:
+        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-size: var(--muza-primary-font-size, 14px);
+      font-weight: var(--muza-font-weight-medium, 500);
+      color: var(--colors_muted_foreground_light, #6b7280);
+      line-height: 16px;
+      margin-bottom: var(--muza-spacing-sm, 8px);
     }
+
+    .input-container {
+      input {
+        border-radius: 9999px !important;
+        height: 36px;
+        padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-md, 12px);
+        border: 1px solid var(--colors_border_light, #e5e7eb);
+        background-color: var(--colors_background_light, #ffffff);
+        font-family:
+          var(--typography_font_family_font_sans, "Founders Grotesk"),
+          sans-serif;
+        font-size: 16px;
+        color: var(--colors_muted_foreground_light, #6b7280);
+        letter-spacing: 0.25px;
+        line-height: 20px;
+
+        &:focus {
+          border-color: var(--colors_primary_light, #1d4ed8);
+          box-shadow: 0 0 0 1px var(--colors_primary_light, #1d4ed8);
+        }
+
+        &::placeholder {
+          color: var(--colors_muted_foreground_light, #6b7280);
+        }
+
+        &.has-leading-icon {
+          padding-left: calc(
+            var(--muza-spacing-md, 12px) + 16px + var(--muza-spacing-xs, 4px)
+          );
+        }
+      }
+
+      .leading-icon {
+        left: var(--muza-spacing-md, 12px);
+        color: var(--colors_muted_foreground_light, #6b7280);
+      }
+    }
+
+    .helper-text {
+      font-family:
+        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-size: var(--muza-primary-font-size, 14px);
+      color: var(--colors_muted_foreground_light, #6b7280);
+      line-height: 16px;
+      margin-top: var(--muza-spacing-sm, 8px);
+    }
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
   }
 }

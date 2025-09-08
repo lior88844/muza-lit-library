@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import MuzaIcon from "~/icons/MuzaIcon";
 import "./MuzaInputField.scss";
 
 export type ValidationRule =
@@ -102,7 +103,7 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
       <div className="input-container">
         {leadingIcon && (
           <span className="leading-icon">
-            <i className={`fa-solid fa-${leadingIcon}`}></i>
+            <MuzaIcon iconName={leadingIcon} />
           </span>
         )}
         <input
@@ -119,7 +120,7 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
         />
         {trailingIcon && (
           <span className="trailing-icon">
-            <i className={`fa-solid fa-${trailingIcon}`}></i>
+            <MuzaIcon iconName={trailingIcon} />
           </span>
         )}
       </div>

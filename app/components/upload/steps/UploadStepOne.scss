@@ -1,3 +1,23 @@
+.upload-page {
+  height: 100vh;
+  background-color: var(--colors_background_light);
+  font-family: var(--typography_font_family_font_sans), sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: hidden;
+
+  .upload-container {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    padding-bottom: 84px;
+  }
+}
+
 .upload-step-one {
   flex: 1;
   overflow: hidden;
@@ -6,24 +26,29 @@
     flex: 1;
     display: flex;
     min-height: 0;
-    padding-bottom: 84px; // Space for fixed footer
+  }
+}
 
-    .upload-left {
-      flex: 1;
-      padding: 24px 40px;
-      border-right: 1px solid var(--colors_border_light);
-      overflow-y: auto;
-    }
+// Common styles for upload sections
+.upload-page .upload-container,
+.upload-step-one .upload-container {
+  .upload-left {
+    flex: 1;
+    border-right: 1px solid var(--colors_border_light);
+    overflow-y: hidden;
+    height: 100%;
+  }
 
-    .upload-right {
-      flex: 1;
-      padding: 24px 40px;
-    }
+  .upload-right {
+    flex: 1;
+    padding: 24px 40px;
+    overflow-y: hidden;
   }
 }
 
 // Responsive Design
 @media (max-width: 1024px) {
+  .upload-page .upload-container,
   .upload-step-one .upload-container {
     flex-direction: column;
 

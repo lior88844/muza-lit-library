@@ -18,6 +18,7 @@ interface UploadStepOneProps {
   onAddMusician: () => void;
   onCoverUpload: (file: File) => void;
   onFileUpload: (files: File[]) => void;
+  onFindAlbumDetails?: () => void;
 }
 
 const UploadStepOne: React.FC<UploadStepOneProps> = ({
@@ -29,7 +30,17 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
   onAddMusician,
   onCoverUpload,
   onFileUpload,
+  onFindAlbumDetails,
 }) => {
+  const handleFindAlbumDetails = () => {
+    if (onFindAlbumDetails) {
+      onFindAlbumDetails();
+    } else {
+      // Default behavior - could show a message or do nothing
+      console.log("Find album details functionality not implemented yet");
+    }
+  };
+
   return (
     <div className="upload-step-one">
       <div className="upload-container">
@@ -40,6 +51,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
             onFormDataChange={onFormDataChange}
             onMusicianChange={onMusicianChange}
             onAddMusician={onAddMusician}
+            onFindAlbumDetails={handleFindAlbumDetails}
           />
         </div>
 
