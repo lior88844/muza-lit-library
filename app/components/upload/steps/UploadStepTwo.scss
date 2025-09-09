@@ -16,12 +16,10 @@
 
     .table-header {
       display: grid;
-      grid-template-columns: auto 1fr minmax(200px, 2fr) minmax(
-          150px,
-          1.5fr
-        ) auto auto;
+      grid-template-columns:
+        auto 1fr minmax(200px, 2fr) minmax(150px, 1.5fr)
+        auto auto;
       align-items: center;
-      padding: 16px 0;
       border-bottom: 1px solid var(--colors_border_light);
       font-size: 14px;
       color: var(--colors_muted_foreground_light);
@@ -64,10 +62,9 @@
 
       .table-row {
         display: grid;
-        grid-template-columns: auto 1fr minmax(200px, 2fr) minmax(
-            150px,
-            1.5fr
-          ) auto auto;
+        grid-template-columns:
+          auto 1fr minmax(200px, 2fr) minmax(150px, 1.5fr)
+          auto auto;
         align-items: center;
         min-height: 54px;
         border-bottom: 1px solid var(--colors_border_light);
@@ -284,17 +281,15 @@
     .metadata-table {
       .table-header {
         font-size: 12px;
-        grid-template-columns: auto 1fr minmax(150px, 1.5fr) minmax(
-            120px,
-            1fr
-          ) auto auto;
+        grid-template-columns:
+          auto 1fr minmax(150px, 1.5fr) minmax(120px, 1fr)
+          auto auto;
       }
 
       .table-body .table-row {
-        grid-template-columns: auto 1fr minmax(150px, 1.5fr) minmax(
-            120px,
-            1fr
-          ) auto auto;
+        grid-template-columns:
+          auto 1fr minmax(150px, 1.5fr) minmax(120px, 1fr)
+          auto auto;
 
         .cell-number {
           padding-left: 20px;
