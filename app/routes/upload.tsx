@@ -100,6 +100,10 @@ export default function Upload() {
       alert(
         `Upload complete! Album: "${formData.albumTitle}" with ${trackMetadata.length} tracks`
       );
+      // Reset test mode if it's currently enabled
+      if (isTestMode) {
+        setTestMode(false);
+      }
       resetUpload();
       navigate("/");
     } else {
