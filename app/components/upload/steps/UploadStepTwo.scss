@@ -17,7 +17,7 @@
     .table-header {
       display: grid;
       grid-template-columns:
-        auto 1fr minmax(200px, 2fr) minmax(150px, 1.5fr)
+        auto 1fr minmax(200px, 1fr) minmax(150px, 1.5fr)
         auto auto;
       align-items: center;
       border-bottom: 1px solid var(--colors_border_light);
@@ -63,7 +63,7 @@
       .table-row {
         display: grid;
         grid-template-columns:
-          auto 1fr minmax(200px, 2fr) minmax(150px, 1.5fr)
+          auto 1fr minmax(200px, 1fr) minmax(150px, 1.5fr)
           auto auto;
         align-items: center;
         min-height: 54px;
@@ -178,7 +178,7 @@
         .cell-songname {
           padding: 16px;
 
-          .editable-field {
+          span {
             width: 100%;
             border: none;
             background: none;
@@ -201,7 +201,7 @@
         .cell-composer {
           padding: 16px;
 
-          .editable-field {
+          span {
             width: 100%;
             border: none;
             background: none;

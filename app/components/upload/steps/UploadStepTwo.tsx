@@ -116,28 +116,12 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
 
       {/* Editable Song Name */}
       <div className="cell-songname">
-        <input
-          type="text"
-          value={track.songName}
-          onChange={e =>
-            onTrackMetadataChange(track.id, "songName", e.target.value)
-          }
-          className="editable-field"
-          placeholder="Song Name"
-        />
+        <span>{track.songName}</span>
       </div>
 
       {/* Editable Composer */}
       <div className="cell-composer">
-        <input
-          type="text"
-          value={track.composer}
-          onChange={e =>
-            onTrackMetadataChange(track.id, "composer", e.target.value)
-          }
-          className="editable-field"
-          placeholder="Composer"
-        />
+        <span>{track.composer}</span>
       </div>
 
       {/* Duration (Read-only) */}
