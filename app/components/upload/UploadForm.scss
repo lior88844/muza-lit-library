@@ -1,44 +1,112 @@
 @import "../../styles/variables.scss";
 
 .upload-form {
-  background-color: var(--colors_muted_light, #f9fafb);
-  padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 32px)
+  // Local variables with fallbacks
+  --form-bg: var(--colors_muted_light, #f9fafb);
+  --form-border: var(--colors_border_light, #e5e7eb);
+  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 32px)
     var(--muza-spacing-sm, 8px) var(--muza-spacing-xxl, 32px);
-  border-right: 1px solid var(--colors_border_light, #e5e7eb);
+  --card-bg: var(--colors_background_light, #ffffff);
+  --card-radius: var(--muza-border-radius-md, 8px);
+  --card-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-lg, 16px);
+  --gap-lg: var(--muza-spacing-lg, 16px);
+  --gap-xl: var(--muza-spacing-xl, 24px);
+  --gap-sm: var(--muza-spacing-sm, 8px);
+  --gap-md: var(--muza-spacing-md, 12px);
+  --font-family:
+    var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+  --font-size-base: var(--muza-primary-font-size, 14px);
+  --font-weight-normal: var(--muza-font-weight-normal, 400);
+  --font-weight-medium: var(--muza-font-weight-medium, 500);
+  --text-primary: var(--colors_foreground_light, #030712);
+  --text-muted: var(--colors_muted_foreground_light, #6b7280);
+  --primary-color: var(--colors_primary_light, #1d4ed8);
+  --primary-hover: #2563eb;
+  --secondary-bg: var(--colors_secondary_light, #f3f4f6);
+  --input-height: 36px;
+  --button-radius: 9999px;
+  --icon-size: 16px;
+  --transition: all 0.2s ease;
+
+  background-color: var(--form-bg);
+  padding: var(--form-padding);
+  border-right: 1px solid var(--form-border);
   overflow-y: auto;
   box-sizing: border-box;
   height: 100%;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+
   .upload-form-container {
     display: flex;
     flex-direction: column;
-    gap: var(--muza-spacing-xl, 24px);
+    gap: var(--gap-xl);
     width: 100%;
   }
 
+  // Shared text styles
+  %text-base {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 16px;
+  }
+
+  %text-muted {
+    @extend %text-base;
+    font-weight: var(--font-weight-normal);
+    color: var(--text-muted);
+  }
+
+  %text-primary {
+    @extend %text-base;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+  }
+
+  // Shared button styles
+  %button-base {
+    border: none;
+    border-radius: var(--button-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-sm);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+
+    .plus-icon,
+    .sparkles-icon {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      flex-shrink: 0;
+    }
+
+    span {
+      flex-shrink: 0;
+    }
+  }
+
   .form-card {
-    background-color: var(--colors_background_light, #ffffff);
-    border: 1px solid var(--colors_border_light, #e5e7eb);
-    border-radius: var(--muza-border-radius-md, 8px);
-    padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-lg, 16px);
+    background-color: var(--card-bg);
+    border: 1px solid var(--form-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
     display: flex;
     flex-direction: column;
-    gap: var(--muza-spacing-lg, 16px);
+    gap: var(--gap-lg);
 
     .form-card-header {
       display: flex;
       align-items: center;
-      gap: var(--muza-spacing-lg, 16px);
+      gap: var(--gap-lg);
 
       .form-card-title {
-        font-family:
-          var(--typography_font_family_font_sans, "Founders Grotesk"),
-          sans-serif;
-        font-size: var(--muza-primary-font-size, 14px);
-        font-weight: var(--muza-font-weight-normal, 400);
-        color: var(--colors_muted_foreground_light, #6b7280);
-        line-height: 16px;
+        @extend %text-muted;
         white-space: nowrap;
       }
     }
@@ -46,7 +114,7 @@
     .detailed-info-header {
       display: flex;
       flex-direction: column;
-      gap: var(--muza-spacing-lg, 16px);
+      gap: var(--gap-lg);
 
       .section-description-row {
         display: flex;
@@ -55,48 +123,18 @@
         width: 100%;
 
         .section-description {
-          font-family:
-            var(--typography_font_family_font_sans, "Founders Grotesk"),
-            sans-serif;
-          font-size: var(--muza-primary-font-size, 14px);
-          font-weight: var(--muza-font-weight-normal, 400);
-          color: var(--colors_muted_foreground_light, #6b7280);
-          line-height: 16px;
+          @extend %text-muted;
           flex: 1;
         }
 
         .find-album-button {
-          background-color: #1d4ed8; // blue-700 from Figma design
+          @extend %button-base;
+          background-color: var(--primary-color);
           color: var(--colors_primary_foreground_light, #f9fafb);
-          border: none;
-          border-radius: 9999px;
-          padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-md, 12px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--muza-spacing-sm, 8px);
-          font-family:
-            var(--typography_font_family_font_sans, "Founders Grotesk"),
-            sans-serif;
-          font-size: var(--muza-primary-font-size, 14px);
-          font-weight: var(--muza-font-weight-medium, 500);
-          line-height: 16px;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          white-space: nowrap;
+          padding: var(--gap-sm) var(--gap-md);
 
           &:hover {
-            background-color: #2563eb; // Slightly lighter blue on hover
-          }
-
-          .sparkles-icon {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-          }
-
-          span {
-            flex-shrink: 0;
+            background-color: var(--primary-hover);
           }
         }
       }
@@ -105,49 +143,39 @@
     .section-header-row {
       display: flex;
       align-items: center;
-      gap: var(--muza-spacing-lg, 16px);
+      gap: var(--gap-lg);
       width: 100%;
 
       .section-title {
-        font-family:
-          var(--typography_font_family_font_sans, "Founders Grotesk"),
-          sans-serif;
-        font-size: var(--muza-primary-font-size, 14px);
-        font-weight: var(--muza-font-weight-normal, 400);
-        color: var(--colors_muted_foreground_light, #6b7280);
-        line-height: 16px;
+        @extend %text-muted;
         white-space: nowrap;
       }
 
       .section-divider {
         flex: 1;
         height: 1px;
-        background-color: var(--colors_border_light, #e5e7eb);
+        background-color: var(--form-border);
       }
     }
 
-    .form-fields {
+    // Shared column layout
+    %column-layout {
       display: flex;
       flex-direction: column;
-      gap: var(--muza-spacing-lg, 16px);
+      gap: var(--gap-lg);
     }
 
+    .form-fields,
     .musicians-section,
     .additional-info-section {
-      display: flex;
-      flex-direction: column;
-      gap: var(--muza-spacing-lg, 16px);
+      @extend %column-layout;
     }
 
     .musicians-container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--muza-spacing-lg, 16px);
+      @extend %column-layout;
 
       .musician-fields {
-        display: flex;
-        flex-direction: column;
-        gap: var(--muza-spacing-lg, 16px);
+        @extend %column-layout;
       }
 
       .add-musician-container {
@@ -155,46 +183,13 @@
         justify-content: flex-start;
 
         .add-musician-button {
-          background: rgba(
-            255,
-            255,
-            255,
-            0
-          ); // Transparent background from Figma
-          color: var(
-            --colors_foreground_light,
-            #030712
-          ); // text-gray-950 from Figma
-          border: none;
-          border-radius: 9999px;
-          padding: 10px var(--muza-spacing-md, 12px) 8px
-            var(--muza-spacing-md, 12px); // pb-2.5 pt-2 px-3 from Figma
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--muza-spacing-sm, 8px);
-          font-family:
-            var(--typography_font_family_font_sans, "Founders Grotesk"),
-            sans-serif;
-          font-size: var(--muza-primary-font-size, 14px);
-          font-weight: var(--muza-font-weight-medium, 500);
-          line-height: 16px;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          white-space: nowrap;
+          @extend %button-base;
+          background: transparent;
+          color: var(--text-primary);
+          padding: 10px var(--gap-md) 8px var(--gap-md);
 
           &:hover {
-            background-color: var(--colors_secondary_light, #f3f4f6);
-          }
-
-          .plus-icon {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-          }
-
-          span {
-            flex-shrink: 0;
+            background-color: var(--secondary-bg);
           }
         }
       }
@@ -203,40 +198,33 @@
     .textarea-field {
       display: flex;
       flex-direction: column;
-      gap: var(--muza-spacing-sm, 8px);
+      gap: var(--gap-sm);
 
       label {
-        font-family:
-          var(--typography_font_family_font_sans, "Founders Grotesk"),
-          sans-serif;
-        font-size: var(--muza-primary-font-size, 14px);
-        font-weight: var(--muza-font-weight-medium, 500);
-        color: var(--colors_foreground_light, #030712);
+        @extend %text-primary;
         line-height: 1;
       }
 
       textarea {
-        padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-md, 12px);
-        border: 1px solid var(--colors_border_light, #e5e7eb);
-        border-radius: var(--muza-border-radius-md, 8px);
-        font-family:
-          var(--typography_font_family_font_sans, "Founders Grotesk"),
-          sans-serif;
+        padding: var(--gap-sm) var(--gap-md);
+        border: 1px solid var(--form-border);
+        border-radius: var(--card-radius);
+        font-family: var(--font-family);
         font-size: 16px;
-        color: var(--colors_foreground_light, #030712);
-        background-color: var(--colors_background_light, #ffffff);
+        color: var(--text-primary);
+        background-color: var(--card-bg);
         resize: vertical;
         min-height: 60px;
         box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 
         &:focus {
           outline: none;
-          border-color: var(--colors_primary_light, #1d4ed8);
-          box-shadow: 0 0 0 1px var(--colors_primary_light, #1d4ed8);
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 1px var(--primary-color);
         }
 
         &::placeholder {
-          color: var(--colors_muted_foreground_light, #6b7280);
+          color: var(--text-muted);
         }
       }
     }
@@ -247,59 +235,55 @@
     margin-bottom: 0;
 
     label {
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
-      font-size: var(--muza-primary-font-size, 14px);
-      font-weight: var(--muza-font-weight-medium, 500);
-      color: var(--colors_muted_foreground_light, #6b7280);
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-muted);
       line-height: 16px;
-      margin-bottom: var(--muza-spacing-sm, 8px);
+      margin-bottom: var(--gap-sm);
     }
 
     .input-container {
       input {
-        border-radius: 9999px !important;
-        height: 36px;
-        padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-md, 12px);
-        border: 1px solid var(--colors_border_light, #e5e7eb);
-        background-color: var(--colors_background_light, #ffffff);
-        font-family:
-          var(--typography_font_family_font_sans, "Founders Grotesk"),
-          sans-serif;
+        border-radius: var(--button-radius) !important;
+        height: var(--input-height);
+        padding: var(--gap-sm) var(--gap-md);
+        border: 1px solid var(--form-border);
+        background-color: var(--card-bg);
+        font-family: var(--font-family);
         font-size: 16px;
-        color: var(--colors_muted_foreground_light, #6b7280);
+        color: var(--text-muted);
         letter-spacing: 0.25px;
         line-height: 20px;
 
         &:focus {
-          border-color: var(--colors_primary_light, #1d4ed8);
-          box-shadow: 0 0 0 1px var(--colors_primary_light, #1d4ed8);
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 1px var(--primary-color);
         }
 
         &::placeholder {
-          color: var(--colors_muted_foreground_light, #6b7280);
+          color: var(--text-muted);
         }
 
         &.has-leading-icon {
           padding-left: calc(
-            var(--muza-spacing-md, 12px) + 16px + var(--muza-spacing-xs, 4px)
+            var(--gap-md) + var(--icon-size) + var(--muza-spacing-xs, 4px)
           );
         }
       }
 
       .leading-icon {
-        left: var(--muza-spacing-md, 12px);
-        color: var(--colors_muted_foreground_light, #6b7280);
+        left: var(--gap-md);
+        color: var(--text-muted);
       }
     }
 
     .helper-text {
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
-      font-size: var(--muza-primary-font-size, 14px);
-      color: var(--colors_muted_foreground_light, #6b7280);
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      color: var(--text-muted);
       line-height: 16px;
-      margin-top: var(--muza-spacing-sm, 8px);
+      margin-top: var(--gap-sm);
     }
   }
   input[type="date"]::-webkit-calendar-picker-indicator {

@@ -1,7 +1,18 @@
+// Local variables with fallbacks
+:root {
+  --upload-bg: var(--colors_background_light, #ffffff);
+  --upload-border: var(--colors_border_light, #e5e7eb);
+  --upload-font:
+    var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+  --upload-padding-lg: var(--muza-spacing-xxl, 32px)
+    calc(var(--muza-spacing-xl, 24px) + var(--muza-spacing-lg, 16px));
+  --upload-footer-space: 84px;
+}
+
 .upload-page {
   height: 100vh;
-  background-color: var(--colors_background_light);
-  font-family: var(--typography_font_family_font_sans), sans-serif;
+  background-color: var(--upload-bg);
+  font-family: var(--upload-font);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -14,7 +25,7 @@
     height: 100%;
     box-sizing: border-box;
     overflow-y: hidden;
-    padding-bottom: 84px;
+    padding-bottom: var(--upload-footer-space);
   }
 }
 
@@ -29,21 +40,26 @@
   }
 }
 
-// Common styles for upload sections
-.upload-page .upload-container,
-.upload-step-one .upload-container {
+// Shared container styles
+%upload-container-base {
   .upload-left {
     flex: 1;
-    border-right: 1px solid var(--colors_border_light);
+    border-right: 1px solid var(--upload-border);
     overflow-y: hidden;
     height: 100%;
   }
 
   .upload-right {
     flex: 1;
-    padding: 32px 40px;
+    padding: var(--upload-padding-lg);
     overflow-y: hidden;
   }
+}
+
+// Apply shared styles to both containers
+.upload-page .upload-container,
+.upload-step-one .upload-container {
+  @extend %upload-container-base;
 }
 
 // Responsive Design
@@ -54,7 +70,7 @@
 
     .upload-left {
       border-right: none;
-      border-bottom: 1px solid var(--colors_border_light);
+      border-bottom: 1px solid var(--upload-border);
     }
   }
 }
