@@ -94,13 +94,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
           (playlist: any) => {
             const playlistSongs = playlist.songs
               .map((songId: number) =>
-                data.songs.find((song: any) => parseInt(song.id) === songId),
+                data.songs.find((song: any) => parseInt(song.id) === songId)
               )
               .filter((song: any) => song !== undefined);
 
             const playlistSuggestions = (playlist.suggestions || [])
               .map((songId: number) =>
-                data.songs.find((song: any) => parseInt(song.id) === songId),
+                data.songs.find((song: any) => parseInt(song.id) === songId)
               )
               .filter((song: any) => song !== undefined);
 
@@ -110,7 +110,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               suggestions: playlistSuggestions,
               author: playlist.userName,
             };
-          },
+          }
         );
 
         setPlaylists(processedPlaylists);
@@ -144,15 +144,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <div className="body">
-          <MusicSidebar
-            logoAlt={t("library.musicLibrary")}
-            logoSrc="/icons/muza.svg"
-            sections={sidebarSections}
-            playlists={playlists}
-          />
+          {!isUploadPage && (
+            <MusicSidebar
+              logoAlt={t("library.musicLibrary")}
+              logoSrc="/icons/muza.svg"
+              sections={sidebarSections}
+              playlists={playlists}
+            />
+          )}
 
           <div className="content">
-            <MusicTopbar />
+            {!isUploadPage && <MusicTopbar />}
             {content || children}
             {!isUploadPage && <MuzaMusicPlayer />}
           </div>
