@@ -48,6 +48,7 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
         <div className="controls">
           <button className="upload-music-button" onClick={handleUploadClick}>
             {t("upload.uploadMusic")}
+            <MuzaIcon iconName="upload" />
           </button>
           <div className="user-menu">
             <div className="user-icon" onClick={onUserIconClick}>

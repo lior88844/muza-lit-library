@@ -8,7 +8,8 @@
   overflow-y: auto;
   box-sizing: border-box;
   height: 100%;
-
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   .upload-form-container {
     display: flex;
     flex-direction: column;
@@ -303,5 +304,8 @@
   }
   input[type="date"]::-webkit-calendar-picker-indicator {
     display: none;
+  }
+  &:-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
   }
 }
