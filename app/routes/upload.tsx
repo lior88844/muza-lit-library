@@ -52,6 +52,10 @@ export default function Upload() {
   };
 
   const handleCancel = () => {
+    // Reset test mode if it's currently enabled
+    if (isTestMode) {
+      setTestMode(false);
+    }
     resetUpload();
     navigate("/");
   };
