@@ -23,6 +23,7 @@ export default function Upload() {
     audioFiles,
     trackMetadata,
     coverImage,
+    isTestMode,
 
     // Actions
     updateFormData,
@@ -38,7 +39,17 @@ export default function Upload() {
     previousStep,
     resetUpload,
     getUploadData,
+    setTestMode,
+    populateTestData,
   } = useUploadStore();
+
+  const handleTestModeToggle = async (enabled: boolean) => {
+    setTestMode(enabled);
+    if (enabled && currentStep === 1) {
+      // Immediately populate test data when test mode is enabled on step 1
+      await populateTestData();
+    }
+  };
 
   const handleCancel = () => {
     resetUpload();
@@ -77,7 +88,7 @@ export default function Upload() {
     setCoverImage(file);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 3) {
       // Final submit logic
       const albumData = getUploadData();
@@ -88,7 +99,7 @@ export default function Upload() {
       resetUpload();
       navigate("/");
     } else {
-      nextStep();
+      await nextStep();
     }
   };
 
@@ -146,7 +157,12 @@ export default function Upload() {
 
   return (
     <div className="upload-page">
-      <UploadHeader title="Album Upload" onCancel={handleCancel} />
+      <UploadHeader
+        title="Album Upload"
+        onCancel={handleCancel}
+        isTestMode={isTestMode}
+        onTestModeToggle={handleTestModeToggle}
+      />
 
       {renderStepContent()}
 
