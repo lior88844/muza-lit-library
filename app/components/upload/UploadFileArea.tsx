@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import "./UploadFileArea.scss";
+import MuzaIcon from "~/icons/MuzaIcon";
 
 interface UploadFileAreaProps {
   onCoverUpload: (file: File) => void;
@@ -118,7 +119,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
         ) : (
           <>
             <div className="cover-upload-button">
-              <div className="plus-icon-large">+</div>
+              <MuzaIcon className="plus-icon-large" iconName="plus" />
             </div>
             <span className="cover-upload-text">
               {isCoverDragActive ? "Drop cover image here" : "Add cover image"}
@@ -135,15 +136,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
         <input {...getFilesInputProps()} />
 
         <div className="upload-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <MuzaIcon className="upload-icon" iconName="upload" />
         </div>
         <div className="upload-text">
           <p className="upload-primary">

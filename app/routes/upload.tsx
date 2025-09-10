@@ -10,6 +10,7 @@ import UploadFooter from "~/components/upload/UploadFooter";
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
+import "../components/upload/steps/UploadStepOne.scss";
 
 export default function Upload() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Upload() {
     audioFiles,
     trackMetadata,
     coverImage,
+    isTestMode,
 
     // Actions
     updateFormData,
@@ -37,9 +39,23 @@ export default function Upload() {
     previousStep,
     resetUpload,
     getUploadData,
+    setTestMode,
+    populateTestData,
   } = useUploadStore();
 
+  const handleTestModeToggle = async (enabled: boolean) => {
+    setTestMode(enabled);
+    if (enabled && currentStep === 1) {
+      // Immediately populate test data when test mode is enabled on step 1
+      await populateTestData();
+    }
+  };
+
   const handleCancel = () => {
+    // Reset test mode if it's currently enabled
+    if (isTestMode) {
+      setTestMode(false);
+    }
     resetUpload();
     navigate("/");
   };
@@ -56,6 +72,18 @@ export default function Upload() {
       updateMusician(index, field, e.target.value);
     };
 
+  const handleFindAlbumDetails = () => {
+    // TODO: Implement album details search functionality
+    console.log(
+      "Finding album details for:",
+      formData.albumTitle,
+      "by",
+      formData.mainArtist
+    );
+    // This could call an API to search for album information
+    // and populate the form fields automatically
+  };
+
   const handleFileUpload = (files: File[]) => {
     setAudioFiles(files);
   };
@@ -64,7 +92,7 @@ export default function Upload() {
     setCoverImage(file);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 3) {
       // Final submit logic
       const albumData = getUploadData();
@@ -72,10 +100,14 @@ export default function Upload() {
       alert(
         `Upload complete! Album: "${formData.albumTitle}" with ${trackMetadata.length} tracks`
       );
+      // Reset test mode if it's currently enabled
+      if (isTestMode) {
+        setTestMode(false);
+      }
       resetUpload();
       navigate("/");
     } else {
-      nextStep();
+      await nextStep();
     }
   };
 
@@ -96,6 +128,7 @@ export default function Upload() {
             onAddMusician={addMusician}
             onCoverUpload={handleCoverUpload}
             onFileUpload={handleFileUpload}
+            onFindAlbumDetails={handleFindAlbumDetails}
           />
         );
       case 2:
@@ -132,7 +165,12 @@ export default function Upload() {
 
   return (
     <div className="upload-page">
-      <UploadHeader title="Album Upload" onCancel={handleCancel} />
+      <UploadHeader
+        title="Album Upload"
+        onCancel={handleCancel}
+        isTestMode={isTestMode}
+        onTestModeToggle={handleTestModeToggle}
+      />
 
       {renderStepContent()}
 

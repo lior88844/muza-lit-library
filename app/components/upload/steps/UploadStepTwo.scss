@@ -1,4 +1,22 @@
 .upload-step-two {
+  // Local variables with fallbacks
+  --cell-padding: var(--muza-spacing-lg, 16px);
+  --cell-number-padding: var(--muza-spacing-md, 12px)
+    var(--muza-spacing-lg, 16px) var(--muza-spacing-md, 12px)
+    calc(var(--muza-spacing-xl, 24px) + var(--muza-spacing-lg, 16px));
+  --button-size: var(--muza-spacing-xl, 24px);
+  --icon-size: var(--muza-spacing-lg, 16px);
+  --border-color: var(--colors_border_light, #e5e7eb);
+  --muted-text: var(--colors_muted_foreground_light, #6b7280);
+  --primary-text: var(--colors_foreground_light, #030712);
+  --secondary-bg: var(--colors_secondary_light, #f3f4f6);
+  --hover-bg: var(--colors_muted_light_50_, #f9fafb7f);
+  --font-regular: var(--muza-font-weight-regular, 400);
+  --font-medium: var(--muza-font-weight-medium, 500);
+  --gap-sm: var(--muza-spacing-sm, 8px);
+  --gap-md: var(--muza-spacing-md, 10px);
+  --transition: all 0.2s ease;
+
   flex: 1;
   padding-bottom: 108px; // Space for fixed footer
   overflow-y: auto;
@@ -14,97 +32,96 @@
     border-collapse: separate;
     border-spacing: 0;
 
-    .table-header {
-      display: flex;
+    // Shared grid template
+    %grid-template {
+      display: grid;
+      grid-template-columns:
+        auto 1fr minmax(200px, 1fr) minmax(150px, 1.5fr)
+        auto auto;
       align-items: center;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--colors_border_light);
-      font-size: 14px;
-      color: var(--colors_muted_foreground_light);
-      font-weight: var(--muza-font-weight-medium);
+    }
+
+    .table-header {
+      @extend %grid-template;
+      border-bottom: 1px solid var(--border-color);
+      font-size: var(--muza-primary-font-size, 14px);
+      color: var(--muted-text);
+      font-weight: var(--font-medium);
+
+      [class*="column-"] {
+        padding: var(--cell-padding);
+      }
 
       .column-number {
-        width: 114px;
+        width: 64px;
         text-align: right;
-        padding: 12px 16px 12px 48px; // Match cell-number padding
-      }
-
-      .column-filename {
-        width: 279px;
-        padding: 16px; // Match cell-filename padding
-      }
-
-      .column-songname {
-        width: 280px;
-        padding: 16px; // Match cell-songname padding
-      }
-
-      .column-composer {
-        flex: 1;
-        padding: 16px; // Match cell-composer padding
+        padding: var(--cell-number-padding);
       }
 
       .column-time {
-        width: 120px;
         text-align: right;
-        padding: 16px; // Match cell-time padding
       }
 
       .column-actions {
-        width: 80px;
         text-align: center;
-        padding: 16px; // Match cell-actions padding
+        width: var(--button-size);
       }
     }
 
     .table-body {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--gap-sm);
 
       .table-row {
-        display: flex;
-        align-items: center;
+        @extend %grid-template;
         min-height: 54px;
-        border-bottom: 1px solid var(--colors_border_light);
-        transition: background-color 0.2s;
+        border-bottom: 1px solid var(--border-color);
+        transition: var(--transition);
 
         &:hover {
-          background-color: var(--colors_muted_light_50_);
+          background-color: var(--hover-bg);
         }
 
         &.dragging {
           opacity: 0.7;
-          background-color: var(--colors_secondary_light);
+          background-color: var(--secondary-bg);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
           z-index: 1000;
         }
 
+        // Shared button styles
+        %button-base {
+          background: none;
+          border: none;
+          width: var(--button-size);
+          height: var(--button-size);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: var(--transition);
+          background-color: var(--secondary-bg);
+        }
+
         .cell-number {
-          width: 114px;
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          padding: 12px 16px 12px 48px;
-          gap: 8px;
+          padding: var(--cell-number-padding);
+          gap: var(--gap-sm);
 
           .drag-handle {
-            background: none;
-            border: none;
-            padding: 4px;
+            @extend %button-base;
+            color: var(--muted-text);
             cursor: grab;
-            color: var(--colors_muted_foreground_light);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             touch-action: none;
+            padding: 4px;
+            background-color: transparent;
 
             &:hover {
-              background-color: var(--colors_secondary_light);
-              color: var(--colors_foreground_light);
+              color: var(--primary-text);
             }
 
             &:active {
@@ -113,32 +130,22 @@
           }
 
           .track-number {
-            font-size: 16px;
-            font-weight: var(--muza-font-weight-medium);
-            color: var(--colors_muted_foreground_light);
-            width: 24px;
+            font-size: var(--muza-songline-number-font-size, 16px);
+            font-weight: var(--font-medium);
+            color: var(--muted-text);
+            width: var(--button-size);
             text-align: center;
           }
         }
 
         .cell-filename {
-          width: 279px;
           display: flex;
           align-items: center;
-          padding: 16px;
-          gap: 10px;
+          padding: var(--cell-padding);
+          gap: var(--gap-md);
 
           .play-button {
-            background-color: var(--colors_secondary_light);
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            @extend %button-base;
 
             // Override global play-button ::after from AlbumCover
             &::after {
@@ -146,118 +153,88 @@
             }
 
             &:hover {
-              background-color: var(--colors_border_light);
+              background-color: var(--border-color);
             }
 
             svg {
-              width: 16px;
-              height: 16px;
+              width: var(--icon-size);
+              height: var(--icon-size);
             }
 
             // Wave animation styling for upload context
             .wave-container {
-              width: 16px;
-              height: 16px;
+              width: var(--icon-size);
+              height: var(--icon-size);
 
               .bar {
-                background-color: var(--colors_foreground_light);
+                background-color: var(--primary-text);
               }
             }
           }
 
           .filename {
             flex: 1;
-            font-size: 14px;
-            color: var(--colors_muted_foreground_light);
+            font-size: var(--muza-primary-font-size, 14px);
+            color: var(--muted-text);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-weight: var(--muza-font-weight-regular);
+            font-weight: var(--font-regular);
           }
         }
 
-        .cell-songname {
-          width: 280px;
-          padding: 16px;
+        // Shared input field styles
+        %input-field {
+          padding: var(--cell-padding);
 
-          .editable-field {
+          span {
             width: 100%;
             border: none;
             background: none;
-            font-size: 14px;
-            color: var(--colors_foreground_light);
-            font-weight: var(--muza-font-weight-regular);
+            font-size: var(--muza-primary-font-size, 14px);
+            color: var(--primary-text);
+            font-weight: var(--font-regular);
             padding: 0;
             outline: none;
 
             &:focus {
-              color: var(--colors_foreground_light);
+              color: var(--primary-text);
             }
 
             &::placeholder {
-              color: var(--colors_muted_foreground_light);
+              color: var(--muted-text);
             }
           }
         }
 
+        .cell-songname,
         .cell-composer {
-          flex: 1;
-          padding: 16px;
-
-          .editable-field {
-            width: 100%;
-            border: none;
-            background: none;
-            font-size: 14px;
-            color: var(--colors_foreground_light);
-            font-weight: var(--muza-font-weight-regular);
-            padding: 0;
-            outline: none;
-
-            &:focus {
-              color: var(--colors_foreground_light);
-            }
-
-            &::placeholder {
-              color: var(--colors_muted_foreground_light);
-            }
-          }
+          @extend %input-field;
         }
 
         .cell-time {
-          width: 120px;
-          padding: 16px;
+          padding: var(--cell-padding);
           text-align: right;
 
           .duration {
-            font-size: 14px;
-            color: var(--colors_muted_foreground_light);
-            font-weight: var(--muza-font-weight-regular);
+            font-size: var(--muza-primary-font-size, 14px);
+            color: var(--muted-text);
+            font-weight: var(--font-regular);
           }
         }
 
         .cell-actions {
-          width: 80px;
-          padding: 16px;
+          padding: var(--cell-padding);
           display: flex;
           justify-content: center;
 
           .delete-button {
-            background-color: var(--colors_secondary_light);
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--colors_muted_foreground_light);
-            transition: all 0.2s;
+            @extend %button-base;
+            color: var(--muted-text);
 
             &:hover {
-              background-color: #ff4444;
-              color: white;
+              background-color: var(--colors_destructive_light, #dc2626);
+              color: var(--colors_destructive_foreground_light, white);
             }
           }
         }
@@ -265,12 +242,15 @@
     }
 
     .empty-state {
-      padding: 48px 16px;
+      padding: calc(
+          var(--muza-spacing-xxl, 32px) + var(--muza-spacing-lg, 16px)
+        )
+        var(--cell-padding);
       text-align: center;
-      color: var(--colors_muted_foreground_light);
+      color: var(--muted-text);
 
       p {
-        font-size: 16px;
+        font-size: var(--muza-songline-title-font-size, 16px);
         margin: 0;
       }
     }
@@ -280,54 +260,29 @@
 // Responsive Design
 @media (max-width: 1024px) {
   .upload-step-two {
-    padding: 16px 20px;
+    --cell-padding: var(--muza-spacing-lg, 16px) var(--muza-spacing-lg, 20px);
+    --cell-number-padding-left: var(--muza-spacing-lg, 20px);
+
+    padding: var(--cell-padding);
     padding-bottom: 108px;
 
     .metadata-table {
+      %responsive-grid {
+        grid-template-columns:
+          auto 1fr minmax(150px, 1.5fr) minmax(120px, 1fr)
+          auto auto;
+      }
+
       .table-header {
-        font-size: 12px;
-
-        .column-number {
-          width: 80px;
-        }
-
-        .column-filename {
-          width: 200px;
-        }
-
-        .column-songname {
-          width: 180px;
-        }
-
-        .column-time {
-          width: 80px;
-        }
-
-        .column-actions {
-          width: 60px;
-        }
+        @extend %responsive-grid;
+        font-size: var(--muza-secondary-font-size, 12px);
       }
 
       .table-body .table-row {
+        @extend %responsive-grid;
+
         .cell-number {
-          width: 80px;
-          padding-left: 20px;
-        }
-
-        .cell-filename {
-          width: 200px;
-        }
-
-        .cell-songname {
-          width: 180px;
-        }
-
-        .cell-time {
-          width: 80px;
-        }
-
-        .cell-actions {
-          width: 60px;
+          padding-left: var(--cell-number-padding-left);
         }
       }
     }

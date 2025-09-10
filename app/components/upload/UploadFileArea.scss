@@ -43,9 +43,9 @@
       margin-bottom: 16px;
 
       .plus-icon-large {
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
+        height: 24px;
+        width: 24px;
+        color: var(--colors_background_light, #ffffff);
       }
     }
 
@@ -101,15 +101,8 @@
     gap: 16px;
     cursor: pointer;
     padding: 32px;
-    border: 2px dashed var(--colors_border_light);
-    border-radius: var(--muza-border-radius-sm);
     transition: all 0.2s ease;
     min-width: 300px;
-
-    &:hover {
-      border-color: var(--colors_primary_light);
-      background-color: var(--colors_muted_light_50_);
-    }
 
     &.drag-active {
       border-color: var(--colors_primary_light);

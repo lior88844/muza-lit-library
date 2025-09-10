@@ -144,15 +144,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <div className="body">
-          <MusicSidebar
-            logoAlt={t("library.musicLibrary")}
-            logoSrc="/icons/muza.svg"
-            sections={sidebarSections}
-            playlists={playlists}
-          />
+          {!isUploadPage && (
+            <MusicSidebar
+              logoAlt={t("library.musicLibrary")}
+              logoSrc="/icons/muza.svg"
+              sections={sidebarSections}
+              playlists={playlists}
+            />
+          )}
 
           <div className="content">
-            <MusicTopbar />
+            {!isUploadPage && <MusicTopbar />}
             {content || children}
             {!isUploadPage && <MuzaMusicPlayer />}
           </div>
