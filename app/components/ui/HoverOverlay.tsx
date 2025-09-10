@@ -6,6 +6,7 @@ interface HoverAction {
   icon: string;
   onClick: (e: React.MouseEvent) => void;
   title?: string;
+  customComponent?: React.ReactNode;
 }
 
 interface HoverOverlayProps {
@@ -42,14 +43,19 @@ const HoverOverlay: React.FC<HoverOverlayProps> = ({
       {actions.length > 0 && (
         <div className="hover-overlay-actions">
           {actions.map((action, index) => (
-            <button
-              key={index}
-              className="hover-overlay-btn"
-              onClick={action.onClick}
-              title={action.title}
-            >
-              <MuzaIcon iconName={action.icon} />
-            </button>
+            <div key={index}>
+              {action.customComponent ? (
+                action.customComponent
+              ) : (
+                <button
+                  className="hover-overlay-btn"
+                  onClick={action.onClick}
+                  title={action.title}
+                >
+                  <MuzaIcon iconName={action.icon} />
+                </button>
+              )}
+            </div>
           ))}
         </div>
       )}

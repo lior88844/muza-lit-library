@@ -1,6 +1,9 @@
 import React from "react";
 import "./PlaylistCover.scss";
 import HoverOverlay from "~/components/ui/HoverOverlay";
+import DropdownMenu from "~/components/ui/DropdownMenu";
+import type { DropdownMenuItem } from "~/components/ui/DropdownMenu";
+import MuzaIcon from "~/icons/MuzaIcon";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import type { MusicPlaylist } from "~/appData/models";
 
@@ -41,6 +44,31 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     }
   };
 
+  const handleShare = () => {
+    // TODO: Implement share functionality
+    console.log("Share playlist:", title);
+  };
+
+  const handleRemoveFromLibrary = () => {
+    // TODO: Implement remove from library functionality
+    console.log("Remove from library:", title);
+  };
+
+  const dropdownMenuItems: DropdownMenuItem[] = [
+    {
+      id: "share",
+      title: "Share",
+      icon: "share",
+      onClick: handleShare,
+    },
+    {
+      id: "remove-from-library",
+      title: "Remove from library",
+      icon: "minus",
+      onClick: handleRemoveFromLibrary,
+    },
+  ];
+
   // Ensure we have 4 images, pad with first image if needed
   const safeAlbumImages = Array.isArray(albumImages) ? albumImages : [];
   const paddedImages = [...safeAlbumImages];
@@ -80,6 +108,20 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
               icon: "ellipsis",
               onClick: e => e.stopPropagation(),
               title: "More options",
+              customComponent: (
+                <DropdownMenu
+                  trigger={
+                    <button
+                      className="hover-overlay-btn"
+                      onClick={e => e.stopPropagation()}
+                      title="More options"
+                    >
+                      <MuzaIcon iconName="ellipsis" />
+                    </button>
+                  }
+                  items={dropdownMenuItems}
+                />
+              ),
             },
           ]}
         />

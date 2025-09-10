@@ -89,19 +89,25 @@
   }
 }
 
-// Hover states - these need to be applied to the parent container
+// Hover states - controlled by CSS hover and Radix dropdown state
 .image-container:hover .hover-overlay,
-.playlist-cover__image-container:hover .hover-overlay {
+.playlist-cover__image-container:hover .hover-overlay,
+.playlist-cover:has([data-state="open"]) .hover-overlay,
+.hover-overlay--visible {
   opacity: 1;
 }
 
 .image-container:hover .hover-play-pause-btn,
-.playlist-cover__image-container:hover .hover-play-pause-btn {
+.playlist-cover__image-container:hover .hover-play-pause-btn,
+.playlist-cover:has([data-state="open"]) .hover-play-pause-btn,
+.hover-play-pause-btn--visible {
   opacity: 1;
 }
 
 .image-container:hover .hover-overlay-actions,
-.playlist-cover__image-container:hover .hover-overlay-actions {
+.playlist-cover__image-container:hover .hover-overlay-actions,
+.playlist-cover:has([data-state="open"]) .hover-overlay-actions,
+.hover-overlay-actions--visible {
   opacity: 1;
   pointer-events: auto;
 }
