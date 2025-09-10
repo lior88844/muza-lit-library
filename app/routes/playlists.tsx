@@ -16,8 +16,8 @@ export default function Playlists() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePlaylistClick = (playlist: any) => {
-    // Navigate to individual playlist view - can be implemented later
-    // TODO: Implement playlist navigation
+    // Navigate to individual playlist detail page using state like albums
+    navigate("/playlist", { state: { playlist } });
   };
 
   const handleCreatePlaylist = () => {

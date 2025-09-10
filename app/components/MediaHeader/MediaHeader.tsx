@@ -15,6 +15,7 @@ import { useTranslation } from "~/lib/i18n/translations";
 import MediaCover from "./components/MediaCover/MediaCover";
 import MediaMetadata from "./components/MediaMetadata/MediaMetadata";
 import MuzaButton from "~/controls/MuzaButton";
+import MuzaIcon from "~/icons/MuzaIcon";
 import { FaPause, FaPlay } from "react-icons/fa";
 
 interface MediaHeaderProps {
@@ -59,7 +60,10 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
       // If not playing, start playing the media
       if (songs.length > 0) {
         setSelectedSong(songs[0]);
-        setSelectedPlaListOrAlbum(media);
+        // Only set album context for albums, not playlists
+        if (mediaType === "album") {
+          setSelectedPlaListOrAlbum(media as Album);
+        }
         setIsPlaying(true);
       }
     }
@@ -77,10 +81,18 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     return (media as Album | MusicPlaylist).title || "";
   };
 
-  // Helper function to safely get image
   const getMediaImageSrc = () => {
     if (mediaType === "artist") {
       return (media as Artist).imageUrl || "";
+    }
+    if (mediaType === "playlist") {
+      // For playlists, return array of first 4 song images for collage
+      const playlistImages = songs
+        .slice(0, 4)
+        .map(song => song.imageSrc || "/art/imag_1.jpg");
+      return playlistImages.length >= 4
+        ? playlistImages
+        : (media as MusicPlaylist).imageSrc || "";
     }
     return (media as Album | MusicPlaylist).imageSrc || "";
   };
@@ -112,14 +124,12 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           songCount: songs.length,
         };
       }
-      case "playlist": {
-        const playlist = media as MusicPlaylist;
+      case "playlist":
         return {
           type: "playlist" as const,
           songCount: songs.length,
-          isPublic: playlist.visibility === "public",
+          // Note: visibility is now handled as separate badge
         };
-      }
       case "artist": {
         const artist = media as Artist;
         return {
@@ -192,6 +202,21 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   </div>
 
                   <MediaMetadata {...metadataProps} />
+                  {/* Visibility Badge - separate from metadata per Figma */}
+                  {mediaType === "playlist" && (
+                    <div className="visibility-badge-section">
+                      <div className="visibility-badge" data-name="Badge">
+                        <div className="badge-icon">
+                          <MuzaIcon iconName="globe" />
+                        </div>
+                        <span className="badge-text">
+                          {(media as MusicPlaylist).visibility === "private"
+                            ? t("common.private")
+                            : t("common.public")}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="actions-section">
