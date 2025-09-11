@@ -36,6 +36,7 @@ const english = {
   "common.songs": "Songs",
   "common.artist": "Artist",
   "common.artists": "Artists",
+  "common.playlist": "Playlist",
   "common.title": "Title",
   "common.close": "×",
   "common.next": "Next",
@@ -84,9 +85,15 @@ const english = {
   "song.addedToLibrary": "Song added successfully to your library",
   "playlist.addedToLibrary": "Playlist added successfully to your library",
 
+  // Artist Header
+  "artist.addedToLibrary": "Artist added successfully to your library",
+
   // Media Header
   "common.playAlbum": "Play Album",
+  "common.playPlaylist": "Play Playlist",
+  "common.playArtist": "Play Artist",
   "common.pause": "Pause",
+  "common.backToPlaylists": "Back to Playlists",
 
   // Artist Details
   "artist.albumsCount": "{count} Albums",
@@ -130,6 +137,8 @@ const english = {
   // Visibility Options
   "visibility.public": "Public",
   "visibility.private": "Private",
+  "common.public": "Public",
+  "common.private": "Private",
 
   // Topbar
   "topbar.user": "user",
@@ -149,6 +158,9 @@ const english = {
   "general.notFound": "404",
   "general.networkError": "Network response was not ok",
   "general.loading": "Loading...",
+
+  // Error Messages
+  "error.playlistNotFound": "Playlist not found",
   "general.errorWithMessage": "Error: {error}",
   "general.oops": "Oops!",
   "general.unexpectedError": "An unexpected error occurred.",

@@ -47,6 +47,9 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
       subTitle: `Album • ${trackMetadata.length} Song${trackMetadata.length !== 1 ? "s" : ""}`,
       artist: formData.mainArtist || "Unknown Artist",
       songs: trackMetadata.map((_, index) => index + 1),
+      year: formData.recordingDate
+        ? new Date(formData.recordingDate).getFullYear()
+        : undefined,
     };
   };
 
@@ -90,13 +93,10 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
           songs={songDetails}
           mediaType="album"
           showBackButton={false}
+          customActions={<div></div>}
         />
-        {/* Use existing AlbumHeader component */}
-        <AlbumHeader album={album} songs={songDetails} />
-
         <hr />
 
-        {/* Use SongLine components with simpler design */}
         <div className="album-song-list">
           {songDetails.map((song: SongDetails) => (
             <SongLine

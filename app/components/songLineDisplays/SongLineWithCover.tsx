@@ -11,6 +11,8 @@ interface SongLineProps {
   onClick: MouseEventHandler<HTMLDivElement>;
   isPlaying: boolean;
   mediaType?: "song" | "album";
+  showPreview?: boolean; // Add preview badge option
+  showHoverActions?: boolean; // Control hover action visibility
 }
 
 const formatDuration = (seconds: number): string => {
@@ -30,6 +32,8 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   onClick,
   isPlaying,
   mediaType = "song",
+  showPreview = false,
+  showHoverActions = true,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { t } = useTranslation();
@@ -91,9 +95,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                 className="play-button"
                 onClick={e => {
                   e.stopPropagation();
-                  // Create a synthetic event that matches the expected type
-                  const syntheticEvent = e as any;
-                  onClick(syntheticEvent);
+                  onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
                 }}
               >
                 <MuzaIcon iconName={isPlaying ? "pause" : "play"} />
@@ -109,6 +111,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
           </div>
 
           <div className="song-line-with-cover__details-row">
+            {showPreview && <div className="preview-badge">Preview</div>}
             <div className="song-details">
               <span className="artist-name">{details.artist}</span>
               <span className="separator">•</span>
@@ -125,7 +128,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
 
         {/* Right Section with Gradient */}
         <div className="song-line-with-cover__actions">
-          {isHovered && (
+          {showHoverActions && isHovered && (
             <button
               className="ellipsis-btn"
               title="More options"

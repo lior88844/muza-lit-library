@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useCurrentPlayerStore } from "./appData/currentPlayerStore";
 import MuzaMusicPlayer from "./components/componentsWithLogic/MuzaMusicPlayer";
 import { useTranslation } from "./lib/i18n/translations";
+import type { MusicPlaylist, SongDetails } from "./appData/models";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -74,7 +75,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     fetch("/staticData/allData.json")
       .then(response => {
         if (!response.ok) {
-          console.log("response not ok");
           fetch("./staticData/allData.json").then(response => {
             if (!response.ok) throw new Error(t("general.networkError"));
             return response.json();
@@ -92,25 +92,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         const processedPlaylists = (data.playlists || []).map(
           (playlist: any) => {
-            const playlistSongs = playlist.songs
-              .map((songId: number) =>
-                data.songs.find((song: any) => parseInt(song.id) === songId),
+            const playlistSongs = (playlist.songs || [])
+              .map((id: string) =>
+                data.songs.find(
+                  (song: SongDetails) =>
+                    parseInt(song.id || "0") === parseInt(id)
+                )
               )
-              .filter((song: any) => song !== undefined);
+              .filter(
+                (song: SongDetails | undefined): song is SongDetails =>
+                  song !== undefined
+              );
 
             const playlistSuggestions = (playlist.suggestions || [])
-              .map((songId: number) =>
-                data.songs.find((song: any) => parseInt(song.id) === songId),
+              .map((songId: string) =>
+                data.songs.find(
+                  (song: SongDetails) =>
+                    parseInt(song.id || "0") === parseInt(songId)
+                )
               )
-              .filter((song: any) => song !== undefined);
+              .filter(
+                (song: SongDetails | undefined): song is SongDetails =>
+                  song !== undefined
+              );
 
             return {
               ...playlist,
               songs: playlistSongs,
               suggestions: playlistSuggestions,
-              author: playlist.userName,
+              author: playlist.author,
             };
-          },
+          }
         );
 
         setPlaylists(processedPlaylists);
@@ -144,15 +156,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <div className="body">
-          <MusicSidebar
-            logoAlt={t("library.musicLibrary")}
-            logoSrc="/icons/muza.svg"
-            sections={sidebarSections}
-            playlists={playlists}
-          />
+          {!isUploadPage && (
+            <MusicSidebar
+              logoAlt={t("library.musicLibrary")}
+              logoSrc="/icons/muza.svg"
+              sections={sidebarSections}
+              playlists={playlists}
+            />
+          )}
 
           <div className="content">
-            <MusicTopbar />
+            {!isUploadPage && <MusicTopbar />}
             {content || children}
             {!isUploadPage && <MuzaMusicPlayer />}
           </div>

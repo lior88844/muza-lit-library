@@ -17,7 +17,6 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
   year,
   songCount,
   duration,
-  isPublic,
   followerCount,
   separator = "•",
 }) => {
@@ -51,15 +50,7 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
       items.push(<span key="duration">{duration}</span>);
     }
 
-    // Add public/private status for playlists
-    if (type === "playlist" && typeof isPublic === "boolean") {
-      items.push(<span key="separator4">{separator}</span>);
-      items.push(
-        <span key="visibility">
-          {isPublic ? t("common.public") : t("common.private")}
-        </span>
-      );
-    }
+    // Note: Public/private status is now handled as separate badge, not in metadata
 
     // Add follower count for artists
     if (type === "artist" && followerCount) {
