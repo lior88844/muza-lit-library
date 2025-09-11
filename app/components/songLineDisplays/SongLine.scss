@@ -15,8 +15,9 @@
   padding: var(--song-line-padding);
   cursor: default;
   border-radius: var(--muza-border-radius-md);
-
-  &:hover {
+  cursor: pointer;
+  &:hover,
+  &.hovered {
     background: var(--hover-background);
 
     .track-number {
@@ -24,7 +25,7 @@
     }
 
     .play-icon {
-      display: inline-block;
+      display: flex;
     }
   }
 
@@ -47,17 +48,39 @@
 
   .track-info {
     display: flex;
-    flex-direction: column;
-    position: relative;
-    padding-left: 40px;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--muza-spacing-sm);
   }
 
   .track-icon {
-    margin-right: 8px;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .track-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xs);
+    flex: 1;
+  }
+
+  .track-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--muza-spacing-sm);
+  }
+
+  .track-meta-row {
+    display: flex;
+    align-items: center;
+    gap: var(--muza-spacing-xs);
+    font-size: var(--muza-songline-number-font-size);
+    color: var(--muza-secondary-text-color);
   }
 
   .track-number {
@@ -68,7 +91,8 @@
     font-size: var(--song-title-font-size);
   }
 
-  .play-icon {
+  .play-icon,
+  .pause-icon {
     display: none;
     color: var(--tertiary-text-color);
     margin-right: 8px;
@@ -80,21 +104,95 @@
     }
   }
 
+  .pause-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .track-title {
     color: var(--primary-text-color);
     font-size: var(--song-title-font-size);
-    font-weight: 500;
+    font-weight: var(--muza-font-weight-medium);
+    line-height: 20px;
   }
 
-  .track-artist {
-    color: var(--secondary-text-color);
-    font-size: var(--song-artist-font-size);
-    font-weight: 400;
+  .track-artist,
+  .track-album,
+  .track-plays {
+    color: var(--muza-secondary-text-color);
+    font-size: var(--muza-songline-number-font-size);
+    line-height: 1;
+  }
+
+  .separator {
+    color: var(--muza-secondary-text-color);
+    font-size: var(--muza-songline-number-font-size);
+    line-height: 1;
+  }
+
+  .preview-badge {
+    background: var(--colors_background_light_50_);
+    backdrop-filter: blur(4px);
+    border: 0.5px solid var(--muza-light-border-color);
+    border-radius: var(--muza-border-radius-sm);
+    padding: 1px var(--muza-spacing-sm);
+    font-size: 14px;
+    font-weight: var(--muza-font-weight-normal);
+    color: var(--primary-text-color);
+    line-height: 1;
+  }
+
+  .track-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--muza-spacing-sm);
+  }
+
+  .add-btn,
+  .ellipsis-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--muza-spacing-sm, 8px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-text-color);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: var(--muza-hover-background);
+      color: var(--primary-text-color);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .ellipsis-btn {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  &:hover .ellipsis-btn,
+  &.hovered .ellipsis-btn {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .track-duration {
-    color: var(--secondary-text-color);
+    color: var(--primary-text-color);
     font-size: var(--song-duration-font-size);
+    min-width: 40px;
+    text-align: right;
+    font-weight: 400;
   }
 
   .wave-container {

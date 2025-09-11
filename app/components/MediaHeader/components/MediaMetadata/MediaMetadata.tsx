@@ -17,7 +17,6 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
   year,
   songCount,
   duration,
-  isPublic,
   followerCount,
   separator = "•",
 }) => {

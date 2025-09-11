@@ -3,11 +3,14 @@ import "./SongLineWithCover.scss";
 import type { SongDetails } from "../../appData/models";
 import { formatSongNumber } from "../../appData/utils";
 import MuzaIcon from "~/icons/MuzaIcon";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../lib/i18n/translations";
 
 interface SongLineProps {
   details: SongDetails;
   onClick: MouseEventHandler<HTMLDivElement>;
   isPlaying: boolean;
+  mediaType?: "song" | "album";
   showPreview?: boolean; // Add preview badge option
   showHoverActions?: boolean; // Control hover action visibility
 }
@@ -28,10 +31,19 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   details,
   onClick,
   isPlaying,
+  mediaType = "song",
   showPreview = false,
   showHoverActions = true,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslation();
+
+  const addToLibrary = () => {
+    toast(t(`${mediaType}.addedToLibrary`), {
+      position: "bottom-center",
+      hideProgressBar: true,
+    });
+  };
 
   const renderIcon = () => {
     if (isPlaying && isHovered) {
@@ -83,9 +95,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                 className="play-button"
                 onClick={e => {
                   e.stopPropagation();
-                  // Create a synthetic event that matches the expected type
-                  const syntheticEvent = e as any;
-                  onClick(syntheticEvent);
+                  onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
                 }}
               >
                 <MuzaIcon iconName={isPlaying ? "pause" : "play"} />
@@ -131,18 +141,16 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             </button>
           )}
 
-          {showHoverActions && (
-            <button
-              className="add-btn"
-              title="Add to library"
-              onClick={e => {
-                e.stopPropagation();
-                // Handle add to library
-              }}
-            >
-              <MuzaIcon iconName="plus" />
-            </button>
-          )}
+          <button
+            className="add-btn"
+            title="Add to library"
+            onClick={e => {
+              e.stopPropagation();
+              addToLibrary();
+            }}
+          >
+            <MuzaIcon iconName="plus" />
+          </button>
 
           <span className="duration">
             {details.time ? formatDuration(details.time) : "00:00"}

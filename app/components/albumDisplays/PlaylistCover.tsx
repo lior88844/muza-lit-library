@@ -39,19 +39,16 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   const handlePlayPlaylist = () => {
     if (playlist && playlist.songs && playlist.songs.length > 0) {
       setSelectedSong(playlist.songs[0]);
-      setSelectedPlaListOrAlbum(playlist as any);
       setIsPlaying(true);
     }
   };
 
   const handleShare = () => {
     // TODO: Implement share functionality
-    console.log("Share playlist:", title);
   };
 
   const handleRemoveFromLibrary = () => {
     // TODO: Implement remove from library functionality
-    console.log("Remove from library:", title);
   };
 
   const dropdownMenuItems: DropdownMenuItem[] = [
