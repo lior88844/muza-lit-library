@@ -112,7 +112,7 @@ export default defineConfig([
     },
   },
 
-  // Ignore patterns
+  // Ignore patterns (migrated from .eslintignore)
   {
     ignores: [
       "node_modules/**",
@@ -128,6 +128,9 @@ export default defineConfig([
       "*.d.ts",
       "react-router.config.ts",
       ".react-router/**",
+      // Additional patterns from .eslintignore
+      "*.config.js",
+      "*.config.ts",
     ],
   },
 ]);
