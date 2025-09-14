@@ -2,9 +2,17 @@ import express from "express";
 import { fileURLToPath } from "url";
 import axios from "axios";
 import path from "path";
-import https from "https";
 import http from "http";
 import * as fs from "fs";
+import { AlbumService } from "./services/album.service";
+import { ArtistService } from "./services/artist.service";
+import { TrackService } from "./services/track.service";
+import { TrackArtistService } from "./services/track-artist.service";
+
+// Initialize services
+const artistService = new ArtistService();
+const albumService = new AlbumService();
+const trackService = new TrackService();
 
 // Add global error handlers to prevent unexpected exits
 process.on("unhandledRejection", (reason, promise) => {
@@ -12,15 +20,10 @@ process.on("unhandledRejection", (reason, promise) => {
   // Don't exit the process, just log the error
 });
 
-process.on("uncaughtException", error => {
+process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);
   // Don't exit the process, just log the error
 });
-
-// Configuration constants
-const GRAPHQL_ENDPOINT =
-  process.env.GRAPHQL_ENDPOINT ||
-  "http://muza-staging-alb-868009887.eu-west-1.elb.amazonaws.com/api/metadata/graphql";
 
 const PORT = process.env.PORT || 3000;
 const STOCK_PHOTO = "https://picsum.photos/400"; // Placeholde photo URL
@@ -38,32 +41,8 @@ const instance = axios.create({
   timeout: 10000, // 10 second timeout
 });
 
-// GraphQL queries
-const ALBUMS_QUERY = `{
-  allAlbums {
-    id albumTitle albumCover label labelLogo bandName artistPhoto
-    artistMain instrument otherArtistPlaying otherInstrument
-    yearRecorded yearReleased songTitle composer songFile createdAt
-  }
-}`;
 
-const TRACKS_QUERY = `{
-  allTracks {
-    id uuid songTitle artistMain bandName albumTitle yearRecorded
-    yearReleased instrument otherArtistPlaying otherInstrument
-    songFile composer label createdAt albumCover
-  }
-}`;
-
-const ARTISTS_QUERY = `{
-  allArtists {
-    id uuid songTitle artistMain bandName albumTitle yearRecorded
-    yearReleased instrument otherArtistPlaying otherInstrument
-    songFile composer label createdAt albumCover
-  }
-}`;
-
-function getRandomItems(array, count) {
+function getRandomItems(array: any[], count: number) {
   if (array.length <= count) {
     return array;
   }
@@ -72,8 +51,8 @@ function getRandomItems(array, count) {
   return shuffled.slice(0, count);
 }
 
-function transformAlbumData(albums, transformedTracks) {
-  return albums.map(album => ({
+function transformAlbumData(albums: any[], transformedTracks: any[]) {
+  return albums.map((album) => ({
     id: album.id,
     imageSrc: album.albumCover || STOCK_PHOTO,
     title: album.albumTitle,
@@ -81,17 +60,17 @@ function transformAlbumData(albums, transformedTracks) {
     artist: album.artistMain,
     songs: transformedTracks
       .filter(
-        track =>
-          track.album === album.albumTitle && track.artist === album.artistMain
+        (track) =>
+          track.album === album.albumTitle && track.artist === album.artistMain,
       )
-      .map(track => track.id),
+      .map((track) => track.id),
   }));
 }
 
-function transformTrackData(tracks) {
+function transformTrackData(tracks: any[]) {
   return tracks
-    .filter(track => track.songFile)
-    .map(track => ({
+    .filter((track) => track.songFile)
+    .map((track) => ({
       id: track.id,
       index: track.id,
       title: track.songTitle,
@@ -105,14 +84,14 @@ function transformTrackData(tracks) {
     }));
 }
 
-function transformArtistData(artists, transformedAlbums) {
+function transformArtistData(artists: any[], transformedAlbums: any[]) {
   const albumsByArtist = transformedAlbums.reduce((acc, album) => {
     acc[album.artist] = (acc[album.artist] || 0) + 1;
     return acc;
   }, {});
 
   return artists
-    .filter(artist => artist.artistMain)
+    .filter((artist) => artist.artistMain)
     .map((artist, index) => ({
       id: artist.id || index + 1,
       index: index + 1,
@@ -120,27 +99,16 @@ function transformArtistData(artists, transformedAlbums) {
       artistName: artist.artistMain,
       albumsCount: String(albumsByArtist[artist.artistMain] || 0),
     }));
-}
-
-// GraphQL API functions
-async function fetchGraphQLData(query) {
-  try {
-    const response = await instance.post(GRAPHQL_ENDPOINT, { query });
-    return response.data.data;
-  } catch (error) {
-    console.error("GraphQL request failed:", error);
-    throw error;
-  }
-}
-
+} 
 async function fetchAlbums() {
   try {
-    const data = await fetchGraphQLData(ALBUMS_QUERY);
-    return data.allAlbums || [];
+    const data = await albumService.findMany(100, 0);
+
+    return data?.albums;
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error.message
+      error?.message,
     );
     return null;
   }
@@ -148,25 +116,26 @@ async function fetchAlbums() {
 
 async function fetchTracks() {
   try {
-    const data = await fetchGraphQLData(TRACKS_QUERY);
-    return data.allTracks || [];
+    const data = await trackService.findMany(100, 0);
+    return data?.tracks;
   } catch (error) {
     console.warn(
-      "Failed to fetch tracks from GraphQL, using empty array:",
-      error.message
+      "Failed to fetch albums from GraphQL, using empty array:",
+      error?.message,
     );
     return null;
   }
 }
 
 async function fetchArtists() {
+ 
   try {
-    const data = await fetchGraphQLData(ARTISTS_QUERY);
-    return data.allArtists || [];
+    const data = await artistService.findMany(100, 0);
+    return data?.artists;
   } catch (error) {
     console.warn(
-      "Failed to fetch artists from GraphQL, using empty array:",
-      error.message
+      "Failed to fetch albums from GraphQL, using empty array:",
+      error?.message,
     );
     return null;
   }
@@ -224,21 +193,21 @@ async function initializeApp() {
         const transformedTracks = transformTrackData(tracksData || []);
         const transformedAlbums = transformAlbumData(
           albumsData || [],
-          transformedTracks
+          transformedTracks,
         );
         const transformedArtists = transformArtistData(
           albumsData || [],
-          transformedAlbums
+          transformedAlbums,
         );
 
         console.log(
-          `Transformed ${transformedAlbums.length} albums with covers`
+          `Transformed ${transformedAlbums.length} albums with covers`,
         );
         console.log(
-          `Transformed ${transformedTracks.length} tracks with files and covers`
+          `Transformed ${transformedTracks.length} tracks with files and covers`,
         );
         console.log(
-          `Transformed ${transformedArtists.length} artists with photos`
+          `Transformed ${transformedArtists.length} artists with photos`,
         );
 
         const response = {
@@ -249,17 +218,17 @@ async function initializeApp() {
           },
           artists: getRandomItems(transformedArtists, 125),
           songs: getRandomItems(transformedTracks, 100000),
-          sidebar: allData?.sidebar,
+          sidebar: allData?.sidebar || [],
         };
 
         console.log(
-          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`
+          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`,
         );
         res.json(response);
       } catch (error) {
         console.error(
           "Error handling /staticData/allData.json request:",
-          error
+          error,
         );
         res.status(500).json({ error: "Internal server error" });
       }
@@ -280,6 +249,7 @@ async function initializeApp() {
 
     // Health check endpoint
     app.get("/health", (req, res) => {
+      console.log("GET /health - Serving OK");
       res.send("OK");
     });
 
@@ -297,7 +267,7 @@ async function initializeApp() {
     // Catch-all middleware for client-side routing
     app.use((req, res) => {
       console.log(
-        `GET ${req.path} - Serving index.html for client-side routing`
+        `GET ${req.path} - Serving index.html for client-side routing`,
       );
       res.sendFile(path.join(clientDir, "index.html"));
     });
@@ -306,15 +276,14 @@ async function initializeApp() {
     const server = app.listen(PORT, () => {
       console.log(`✅ Server running at http://localhost:${PORT}`);
       console.log(`📁 Serving static files from: ${clientDir}`);
-      console.log(`📊 GraphQL endpoint: ${GRAPHQL_ENDPOINT}`);
       console.log(`🚀 Server is ready to accept connections`);
       console.log(
-        `🔗 Using internal ECS service discovery for API communication`
+        `🔗 Using internal ECS service discovery for API communication`,
       );
     });
 
     // Add error handling for the server
-    server.on("error", error => {
+    server.on("error", (error) => {
       console.error("Server error:", error);
     });
 
@@ -327,7 +296,7 @@ async function initializeApp() {
       });
     });
 
-    process.on("SIGTERM", grace => {
+    process.on("SIGTERM", (grace) => {
       console.log("Received SIGTERM, shutting down gracefully...", grace);
       server.close(() => {
         console.log("Server closed");
