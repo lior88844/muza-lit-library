@@ -128,6 +128,8 @@ export default defineConfig([
       "*.d.ts",
       "react-router.config.ts",
       ".react-router/**",
+      // Build artifacts and server-generated files
+      "server/reactServer/**",
       // Additional patterns from .eslintignore
       "*.config.js",
       "*.config.ts",
