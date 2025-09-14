@@ -1,14 +1,16 @@
 @import "../../styles/variables.scss";
 
 .upload-form {
-  // Local variables with fallbacks
+  // Local variables with fallbacks - updated for new design
   --form-bg: var(--colors_muted_light, #f9fafb);
   --form-border: var(--colors_border_light, #e5e7eb);
-  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 32px)
-    var(--muza-spacing-sm, 8px) var(--muza-spacing-xxl, 32px);
+  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 40px)
+    var(--muza-spacing-sm, 10px) var(--muza-spacing-xxl, 40px);
   --card-bg: var(--colors_background_light, #ffffff);
-  --card-radius: var(--muza-border-radius-md, 8px);
+  --card-radius: var(--muza-border-radius-md, 6px);
   --card-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-lg, 16px);
+  --card-gap: var(--muza-spacing-xl, 24px);
+  --section-gap: var(--muza-spacing-xxl, 32px);
   --gap-lg: var(--muza-spacing-lg, 16px);
   --gap-xl: var(--muza-spacing-xl, 24px);
   --gap-sm: var(--muza-spacing-sm, 8px);
@@ -40,7 +42,7 @@
   .upload-form-container {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-xl);
+    gap: var(--card-gap);
     width: 100%;
   }
 
@@ -98,7 +100,8 @@
     padding: var(--card-padding);
     display: flex;
     flex-direction: column;
-    gap: var(--gap-lg);
+    gap: var(--section-gap);
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 
     .form-card-header {
       display: flex;
@@ -111,31 +114,27 @@
       }
     }
 
-    .detailed-info-header {
+    .section-description-row {
       display: flex;
-      flex-direction: column;
-      gap: var(--gap-lg);
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
 
-      .section-description-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
+      .section-description {
+        @extend %text-muted;
+        flex: 1;
+      }
 
-        .section-description {
-          @extend %text-muted;
-          flex: 1;
-        }
+      .find-album-button {
+        @extend %button-base;
+        background-color: var(--primary-color);
+        color: var(--colors_primary_foreground_light, #f9fafb);
+        padding: var(--gap-sm) var(--gap-md);
+        opacity: 0.5;
 
-        .find-album-button {
-          @extend %button-base;
-          background-color: var(--primary-color);
-          color: var(--colors_primary_foreground_light, #f9fafb);
-          padding: var(--gap-sm) var(--gap-md);
-
-          &:hover {
-            background-color: var(--primary-hover);
-          }
+        &:hover {
+          background-color: var(--primary-hover);
+          opacity: 1;
         }
       }
     }
@@ -165,31 +164,39 @@
       gap: var(--gap-lg);
     }
 
-    .form-fields,
-    .musicians-section,
-    .additional-info-section {
+    .form-fields {
       @extend %column-layout;
     }
 
-    .musicians-container {
-      @extend %column-layout;
-
+    // Individual musician card styling
+    &.musician-card {
       .musician-fields {
         @extend %column-layout;
-      }
 
-      .add-musician-container {
-        display: flex;
-        justify-content: flex-start;
+        .musician-inputs {
+          @extend %column-layout;
+        }
 
-        .add-musician-button {
-          @extend %button-base;
-          background: transparent;
-          color: var(--text-primary);
-          padding: 10px var(--gap-md) 8px var(--gap-md);
+        .musician-actions {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: var(--gap-sm);
 
-          &:hover {
-            background-color: var(--secondary-bg);
+          .delete-musician-button {
+            @extend %button-base;
+            background: transparent;
+            color: var(--text-primary);
+            padding: var(--gap-sm) var(--gap-md);
+
+            .trash-icon {
+              width: var(--icon-size);
+              height: var(--icon-size);
+              flex-shrink: 0;
+            }
+
+            &:hover {
+              background-color: var(--secondary-bg);
+            }
           }
         }
       }
@@ -226,6 +233,24 @@
         &::placeholder {
           color: var(--text-muted);
         }
+      }
+    }
+  }
+
+  // Add Musician button - now outside cards on gray background
+  .add-musician-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+
+    .add-musician-button {
+      @extend %button-base;
+      background: transparent;
+      color: var(--text-primary);
+      padding: var(--gap-sm) var(--gap-md);
+
+      &:hover {
+        background-color: var(--secondary-bg);
       }
     }
   }

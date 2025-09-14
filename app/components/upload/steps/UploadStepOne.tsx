@@ -16,6 +16,7 @@ interface UploadStepOneProps {
     field: keyof Musician
   ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddMusician: () => void;
+  onRemoveMusician: (index: number) => void;
   onCoverUpload: (file: File) => void;
   onFileUpload: (files: File[]) => void;
   onFindAlbumDetails?: () => void;
@@ -28,6 +29,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
   onFormDataChange,
   onMusicianChange,
   onAddMusician,
+  onRemoveMusician,
   onCoverUpload,
   onFileUpload,
   onFindAlbumDetails,
@@ -51,6 +53,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
             onFormDataChange={onFormDataChange}
             onMusicianChange={onMusicianChange}
             onAddMusician={onAddMusician}
+            onRemoveMusician={onRemoveMusician}
             onFindAlbumDetails={handleFindAlbumDetails}
           />
         </div>
