@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import SongDetails from "~/components/songLineDisplays/SongDetails";
+import SongLineWithCover from "~/components/songLineDisplays/SongLineWithCover";
 import type { SongDetails as SongDetailsType } from "~/appData/models";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import { useMusicLibraryStore } from "~/appData/musicStore";
@@ -12,11 +12,11 @@ import "./songs.scss";
 
 export default function Songs() {
   const { t } = useTranslation();
-  const { setSelectedSong, selectedSong } = useCurrentPlayerStore();
+  const { setSelectedSong, selectedSong, setIsPlaying } =
+    useCurrentPlayerStore();
   const { recentlyPlayed } = useMusicLibraryStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeSongId, setActiveSongId] = useState<string | null>(null);
 
   useEffect(() => {
     // Simulate loading state
@@ -29,7 +29,7 @@ export default function Songs() {
 
   const handleSongClick = (song: SongDetailsType) => {
     setSelectedSong(song);
-    setActiveSongId(song.id || null);
+    setIsPlaying(true);
   };
 
   if (loading) return <p>{t("general.loading")}</p>;
@@ -45,11 +45,10 @@ export default function Songs() {
       <div className="songs-list-container">
         <div className="songs-list">
           {recentlyPlayed.map(song => (
-            <SongDetails
+            <SongLineWithCover
               key={song.id}
               details={song}
               onClick={() => handleSongClick(song)}
-              isActive={activeSongId === song.id}
               isPlaying={selectedSong?.id === song.id}
             />
           ))}
