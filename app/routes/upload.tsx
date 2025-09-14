@@ -29,6 +29,7 @@ export default function Upload() {
     updateFormData,
     updateMusician,
     addMusician,
+    removeMusician,
     setCoverImage,
     setAudioFiles,
     updateTrackMetadata,
@@ -126,6 +127,7 @@ export default function Upload() {
             onFormDataChange={handleInputChange}
             onMusicianChange={handleMusicianChange}
             onAddMusician={addMusician}
+            onRemoveMusician={removeMusician}
             onCoverUpload={handleCoverUpload}
             onFileUpload={handleFileUpload}
             onFindAlbumDetails={handleFindAlbumDetails}
