@@ -60,7 +60,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     if (!audio) return;
 
     audio.play().catch(err => {
-      console.error("Error playing audio:", err);
       setIsPlaying(false);
       onUpdate?.({ ...details });
     });

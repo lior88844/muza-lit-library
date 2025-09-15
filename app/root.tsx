@@ -49,15 +49,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if we're on the upload page
+  // Check if we're on the upload pages
   const isUploadPage = location.pathname === "/upload";
+  const isAdminUploadPage = location.pathname === "/admin-upload";
+  const isAnyUploadPage = isUploadPage || isAdminUploadPage;
 
-  // Stop music when navigating to upload page
+  // Stop music when navigating to upload pages
   useEffect(() => {
-    if (isUploadPage) {
+    if (isAnyUploadPage) {
       setIsPlaying(false);
     }
-  }, [isUploadPage, setIsPlaying]);
+  }, [isAnyUploadPage, setIsPlaying]);
 
   useEffect(() => {
     const {
@@ -156,7 +158,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <div className="body">
-          {!isUploadPage && (
+          {!isAnyUploadPage && (
             <MusicSidebar
               logoAlt={t("library.musicLibrary")}
               logoSrc="/icons/muza.svg"
@@ -166,9 +168,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           )}
 
           <div className="content">
-            {!isUploadPage && <MusicTopbar />}
+            {!isAnyUploadPage && <MusicTopbar />}
             {content || children}
-            {!isUploadPage && <MuzaMusicPlayer />}
+            {!isAnyUploadPage && <MuzaMusicPlayer />}
           </div>
         </div>
         <ToastContainer />

@@ -1,0 +1,40 @@
+@import "../../styles/variables.scss";
+
+.admin-upload-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--colors_background_light);
+  font-family: var(--typography_font_family_font_sans);
+}
+
+.admin-upload-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--muza-spacing-lg) var(--muza-spacing-xxl);
+  gap: 0; // Remove gap, we'll handle spacing individually
+
+  @media (max-width: 768px) {
+    padding: var(--muza-spacing-md) var(--muza-spacing-lg);
+  }
+
+  @media (max-width: 480px) {
+    padding: var(--muza-spacing-sm) var(--muza-spacing-md);
+  }
+}
+
+.admin-upload-drop-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--muza-spacing-md) 0;
+}
+
+.admin-upload-table-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+  min-height: 0; // Allow flex shrinking
+}
