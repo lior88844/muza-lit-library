@@ -9,7 +9,7 @@ export default {
   bracketSpacing: true,
   bracketSameLine: false,
   arrowParens: "avoid",
-  endOfLine: "lf",
+  endOfLine: "auto",
   plugins: ["prettier-plugin-tailwindcss"],
   // tailwindcss
   tailwindAttributes: ["theme"],
