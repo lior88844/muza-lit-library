@@ -50,6 +50,13 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
             {t("upload.uploadMusic")}
             <MuzaIcon iconName="upload" />
           </button>
+          <button
+            className="upload-music-button admin-upload-button"
+            onClick={handleUploadClick}
+          >
+            {t("upload.uploadAdmin")}
+            <MuzaIcon iconName="heart" />
+          </button>
           <div className="user-menu">
             <div className="user-icon" onClick={onUserIconClick}>
               <img src="/art/logo.jpg" alt={t("topbar.user")} />
