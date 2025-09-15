@@ -20,7 +20,7 @@ process.on("unhandledRejection", (reason, promise) => {
   // Don't exit the process, just log the error
 });
 
-process.on("uncaughtException", (error) => {
+process.on("uncaughtException", error => {
   console.error("Uncaught Exception:", error);
   // Don't exit the process, just log the error
 });
@@ -41,7 +41,6 @@ const instance = axios.create({
   timeout: 10000, // 10 second timeout
 });
 
-
 function getRandomItems(array: any[], count: number) {
   if (array.length <= count) {
     return array;
@@ -52,7 +51,7 @@ function getRandomItems(array: any[], count: number) {
 }
 
 function transformAlbumData(albums: any[], transformedTracks: any[]) {
-  return albums.map((album) => ({
+  return albums.map(album => ({
     id: album.id,
     imageSrc: album.albumCover || STOCK_PHOTO,
     title: album.albumTitle,
@@ -60,17 +59,17 @@ function transformAlbumData(albums: any[], transformedTracks: any[]) {
     artist: album.artistMain,
     songs: transformedTracks
       .filter(
-        (track) =>
-          track.album === album.albumTitle && track.artist === album.artistMain,
+        track =>
+          track.album === album.albumTitle && track.artist === album.artistMain
       )
-      .map((track) => track.id),
+      .map(track => track.id),
   }));
 }
 
 function transformTrackData(tracks: any[]) {
   return tracks
-    .filter((track) => track.songFile)
-    .map((track) => ({
+    .filter(track => track.songFile)
+    .map(track => ({
       id: track.id,
       index: track.id,
       title: track.songTitle,
@@ -91,7 +90,7 @@ function transformArtistData(artists: any[], transformedAlbums: any[]) {
   }, {});
 
   return artists
-    .filter((artist) => artist.artistMain)
+    .filter(artist => artist.artistMain)
     .map((artist, index) => ({
       id: artist.id || index + 1,
       index: index + 1,
@@ -99,7 +98,7 @@ function transformArtistData(artists: any[], transformedAlbums: any[]) {
       artistName: artist.artistMain,
       albumsCount: String(albumsByArtist[artist.artistMain] || 0),
     }));
-} 
+}
 async function fetchAlbums() {
   try {
     const data = await albumService.findMany(100, 0);
@@ -108,7 +107,7 @@ async function fetchAlbums() {
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message,
+      error?.message
     );
     return null;
   }
@@ -121,21 +120,20 @@ async function fetchTracks() {
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message,
+      error?.message
     );
     return null;
   }
 }
 
 async function fetchArtists() {
- 
   try {
     const data = await artistService.findMany(100, 0);
     return data?.artists;
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message,
+      error?.message
     );
     return null;
   }
@@ -193,21 +191,21 @@ async function initializeApp() {
         const transformedTracks = transformTrackData(tracksData || []);
         const transformedAlbums = transformAlbumData(
           albumsData || [],
-          transformedTracks,
+          transformedTracks
         );
         const transformedArtists = transformArtistData(
           albumsData || [],
-          transformedAlbums,
+          transformedAlbums
         );
 
         console.log(
-          `Transformed ${transformedAlbums.length} albums with covers`,
+          `Transformed ${transformedAlbums.length} albums with covers`
         );
         console.log(
-          `Transformed ${transformedTracks.length} tracks with files and covers`,
+          `Transformed ${transformedTracks.length} tracks with files and covers`
         );
         console.log(
-          `Transformed ${transformedArtists.length} artists with photos`,
+          `Transformed ${transformedArtists.length} artists with photos`
         );
 
         const response = {
@@ -222,13 +220,13 @@ async function initializeApp() {
         };
 
         console.log(
-          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`,
+          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`
         );
         res.json(response);
       } catch (error) {
         console.error(
           "Error handling /staticData/allData.json request:",
-          error,
+          error
         );
         res.status(500).json({ error: "Internal server error" });
       }
@@ -267,7 +265,7 @@ async function initializeApp() {
     // Catch-all middleware for client-side routing
     app.use((req, res) => {
       console.log(
-        `GET ${req.path} - Serving index.html for client-side routing`,
+        `GET ${req.path} - Serving index.html for client-side routing`
       );
       res.sendFile(path.join(clientDir, "index.html"));
     });
@@ -278,12 +276,12 @@ async function initializeApp() {
       console.log(`📁 Serving static files from: ${clientDir}`);
       console.log(`🚀 Server is ready to accept connections`);
       console.log(
-        `🔗 Using internal ECS service discovery for API communication`,
+        `🔗 Using internal ECS service discovery for API communication`
       );
     });
 
     // Add error handling for the server
-    server.on("error", (error) => {
+    server.on("error", error => {
       console.error("Server error:", error);
     });
 
@@ -296,7 +294,7 @@ async function initializeApp() {
       });
     });
 
-    process.on("SIGTERM", (grace) => {
+    process.on("SIGTERM", grace => {
       console.log("Received SIGTERM, shutting down gracefully...", grace);
       server.close(() => {
         console.log("Server closed");

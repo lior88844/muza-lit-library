@@ -1,5 +1,5 @@
-import { AudioFormatEnum } from 'server/db/track.entity';
-import { z } from 'zod';
+import { AudioFormatEnum } from "server/db/track.entity";
+import { z } from "zod";
 
 // Track schemas
 export const TrackSchema = z.object({

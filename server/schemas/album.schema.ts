@@ -1,5 +1,5 @@
-import { AlbumTypeEnum, ReleaseStatusEnum } from 'server/db/album.entity';
-import { z } from 'zod';
+import { AlbumTypeEnum, ReleaseStatusEnum } from "server/db/album.entity";
+import { z } from "zod";
 
 // Album schemas
 export const AlbumSchema = z.object({
