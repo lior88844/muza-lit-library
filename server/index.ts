@@ -21,7 +21,7 @@ process.on("unhandledRejection", (reason, promise) => {
   // Don't exit the process, just log the error
 });
 
-process.on("uncaughtException", (error) => {
+process.on("uncaughtException", error => {
   console.error("Uncaught Exception:", error);
   // Don't exit the process, just log the error
 });
@@ -42,7 +42,6 @@ const instance = axios.create({
   timeout: 10000, // 10 second timeout
 });
 
-
 function getRandomItems(array: any[], count: number) {
   if (array.length <= count) {
     return array;
@@ -53,7 +52,7 @@ function getRandomItems(array: any[], count: number) {
 }
 
 function transformAlbumData(albums: Album[], transformedTracks: Track[]) {
-  return albums.map((album) => ({
+  return albums.map(album => ({
     id: album.id,
     imageSrc: album.coverArt || STOCK_PHOTO,
     title: album.title,
@@ -61,39 +60,43 @@ function transformAlbumData(albums: Album[], transformedTracks: Track[]) {
     artist: album.artistId,
     songs: transformedTracks
       .filter(
-        (track) =>
-          track.albumId === album.id && track.artistId === album.artistId,
+        track => track.albumId === album.id && track.artistId === album.artistId
       )
-      .map((track) => track.id),
+      .map(track => track.id),
   }));
 }
 
 function transformTrackData(tracks: Track[]) {
-  return tracks
-    // .filter((track) => track.fileId)
-    .map((track) => ({
-      id: track.id,
-      index: track.id,
-      title: track.title,
-      time: 185,
-      filePath: track.fileId, /* todo converting f
+  return (
+    tracks
+      // .filter((track) => track.fileId)
+      .map(track => ({
+        id: track.id,
+        index: track.id,
+        title: track.title,
+        time: 185,
+        filePath: track.fileId,
+        /* todo converting f
       albumId: track.albumId,
       audioUrl: track.isrc,
-      imageSrc: /*join album*/  STOCK_PHOTO,
-      artist: 'where is my artist???',
-      album: track.albumId,
-      year: track.createdAt?.getFullYear() || "2023",
-    }));
+      imageSrc: /*join album*/ STOCK_PHOTO,
+        artist: "where is my artist???",
+        album: track.albumId,
+        year: track.createdAt?.getFullYear() || "2023",
+      }))
+  );
 }
-
+function getTrackFilePathFromFileId(fileId: string) {
+  return `https://${process.env.CDN_DOMAIN_NAME}/audio/hls/${fileId}/${fileId}.m3u8`;
+}
 function transformArtistData(artists: Artist[], transformedAlbums: Album[]) {
   const albumsByArtist = transformedAlbums.reduce((acc, album) => {
     acc[album.artistId] = (acc[album.artistId] || 0) + 1;
     return acc;
-  }, {});  
+  }, {});
 
   return artists
-    .filter((artist) => artist.name)
+    .filter(artist => artist.name)
     .map((artist, index) => ({
       id: artist.id || index + 1,
       index: index + 1,
@@ -101,7 +104,7 @@ function transformArtistData(artists: Artist[], transformedAlbums: Album[]) {
       artistName: artist.name,
       albumsCount: String(albumsByArtist[artist.id] || 0),
     }));
-} 
+}
 async function fetchAlbums() {
   try {
     const data = await albumService.findMany(100, 0);
@@ -110,7 +113,7 @@ async function fetchAlbums() {
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message,
+      error?.message
     );
     return null;
   }
@@ -123,21 +126,20 @@ async function fetchTracks() {
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message,
+      error?.message
     );
     return null;
   }
 }
 
 async function fetchArtists() {
- 
   try {
     const data = await artistService.findMany(100, 0);
     return data?.artists;
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message,
+      error?.message
     );
     return null;
   }
@@ -195,21 +197,21 @@ async function initializeApp() {
         const transformedTracks = transformTrackData(tracksData || []);
         const transformedAlbums = transformAlbumData(
           albumsData || [],
-          transformedTracks,
+          transformedTracks
         );
         const transformedArtists = transformArtistData(
           albumsData || [],
-          transformedAlbums,
+          transformedAlbums
         );
 
         console.log(
-          `Transformed ${transformedAlbums.length} albums with covers`,
+          `Transformed ${transformedAlbums.length} albums with covers`
         );
         console.log(
-          `Transformed ${transformedTracks.length} tracks with files and covers`,
+          `Transformed ${transformedTracks.length} tracks with files and covers`
         );
         console.log(
-          `Transformed ${transformedArtists.length} artists with photos`,
+          `Transformed ${transformedArtists.length} artists with photos`
         );
 
         const response = {
@@ -224,13 +226,13 @@ async function initializeApp() {
         };
 
         console.log(
-          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`,
+          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`
         );
         res.json(response);
       } catch (error) {
         console.error(
           "Error handling /staticData/allData.json request:",
-          error,
+          error
         );
         res.status(500).json({ error: "Internal server error" });
       }
@@ -269,7 +271,7 @@ async function initializeApp() {
     // Catch-all middleware for client-side routing
     app.use((req, res) => {
       console.log(
-        `GET ${req.path} - Serving index.html for client-side routing`,
+        `GET ${req.path} - Serving index.html for client-side routing`
       );
       res.sendFile(path.join(clientDir, "index.html"));
     });
@@ -280,12 +282,12 @@ async function initializeApp() {
       console.log(`📁 Serving static files from: ${clientDir}`);
       console.log(`🚀 Server is ready to accept connections`);
       console.log(
-        `🔗 Using internal ECS service discovery for API communication`,
+        `🔗 Using internal ECS service discovery for API communication`
       );
     });
 
     // Add error handling for the server
-    server.on("error", (error) => {
+    server.on("error", error => {
       console.error("Server error:", error);
     });
 
@@ -298,7 +300,7 @@ async function initializeApp() {
       });
     });
 
-    process.on("SIGTERM", (grace) => {
+    process.on("SIGTERM", grace => {
       console.log("Received SIGTERM, shutting down gracefully...", grace);
       server.close(() => {
         console.log("Server closed");
