@@ -29,6 +29,7 @@ export const TrackSchema = z.object({
   lastPlayed: z.date().optional(),
   lastUpdated: z.date(),
   createdAt: z.date(),
+  artistId: z.number().optional(),
   updatedAt: z.date(),
 });
 export const CreateTrackSchema = TrackSchema.omit({

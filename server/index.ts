@@ -8,6 +8,7 @@ import { AlbumService } from "./services/album.service";
 import { ArtistService } from "./services/artist.service";
 import { TrackService } from "./services/track.service";
 import { TrackArtistService } from "./services/track-artist.service";
+import type { Album, Artist, Track } from "./schemas";
 
 // Initialize services
 const artistService = new ArtistService();
@@ -51,53 +52,54 @@ function getRandomItems(array: any[], count: number) {
   return shuffled.slice(0, count);
 }
 
-function transformAlbumData(albums: any[], transformedTracks: any[]) {
+function transformAlbumData(albums: Album[], transformedTracks: Track[]) {
   return albums.map((album) => ({
     id: album.id,
-    imageSrc: album.albumCover || STOCK_PHOTO,
-    title: album.albumTitle,
-    subTitle: album.yearReleased,
-    artist: album.artistMain,
+    imageSrc: album.coverArt || STOCK_PHOTO,
+    title: album.title,
+    subTitle: album.releaseDate,
+    artist: album.artistId,
     songs: transformedTracks
       .filter(
         (track) =>
-          track.album === album.albumTitle && track.artist === album.artistMain,
+          track.albumId === album.id && track.artistId === album.artistId,
       )
       .map((track) => track.id),
   }));
 }
 
-function transformTrackData(tracks: any[]) {
+function transformTrackData(tracks: Track[]) {
   return tracks
-    .filter((track) => track.songFile)
+    // .filter((track) => track.fileId)
     .map((track) => ({
       id: track.id,
       index: track.id,
-      title: track.songTitle,
+      title: track.title,
       time: 185,
-      albumId: track.albumTitle,
-      audioUrl: track.songFile,
-      imageSrc: track.albumCover || STOCK_PHOTO,
-      artist: track.artistMain,
-      album: track.albumTitle,
-      year: track.yearReleased,
+      filePath: fileId, /* todo converting function*/
+      albumId: track.albumId,
+      audioUrl: track.isrc,
+      imageSrc: /*join album*/  STOCK_PHOTO,
+      artist: 'where is my artist???',
+      album: track.albumId,
+      year: track.createdAt?.getFullYear() || "2023",
     }));
 }
 
-function transformArtistData(artists: any[], transformedAlbums: any[]) {
+function transformArtistData(artists: Artist[], transformedAlbums: Album[]) {
   const albumsByArtist = transformedAlbums.reduce((acc, album) => {
-    acc[album.artist] = (acc[album.artist] || 0) + 1;
+    acc[album.artistId] = (acc[album.artistId] || 0) + 1;
     return acc;
-  }, {});
+  }, {});  
 
   return artists
-    .filter((artist) => artist.artistMain)
+    .filter((artist) => artist.name)
     .map((artist, index) => ({
       id: artist.id || index + 1,
       index: index + 1,
-      imageSrc: artist.albumCover || STOCK_PHOTO,
-      artistName: artist.artistMain,
-      albumsCount: String(albumsByArtist[artist.artistMain] || 0),
+      imageSrc: artist.image || STOCK_PHOTO,
+      artistName: artist.name,
+      albumsCount: String(albumsByArtist[artist.id] || 0),
     }));
 } 
 async function fetchAlbums() {
