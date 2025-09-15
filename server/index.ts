@@ -76,7 +76,7 @@ function transformTrackData(tracks: Track[]) {
       index: track.id,
       title: track.title,
       time: 185,
-      filePath: fileId, /* todo converting function*/
+      filePath: track.fileId, /* todo converting f
       albumId: track.albumId,
       audioUrl: track.isrc,
       imageSrc: /*join album*/  STOCK_PHOTO,
