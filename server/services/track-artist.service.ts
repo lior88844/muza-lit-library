@@ -1,7 +1,4 @@
-import {
-  type TrackArtist,
-  type ArtistRole,
-} from '../schemas/index';
+import { type TrackArtist, type ArtistRole } from "../schemas/index";
 
 export class TrackArtistService {
   /**

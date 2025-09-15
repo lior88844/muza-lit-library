@@ -1,5 +1,5 @@
-import { ArtistRoleEnum } from 'server/db/track-artist.entity';
-import { z } from 'zod';
+import { ArtistRoleEnum } from "server/db/track-artist.entity";
+import { z } from "zod";
 
 // Artist role enum for validation
 export const ArtistRoleSchema = z.nativeEnum(ArtistRoleEnum);
@@ -47,7 +47,7 @@ export const TrackWithArtistsSchema = z.object({
   filePath: z.string().optional(),
   fileName: z.string().optional(),
   fileSize: z.string().optional(),
-  format: z.enum(['FLAC', 'MP3', 'WAV', 'AAC', 'OGG', 'OPUS']).optional(),
+  format: z.enum(["FLAC", "MP3", "WAV", "AAC", "OGG", "OPUS"]).optional(),
   bitrate: z.number().positive().optional(),
   sampleRate: z.number().int().positive().optional(),
   channels: z.number().int().min(1).max(8).optional(),

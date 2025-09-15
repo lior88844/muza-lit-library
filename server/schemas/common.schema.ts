@@ -1,14 +1,14 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Upload schemas
 export const FileUploadSchema = z.object({
   filename: z.string().min(1),
   mimetype: z.enum([
-    'audio/flac',
-    'audio/mpeg',
-    'audio/wav',
-    'audio/aac',
-    'audio/ogg',
+    "audio/flac",
+    "audio/mpeg",
+    "audio/wav",
+    "audio/aac",
+    "audio/ogg",
   ]),
   size: z.number().max(100 * 1024 * 1024), // 100MB limit
   buffer: z.instanceof(Buffer).optional(),

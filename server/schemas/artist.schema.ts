@@ -1,5 +1,5 @@
-import { ArtistTypeEnum, GenderEnum } from 'server/db/artist.entity';
-import { z } from 'zod';
+import { ArtistTypeEnum, GenderEnum } from "server/db/artist.entity";
+import { z } from "zod";
 
 // Artist schemas
 export const ArtistSchema = z.object({

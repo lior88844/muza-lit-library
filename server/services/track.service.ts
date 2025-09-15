@@ -1,15 +1,13 @@
-import { eq, desc, count, sql } from 'drizzle-orm';
-import { db } from '../db/connection';
+import { eq, desc, count, sql } from "drizzle-orm";
+import { db } from "../db/connection";
 import {
   trackArtists,
   tracks,
   artists,
   ArtistRoleEnum,
   AudioFormatEnum,
-} from '../db/schema';
-import {
-  type Track,
-} from '../schemas/index';
+} from "../db/schema";
+import { type Track } from "../schemas/index";
 
 export class TrackService {
   /**
@@ -113,7 +111,7 @@ export class TrackService {
 
     return result.map(this.mapDbTrackToTrack);
   }
-   
+
   /**
    * Find tracks by artist using proper JOIN
    */
