@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Playlist schemas
 export const PlaylistSchema = z.object({

@@ -1,7 +1,7 @@
-import { eq, desc, count, sql, and } from 'drizzle-orm';
-import { db } from '../db/connection';
-import { albums, tracks } from '../db/schema';
-import type { Album } from 'server/schemas';
+import { eq, desc, count, sql, and } from "drizzle-orm";
+import { db } from "../db/connection";
+import { albums, tracks } from "../db/schema";
+import type { Album } from "server/schemas";
 
 export class AlbumService {
   /**
@@ -74,7 +74,7 @@ export class AlbumService {
 
     return result as Album[];
   }
- 
+
   /**
    * Find albums by artist
    */
@@ -172,7 +172,7 @@ export class AlbumService {
       null
     );
   }
- 
+
   /**
    * Get album statistics
    */
@@ -214,8 +214,8 @@ export class AlbumService {
     ]);
 
     const typeDistribution: Record<string, number> = {};
-    typeResult.forEach((row) => {
-      const type = row.type || 'Unknown';
+    typeResult.forEach(row => {
+      const type = row.type || "Unknown";
       typeDistribution[type] = row.count;
     });
 
