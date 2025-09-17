@@ -173,14 +173,18 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
 
   const renderPagination = () => {
     const pages = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    const maxVisiblePages = 3;
+
+    // Calculate the range of pages to show
+    let startPage = Math.max(1, currentPage - 1);
     const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
+    // Adjust startPage if we're near the end
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
+    // Create page buttons
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
@@ -208,17 +212,11 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
 
         <div className="admin-upload-table__page-numbers">
           {pages}
-          {endPage < totalPages && (
-            <>
-              <span className="admin-upload-table__ellipsis">...</span>
-              <button
-                onClick={() => onPageChange(totalPages)}
-                className="admin-upload-table__page-button"
-              >
-                {totalPages}
-              </button>
-            </>
-          )}
+          <div
+            className={`admin-upload-table__ellipsis ${endPage < totalPages ? "" : "admin-upload-table__ellipsis--hidden"}`}
+          >
+            <MuzaIcon iconName="ellipsis" />
+          </div>
         </div>
 
         <button
