@@ -4,12 +4,10 @@ import "./AdminFileDropArea.scss";
 
 interface AdminFileDropAreaProps {
   onFileUpload: (files: File[]) => void;
-  hasFiles: boolean;
 }
 
 const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
   onFileUpload,
-  hasFiles,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -36,21 +34,13 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
     [onFileUpload]
   );
 
-  const handleFileInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []);
-      if (files.length > 0) {
-        onFileUpload(files);
-      }
-    },
-    [onFileUpload]
-  );
-
   const handleBrowseClick = useCallback(() => {
+    // Only folder selection
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = true;
     input.accept = "audio/*";
+    input.webkitdirectory = true; // Enable folder selection only
     input.onchange = e => {
       const target = e.target as HTMLInputElement;
       const files = Array.from(target.files || []);
@@ -78,7 +68,7 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
 
           <div className="admin-file-drop-area__text">
             <span className="admin-file-drop-area__main-text">
-              Drag files or folders here{" "}
+              Drag folders here{" "}
             </span>
             <button
               type="button"
@@ -90,7 +80,7 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
           </div>
 
           <p className="admin-file-drop-area__support-text">
-            Supports directories and multiple files
+            Supports music folders with multiple files
           </p>
         </div>
       </div>

@@ -4,14 +4,23 @@ import AdminFileDropArea from "./AdminFileDropArea";
 import AdminUploadTable from "./AdminUploadTable";
 import "./AdminUploadPage.scss";
 
+export interface UploadItem {
+  id: string;
+  name: string;
+  type: "folder";
+  size: number;
+  files: File[]; // Array of files in the folder
+  path: string;
+}
+
 interface AdminUploadPageProps {
-  uploadedFiles: File[];
-  selectedFiles: Set<number>;
+  uploadedItems: UploadItem[];
+  selectedItems: Set<number>;
   isScanning: boolean;
   currentPage: number;
   itemsPerPage: number;
   onFileUpload: (files: File[]) => void;
-  onFileSelect: (index: number, selected: boolean) => void;
+  onItemSelect: (index: number, selected: boolean) => void;
   onSelectAll: (selected: boolean) => void;
   onCancelSelection: () => void;
   onProcessUpload: () => void;
@@ -21,13 +30,13 @@ interface AdminUploadPageProps {
 }
 
 const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
-  uploadedFiles,
-  selectedFiles,
+  uploadedItems,
+  selectedItems,
   isScanning,
   currentPage,
   itemsPerPage,
   onFileUpload,
-  onFileSelect,
+  onItemSelect,
   onSelectAll,
   onCancelSelection,
   onProcessUpload,
@@ -35,8 +44,8 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
   onPageChange,
   onItemsPerPageChange,
 }) => {
-  const totalFiles = uploadedFiles.length;
-  const hasSelectedFiles = selectedFiles.size > 0;
+  const totalItems = uploadedItems.length;
+  const hasSelectedItems = selectedItems.size > 0;
 
   return (
     <div className="admin-upload-page">
@@ -45,24 +54,21 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
       <div className="admin-upload-content">
         {/* Always show drag area - positioned above the table */}
         <div className="admin-upload-drop-section">
-          <AdminFileDropArea
-            onFileUpload={onFileUpload}
-            hasFiles={uploadedFiles.length > 0}
-          />
+          <AdminFileDropArea onFileUpload={onFileUpload} />
         </div>
 
-        {/* Show table only when files are uploaded */}
-        {uploadedFiles.length > 0 && (
+        {/* Show table only when items are uploaded */}
+        {uploadedItems.length > 0 && (
           <div className="admin-upload-table-section">
             <AdminUploadTable
-              files={uploadedFiles}
-              selectedFiles={selectedFiles}
+              items={uploadedItems}
+              selectedItems={selectedItems}
               isScanning={isScanning}
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
-              totalFiles={totalFiles}
-              hasSelectedFiles={hasSelectedFiles}
-              onFileSelect={onFileSelect}
+              totalItems={totalItems}
+              hasSelectedItems={hasSelectedItems}
+              onItemSelect={onItemSelect}
               onSelectAll={onSelectAll}
               onCancelSelection={onCancelSelection}
               onProcessUpload={onProcessUpload}

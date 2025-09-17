@@ -3,15 +3,24 @@ import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
 import "./AdminUploadTable.scss";
 
+export interface UploadItem {
+  id: string;
+  name: string;
+  type: "folder";
+  size: number;
+  files: File[]; // Array of files in the folder
+  path: string;
+}
+
 interface AdminUploadTableProps {
-  files: File[];
-  selectedFiles: Set<number>;
+  items: UploadItem[];
+  selectedItems: Set<number>;
   isScanning: boolean;
   currentPage: number;
   itemsPerPage: number;
-  totalFiles: number;
-  hasSelectedFiles: boolean;
-  onFileSelect: (index: number, selected: boolean) => void;
+  totalItems: number;
+  hasSelectedItems: boolean;
+  onItemSelect: (index: number, selected: boolean) => void;
   onSelectAll: (selected: boolean) => void;
   onCancelSelection: () => void;
   onProcessUpload: () => void;
@@ -20,36 +29,36 @@ interface AdminUploadTableProps {
 }
 
 const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
-  files,
-  selectedFiles,
+  items,
+  selectedItems,
   isScanning,
   currentPage,
   itemsPerPage,
-  totalFiles,
-  hasSelectedFiles,
-  onFileSelect,
+  totalItems,
+  hasSelectedItems,
+  onItemSelect,
   onSelectAll,
   onCancelSelection,
   onProcessUpload,
   onPageChange,
   onItemsPerPageChange,
 }) => {
-  const paginatedFiles = useMemo(() => {
+  const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return files.slice(startIndex, endIndex);
-  }, [files, currentPage, itemsPerPage]);
+    return items.slice(startIndex, endIndex);
+  }, [items, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(totalFiles / itemsPerPage);
-  const isAllSelected = selectedFiles.size === files.length && files.length > 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const isAllSelected = selectedItems.size === items.length && items.length > 0;
 
   const handleSelectAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSelectAll(e.target.checked);
   };
 
-  const handleFileSelectChange =
+  const handleItemSelectChange =
     (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      onFileSelect(index, e.target.checked);
+      onItemSelect(index, e.target.checked);
     };
 
   const formatFileSize = (bytes: number): string => {
@@ -61,16 +70,16 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   };
 
   const renderTableRows = () => {
-    if (files.length === 0) {
+    if (items.length === 0) {
       return null;
     }
 
-    return paginatedFiles.map((file, index) => {
+    return paginatedItems.map((item, index) => {
       const globalIndex = (currentPage - 1) * itemsPerPage + index;
-      const isSelected = selectedFiles.has(globalIndex);
+      const isSelected = selectedItems.has(globalIndex);
 
       return (
-        <tr key={globalIndex} className="admin-upload-table__row">
+        <tr key={item.id} className="admin-upload-table__row">
           <td className="admin-upload-table__cell admin-upload-table__cell--number">
             {globalIndex + 1}
           </td>
@@ -81,7 +90,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
               <input
                 type="checkbox"
                 checked={isSelected}
-                onChange={handleFileSelectChange(globalIndex)}
+                onChange={handleItemSelectChange(globalIndex)}
                 className="admin-upload-table__checkbox"
               />
               <div className="admin-upload-table__checkbox-visual">
@@ -98,9 +107,16 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                 ...scanning data
               </span>
             ) : (
-              <span className="admin-upload-table__folder-name">
-                {file.name}
-              </span>
+              <div className="admin-upload-table__item-info">
+                <span className="admin-upload-table__item-name">
+                  {item.name}
+                </span>
+                <div className="admin-upload-table__item-meta">
+                  <span className="admin-upload-table__file-count">
+                    {item.files.length} files
+                  </span>
+                </div>
+              </div>
             )}
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--upload">
@@ -113,17 +129,29 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
               </div>
               <div className="admin-upload-table__upload-content">
                 <div className="admin-upload-table__upload-info">
-                  <span className="admin-upload-table__percentage">0%</span>
-                  <div className="admin-upload-table__size-info">
-                    <span className="admin-upload-table__size">
-                      -- / {formatFileSize(file.size)}
+                  <div className="admin-upload-table__upload-icon">
+                    <MuzaIcon
+                      iconName="folder"
+                      className="admin-upload-table__type-icon"
+                    />
+                  </div>
+                  <span className="admin-upload-table__size-text">
+                    {formatFileSize(item.size)}
+                  </span>
+                  <span className="admin-upload-table__status-text">
+                    Uploading
+                  </span>
+                  <span className="admin-upload-table__percentage">75%</span>
+                  <div className="admin-upload-table__file-progress">
+                    <span className="admin-upload-table__progress-count">
+                      7 / {item.files.length}
                     </span>
                   </div>
                 </div>
                 <div className="admin-upload-table__progress-bar">
                   <div
                     className="admin-upload-table__progress-fill"
-                    style={{ width: "0%" }}
+                    style={{ width: "75%" }}
                   />
                 </div>
               </div>
@@ -205,7 +233,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
     );
   };
 
-  if (files.length === 0) {
+  if (items.length === 0) {
     return null;
   }
 
@@ -273,7 +301,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
-          <span>of {totalFiles} rows</span>
+          <span>of {totalItems} rows</span>
         </div>
 
         {totalPages > 1 && renderPagination()}
@@ -283,14 +311,14 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             content="Cancel Selection"
             iconName="trash"
             onClick={onCancelSelection}
-            disabled={!hasSelectedFiles}
+            disabled={!hasSelectedItems}
             className="admin-upload-table__cancel-button"
           />
           <MuzaButton
             content="Process & Upload"
             iconName="upload"
             onClick={onProcessUpload}
-            disabled={!hasSelectedFiles}
+            disabled={!hasSelectedItems}
             className="admin-upload-table__process-button"
           />
         </div>

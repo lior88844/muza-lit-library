@@ -333,6 +333,7 @@
     font-weight: var(--muza-font-weight-medium);
     color: var(--colors_foreground_light);
     cursor: pointer;
+    text-align: center;
 
     &:focus {
       outline: none;
@@ -527,5 +528,144 @@
       width: 16px;
       height: 16px;
     }
+  }
+
+  // Folder-specific styles
+  &__row--folder {
+    background-color: var(--colors_background_light);
+
+    &:hover {
+      background-color: var(--colors_background_medium);
+    }
+  }
+
+  &__row--file {
+    background-color: var(--colors_background_medium);
+    opacity: 0.8;
+
+    &:hover {
+      background-color: var(--colors_background_dark);
+    }
+  }
+
+  &__folder-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xs);
+  }
+
+  &__folder-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--muza-spacing-xs);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+
+    &:hover {
+      color: var(--colors_accent_primary);
+    }
+  }
+
+  &__folder-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  &__folder-name {
+    font-weight: var(--muza-font-weight-medium);
+    font-size: 16px;
+  }
+
+  &__folder-meta {
+    display: flex;
+    gap: var(--muza-spacing-md);
+    font-size: 14px;
+    color: var(--colors_text_secondary);
+  }
+
+  &__file-count,
+  &__folder-size {
+    font-size: 12px;
+    color: var(--colors_text_tertiary);
+  }
+
+  &__file-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xs);
+    padding-left: var(--muza-spacing-lg);
+  }
+
+  &__file-name {
+    font-size: 14px;
+    color: var(--colors_text_secondary);
+  }
+
+  &__file-size {
+    font-size: 12px;
+    color: var(--colors_text_tertiary);
+  }
+
+  // New simplified item styles
+  &__item-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--muza-spacing-xs);
+  }
+
+  &__item-name {
+    font-weight: var(--muza-font-weight-medium);
+    font-size: 16px;
+    color: var(--colors_text_primary);
+  }
+
+  &__item-meta {
+    display: flex;
+    gap: var(--muza-spacing-md);
+    font-size: 14px;
+    color: var(--colors_text_secondary);
+  }
+
+  &__upload-info {
+    display: flex;
+    align-items: center;
+    gap: var(--muza-spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  &__upload-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--colors_text_secondary);
+  }
+
+  &__type-icon {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__size-text {
+    font-size: 14px;
+    color: var(--colors_text_secondary);
+  }
+
+  &__status-text {
+    font-size: 14px;
+    color: var(--colors_text_secondary);
+  }
+
+  &__file-progress {
+    margin-left: auto;
+  }
+
+  &__progress-count {
+    font-size: 14px;
+    font-weight: var(--muza-font-weight-medium);
+    color: var(--colors_text_primary);
   }
 }
