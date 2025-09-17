@@ -60,6 +60,7 @@
     &--checkbox {
       width: 50px;
       text-align: center;
+      vertical-align: middle;
     }
 
     &--folder {
@@ -148,6 +149,13 @@
     justify-content: center;
     align-items: center;
     position: relative;
+    height: 20px; // Match the line-height of header text
+
+    // Ensure proper alignment in header context
+    .admin-upload-table__header & {
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   &__checkbox {
