@@ -135,12 +135,110 @@
       }
     }
 
-    .user-icon {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      border-radius: 999px;
-      overflow: hidden;
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: var(--muza-spacing-sm, 8px);
+
+      .login-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--muza-spacing-sm, 8px);
+        color: var(--colors_foreground_light, #030712);
+        background-color: var(--colors_primary, #3b82f6);
+        color: white;
+        border-radius: 999px;
+        font-size: 14px;
+        padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-weight: var(--muza-font-weight-medium, 500);
+
+        &:hover {
+          background-color: #2563eb;
+        }
+
+        i {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          svg {
+            width: 16px;
+            height: 16px;
+            path {
+              stroke: white;
+            }
+          }
+        }
+      }
+
+      .user-dropdown {
+        display: flex;
+        align-items: center;
+        gap: var(--muza-spacing-sm, 8px);
+
+        .user-icon {
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
+          border-radius: 999px;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: var(--muza-spacing-sm, 8px);
+
+          .user-name {
+            font-size: 14px;
+            font-weight: var(--muza-font-weight-medium, 500);
+            color: var(--colors_foreground_light, #030712);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .logout-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+              background-color: #f3f4f6;
+            }
+
+            i {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              svg {
+                width: 16px;
+                height: 16px;
+                path {
+                  stroke: var(--colors_foreground_light, #030712);
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
