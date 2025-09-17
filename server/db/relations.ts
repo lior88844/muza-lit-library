@@ -1,8 +1,8 @@
-import { relations } from 'drizzle-orm';
-import { artists } from './artist.entity';
-import { albums } from './album.entity';
-import { tracks } from './track.entity';
-import { trackArtists } from './track-artist.entity';
+import { relations } from "drizzle-orm";
+import { artists } from "./artist.entity";
+import { albums } from "./album.entity";
+import { tracks } from "./track.entity";
+import { trackArtists } from "./track-artist.entity";
 
 // Relations
 export const artistsRelations = relations(artists, ({ many }) => ({
