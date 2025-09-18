@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
+import Hls from "hls.js";
 import "./MusicPlayer.scss";
 import VolumeControl from "../../controls/VolumeControl";
 import MuzaIcon from "~/icons/MuzaIcon";
@@ -27,6 +28,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 }) => {
   const { t } = useTranslation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hlsRef = useRef<Hls | null>(null);
 
   // Audio state
   const [duration, setDuration] = useState(0);
@@ -52,19 +54,72 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     return `${minutes}:${secs}`;
   };
 
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const isHlsUrl = (url: string): boolean => {
+    return url.includes(".m3u8") || url.includes("hls");
+  };
 
-  // Audio control functions
-  const playAudio = () => {
+  const initializeHls = (url: string) => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.play().catch(err => {
-      console.error("Error playing audio:", err);
+    // Clean up existing HLS instance
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+      });
+
+      hlsRef.current = hls;
+      hls.loadSource(url);
+      hls.attachMedia(audio);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // HLS manifest parsed, ready to play
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              // Fatal network error encountered, try to recover
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              // Fatal media error encountered, try to recover
+              hls.recoverMediaError();
+              break;
+            default:
+              // Fatal error, cannot recover
+              hls.destroy();
+              break;
+          }
+        }
+      });
+    } else if (audio.canPlayType("application/vnd.apple.mpegurl")) {
+      // Native HLS support (Safari)
+      audio.src = url;
+    } else {
+      // HLS is not supported in this browser
+    }
+  };
+
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  // Audio control functions
+  const playAudio = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.play().catch(() => {
       setIsPlaying(false);
       onUpdate?.({ ...details });
     });
-  };
+  }, [details, onUpdate, setIsPlaying]);
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
@@ -95,7 +150,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   // Effects
   useEffect(() => {
     setIsPlaying(details.isPlaying || false);
-  }, [details.isPlaying]);
+  }, [details.isPlaying, setIsPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -106,7 +161,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     } else if (!details.isPlaying) {
       audio.pause();
     }
-  }, [details.isPlaying, isLoading]);
+  }, [details.isPlaying, isLoading, playAudio]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -152,16 +207,27 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     audio.addEventListener("waiting", handleLoadStart);
     audio.addEventListener("canplay", handleCanPlay);
 
-    // Setup audio
-    audio.src = details.audioUrl;
+    // Setup audio - check if it's HLS or regular audio
+    if (isHlsUrl(details.audioUrl)) {
+      initializeHls(details.audioUrl);
+    } else {
+      // Regular audio file
+      audio.src = details.audioUrl;
+      audio.load();
+    }
+
     audio.volume = volume / 100;
-    audio.load();
 
     if (details.isPlaying) playAudio();
 
     // Cleanup
     return () => {
       audio.pause();
+      // Clean up HLS instance
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
       audio.removeEventListener("loadeddata", handleLoadedData);
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
@@ -171,7 +237,16 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       audio.removeEventListener("waiting", handleLoadStart);
       audio.removeEventListener("canplay", handleCanPlay);
     };
-  }, [details.audioUrl]);
+  }, [
+    details.audioUrl,
+    details,
+    onPlayCountIncrement,
+    onSongEnded,
+    onUpdate,
+    playAudio,
+    setIsPlaying,
+    volume,
+  ]);
 
   return (
     <div className="music-player">

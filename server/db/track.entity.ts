@@ -37,8 +37,8 @@ export const tracks = pgTable("tracks", {
   discNumber: integer("disc_number").default(1),
   duration: integer("duration"), // in seconds
   isrc: varchar("isrc", { length: 12 }),
-  musicbrainzId: uuid("musicbrainz_id"),
-  musicbrainzRecordingId: uuid("musicbrainz_recording_id"),
+  mbId: uuid("mb_id"),
+  mbRecordingId: uuid("mb_recording_id"),
   fileId: uuid("track_file_id"),
   format: audioFormatEnum("format"),
   bitrate: numeric("bitrate"),

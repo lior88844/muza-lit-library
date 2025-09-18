@@ -1,14 +1,9 @@
 import express from "express";
-import { fileURLToPath } from "url";
-import axios from "axios";
 import path from "path";
-import http from "http";
 import * as fs from "fs";
 import { AlbumService } from "./services/album.service";
 import { ArtistService } from "./services/artist.service";
 import { TrackService } from "./services/track.service";
-import { TrackArtistService } from "./services/track-artist.service";
-import type { Album, Artist, Track } from "./schemas";
 
 // Initialize services
 const artistService = new ArtistService();
@@ -27,20 +22,10 @@ process.on("uncaughtException", error => {
 });
 
 const PORT = process.env.PORT || 3000;
-const STOCK_PHOTO = "https://picsum.photos/400"; // Placeholde photo URL
 
-// File paths
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const clientDir = path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
-
-// HTTP client setup
-const instance = axios.create({
-  httpAgent: new http.Agent(),
-  timeout: 10000, // 10 second timeout
-});
 
 function getRandomItems(array: any[], count: number) {
   if (array.length <= count) {
@@ -51,97 +36,43 @@ function getRandomItems(array: any[], count: number) {
   return shuffled.slice(0, count);
 }
 
-function transformAlbumData(albums: Album[], transformedTracks: Track[]) {
-  return albums.map(album => ({
-    id: album.id,
-    imageSrc: album.coverArt || STOCK_PHOTO,
-    title: album.title,
-    subTitle: album.releaseDate,
-    artist: album.artistId,
-    songs: transformedTracks
-      .filter(
-        track => track.albumId === album.id && track.artistId === album.artistId
-      )
-      .map(track => track.id),
-  }));
-}
-
-function transformTrackData(tracks: Track[]) {
-  return (
-    tracks
-      // .filter((track) => track.fileId)
-      .map(track => ({
-        id: track.id,
-        index: track.id,
-        title: track.title,
-        time: 185,
-        filePath: track.fileId,
-        /* todo converting f
-      albumId: track.albumId,
-      audioUrl: track.isrc,
-      imageSrc: /*join album*/ STOCK_PHOTO,
-        artist: "where is my artist???",
-        album: track.albumId,
-        year: track.createdAt?.getFullYear() || "2023",
-      }))
-  );
-}
-function getTrackFilePathFromFileId(fileId: string) {
-  return `https://${process.env.CDN_DOMAIN_NAME}/audio/hls/${fileId}/${fileId}.m3u8`;
-}
-function transformArtistData(artists: Artist[], transformedAlbums: Album[]) {
-  const albumsByArtist = transformedAlbums.reduce((acc, album) => {
-    acc[album.artistId] = (acc[album.artistId] || 0) + 1;
-    return acc;
-  }, {});
-
-  return artists
-    .filter(artist => artist.name)
-    .map((artist, index) => ({
-      id: artist.id || index + 1,
-      index: index + 1,
-      imageSrc: artist.image || STOCK_PHOTO,
-      artistName: artist.name,
-      albumsCount: String(albumsByArtist[artist.id] || 0),
-    }));
-}
 async function fetchAlbums() {
   try {
     const data = await albumService.findMany(100, 0);
 
-    return data?.albums;
+    return data?.albums || [];
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message
+      (error as Error)?.message
     );
-    return null;
+    return [];
   }
 }
 
 async function fetchTracks() {
   try {
     const data = await trackService.findMany(100, 0);
-    return data?.tracks;
+    return data?.tracks || [];
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message
+      (error as Error)?.message
     );
-    return null;
+    return [];
   }
 }
 
 async function fetchArtists() {
   try {
     const data = await artistService.findMany(100, 0);
-    return data?.artists;
+    return data?.artists || [];
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message
+      (error as Error)?.message
     );
-    return null;
+    return [];
   }
 }
 
@@ -192,37 +123,16 @@ async function initializeApp() {
         console.log(`Loaded ${albumsData?.length} albums from GraphQL`);
         console.log(`Loaded ${tracksData?.length} tracks from GraphQL`);
         console.log(`Loaded ${artistsData?.length} artists from GraphQL`);
-        // Transform data
-        console.log("Transforming data...");
-        const transformedTracks = transformTrackData(tracksData || []);
-        const transformedAlbums = transformAlbumData(
-          albumsData || [],
-          transformedTracks
-        );
-        const transformedArtists = transformArtistData(
-          albumsData || [],
-          transformedAlbums
-        );
-
-        console.log(
-          `Transformed ${transformedAlbums.length} albums with covers`
-        );
-        console.log(
-          `Transformed ${transformedTracks.length} tracks with files and covers`
-        );
-        console.log(
-          `Transformed ${transformedArtists.length} artists with photos`
-        );
 
         const response = {
           albums: {
-            featured: getRandomItems(transformedAlbums, 125),
-            newReleases: getRandomItems(transformedAlbums, 125),
-            recommended: getRandomItems(transformedAlbums, 125),
+            featured: getRandomItems(albumsData, 125),
+            newReleases: getRandomItems(albumsData, 125),
+            recommended: getRandomItems(albumsData, 125),
           },
-          artists: getRandomItems(transformedArtists, 125),
-          songs: getRandomItems(transformedTracks, 100000),
-          sidebar: allData?.sidebar || [],
+          artists: getRandomItems(artistsData, 125),
+          songs: getRandomItems(tracksData, 100000),
+          sidebar: (allData as any)?.sidebar || [],
         };
 
         console.log(
