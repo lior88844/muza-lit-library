@@ -39,7 +39,7 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = true;
-    input.accept = "audio/*";
+    input.accept = ".flac,audio/flac";
     input.webkitdirectory = true; // Enable folder selection only
     input.onchange = e => {
       const target = e.target as HTMLInputElement;
@@ -80,7 +80,7 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
           </div>
 
           <p className="admin-file-drop-area__support-text">
-            Supports music folders with multiple files
+            Only FLAC files from folders will be processed
           </p>
         </div>
       </div>

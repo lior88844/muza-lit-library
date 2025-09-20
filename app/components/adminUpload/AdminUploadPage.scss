@@ -1,5 +1,8 @@
 @import "../../styles/variables.scss";
 
+// Local variables for AdminUploadPage component
+$admin-page-gap: 0;
+
 .admin-upload-page {
   display: flex;
   flex-direction: column;
@@ -13,15 +16,7 @@
   display: flex;
   flex-direction: column;
   padding: var(--muza-spacing-lg) var(--muza-spacing-xxl);
-  gap: 0; // Remove gap, we'll handle spacing individually
-
-  @media (max-width: 768px) {
-    padding: var(--muza-spacing-md) var(--muza-spacing-lg);
-  }
-
-  @media (max-width: 480px) {
-    padding: var(--muza-spacing-sm) var(--muza-spacing-md);
-  }
+  gap: $admin-page-gap; // Remove gap, we'll handle spacing individually
 }
 
 .admin-upload-drop-section {

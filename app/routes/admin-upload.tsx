@@ -6,6 +6,29 @@ import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
 
+const isFlacFile = (file: File): boolean => {
+  const fileName = file.name.toLowerCase();
+  return fileName.endsWith(".flac");
+};
+
+// Error codes and their explanations
+const ERROR_CODES = {
+  1001: {
+    code: "1001",
+    title: "All Files Invalid",
+    description:
+      "No FLAC files found in this folder. All files were skipped because they are not in FLAC format.",
+  },
+  1002: {
+    code: "1002",
+    title: "Partial Upload",
+    description:
+      "Some files were skipped because they are not in FLAC format. Only FLAC files will be processed.",
+  },
+} as const;
+
+type ErrorCode = keyof typeof ERROR_CODES;
+
 export default function AdminUpload() {
   const navigate = useNavigate();
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([]);
@@ -17,27 +40,48 @@ export default function AdminUpload() {
   const handleFileUpload = useCallback((files: File[]) => {
     const newItems: UploadItem[] = [];
 
-    // Only handle folders - group files by their folder path
-    const folderMap = new Map<string, File[]>();
+    // Filter for FLAC files only
+    const flacFiles = files.filter(isFlacFile);
 
+    // Group all files by folder path to track folders with no FLAC files
+    const allFolderMap = new Map<string, File[]>();
+    const flacFolderMap = new Map<string, File[]>();
+
+    // First, group all files by folder
     files.forEach(file => {
-      // All files should have webkitRelativePath since we only accept folders
       const path = file.webkitRelativePath || file.name;
       const folderPath = path.includes("/")
         ? path.substring(0, path.lastIndexOf("/"))
         : "root";
 
-      if (!folderMap.has(folderPath)) {
-        folderMap.set(folderPath, []);
+      if (!allFolderMap.has(folderPath)) {
+        allFolderMap.set(folderPath, []);
       }
-      folderMap.get(folderPath)!.push(file);
+      allFolderMap.get(folderPath)!.push(file);
     });
 
-    // Convert to UploadItem objects for folders
-    Array.from(folderMap.entries()).forEach(([path, folderFiles]) => {
+    // Then, group FLAC files by folder
+    flacFiles.forEach(file => {
+      const path = file.webkitRelativePath || file.name;
+      const folderPath = path.includes("/")
+        ? path.substring(0, path.lastIndexOf("/"))
+        : "root";
+
+      if (!flacFolderMap.has(folderPath)) {
+        flacFolderMap.set(folderPath, []);
+      }
+      flacFolderMap.get(folderPath)!.push(file);
+    });
+
+    // Create items for folders with FLAC files
+    Array.from(flacFolderMap.entries()).forEach(([path, folderFiles]) => {
       const totalSize = folderFiles.reduce((sum, file) => sum + file.size, 0);
       const folderName =
         path === "root" ? "Music Folder" : path.split("/").pop() || path;
+
+      // Check if this folder has non-FLAC files that were skipped
+      const allFilesInFolder = allFolderMap.get(path) || [];
+      const skippedCount = allFilesInFolder.length - folderFiles.length;
 
       newItems.push({
         id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -46,7 +90,26 @@ export default function AdminUpload() {
         size: totalSize,
         files: folderFiles,
         path,
+        errorCode: skippedCount > 0 ? ("1002" as const) : undefined,
       });
+    });
+
+    // Create error items for folders with no FLAC files
+    Array.from(allFolderMap.entries()).forEach(([path, allFiles]) => {
+      if (!flacFolderMap.has(path)) {
+        const folderName =
+          path === "root" ? "Music Folder" : path.split("/").pop() || path;
+
+        newItems.push({
+          id: `error-folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: folderName,
+          type: "folder",
+          size: 0,
+          files: [],
+          path,
+          errorCode: "1001" as const,
+        });
+      }
     });
 
     setUploadedItems(prev => [...prev, ...newItems]);

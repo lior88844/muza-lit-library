@@ -1,7 +1,65 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
 import "./AdminUploadTable.scss";
+
+// Error codes and their explanations
+const ERROR_CODES = {
+  1001: {
+    code: "1001",
+    title: "All Files Invalid",
+    description:
+      "No FLAC files found in this folder. All files were skipped because they are not in FLAC format.",
+  },
+  1002: {
+    code: "1002",
+    title: "Partial Upload",
+    description:
+      "Some files were skipped because they are not in FLAC format. Only FLAC files will be processed.",
+  },
+} as const;
+
+type ErrorCode = keyof typeof ERROR_CODES;
+
+// Error Badge Component with Tooltip
+const ErrorBadge: React.FC<{ errorCode: "1001" | "1002" }> = ({
+  errorCode,
+}) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const errorInfo = ERROR_CODES[errorCode];
+
+  return (
+    <div
+      className="admin-upload-table__error-badge-container"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div
+        className={`admin-upload-table__error-badge admin-upload-table__error-badge--${errorCode}`}
+      >
+        Error: {errorInfo.code}
+      </div>
+      {showTooltip && (
+        <div className="admin-upload-table__tooltip">
+          <div className="admin-upload-table__tooltip-title">
+            {errorInfo.title}
+          </div>
+          <div className="admin-upload-table__tooltip-description">
+            {errorInfo.description}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Success Badge Component
+const SuccessBadge: React.FC = () => (
+  <div className="admin-upload-table__success-badge">
+    <MuzaIcon iconName="Check" className="admin-upload-table__success-icon" />
+    No Errors
+  </div>
+);
 
 export interface UploadItem {
   id: string;
@@ -10,6 +68,7 @@ export interface UploadItem {
   size: number;
   files: File[]; // Array of files in the folder
   path: string;
+  errorCode?: "1001" | "1002"; // Optional error code
 }
 
 interface AdminUploadTableProps {
@@ -85,13 +144,14 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--checkbox">
             <div
-              className={`admin-upload-table__checkbox-wrapper ${isSelected ? "admin-upload-table__checkbox-wrapper--checked" : ""}`}
+              className={`admin-upload-table__checkbox-wrapper ${isSelected ? "admin-upload-table__checkbox-wrapper--checked" : ""} ${item.errorCode === "1001" ? "admin-upload-table__checkbox-wrapper--disabled" : ""}`}
             >
               <input
                 type="checkbox"
                 checked={isSelected}
                 onChange={handleItemSelectChange(globalIndex)}
                 className="admin-upload-table__checkbox"
+                disabled={item.errorCode === "1001"}
               />
               <div className="admin-upload-table__checkbox-visual">
                 <MuzaIcon
@@ -164,7 +224,11 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             {/* Empty for now */}
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--errors">
-            {/* Empty for now */}
+            {item.errorCode ? (
+              <ErrorBadge errorCode={item.errorCode} />
+            ) : (
+              <SuccessBadge />
+            )}
           </td>
         </tr>
       );

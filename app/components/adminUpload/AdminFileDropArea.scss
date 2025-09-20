@@ -1,5 +1,10 @@
 @import "../../styles/variables.scss";
 
+// Local variables for AdminFileDropArea component
+$admin-drop-area-icon-size: 24px;
+$admin-drop-area-text-font-size: 16px;
+$admin-drop-area-border-width: 2px;
+
 .admin-file-drop-area {
   display: flex;
   align-items: center;
@@ -9,7 +14,7 @@
 
   &__zone {
     width: 100%;
-    border: 2px dashed var(--colors_border_light);
+    border: $admin-drop-area-border-width dashed var(--colors_border_light);
     border-radius: var(--muza-border-radius-md);
     padding: var(--muza-spacing-lg) var(--muza-spacing-xl);
     background-color: var(--colors_background_light);
@@ -29,15 +34,11 @@
     align-items: center;
     gap: var(--muza-spacing-md);
     text-align: center;
-
-    @media (max-width: 480px) {
-      gap: var(--muza-spacing-sm);
-    }
   }
 
   &__icon {
-    width: 24px;
-    height: 24px;
+    width: $admin-drop-area-icon-size;
+    height: $admin-drop-area-icon-size;
     color: var(--colors_muted_foreground_light);
 
     i {
@@ -60,23 +61,14 @@
     gap: var(--muza-spacing-xs);
     flex-wrap: wrap;
     justify-content: center;
-
-    @media (max-width: 480px) {
-      flex-direction: column;
-      gap: var(--muza-spacing-xs);
-    }
   }
 
   &__main-text {
     font-family: var(--typography_font_family_font_sans);
-    font-size: 16px;
+    font-size: $admin-drop-area-text-font-size;
     font-weight: var(--muza-font-weight-normal);
     color: var(--colors_foreground_light);
     line-height: 1;
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-    }
   }
 
   &__browse-button {
@@ -84,7 +76,7 @@
     border: none;
     padding: 0;
     font-family: var(--typography_font_family_font_sans);
-    font-size: 16px;
+    font-size: $admin-drop-area-text-font-size;
     font-weight: var(--muza-font-weight-normal);
     color: var(--colors_primary_light);
     text-decoration: underline;
@@ -94,22 +86,14 @@
     &:hover {
       color: var(--colors_primary_dark);
     }
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-    }
   }
 
   &__support-text {
     font-family: var(--typography_font_family_font_sans);
-    font-size: 16px;
+    font-size: $admin-drop-area-text-font-size;
     font-weight: var(--muza-font-weight-normal);
     color: var(--colors_muted_foreground_light);
     margin: 0;
     line-height: 1;
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-    }
   }
 }

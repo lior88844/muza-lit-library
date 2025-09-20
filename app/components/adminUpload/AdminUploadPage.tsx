@@ -11,6 +11,7 @@ export interface UploadItem {
   size: number;
   files: File[]; // Array of files in the folder
   path: string;
+  errorCode?: "1001" | "1002"; // Optional error code
 }
 
 interface AdminUploadPageProps {

@@ -1,5 +1,45 @@
 @import "../../styles/variables.scss";
 
+// Local variables for AdminUploadTable component
+$admin-table-min-width: 800px;
+$admin-table-border-width: 1px;
+$admin-table-checkbox-size: 16px;
+$admin-table-checkbox-border-width: 1.33px;
+$admin-table-status-icon-size: 18px;
+$admin-table-icon-size: 16px;
+$admin-table-progress-bar-height: 4px;
+$admin-table-page-button-size: 36px;
+$admin-table-ellipsis-icon-size: 16px;
+$admin-table-disabled-opacity: 0.5;
+$admin-table-font-size-base: 16px;
+$admin-table-font-size-small: 14px;
+$admin-table-font-size-xs: 12px;
+$admin-table-line-height-base: 20px;
+$admin-table-line-height-small: 16px;
+$admin-table-header-number-width: 50px;
+$admin-table-header-checkbox-width: 50px;
+$admin-table-header-folder-width: 180px;
+$admin-table-header-upload-min-width: 400px;
+$admin-table-header-data-source-width: 100px;
+$admin-table-header-cover-width: 70px;
+$admin-table-tooltip-min-width: 280px;
+$admin-table-tooltip-max-width: 320px;
+$admin-table-tooltip-padding: 12px;
+$admin-table-tooltip-border-radius: 6px;
+$admin-table-tooltip-arrow-size: 6px;
+$admin-table-tooltip-arrow-offset: 16px;
+$admin-table-tooltip-z-index: 1000;
+$admin-table-badge-padding: 2px 8px 4px 8px;
+$admin-table-badge-border-radius: 2px;
+$admin-table-success-icon-size: 12px;
+$admin-table-error-1001-bg: #dc2626;
+$admin-table-error-1002-bg: #ea580c;
+$admin-table-success-bg: #15803d;
+$admin-table-tooltip-bg: #1f2937;
+$admin-table-tooltip-title-color: #f9fafb;
+$admin-table-tooltip-desc-color: #d1d5db;
+$admin-table-badge-text-color: #f9fafb;
+
 .admin-upload-table {
   width: 100%;
   margin-top: 0;
@@ -11,28 +51,20 @@
   &__container {
     width: 100%;
     overflow-x: auto;
-    border: 1px solid var(--colors_border_light);
+    border: $admin-table-border-width solid var(--colors_border_light);
     border-radius: var(--muza-border-radius-md);
     background-color: var(--colors_background_light);
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0; // Allow flex shrinking
-
-    @media (max-width: 768px) {
-      border-radius: var(--muza-border-radius-sm);
-    }
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
     font-family: var(--typography_font_family_font_sans);
-    min-width: 800px;
-
-    @media (max-width: 768px) {
-      min-width: 600px;
-    }
+    min-width: $admin-table-min-width;
   }
 
   &__head {
@@ -40,58 +72,53 @@
   }
 
   &__header-row {
-    border-bottom: 1px solid var(--colors_border_light);
+    border-bottom: $admin-table-border-width solid var(--colors_border_light);
   }
 
   &__header {
     padding: var(--muza-spacing-sm);
     text-align: left;
     font-weight: var(--muza-font-weight-medium);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     color: var(--colors_muted_foreground_light);
-    line-height: 20px;
-    border-bottom: 1px solid var(--colors_border_light);
+    line-height: $admin-table-line-height-base;
+    border-bottom: $admin-table-border-width solid var(--colors_border_light);
 
     &--number {
-      width: 50px;
+      width: $admin-table-header-number-width;
       text-align: center;
     }
 
     &--checkbox {
-      width: 50px;
+      width: $admin-table-header-checkbox-width;
       text-align: center;
       vertical-align: middle;
     }
 
     &--folder {
-      width: 180px;
-      max-width: 180px;
+      width: $admin-table-header-folder-width;
+      max-width: $admin-table-header-folder-width;
     }
 
     &--upload {
       width: auto;
-      min-width: 400px;
+      min-width: $admin-table-header-upload-min-width;
       // This column will take up the most available space
     }
 
     &--data-source {
-      width: 100px;
-      max-width: 100px;
+      width: $admin-table-header-data-source-width;
+      max-width: $admin-table-header-data-source-width;
     }
 
     &--cover {
-      width: 70px;
-      max-width: 70px;
+      width: $admin-table-header-cover-width;
+      max-width: $admin-table-header-cover-width;
     }
 
     &--errors {
-      width: 80px;
-      max-width: 80px;
-    }
-
-    @media (max-width: 768px) {
-      padding: var(--muza-spacing-xs);
-      font-size: 14px;
+      min-width: max-content;
+      text-align: left;
     }
   }
 
@@ -100,7 +127,7 @@
   }
 
   &__row {
-    border-bottom: 1px solid var(--colors_border_light);
+    border-bottom: $admin-table-border-width solid var(--colors_border_light);
 
     &:hover {
       background-color: var(--colors_muted_light);
@@ -110,13 +137,13 @@
   &__cell {
     padding: var(--muza-spacing-sm);
     vertical-align: middle;
-    border-bottom: 1px solid var(--colors_border_light);
+    border-bottom: $admin-table-border-width solid var(--colors_border_light);
 
     &--number {
       text-align: center;
-      font-size: 14px;
+      font-size: $admin-table-font-size-small;
       color: var(--colors_muted_foreground_light);
-      line-height: 16px;
+      line-height: $admin-table-line-height-small;
     }
 
     &--checkbox {
@@ -124,9 +151,9 @@
     }
 
     &--folder {
-      font-size: 16px;
+      font-size: $admin-table-font-size-base;
       color: var(--colors_muted_foreground_light);
-      line-height: 20px;
+      line-height: $admin-table-line-height-base;
     }
 
     &--upload {
@@ -136,11 +163,7 @@
 
     &--errors {
       text-align: right;
-    }
-
-    @media (max-width: 768px) {
-      padding: var(--muza-spacing-xs);
-      font-size: 12px;
+      min-width: max-content;
     }
   }
 
@@ -149,7 +172,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    height: 20px; // Match the line-height of header text
+    height: $admin-table-line-height-base; // Match the line-height of header text
 
     // Ensure proper alignment in header context
     .admin-upload-table__header & {
@@ -159,8 +182,8 @@
   }
 
   &__checkbox {
-    width: 16px;
-    height: 16px;
+    width: $admin-table-checkbox-size;
+    height: $admin-table-checkbox-size;
     opacity: 0;
     position: absolute;
     cursor: pointer;
@@ -168,9 +191,9 @@
   }
 
   &__checkbox-visual {
-    width: 16px;
-    height: 16px;
-    border: 1.33px solid var(--colors_primary_light);
+    width: $admin-table-checkbox-size;
+    height: $admin-table-checkbox-size;
+    border: $admin-table-checkbox-border-width solid var(--colors_primary_light);
     border-radius: var(--muza-border-radius-sm);
     background-color: var(--colors_background_light);
     display: flex;
@@ -182,8 +205,8 @@
   }
 
   &__checkmark {
-    width: 16px;
-    height: 16px;
+    width: $admin-table-checkbox-size;
+    height: $admin-table-checkbox-size;
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.2s ease;
@@ -222,16 +245,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: $admin-table-status-icon-size;
+    height: $admin-table-status-icon-size;
     background-color: var(--colors_secondary_light);
     border-radius: calc(var(--border_radius_full) * 1px);
     flex-shrink: 0;
   }
 
   &__status-icon {
-    width: 16px;
-    height: 16px;
+    width: $admin-table-icon-size;
+    height: $admin-table-icon-size;
     color: var(--colors_secondary_foreground_light);
 
     i {
@@ -264,9 +287,9 @@
   }
 
   &__percentage {
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_muted_foreground_light);
-    line-height: 16px;
+    line-height: $admin-table-line-height-small;
     flex-shrink: 0;
   }
 
@@ -277,9 +300,9 @@
   }
 
   &__size {
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_foreground_light);
-    line-height: 16px;
+    line-height: $admin-table-line-height-small;
     text-align: right;
 
     .admin-upload-table__size-total {
@@ -289,7 +312,7 @@
 
   &__progress-bar {
     width: 100%;
-    height: 4px;
+    height: $admin-table-progress-bar-height;
     background-color: var(--colors_primary_light);
     border-radius: calc(var(--border_radius_full) * 1px);
     overflow: hidden;
@@ -311,33 +334,22 @@
     flex-wrap: wrap;
     flex-shrink: 0; // Don't let the footer shrink
     margin-top: auto; // Push footer to bottom
-
-    @media (max-width: 768px) {
-      flex-direction: column;
-      align-items: stretch;
-      gap: var(--muza-spacing-md);
-    }
   }
 
   &__info {
     display: flex;
     align-items: center;
     gap: var(--muza-spacing-sm);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     color: var(--colors_muted_foreground_light);
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-      justify-content: center;
-    }
   }
 
   &__items-per-page {
     padding: var(--muza-spacing-xs) var(--muza-spacing-sm);
-    border: 1px solid var(--colors_border_light);
+    border: $admin-table-border-width solid var(--colors_border_light);
     border-radius: calc(var(--border_radius_full) * 1px);
     background-color: var(--colors_background_light);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     font-weight: var(--muza-font-weight-medium);
     color: var(--colors_foreground_light);
     cursor: pointer;
@@ -347,21 +359,12 @@
       outline: none;
       border-color: var(--colors_primary_light);
     }
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-    }
   }
 
   &__pagination {
     display: flex;
     align-items: center;
     gap: var(--muza-spacing-xs);
-
-    @media (max-width: 480px) {
-      justify-content: center;
-      flex-wrap: wrap;
-    }
   }
 
   &__nav-button {
@@ -372,7 +375,7 @@
     background-color: var(--colors_secondary_light);
     border: none;
     border-radius: calc(var(--border_radius_full) * 1px);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     color: var(--colors_secondary_foreground_light);
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -382,13 +385,8 @@
     }
 
     &:disabled {
-      opacity: 0.5;
+      opacity: $admin-table-disabled-opacity;
       cursor: not-allowed;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-      padding: var(--muza-spacing-xs) var(--muza-spacing-sm);
     }
   }
 
@@ -399,15 +397,15 @@
   }
 
   &__page-button {
-    width: 36px;
-    height: 36px;
+    width: $admin-table-page-button-size;
+    height: $admin-table-page-button-size;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
     border-radius: calc(var(--border_radius_full) * 1px);
     background-color: transparent;
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     color: var(--colors_foreground_light);
     cursor: pointer;
     transition: all 0.2s ease;
@@ -418,31 +416,25 @@
 
     &--active {
       background-color: var(--colors_background_light);
-      border: 1px solid var(--colors_border_light);
+      border: $admin-table-border-width solid var(--colors_border_light);
       box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
-    }
-
-    @media (max-width: 480px) {
-      width: 32px;
-      height: 32px;
-      font-size: 14px;
     }
   }
 
   &__ellipsis {
-    width: 36px;
-    height: 36px;
+    width: $admin-table-page-button-size;
+    height: $admin-table-page-button-size;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--colors_muted_foreground_light);
 
     i {
-      width: 16px;
-      height: 16px;
+      width: $admin-table-ellipsis-icon-size;
+      height: $admin-table-ellipsis-icon-size;
       svg {
-        width: 16px;
-        height: 16px;
+        width: $admin-table-ellipsis-icon-size;
+        height: $admin-table-ellipsis-icon-size;
       }
     }
 
@@ -450,27 +442,12 @@
       opacity: 0;
       pointer-events: none;
     }
-
-    @media (max-width: 480px) {
-      width: 32px;
-      height: 32px;
-    }
   }
 
   &__actions {
     display: flex;
     align-items: center;
     gap: var(--muza-spacing-lg);
-
-    @media (max-width: 768px) {
-      justify-content: center;
-    }
-
-    @media (max-width: 480px) {
-      gap: var(--muza-spacing-md);
-      flex-direction: column;
-      width: 100%;
-    }
   }
 
   &__cancel-button {
@@ -482,7 +459,7 @@
     border-radius: calc(var(--border_radius_full) * 1px);
     padding: var(--muza-spacing-sm) var(--muza-spacing-lg);
     font-weight: var(--muza-font-weight-medium);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -493,7 +470,7 @@
       background-color: var(--muza-button-hover-background);
     }
     span {
-      font-size: 16px;
+      font-size: $admin-table-font-size-base;
       font-weight: var(--muza-font-weight-medium);
       color: var(--colors_secondary_foreground_light);
     }
@@ -504,11 +481,11 @@
     }
     svg {
       color: var(--colors_secondary_foreground_light);
-      width: 16px;
-      height: 16px;
+      width: $admin-table-icon-size;
+      height: $admin-table-icon-size;
     }
     &:disabled {
-      opacity: 0.5;
+      opacity: $admin-table-disabled-opacity;
       cursor: not-allowed;
     }
   }
@@ -522,7 +499,7 @@
     border-radius: calc(var(--border_radius_full) * 1px);
     padding: var(--muza-spacing-sm) var(--muza-spacing-lg);
     font-weight: var(--muza-font-weight-medium);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -536,12 +513,12 @@
       background-color: var(--colors_primary_dark);
     }
     span {
-      font-size: 16px;
+      font-size: $admin-table-font-size-base;
       font-weight: var(--muza-font-weight-medium);
       color: var(--colors_primary_foreground_light);
     }
     &:disabled {
-      opacity: 0.5;
+      opacity: $admin-table-disabled-opacity;
       cursor: not-allowed;
     }
     i {
@@ -551,8 +528,8 @@
     }
     svg {
       color: var(--colors_primary_foreground_light);
-      width: 16px;
-      height: 16px;
+      width: $admin-table-icon-size;
+      height: $admin-table-icon-size;
     }
   }
 
@@ -597,26 +574,26 @@
   }
 
   &__folder-chevron {
-    width: 16px;
-    height: 16px;
+    width: $admin-table-icon-size;
+    height: $admin-table-icon-size;
     transition: transform 0.2s ease;
   }
 
   &__folder-name {
     font-weight: var(--muza-font-weight-medium);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
   }
 
   &__folder-meta {
     display: flex;
     gap: var(--muza-spacing-md);
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_text_secondary);
   }
 
   &__file-count,
   &__folder-size {
-    font-size: 12px;
+    font-size: $admin-table-font-size-xs;
     color: var(--colors_text_tertiary);
   }
 
@@ -628,12 +605,12 @@
   }
 
   &__file-name {
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_text_secondary);
   }
 
   &__file-size {
-    font-size: 12px;
+    font-size: $admin-table-font-size-xs;
     color: var(--colors_text_tertiary);
   }
 
@@ -646,14 +623,14 @@
 
   &__item-name {
     font-weight: var(--muza-font-weight-medium);
-    font-size: 16px;
+    font-size: $admin-table-font-size-base;
     color: var(--colors_text_primary);
   }
 
   &__item-meta {
     display: flex;
     gap: var(--muza-spacing-md);
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_text_secondary);
   }
 
@@ -665,8 +642,8 @@
   }
 
   &__upload-icon {
-    width: 20px;
-    height: 20px;
+    width: $admin-table-line-height-base;
+    height: $admin-table-line-height-base;
     color: var(--colors_text_secondary);
   }
 
@@ -676,12 +653,12 @@
   }
 
   &__size-text {
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_text_secondary);
   }
 
   &__status-text {
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     color: var(--colors_text_secondary);
   }
 
@@ -690,8 +667,120 @@
   }
 
   &__progress-count {
-    font-size: 14px;
+    font-size: $admin-table-font-size-small;
     font-weight: var(--muza-font-weight-medium);
     color: var(--colors_text_primary);
+  }
+
+  // New Badge-style Error Display (based on Figma design)
+  &__error-badge-container {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  &__error-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $admin-table-badge-padding;
+    border-radius: $admin-table-badge-border-radius;
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: $admin-table-font-size-small;
+    font-weight: 400;
+    line-height: 1;
+    color: $admin-table-badge-text-color;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    // Red badge for error 1001 (all files invalid)
+    &--1001 {
+      background-color: $admin-table-error-1001-bg;
+    }
+
+    // Orange badge for error 1002 (partial invalid)
+    &--1002 {
+      background-color: $admin-table-error-1002-bg;
+    }
+  }
+
+  &__success-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: $admin-table-badge-padding;
+    border-radius: $admin-table-badge-border-radius;
+    background-color: $admin-table-success-bg;
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: $admin-table-font-size-small;
+    font-weight: 400;
+    line-height: 1;
+    color: $admin-table-badge-text-color;
+    white-space: nowrap;
+  }
+
+  &__success-icon {
+    width: $admin-table-success-icon-size;
+    height: $admin-table-success-icon-size;
+    color: $admin-table-badge-text-color;
+  }
+
+  // Tooltip styles
+  &__tooltip {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: var(--muza-spacing-sm);
+    min-width: $admin-table-tooltip-min-width;
+    max-width: $admin-table-tooltip-max-width;
+    padding: $admin-table-tooltip-padding;
+    background-color: $admin-table-tooltip-bg;
+    border-radius: $admin-table-tooltip-border-radius;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: $admin-table-tooltip-z-index;
+    pointer-events: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      right: $admin-table-tooltip-arrow-offset;
+      border: $admin-table-tooltip-arrow-size solid transparent;
+      border-top-color: $admin-table-tooltip-bg;
+    }
+  }
+
+  &__tooltip-title {
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: $admin-table-font-size-small;
+    font-weight: 500;
+    color: $admin-table-tooltip-title-color;
+    margin-bottom: 4px;
+  }
+
+  &__tooltip-description {
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: $admin-table-tooltip-desc-color;
+  }
+
+  // Disabled checkbox styles
+  &__checkbox-wrapper--disabled {
+    opacity: $admin-table-disabled-opacity;
+    cursor: not-allowed;
+
+    .admin-upload-table__checkbox {
+      cursor: not-allowed;
+    }
   }
 }
