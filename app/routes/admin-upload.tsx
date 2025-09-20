@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router";
 import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
 
 import "../styles/scrollbar.scss";
@@ -6,6 +7,7 @@ import "../styles/variables.scss";
 import "../styles/main.scss";
 
 export default function AdminUpload() {
+  const navigate = useNavigate();
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [isScanning, setIsScanning] = useState(false);
@@ -101,7 +103,8 @@ export default function AdminUpload() {
     setSelectedItems(new Set());
     setIsScanning(false);
     setCurrentPage(1);
-  }, []);
+    navigate("/");
+  }, [navigate]);
 
   return (
     <AdminUploadPage
