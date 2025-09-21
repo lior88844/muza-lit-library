@@ -27,7 +27,7 @@ export const AlbumSchema = z.object({
   duration: z.number().int().min(0).optional(), // in seconds
   genres: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
-  credits: z.record(z.any()).optional(),
+  credits: z.record(z.string(), z.any()).optional(),
   notes: z.string().optional(),
   quality: z.number().int().min(0).max(100).default(0),
   popularity: z.number().int().min(0).max(100).default(0),

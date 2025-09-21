@@ -1,4 +1,4 @@
-import type { SimpleFlacMetadata } from "./simpleFlacMetadata";
+import type { SimpleFlacMetadata } from "./utils/simpleFlacMetadata";
 
 export interface AlbumLookupResult {
   found: boolean;

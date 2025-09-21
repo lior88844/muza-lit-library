@@ -17,7 +17,7 @@ export const ArtistSchema = z.object({
   biography: z.string().optional(),
   tags: z.array(z.string()).default([]),
   image: z.string().url().optional(),
-  links: z.record(z.string()).optional(),
+  links: z.record(z.string(), z.string()).optional(),
   isni: z.string().optional(),
   ipis: z.array(z.string()).default([]),
   popularity: z.number().int().min(0).max(100).default(0),
