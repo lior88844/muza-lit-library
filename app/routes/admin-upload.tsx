@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
+import { extractAlbumMetadataSimple } from "~/lib/utils/simpleFlacMetadata";
+import { lookupAlbum } from "~/components/adminUpload/services/albumLookup";
 
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
@@ -37,7 +39,7 @@ export default function AdminUpload() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const handleFileUpload = useCallback((files: File[]) => {
+  const handleFileUpload = useCallback(async (files: File[]) => {
     const newItems: UploadItem[] = [];
 
     // Filter for FLAC files only
@@ -74,7 +76,7 @@ export default function AdminUpload() {
     });
 
     // Create items for folders with FLAC files
-    Array.from(flacFolderMap.entries()).forEach(([path, folderFiles]) => {
+    for (const [path, folderFiles] of Array.from(flacFolderMap.entries())) {
       const totalSize = folderFiles.reduce((sum, file) => sum + file.size, 0);
       const folderName =
         path === "root" ? "Music Folder" : path.split("/").pop() || path;
@@ -83,7 +85,7 @@ export default function AdminUpload() {
       const allFilesInFolder = allFolderMap.get(path) || [];
       const skippedCount = allFilesInFolder.length - folderFiles.length;
 
-      newItems.push({
+      const newItem: UploadItem = {
         id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: folderName,
         type: "folder",
@@ -91,8 +93,11 @@ export default function AdminUpload() {
         files: folderFiles,
         path,
         errorCode: skippedCount > 0 ? ("1002" as const) : undefined,
-      });
-    });
+        isLookingUp: skippedCount === 0, // Only look up if there are no errors
+      };
+
+      newItems.push(newItem);
+    }
 
     // Create error items for folders with no FLAC files
     Array.from(allFolderMap.entries()).forEach(([path, allFiles]) => {
@@ -119,6 +124,56 @@ export default function AdminUpload() {
     setTimeout(() => {
       setIsScanning(false);
     }, 2000);
+
+    // Process metadata extraction and album lookup for each valid folder
+    for (const item of newItems) {
+      if (item.files.length > 0 && !item.errorCode) {
+        try {
+          // Extract metadata from the folder
+          const metadata = extractAlbumMetadataSimple(item.files);
+
+          if (metadata) {
+            // Update item with metadata
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id ? { ...prevItem, metadata } : prevItem
+              )
+            );
+
+            // Look up album in backend
+            const albumLookup = await lookupAlbum(metadata);
+
+            // Update item with lookup result and remove loading state
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? { ...prevItem, albumLookup, isLookingUp: false }
+                  : prevItem
+              )
+            );
+          } else {
+            // Failed to extract metadata
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? { ...prevItem, isLookingUp: false }
+                  : prevItem
+              )
+            );
+          }
+        } catch (error) {
+          console.error("Error processing album metadata:", error);
+          // Remove loading state on error
+          setUploadedItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? { ...prevItem, isLookingUp: false }
+                : prevItem
+            )
+          );
+        }
+      }
+    }
   }, []);
 
   const handleItemSelect = useCallback((index: number, selected: boolean) => {
@@ -161,6 +216,17 @@ export default function AdminUpload() {
     console.log("Processing items:", selectedItemList);
   }, [selectedItems, uploadedItems]);
 
+  const handleManualIdChange = useCallback(
+    (itemId: string, albumId: number | undefined) => {
+      setUploadedItems(prev =>
+        prev.map(item =>
+          item.id === itemId ? { ...item, manualAlbumId: albumId } : item
+        )
+      );
+    },
+    []
+  );
+
   const handleCancel = useCallback(() => {
     setUploadedItems([]);
     setSelectedItems(new Set());
@@ -184,6 +250,7 @@ export default function AdminUpload() {
       onCancel={handleCancel}
       onPageChange={setCurrentPage}
       onItemsPerPageChange={setItemsPerPage}
+      onManualIdChange={handleManualIdChange}
     />
   );
 }

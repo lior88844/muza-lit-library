@@ -1,6 +1,9 @@
 import React, { useMemo, useState } from "react";
 import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
+import DataSourceCell from "./DataSourceCell";
+import type { SimpleFlacMetadata } from "~/lib/utils/simpleFlacMetadata";
+import type { AlbumLookupResult } from "./services/albumLookup";
 import "./AdminUploadTable.scss";
 
 // Error codes and their explanations
@@ -18,8 +21,6 @@ const ERROR_CODES = {
       "Some files were skipped because they are not in FLAC format. Only FLAC files will be processed.",
   },
 } as const;
-
-type ErrorCode = keyof typeof ERROR_CODES;
 
 // Error Badge Component with Tooltip
 const ErrorBadge: React.FC<{ errorCode: "1001" | "1002" }> = ({
@@ -69,6 +70,10 @@ export interface UploadItem {
   files: File[]; // Array of files in the folder
   path: string;
   errorCode?: "1001" | "1002"; // Optional error code
+  metadata?: SimpleFlacMetadata; // Extracted FLAC metadata
+  albumLookup?: AlbumLookupResult; // Backend lookup result
+  isLookingUp?: boolean; // Whether we're currently looking up the album
+  manualAlbumId?: number; // Manually entered album ID
 }
 
 interface AdminUploadTableProps {
@@ -85,6 +90,7 @@ interface AdminUploadTableProps {
   onProcessUpload: () => void;
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: number) => void;
+  onManualIdChange: (itemId: string, albumId: number | undefined) => void;
 }
 
 const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
@@ -101,6 +107,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   onProcessUpload,
   onPageChange,
   onItemsPerPageChange,
+  onManualIdChange,
 }) => {
   const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -218,7 +225,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             </div>
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--data-source">
-            {/* Empty for now */}
+            <DataSourceCell item={item} onManualIdChange={onManualIdChange} />
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--cover">
             {/* Empty for now */}

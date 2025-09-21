@@ -4,6 +4,9 @@ import AdminFileDropArea from "./AdminFileDropArea";
 import AdminUploadTable from "./AdminUploadTable";
 import "./AdminUploadPage.scss";
 
+import type { SimpleFlacMetadata } from "~/lib/utils/simpleFlacMetadata";
+import type { AlbumLookupResult } from "./services/albumLookup";
+
 export interface UploadItem {
   id: string;
   name: string;
@@ -12,6 +15,10 @@ export interface UploadItem {
   files: File[]; // Array of files in the folder
   path: string;
   errorCode?: "1001" | "1002"; // Optional error code
+  metadata?: SimpleFlacMetadata; // Extracted FLAC metadata
+  albumLookup?: AlbumLookupResult; // Backend lookup result
+  isLookingUp?: boolean; // Whether we're currently looking up the album
+  manualAlbumId?: number; // Manually entered album ID
 }
 
 interface AdminUploadPageProps {
@@ -28,6 +35,7 @@ interface AdminUploadPageProps {
   onCancel: () => void;
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: number) => void;
+  onManualIdChange: (itemId: string, albumId: number | undefined) => void;
 }
 
 const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
@@ -44,6 +52,7 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
   onCancel,
   onPageChange,
   onItemsPerPageChange,
+  onManualIdChange,
 }) => {
   const totalItems = uploadedItems.length;
   const hasSelectedItems = selectedItems.size > 0;
@@ -75,6 +84,7 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
               onProcessUpload={onProcessUpload}
               onPageChange={onPageChange}
               onItemsPerPageChange={onItemsPerPageChange}
+              onManualIdChange={onManualIdChange}
             />
           </div>
         )}
