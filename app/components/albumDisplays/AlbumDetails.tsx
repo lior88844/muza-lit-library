@@ -33,14 +33,6 @@ const AlbumDetails: React.FC<AlbumDetailsProps> = ({
           onPlayPause={handlePlayPause}
           actions={[
             {
-              icon: "plus",
-              onClick: e => {
-                e.stopPropagation();
-                addToLibrary();
-              },
-              title: "Add to library",
-            },
-            {
               icon: "ellipsis",
               onClick: e => e.stopPropagation(),
               title: "More options",
