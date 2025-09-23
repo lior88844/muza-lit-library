@@ -39,7 +39,7 @@ const HoverOverlay: React.FC<HoverOverlayProps> = ({
         </button>
       )}
 
-      {/* Action buttons in top-right */}
+      {/* Action buttons in bottom-left */}
       {actions.length > 0 && (
         <div className="hover-overlay-actions">
           {actions.map((action, index) => (
