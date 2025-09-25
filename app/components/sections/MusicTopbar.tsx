@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
 import "./MusicTopbar.scss";
 import { useTranslation } from "~/lib/i18n/translations";
 import MuzaIcon from "~/icons/MuzaIcon";
+import { useAuth, getUserInfo } from "~/appData/authStore";
 
 interface MusicTopbarProps {
   onSearchChange?: (searchText: string) => void;
@@ -15,6 +16,7 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange?.(e.target.value);
@@ -22,6 +24,19 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
 
   const handleUploadClick = () => {
     navigate("/upload");
+  };
+
+  const handleLoginClick = () => {
+    auth.signinRedirect();
+  };
+
+  const handleLogoutClick = () => {
+    auth.signoutRedirect({
+      extraQueryParams: {
+        client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+        logout_uri: `${window.location.origin}/`,
+      },
+    });
   };
 
   const handleAdminUploadClick = () => {
@@ -62,9 +77,33 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
             <MuzaIcon iconName="heart" />
           </button>
           <div className="user-menu">
-            <div className="user-icon" onClick={onUserIconClick}>
-              <img src="/art/logo.jpg" alt={t("topbar.user")} />
-            </div>
+            {auth.isAuthenticated ? (
+              <div className="user-dropdown">
+                <div className="user-icon" onClick={onUserIconClick}>
+                  <img
+                    src={getUserInfo(auth)?.picture || "/art/logo.jpg"}
+                    alt={getUserInfo(auth)?.name || t("topbar.user")}
+                  />
+                </div>
+                <div className="user-info">
+                  <span className="user-name">
+                    {getUserInfo(auth)?.name || getUserInfo(auth)?.email}
+                  </span>
+                  <button
+                    className="logout-button"
+                    onClick={handleLogoutClick}
+                    title="Logout"
+                  >
+                    <MuzaIcon iconName="logout" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button className="login-button" onClick={handleLoginClick}>
+                <MuzaIcon iconName="user" />
+                Login
+              </button>
+            )}
           </div>
         </div>
       </div>

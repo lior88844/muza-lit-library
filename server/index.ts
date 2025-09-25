@@ -1,8 +1,5 @@
 import express from "express";
-import { fileURLToPath } from "url";
-import axios from "axios";
 import path from "path";
-import http from "http";
 import * as fs from "fs";
 import { AlbumService } from "./services/album.service";
 import { ArtistService } from "./services/artist.service";
@@ -25,19 +22,12 @@ process.on("uncaughtException", error => {
 });
 
 const PORT = process.env.PORT || 3000;
-const STOCK_PHOTO = "https://picsum.photos/400"; // Placeholde photo URL
 
 // File paths
 const __filename = fileURLToPath(import.meta.url);
 const clientDir = path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
-
-// HTTP client setup
-const instance = axios.create({
-  httpAgent: new http.Agent(),
-  timeout: 10000, // 10 second timeout
-});
 
 function getRandomItems(array: any[], count: number) {
   if (array.length <= count) {
@@ -105,12 +95,12 @@ async function fetchAlbums() {
     const data = await albumService.findMany(100, 0);
 
     return data?.albums;
-  } catch (error: any) {
+  } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
-      error?.message
+      (error as Error)?.message
     );
-    return null;
+    return [];
   }
 }
 
@@ -118,12 +108,12 @@ async function fetchTracks() {
   try {
     const data = await trackService.findMany(100, 0);
     return data?.tracks;
-  } catch (error: any) {
+  } catch (error) {
     console.warn(
       "Failed to fetch tracks from GraphQL, using empty array:",
-      error?.message
+      (error as Error)?.message
     );
-    return null;
+    return [];
   }
 }
 
@@ -131,12 +121,12 @@ async function fetchArtists() {
   try {
     const data = await artistService.findMany(100, 0);
     return data?.artists;
-  } catch (error: any) {
+  } catch (error) {
     console.warn(
       "Failed to fetch artists from GraphQL, using empty array:",
-      error?.message
+      (error as Error)?.message
     );
-    return null;
+    return [];
   }
 }
 
@@ -187,36 +177,15 @@ async function initializeApp() {
         console.log(`Loaded ${albumsData?.length} albums from GraphQL`);
         console.log(`Loaded ${tracksData?.length} tracks from GraphQL`);
         console.log(`Loaded ${artistsData?.length} artists from GraphQL`);
-        // Transform data
-        console.log("Transforming data...");
-        const transformedTracks = transformTrackData(tracksData || []);
-        const transformedAlbums = transformAlbumData(
-          albumsData || [],
-          transformedTracks
-        );
-        const transformedArtists = transformArtistData(
-          albumsData || [],
-          transformedAlbums
-        );
-
-        console.log(
-          `Transformed ${transformedAlbums.length} albums with covers`
-        );
-        console.log(
-          `Transformed ${transformedTracks.length} tracks with files and covers`
-        );
-        console.log(
-          `Transformed ${transformedArtists.length} artists with photos`
-        );
 
         const response = {
           albums: {
-            featured: getRandomItems(transformedAlbums, 125),
-            newReleases: getRandomItems(transformedAlbums, 125),
-            recommended: getRandomItems(transformedAlbums, 125),
+            featured: getRandomItems(albumsData, 125),
+            newReleases: getRandomItems(albumsData, 125),
+            recommended: getRandomItems(albumsData, 125),
           },
-          artists: getRandomItems(transformedArtists, 125),
-          songs: getRandomItems(transformedTracks, 100000),
+          artists: getRandomItems(artistsData, 125),
+          songs: getRandomItems(tracksData, 100000),
           sidebar: (allData as any)?.sidebar || [],
         };
 

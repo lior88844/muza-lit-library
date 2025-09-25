@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 // Translation type
 interface Translations {
@@ -44,15 +44,15 @@ initializeTranslations();
 export const useTranslation = () => {
   const [, forceUpdate] = useState({});
 
-  const t = (key: string, fallback?: string): string => {
+  const t = useCallback((key: string, fallback?: string): string => {
     return translations[key] || fallback || key;
-  };
+  }, []);
 
-  const changeLanguage = async (language: string) => {
+  const changeLanguage = useCallback(async (language: string) => {
     currentLanguage = language;
     translations = await loadTranslations(language);
     forceUpdate({}); // Force re-render
-  };
+  }, []);
 
   return { t, changeLanguage, currentLanguage };
 };

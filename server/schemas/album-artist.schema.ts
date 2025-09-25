@@ -1,4 +1,4 @@
-import { trackArtists, ArtistRoleEnum } from "server/db/track-artist.entity";
+import { albumArtists } from "server/db/album-artist.entity";
 import {
   createSelectSchema,
   createInsertSchema,
@@ -6,24 +6,21 @@ import {
 } from "drizzle-zod";
 import { z } from "zod";
 
-// Artist role enum for validation
-export const ArtistRoleSchema = z.nativeEnum(ArtistRoleEnum);
-
 // Generate schemas from Drizzle table
-export const TrackArtistSchema = createSelectSchema(trackArtists, {
+export const AlbumArtistSchema = createSelectSchema(albumArtists, {
   order: schema => schema.min(0),
 });
 
-export const CreateTrackArtistSchema = createInsertSchema(trackArtists, {
+export const CreateAlbumArtistSchema = createInsertSchema(albumArtists, {
   order: schema => schema.min(0),
 });
 
-export const UpdateTrackArtistSchema = createUpdateSchema(trackArtists, {
+export const UpdateAlbumArtistSchema = createUpdateSchema(albumArtists, {
   order: schema => schema.min(0),
 });
 
 // Extended track schema with artists - this is a composite schema that combines track data with artist relationships
-export const TrackWithArtistsSchema = z.object({
+export const AlbumWithArtistsSchema = z.object({
   id: z.number(),
   title: z.string().min(1).max(255),
   sortTitle: z.string().max(255).optional(),
@@ -51,12 +48,11 @@ export const TrackWithArtistsSchema = z.object({
   lastUpdated: z.date(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  artists: z.array(TrackArtistSchema).default([]),
+  artists: z.array(AlbumArtistSchema).default([]),
 });
 
 // Type exports
-export type TrackArtist = z.infer<typeof TrackArtistSchema>;
-export type CreateTrackArtist = z.infer<typeof CreateTrackArtistSchema>;
-export type UpdateTrackArtist = z.infer<typeof UpdateTrackArtistSchema>;
-export type TrackWithArtists = z.infer<typeof TrackWithArtistsSchema>;
-export type ArtistRole = z.infer<typeof ArtistRoleSchema>;
+export type AlbumArtist = z.infer<typeof AlbumArtistSchema>;
+export type CreateAlbumArtist = z.infer<typeof CreateAlbumArtistSchema>;
+export type UpdateAlbumArtist = z.infer<typeof UpdateAlbumArtistSchema>;
+export type AlbumWithArtists = z.infer<typeof AlbumWithArtistsSchema>;

@@ -20,7 +20,9 @@ import { useEffect, useState } from "react";
 import { useCurrentPlayerStore } from "./appData/currentPlayerStore";
 import MuzaMusicPlayer from "./components/componentsWithLogic/MuzaMusicPlayer";
 import { useTranslation } from "./lib/i18n/translations";
-import type { MusicPlaylist, SongDetails } from "./appData/models";
+import type { SongDetails } from "./appData/models";
+import { apiClient } from "./lib/apiClient";
+import Providers from "./Providers";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -74,15 +76,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     const { selectedSong, setSelectedSong } = useCurrentPlayerStore.getState();
 
-    fetch("/staticData/allData.json")
+    apiClient
+      .get("/staticData/allData.json")
       .then(response => {
-        if (!response.ok) {
-          fetch("./staticData/allData.json").then(response => {
-            if (!response.ok) throw new Error(t("general.networkError"));
-            return response.json();
+        if (!response.status) {
+          apiClient.get("./staticData/allData.json").then(response => {
+            if (!response.status) throw new Error(t("general.networkError"));
+            return response.data;
           });
         } else {
-          return response.json();
+          return response.data;
         }
       })
       .then(data => {
@@ -139,7 +142,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [t]);
 
   const content = loading ? (
     <p>{t("general.loading")}</p>

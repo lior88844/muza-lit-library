@@ -42,30 +42,24 @@ export const trackArtists = pgTable(
     role: artistRoleEnum("role").notNull().default(ArtistRoleEnum.MainArtist),
     order: integer("order").default(0), // For ordering artists (main artist first, etc.)
   },
-  table => ({
+  table => [
     // Composite index for efficient track-artist lookups
-    trackArtistIdx: index("track_artist_idx").on(table.trackId, table.artistId),
+    index("track_artist_idx").on(table.trackId, table.artistId),
 
     // Index for finding all tracks by an artist
-    artistIdx: index("track_artists_artist_idx").on(table.artistId),
+    index("track_artists_artist_idx").on(table.artistId),
 
     // Index for finding tracks by artist and role
-    artistRoleIdx: index("track_artists_artist_role_idx").on(
-      table.artistId,
-      table.role
-    ),
+    index("track_artists_artist_role_idx").on(table.artistId, table.role),
 
     // Index for ordering artists within a track
-    trackOrderIdx: index("track_artists_track_order_idx").on(
-      table.trackId,
-      table.order
-    ),
+    index("track_artists_track_order_idx").on(table.trackId, table.order),
 
     // Unique constraint to prevent duplicate track-artist relationships
-    uniqueTrackArtist: uniqueIndex("unique_track_artist").on(
+    uniqueIndex("unique_track_artist").on(
       table.trackId,
       table.artistId,
       table.role
     ),
-  })
+  ]
 );

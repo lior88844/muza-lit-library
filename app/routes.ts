@@ -64,6 +64,18 @@ const playlist = {
   id: "playlist",
 } as RouteConfigEntry;
 
+const login = {
+  file: "routes/login.tsx",
+  path: "login",
+  id: "login",
+} as RouteConfigEntry;
+
+const callback = {
+  file: "routes/callback.tsx",
+  path: "auth/callback",
+  id: "callback",
+} as RouteConfigEntry;
+
 export default [
   home,
   album,
@@ -75,4 +87,6 @@ export default [
   adminUpload,
   playlists,
   playlist,
+  login,
+  callback,
 ] satisfies RouteConfig;

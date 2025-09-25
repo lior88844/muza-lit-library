@@ -1,43 +1,37 @@
-import { ArtistTypeEnum, GenderEnum } from "server/db/artist.entity";
+import { artists } from "server/db/artist.entity";
+import {
+  createSelectSchema,
+  createInsertSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 import { z } from "zod";
 
-// Artist schemas
-export const ArtistSchema = z.object({
-  id: z.number(),
-  name: z.string().min(1).max(255),
-  sortName: z.string().max(255).optional(),
-  disambiguation: z.string().max(255).optional(),
-  type: z.nativeEnum(ArtistTypeEnum).default(ArtistTypeEnum.Person),
-  gender: z.nativeEnum(GenderEnum).default(GenderEnum.NotApplicable),
-  area: z.string().max(255).optional(),
-  beginDate: z.date().optional(),
-  endDate: z.date().optional(),
-  ended: z.boolean().default(false),
-  musicbrainzId: z.string().uuid().optional(),
-  biography: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  image: z.string().url().optional(),
-  links: z.record(z.string(), z.string()).optional(),
-  isni: z.string().optional(),
-  ipis: z.array(z.string()).default([]),
-  popularity: z.number().int().min(0).max(100).default(0),
-  verified: z.boolean().default(false),
-  lastUpdated: z.date(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+// Generate schemas from Drizzle table
+export const ArtistSchema = createSelectSchema(artists, {
+  name: schema => schema.min(1).max(255),
+  sortName: schema => schema.max(255),
+  disambiguation: schema => schema.max(255),
+  area: schema => schema.max(255),
+  isni: schema => schema.max(50),
+  popularity: schema => schema.min(0).max(100),
 });
 
-export const CreateArtistSchema = ArtistSchema.omit({
-  id: true,
-  lastUpdated: true,
-  createdAt: true,
-  updatedAt: true,
-}).extend({
-  name: z.string().min(1).max(255),
+export const CreateArtistSchema = createInsertSchema(artists, {
+  name: schema => schema.min(1).max(255),
+  sortName: schema => schema.max(255),
+  disambiguation: schema => schema.max(255),
+  area: schema => schema.max(255),
+  isni: schema => schema.max(50),
+  popularity: schema => schema.min(0).max(100),
 });
 
-export const UpdateArtistSchema = CreateArtistSchema.partial().extend({
-  id: z.number(),
+export const UpdateArtistSchema = createUpdateSchema(artists, {
+  name: schema => schema.min(1).max(255),
+  sortName: schema => schema.max(255),
+  disambiguation: schema => schema.max(255),
+  area: schema => schema.max(255),
+  isni: schema => schema.max(50),
+  popularity: schema => schema.min(0).max(100),
 });
 
 // Type exports
