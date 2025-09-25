@@ -6,3 +6,4 @@
 /build/
 server/reactServer
 .env
+package-lock.json
