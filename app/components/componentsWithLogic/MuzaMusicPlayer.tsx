@@ -1,7 +1,8 @@
-import type { SongDetails } from "~/appData/models";
+import type { PlayerDetails, SongDetails } from "~/appData/models";
 import { useMusicLibraryStore } from "~/appData/musicStore";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import { MusicPlayer } from "../sections/MusicPlayer";
+import { useCallback, useMemo } from "react";
 
 export default function MuzaMusicPlayer() {
   const { recentlyPlayed, incrementPlayCount } = useMusicLibraryStore();
@@ -53,28 +54,35 @@ export default function MuzaMusicPlayer() {
       setPlayCountIncremented(true);
     }
   };
+  const details = useMemo(() => {
+    return {
+      audioUrl: selectedSong?.audioUrl || "",
+      imageSrc: selectedSong?.imageSrc || "",
+      title: selectedSong?.title,
+      artist: selectedSong?.artist || "",
+      album: selectedSong?.album || "",
+      year: selectedSong?.year || new Date().getFullYear(),
+      isPlaying: isPlaying || false,
+      id: selectedSong?.id,
+    };
+  }, [selectedSong, isPlaying]);
 
+  const onUpdate = useCallback(
+    (updatedDetails: PlayerDetails) => {
+      setSelectedSong({
+        ...selectedSong!,
+        audioUrl: updatedDetails.audioUrl!,
+      });
+    },
+    [selectedSong, setSelectedSong]
+  );
   return (
     <>
       {selectedSong && (
         <MusicPlayer
-          details={{
-            audioUrl: selectedSong.audioUrl || "",
-            imageSrc: selectedSong.imageSrc || "",
-            title: selectedSong.title,
-            artist: selectedSong.artist || "",
-            album: selectedSong.album || "",
-            year: selectedSong.year || new Date().getFullYear(),
-            isPlaying: isPlaying || false,
-            id: selectedSong.id,
-          }}
+          details={details}
           setIsPlaying={setIsPlaying}
-          onUpdate={updatedDetails => {
-            setSelectedSong({
-              ...selectedSong,
-              audioUrl: updatedDetails.audioUrl,
-            });
-          }}
+          onUpdate={onUpdate}
           onPrevious={handlePreviousSong}
           onNext={handleNextSong}
           onSongEnded={handleNextSong}
