@@ -27,7 +27,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   onPlayCountIncrement,
 }) => {
   const { t } = useTranslation();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playerRef = useRef<HTMLVideoElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
   // Audio state
@@ -59,7 +59,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   };
 
   const initializeHls = (url: string) => {
-    const audio = audioRef.current;
+    const audio = playerRef.current;
     if (!audio) return;
 
     // Clean up existing HLS instance
@@ -70,16 +70,24 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
     if (Hls.isSupported()) {
       const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
+        enableWorker: false,
       });
 
       hlsRef.current = hls;
-      hls.loadSource(url);
-      hls.attachMedia(audio);
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        // HLS manifest parsed, ready to play
+      if (audio != null) {
+        hls.attachMedia(audio);
+      }
+      hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+        hls.loadSource(url);
+        // hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        //   audio
+        //     ?.play()
+        //     .catch(() =>
+        //       console.log(
+        //         "Unable to autoplay prior to user interaction with the dom."
+        //       )
+        //     );
+        // });
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -112,7 +120,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   // Audio control functions
   const playAudio = useCallback(() => {
-    const audio = audioRef.current;
+    const audio = playerRef.current;
     if (!audio) return;
 
     audio.play().catch(() => {
@@ -123,13 +131,13 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume / 100;
+    if (playerRef.current) {
+      playerRef.current.volume = newVolume / 100;
     }
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const audio = audioRef.current;
+    const audio = playerRef.current;
     if (!audio || duration === 0) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
@@ -144,27 +152,30 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     if (isLoading) return;
     const newPlayingState = !details.isPlaying;
     setIsPlaying(newPlayingState);
+    if (newPlayingState) {
+      onPlayCountIncrement?.();
+    }
     onUpdate?.({ ...details });
   };
 
   // Effects
-  useEffect(() => {
-    setIsPlaying(details.isPlaying || false);
-  }, [details.isPlaying, setIsPlaying]);
+  // useEffect(() => {
+  //   setIsPlaying(details.isPlaying || false);
+  // }, [details.isPlaying, setIsPlaying]);
+
+  // useEffect(() => {
+  //   const audio = playerRef.current;
+  //   if (!audio) return;
+
+  //   if (details.isPlaying && !isLoading) {
+  //     playAudio();
+  //   } else if (!details.isPlaying) {
+  //     audio.pause();
+  //   }
+  // }, [details.isPlaying, isLoading, playAudio]);
 
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (details.isPlaying && !isLoading) {
-      playAudio();
-    } else if (!details.isPlaying) {
-      audio.pause();
-    }
-  }, [details.isPlaying, isLoading, playAudio]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
+    const audio = playerRef.current;
     if (!audio || !details.audioUrl) return;
 
     // Audio event handlers
@@ -178,20 +189,17 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
     const handleEnded = () => {
       setIsPlaying(false);
-      onUpdate?.({ ...details });
       onSongEnded?.();
     };
 
-    const handlePlay = () => {
-      setIsPlaying(true);
-      onUpdate?.({ ...details });
-      // Trigger play count increment when audio actually starts playing
-      onPlayCountIncrement?.();
-    };
+    // const handlePlay = () => {
+    //   setIsPlaying(true);
+    //   // Trigger play count increment when audio actually starts playing
+    //   onPlayCountIncrement?.();
+    // };
 
     const handlePause = () => {
       setIsPlaying(false);
-      onUpdate?.({ ...details });
     };
 
     const handleLoadStart = () => setIsLoading(true);
@@ -201,7 +209,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     audio.addEventListener("loadeddata", handleLoadedData);
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
-    audio.addEventListener("play", handlePlay);
+    // audio.addEventListener("play", handlePlay);
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("loadstart", handleLoadStart);
     audio.addEventListener("waiting", handleLoadStart);
@@ -218,8 +226,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
     audio.volume = volume / 100;
 
-    if (details.isPlaying) playAudio();
-
     // Cleanup
     return () => {
       audio.pause();
@@ -231,7 +237,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       audio.removeEventListener("loadeddata", handleLoadedData);
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
-      audio.removeEventListener("play", handlePlay);
+      // audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("loadstart", handleLoadStart);
       audio.removeEventListener("waiting", handleLoadStart);
@@ -239,10 +245,9 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     };
   }, [
     details.audioUrl,
-    details,
+    details.isPlaying,
     onPlayCountIncrement,
     onSongEnded,
-    onUpdate,
     playAudio,
     setIsPlaying,
     volume,
@@ -250,7 +255,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   return (
     <div className="music-player">
-      <audio ref={audioRef} hidden />
+      <video ref={playerRef} hidden />
 
       <div className="player-info">
         <img
