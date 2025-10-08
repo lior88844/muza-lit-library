@@ -1,0 +1,63 @@
+@import "../../styles/variables.scss";
+
+// Local variables for AdminUploadHeader component
+$admin-header-max-width: 1200px;
+$admin-header-title-font-size: 20px;
+$admin-header-button-font-size: 16px;
+$admin-header-button-line-height: 20px;
+$admin-header-border-width: 1px;
+$admin-header-disabled-opacity: 0.5;
+
+.admin-upload-header {
+  background-color: var(--colors_background_light);
+  border-bottom: $admin-header-border-width solid var(--colors_border_light);
+  padding: var(--muza-spacing-md) var(--muza-spacing-xxl);
+
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: $admin-header-max-width;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--typography_font_family_font_sans);
+    font-size: $admin-header-title-font-size;
+    font-weight: var(--muza-font-weight-bold);
+    color: var(--colors_foreground_light);
+    margin: 0;
+    line-height: 1;
+  }
+
+  &__cancel-button {
+    background-color: var(--colors_secondary_light);
+    color: var(--colors_secondary_foreground_light);
+    border-radius: calc(var(--border_radius_full) * 1px);
+    padding: var(--muza-spacing-sm) var(--muza-spacing-lg);
+    border: none;
+    font-weight: var(--muza-font-weight-medium);
+    font-size: $admin-header-button-font-size;
+    line-height: $admin-header-button-line-height;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: fit-content;
+    height: fit-content;
+
+    &:hover {
+      background-color: var(--muza-button-hover-background);
+    }
+
+    &:disabled {
+      opacity: $admin-header-disabled-opacity;
+      cursor: not-allowed;
+    }
+
+    span {
+      font-size: $admin-header-button-font-size;
+      font-weight: var(--muza-font-weight-medium);
+      color: var(--colors_foreground_light);
+      line-height: $admin-header-button-line-height;
+    }
+  }
+}

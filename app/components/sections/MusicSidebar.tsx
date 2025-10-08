@@ -36,7 +36,6 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 
   const handlePlaylistClick = (playlist: MusicPlaylist) => {
     // Navigate to playlist page or handle playlist selection
-    console.log("Playlist clicked:", playlist.title);
   };
 
   const handleSidebarToggle = () => {

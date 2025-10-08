@@ -10,6 +10,7 @@ import {
   pgEnum,
   json,
 } from "drizzle-orm/pg-core";
+import { artists } from "./artist.entity";
 
 export enum AlbumTypeEnum {
   Album = "Album",
@@ -44,6 +45,7 @@ export const albums = pgTable("albums", {
   title: varchar("title", { length: 255 }).notNull(),
   sortTitle: varchar("sort_title", { length: 255 }),
   disambiguation: varchar("disambiguation", { length: 255 }),
+  artistId: integer("artist_id").references(() => artists.id),
   releaseDate: timestamp("release_date"),
   originalReleaseDate: timestamp("original_release_date"),
   albumType: albumTypeEnum("album_type").default("Album"),
@@ -52,8 +54,8 @@ export const albums = pgTable("albums", {
   country: varchar("country", { length: 2 }), // ISO 3166-1 alpha-2
   language: varchar("language", { length: 3 }), // ISO 639-3
   script: varchar("script", { length: 4 }), // ISO 15924
-  mbId: uuid("mb_id"),
-  mbReleaseGroupId: uuid("mb_release_group_id"),
+  musicbrainzId: uuid("musicbrainz_id"),
+  musicbrainzReleaseGroupId: uuid("musicbrainz_release_group_id"),
   barcode: varchar("barcode", { length: 50 }),
   catalogNumber: varchar("catalog_number", { length: 100 }),
   label: varchar("label", { length: 255 }),

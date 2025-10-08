@@ -129,6 +129,7 @@ const english = {
   "upload.unknownArtist": "Unknown Artist",
   "upload.untitled": "Untitled",
   "upload.uploadMusic": "Upload Music",
+  "upload.uploadAdmin": "Upload Admin",
 
   // Form Validation and Input
   "form.required": "*",

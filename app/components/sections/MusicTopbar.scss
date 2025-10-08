@@ -179,6 +179,13 @@
         align-items: center;
         gap: var(--muza-spacing-sm, 8px);
 
+        .admin-upload-button {
+          background-color: var(--colors_accent_light, #f3f4f6);
+          &:hover {
+            background-color: #dcdee0;
+          }
+        }
+
         .user-icon {
           width: 40px;
           height: 40px;

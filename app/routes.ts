@@ -46,6 +46,12 @@ const upload = {
   id: "upload",
 } as RouteConfigEntry;
 
+const adminUpload = {
+  file: "routes/admin-upload.tsx",
+  path: "admin-upload",
+  id: "admin-upload",
+} as RouteConfigEntry;
+
 const playlists = {
   file: "routes/playlists.tsx",
   path: "playlists",
@@ -78,6 +84,7 @@ export default [
   songs,
   explore,
   upload,
+  adminUpload,
   playlists,
   playlist,
   login,

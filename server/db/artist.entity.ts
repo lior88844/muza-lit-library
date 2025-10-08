@@ -49,7 +49,7 @@ export const artists = pgTable("artists", {
   beginDate: timestamp("begin_date"),
   endDate: timestamp("end_date"),
   ended: boolean("ended").default(false),
-  mbId: uuid("mb_id"),
+  musicbrainzId: uuid("musicbrainz_id"),
   bio: text("biography"),
   tags: text("tags").array(), // PostgreSQL array
   image: text("image"),

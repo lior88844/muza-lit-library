@@ -51,15 +51,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if we're on the upload page
+  // Check if we're on the upload pages
   const isUploadPage = location.pathname === "/upload";
+  const isAdminUploadPage = location.pathname === "/admin-upload";
+  const isAnyUploadPage = isUploadPage || isAdminUploadPage;
 
-  // Stop music when navigating to upload page
+  // Stop music when navigating to upload pages
   useEffect(() => {
-    if (isUploadPage) {
+    if (isAnyUploadPage) {
       setIsPlaying(false);
     }
-  }, [isUploadPage, setIsPlaying]);
+  }, [isAnyUploadPage, setIsPlaying]);
 
   useEffect(() => {
     const {
@@ -158,24 +160,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ThemeModeScript />
       </head>
       <body>
-        <Providers>
-          <div className="body">
-            {!isUploadPage && (
-              <MusicSidebar
-                logoAlt={t("library.musicLibrary")}
-                logoSrc="/icons/muza.svg"
-                sections={sidebarSections}
-                playlists={playlists}
-              />
-            )}
+        <div className="body">
+          {!isAnyUploadPage && (
+            <MusicSidebar
+              logoAlt={t("library.musicLibrary")}
+              logoSrc="/icons/muza.svg"
+              sections={sidebarSections}
+              playlists={playlists}
+            />
+          )}
 
-            <div className="content">
-              {!isUploadPage && <MusicTopbar />}
-              {content || children}
-              {!isUploadPage && <MuzaMusicPlayer />}
-            </div>
+          <div className="content">
+            {!isAnyUploadPage && <MusicTopbar />}
+            {content || children}
+            {!isAnyUploadPage && <MuzaMusicPlayer />}
           </div>
-        </Providers>
+        </div>
         <ToastContainer />
         <ScrollRestoration />
         <Scripts />
