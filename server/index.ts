@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import * as fs from "fs";
+import { fileURLToPath } from "url";
 import { AlbumService } from "./services/album.service";
 import { ArtistService } from "./services/artist.service";
 import { TrackService } from "./services/track.service";
@@ -22,6 +23,7 @@ process.on("uncaughtException", error => {
 });
 
 const PORT = process.env.PORT || 3000;
+const STOCK_PHOTO = "/art/muza.png";
 
 // File paths
 const __filename = fileURLToPath(import.meta.url);
@@ -159,6 +161,48 @@ async function initializeApp() {
   try {
     console.log("Initializing application...");
     const app = express();
+
+    // Middleware
+    app.use(express.json());
+
+    // Admin API endpoints
+    app.post("/admin/discover", async (req, res): Promise<void> => {
+      try {
+        console.log("POST /admin/discover - Request received");
+        const { metadata } = req.body;
+
+        if (!metadata || !Array.isArray(metadata)) {
+          res.status(400).json({
+            error: "Invalid request",
+            message: "metadata array is required",
+          });
+          return;
+        }
+
+        console.log(`Processing ${metadata.length} album(s) for discovery`);
+
+        // Mock implementation - replace with actual MusicBrainz/Album lookup logic
+        const results = metadata.map((item: unknown) => {
+          const metadataItem = item as { album?: string; albumArtist?: string };
+          console.log(
+            `Looking up: "${metadataItem.album}" by ${metadataItem.albumArtist}`
+          );
+
+          // TODO: Implement actual album lookup via MusicBrainz API
+          // For now, return mock data
+          return {
+            mbId: `mock-mbid-${Date.now()}`,
+            coverUrl: `https://via.placeholder.com/300x300?text=${encodeURIComponent(metadataItem.album || "Unknown")}`,
+          };
+        });
+
+        console.log(`Returning ${results.length} result(s)`);
+        res.json({ results });
+      } catch (error) {
+        console.error("Error handling /admin/discover request:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
 
     // API endpoints
     app.get("/staticData/allData.json", async (req, res) => {
