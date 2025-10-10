@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
-import { extractAlbumMetadataSimple } from "~/lib/utils/simpleFlacMetadata";
-import { lookupAlbum } from "~/components/adminUpload/services/albumLookup";
+import { extractAlbumDiscoverMetadata } from "~/lib/flacMetadata";
+import { discoverAlbum } from "~/components/adminUpload/services/albumLookup";
 
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
@@ -75,8 +75,18 @@ export default function AdminUpload() {
       flacFolderMap.get(folderPath)!.push(file);
     });
 
-    // Create items for folders with FLAC files
-    for (const [path, folderFiles] of Array.from(flacFolderMap.entries())) {
+    // Filter out parent folders that have child folders in the list
+    const allFolderPaths = Array.from(flacFolderMap.keys());
+    const filteredFolderPaths = allFolderPaths.filter(path => {
+      // Keep this folder if no other folder in the list has it as a prefix (i.e., it's not a parent)
+      return !allFolderPaths.some(
+        otherPath => otherPath !== path && otherPath.startsWith(path + "/")
+      );
+    });
+
+    // Create items for folders with FLAC files (excluding parent folders)
+    for (const path of filteredFolderPaths) {
+      const folderFiles = flacFolderMap.get(path)!;
       const totalSize = folderFiles.reduce((sum, file) => sum + file.size, 0);
       const folderName =
         path === "root" ? "Music Folder" : path.split("/").pop() || path;
@@ -93,28 +103,37 @@ export default function AdminUpload() {
         files: folderFiles,
         path,
         errorCode: skippedCount > 0 ? ("1002" as const) : undefined,
-        isLookingUp: skippedCount === 0, // Only look up if there are no errors
+        isLookingUp: true, // Start lookup for all items with FLAC files
       };
 
       newItems.push(newItem);
     }
 
-    // Create error items for folders with no FLAC files
-    Array.from(allFolderMap.entries()).forEach(([path, allFiles]) => {
-      if (!flacFolderMap.has(path)) {
-        const folderName =
-          path === "root" ? "Music Folder" : path.split("/").pop() || path;
+    // Create error items for folders with no FLAC files (excluding parent folders)
+    const allFoldersWithoutFlac = Array.from(allFolderMap.keys()).filter(
+      path => !flacFolderMap.has(path)
+    );
 
-        newItems.push({
-          id: `error-folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          name: folderName,
-          type: "folder",
-          size: 0,
-          files: [],
-          path,
-          errorCode: "1001" as const,
-        });
-      }
+    const filteredErrorFolderPaths = allFoldersWithoutFlac.filter(path => {
+      // Keep this folder if no other folder in allFolderMap has it as a prefix
+      return !Array.from(allFolderMap.keys()).some(
+        otherPath => otherPath !== path && otherPath.startsWith(path + "/")
+      );
+    });
+
+    filteredErrorFolderPaths.forEach(path => {
+      const folderName =
+        path === "root" ? "Music Folder" : path.split("/").pop() || path;
+
+      newItems.push({
+        id: `error-folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: folderName,
+        type: "folder",
+        size: 0,
+        files: [],
+        path,
+        errorCode: "1001" as const,
+      });
     });
 
     setUploadedItems(prev => [...prev, ...newItems]);
@@ -125,23 +144,17 @@ export default function AdminUpload() {
       setIsScanning(false);
     }, 2000);
 
-    // Process metadata extraction and album lookup for each valid folder
+    // Process metadata extraction and album discovery for each valid folder
     for (const item of newItems) {
-      if (item.files.length > 0 && !item.errorCode) {
+      // Only process items without critical errors (error code 1001)
+      if (item.files.length > 0 && item.errorCode !== "1001") {
         try {
-          // Extract metadata from the folder
-          const metadata = extractAlbumMetadataSimple(item.files);
+          // Extract complete metadata from the first FLAC file
+          const metadata = await extractAlbumDiscoverMetadata(item.files);
 
           if (metadata) {
-            // Update item with metadata
-            setUploadedItems(prev =>
-              prev.map(prevItem =>
-                prevItem.id === item.id ? { ...prevItem, metadata } : prevItem
-              )
-            );
-
-            // Look up album in backend
-            const albumLookup = await lookupAlbum(metadata);
+            // Discover album in backend
+            const albumLookup = await discoverAlbum(metadata);
 
             // Update item with lookup result and remove loading state
             setUploadedItems(prev =>
@@ -162,7 +175,7 @@ export default function AdminUpload() {
             );
           }
         } catch (error) {
-          console.error("Error processing album metadata:", error);
+          console.error("Error processing album discovery:", error);
           // Remove loading state on error
           setUploadedItems(prev =>
             prev.map(prevItem =>
@@ -227,6 +240,37 @@ export default function AdminUpload() {
     []
   );
 
+  const handleCoverUpload = useCallback((itemId: string, file: File) => {
+    console.log(
+      "Cover upload handler called for item:",
+      itemId,
+      "with file:",
+      file.name
+    );
+    setUploadedItems(prev =>
+      prev.map(item => {
+        if (item.id === itemId) {
+          console.log("Updating item with cover image:", item.name);
+          return { ...item, coverImage: file };
+        }
+        return item;
+      })
+    );
+  }, []);
+
+  const handleCoverRemove = useCallback((itemId: string) => {
+    console.log("Cover remove handler called for item:", itemId);
+    setUploadedItems(prev =>
+      prev.map(item => {
+        if (item.id === itemId) {
+          console.log("Removing cover image from item:", item.name);
+          return { ...item, coverImage: undefined };
+        }
+        return item;
+      })
+    );
+  }, []);
+
   const handleCancel = useCallback(() => {
     setUploadedItems([]);
     setSelectedItems(new Set());
@@ -251,6 +295,8 @@ export default function AdminUpload() {
       onPageChange={setCurrentPage}
       onItemsPerPageChange={setItemsPerPage}
       onManualIdChange={handleManualIdChange}
+      onCoverUpload={handleCoverUpload}
+      onCoverRemove={handleCoverRemove}
     />
   );
 }

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
 import DataSourceCell from "./DataSourceCell";
+import CoverCell from "./CoverCell";
 import type { SimpleFlacMetadata } from "~/lib/utils/simpleFlacMetadata";
 import type { AlbumLookupResult } from "./services/albumLookup";
 import "./AdminUploadTable.scss";
@@ -91,6 +92,8 @@ interface AdminUploadTableProps {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: number) => void;
   onManualIdChange: (itemId: string, albumId: number | undefined) => void;
+  onCoverUpload: (itemId: string, file: File) => void;
+  onCoverRemove: (itemId: string) => void;
 }
 
 const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
@@ -108,6 +111,8 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   onPageChange,
   onItemsPerPageChange,
   onManualIdChange,
+  onCoverUpload,
+  onCoverRemove,
 }) => {
   const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -228,7 +233,11 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             <DataSourceCell item={item} onManualIdChange={onManualIdChange} />
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--cover">
-            {/* Empty for now */}
+            <CoverCell
+              item={item}
+              onCoverUpload={onCoverUpload}
+              onCoverRemove={onCoverRemove}
+            />
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--errors">
             {item.errorCode ? (

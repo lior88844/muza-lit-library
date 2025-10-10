@@ -15,6 +15,35 @@ export interface FlacMetadata {
   musicbrainzReleaseGroupId?: string;
 }
 
+// Complete metadata for admin discover endpoint
+export interface DiscoverMetadata {
+  title: string;
+  artist: string;
+  album: string;
+  albumArtist: string;
+  trackNumber: number;
+  trackTotal: number;
+  discNumber: number;
+  discTotal: number;
+  year: number | null;
+  date: string | null;
+  genres: string[];
+  duration: number;
+  bitrate: number;
+  sampleRate: number;
+  channels: number;
+  format: string;
+  codecProfile: string | null;
+  lossless: boolean;
+  comment: string | null;
+  isrc: string | null;
+  musicbrainzTrackId: string | null;
+  mbRecordingId: string | null;
+  musicbrainzAlbumId: string | null;
+  musicbrainzArtistId: string | null;
+  acoustid: string | null;
+}
+
 /**
  * Extract metadata from a FLAC file
  */
@@ -85,4 +114,95 @@ export async function extractAlbumMetadata(
 
   // Use the first FLAC file to get album metadata
   return await extractFlacMetadata(flacFiles[0]);
+}
+
+/**
+ * Extract complete metadata from a FLAC file for the admin discover endpoint
+ */
+export async function extractDiscoverMetadata(
+  file: File
+): Promise<DiscoverMetadata | null> {
+  try {
+    const metadata = await parseBlob(file);
+
+    // Extract genres
+    const genres: string[] = [];
+    if (metadata.common.genre) {
+      if (Array.isArray(metadata.common.genre)) {
+        genres.push(...metadata.common.genre);
+      } else {
+        genres.push(metadata.common.genre);
+      }
+    }
+
+    // Extract date if available
+    const date =
+      metadata.common.date || metadata.common.year
+        ? metadata.common.date ||
+          (metadata.common.year ? `${metadata.common.year}` : null)
+        : null;
+
+    return {
+      title: metadata.common.title || file.name.replace(/\.flac$/i, ""),
+      artist: metadata.common.artist || "Unknown Artist",
+      album: metadata.common.album || "Unknown Album",
+      albumArtist:
+        metadata.common.albumartist ||
+        metadata.common.artist ||
+        "Unknown Artist",
+      trackNumber: metadata.common.track?.no || 1,
+      trackTotal: metadata.common.track?.of || 1,
+      discNumber: metadata.common.disk?.no || 1,
+      discTotal: metadata.common.disk?.of || 1,
+      year: metadata.common.year || null,
+      date,
+      genres,
+      duration: Math.round(metadata.format.duration || 0),
+      bitrate: metadata.format.bitrate || 0,
+      sampleRate: metadata.format.sampleRate || 44100,
+      channels: metadata.format.numberOfChannels || 2,
+      format: metadata.format.container?.toUpperCase() || "FLAC",
+      codecProfile: metadata.format.codecProfile || null,
+      lossless: metadata.format.lossless !== false,
+      comment: (metadata.common.comment?.[0] as string) || null,
+      isrc: (metadata.common.isrc?.[0] as string) || null,
+      musicbrainzTrackId: Array.isArray(metadata.common.musicbrainz_trackid)
+        ? metadata.common.musicbrainz_trackid[0]
+        : metadata.common.musicbrainz_trackid || null,
+      mbRecordingId: Array.isArray(metadata.common.musicbrainz_recordingid)
+        ? metadata.common.musicbrainz_recordingid[0]
+        : metadata.common.musicbrainz_recordingid || null,
+      musicbrainzAlbumId: Array.isArray(metadata.common.musicbrainz_albumid)
+        ? metadata.common.musicbrainz_albumid[0]
+        : metadata.common.musicbrainz_albumid || null,
+      musicbrainzArtistId: Array.isArray(metadata.common.musicbrainz_artistid)
+        ? metadata.common.musicbrainz_artistid[0]
+        : metadata.common.musicbrainz_artistid || null,
+      acoustid: Array.isArray(metadata.common.acoustid_id)
+        ? metadata.common.acoustid_id[0]
+        : metadata.common.acoustid_id || null,
+    };
+  } catch (error) {
+    console.error("Error extracting discover metadata:", error);
+    return null;
+  }
+}
+
+/**
+ * Extract complete metadata from the first FLAC file in a folder for discover endpoint
+ */
+export async function extractAlbumDiscoverMetadata(
+  files: File[]
+): Promise<DiscoverMetadata | null> {
+  const flacFiles = files.filter(
+    file =>
+      file.name.toLowerCase().endsWith(".flac") || file.type === "audio/flac"
+  );
+
+  if (flacFiles.length === 0) {
+    return null;
+  }
+
+  // Use the first FLAC file to get album metadata
+  return await extractDiscoverMetadata(flacFiles[0]);
 }
