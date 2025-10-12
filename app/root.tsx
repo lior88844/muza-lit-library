@@ -160,24 +160,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ThemeModeScript />
       </head>
       <body>
-        <div className="body">
-          {!isAnyUploadPage && (
-            <MusicSidebar
-              logoAlt={t("library.musicLibrary")}
-              logoSrc="/icons/muza.svg"
-              sections={sidebarSections}
-              playlists={playlists}
-            />
-          )}
+        <Providers>
+          <div className="body">
+            {!isAnyUploadPage && (
+              <MusicSidebar
+                logoAlt={t("library.musicLibrary")}
+                logoSrc="/icons/muza.svg"
+                sections={sidebarSections}
+                playlists={playlists}
+              />
+            )}
 
-          <div className="content">
-            {!isAnyUploadPage && <MusicTopbar />}
-            {content || children}
-            {!isAnyUploadPage && <MuzaMusicPlayer />}
+            <div className="content">
+              {!isAnyUploadPage && <MusicTopbar />}
+              {content || children}
+              {!isAnyUploadPage && <MuzaMusicPlayer />}
+            </div>
           </div>
-        </div>
-        <ToastContainer />
-        <ScrollRestoration />
+          <ToastContainer />
+          <ScrollRestoration />
+        </Providers>
         <Scripts />
       </body>
     </html>
