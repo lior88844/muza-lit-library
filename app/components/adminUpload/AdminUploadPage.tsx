@@ -20,6 +20,12 @@ export interface UploadItem {
   isLookingUp?: boolean; // Whether we're currently looking up the album
   manualAlbumId?: number; // Manually entered album ID
   coverImage?: File; // Manually uploaded cover image
+  loadingState?: {
+    status: "loading" | "loaded" | "error";
+    loadedFiles: number; // how many files read from disk
+    totalFiles: number; // total files in folder
+    progress: number; // 0-100 percentage
+  };
 }
 
 interface AdminUploadPageProps {

@@ -75,6 +75,12 @@ export interface UploadItem {
   albumLookup?: AlbumLookupResult; // Backend lookup result
   isLookingUp?: boolean; // Whether we're currently looking up the album
   manualAlbumId?: number; // Manually entered album ID
+  loadingState?: {
+    status: "loading" | "loaded" | "error";
+    loadedFiles: number; // how many files read from disk
+    totalFiles: number; // total files in folder
+    progress: number; // 0-100 percentage
+  };
 }
 
 interface AdminUploadTableProps {
@@ -193,9 +199,17 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--upload">
             <div className="admin-upload-table__upload-item">
-              <div className="admin-upload-table__upload-status">
+              <div
+                className={`admin-upload-table__upload-status ${
+                  item.loadingState?.status === "loaded"
+                    ? "admin-upload-table__upload-status--loaded"
+                    : ""
+                }`}
+              >
                 <MuzaIcon
-                  iconName="Clock8"
+                  iconName={
+                    item.loadingState?.status === "loaded" ? "Check" : "Clock8"
+                  }
                   className="admin-upload-table__status-icon"
                 />
               </div>
@@ -207,23 +221,39 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                       className="admin-upload-table__type-icon"
                     />
                   </div>
-                  <span className="admin-upload-table__size-text">
-                    {formatFileSize(item.size)}
-                  </span>
-                  <span className="admin-upload-table__status-text">
-                    Uploading
-                  </span>
-                  <span className="admin-upload-table__percentage">75%</span>
-                  <div className="admin-upload-table__file-progress">
-                    <span className="admin-upload-table__progress-count">
-                      7 / {item.files.length}
+                  {item.loadingState?.status === "loaded" && item.metadata ? (
+                    <span className="admin-upload-table__album-text">
+                      {item.metadata.album || "Unknown Album"} -{" "}
+                      {item.metadata.albumartist ||
+                        item.metadata.artist ||
+                        "Unknown Artist"}
                     </span>
-                  </div>
+                  ) : (
+                    <>
+                      <span className="admin-upload-table__size-text">
+                        {formatFileSize(item.size)}
+                      </span>
+                      <span className="admin-upload-table__status-text">
+                        Loading
+                      </span>
+                      <span className="admin-upload-table__percentage">
+                        {item.loadingState?.progress ?? 0}%
+                      </span>
+                      <div className="admin-upload-table__file-progress">
+                        <span className="admin-upload-table__progress-count">
+                          {item.loadingState?.loadedFiles ?? 0} /{" "}
+                          {item.files.length}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div className="admin-upload-table__progress-bar">
                   <div
                     className="admin-upload-table__progress-fill"
-                    style={{ width: "75%" }}
+                    style={{
+                      width: `${item.loadingState?.progress ?? 0}%`,
+                    }}
                   />
                 </div>
               </div>

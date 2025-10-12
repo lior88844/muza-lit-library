@@ -250,12 +250,25 @@ $admin-table-badge-text-color: #f9fafb;
     background-color: var(--colors_secondary_light);
     border-radius: calc(var(--border_radius_full) * 1px);
     flex-shrink: 0;
+    transition: background-color 0.3s ease;
+
+    &--loaded {
+      background-color: $admin-table-success-bg;
+    }
   }
 
   &__status-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: $admin-table-icon-size;
     height: $admin-table-icon-size;
     color: var(--colors_secondary_foreground_light);
+    transition: color 0.3s ease;
+
+    .admin-upload-table__upload-status--loaded & {
+      color: $admin-table-badge-text-color;
+    }
 
     i {
       width: 100%;
@@ -639,6 +652,13 @@ $admin-table-badge-text-color: #f9fafb;
     align-items: center;
     gap: var(--muza-spacing-sm);
     flex-wrap: wrap;
+  }
+
+  &__album-text {
+    font-size: $admin-table-font-size-base;
+    font-weight: var(--muza-font-weight-bold);
+    color: var(--colors_foreground_light);
+    line-height: $admin-table-line-height-base;
   }
 
   &__upload-icon {

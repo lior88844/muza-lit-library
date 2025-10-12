@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
 import { extractAlbumDiscoverMetadata } from "~/lib/flacMetadata";
+import { extractAlbumMetadataSimple } from "~/lib/utils/simpleFlacMetadata";
 import { discoverAlbum } from "~/components/adminUpload/services/albumLookup";
 
 import "../styles/scrollbar.scss";
@@ -104,6 +105,12 @@ export default function AdminUpload() {
         path,
         errorCode: skippedCount > 0 ? ("1002" as const) : undefined,
         isLookingUp: true, // Start lookup for all items with FLAC files
+        loadingState: {
+          status: "loading",
+          loadedFiles: 0,
+          totalFiles: folderFiles.length,
+          progress: 0,
+        },
       };
 
       newItems.push(newItem);
@@ -133,6 +140,12 @@ export default function AdminUpload() {
         files: [],
         path,
         errorCode: "1001" as const,
+        loadingState: {
+          status: "error",
+          loadedFiles: 0,
+          totalFiles: 0,
+          progress: 0,
+        },
       });
     });
 
@@ -149,6 +162,56 @@ export default function AdminUpload() {
       // Only process items without critical errors (error code 1001)
       if (item.files.length > 0 && item.errorCode !== "1001") {
         try {
+          // Simulate loading progress for files
+          const totalFiles = item.files.length;
+          for (let i = 0; i < totalFiles; i++) {
+            const loadedFiles = i + 1;
+            const progress = Math.round((loadedFiles / totalFiles) * 100);
+
+            // Update loading progress
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? {
+                      ...prevItem,
+                      loadingState: {
+                        status: "loading",
+                        loadedFiles,
+                        totalFiles,
+                        progress,
+                      },
+                    }
+                  : prevItem
+              )
+            );
+
+            // Small delay to show progress (remove in production if files load instantly)
+            if (i < totalFiles - 1) {
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+          }
+
+          // Extract simple metadata from the first FLAC file
+          const simpleMetadata = extractAlbumMetadataSimple(item.files);
+
+          // Mark as fully loaded with metadata
+          setUploadedItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? {
+                    ...prevItem,
+                    metadata: simpleMetadata || undefined,
+                    loadingState: {
+                      status: "loaded",
+                      loadedFiles: totalFiles,
+                      totalFiles,
+                      progress: 100,
+                    },
+                  }
+                : prevItem
+            )
+          );
+
           // Extract complete metadata from the first FLAC file
           const metadata = await extractAlbumDiscoverMetadata(item.files);
 
@@ -180,7 +243,16 @@ export default function AdminUpload() {
           setUploadedItems(prev =>
             prev.map(prevItem =>
               prevItem.id === item.id
-                ? { ...prevItem, isLookingUp: false }
+                ? {
+                    ...prevItem,
+                    isLookingUp: false,
+                    loadingState: {
+                      status: "error",
+                      loadedFiles: item.files.length,
+                      totalFiles: item.files.length,
+                      progress: 0,
+                    },
+                  }
                 : prevItem
             )
           );
