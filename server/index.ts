@@ -25,8 +25,6 @@ process.on("uncaughtException", error => {
 const PORT = process.env.PORT || 3000;
 const STOCK_PHOTO = "/art/muza.png";
 
-// File paths
-const __filename = fileURLToPath(import.meta.url);
 const clientDir = path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
@@ -40,63 +38,11 @@ function getRandomItems(array: any[], count: number) {
   return shuffled.slice(0, count);
 }
 
-function transformAlbumData(albums: any[], transformedTracks: any[]) {
-  return albums.map(album => ({
-    id: album.id,
-    imageSrc: album.albumCover || STOCK_PHOTO,
-    title: album.albumTitle,
-    subTitle: album.yearReleased,
-    artist: album.artistMain,
-    songs: transformedTracks
-      .filter(
-        track =>
-          track.album === album.albumTitle && track.artist === album.artistMain
-      )
-      .map(track => track.id),
-  }));
-}
-
-function transformTrackData(tracks: any[]) {
-  return tracks
-    .filter(track => track.songFile)
-    .map(track => ({
-      id: track.id,
-      index: track.id,
-      title: track.songTitle,
-      time: 185,
-      albumId: track.albumTitle,
-      audioUrl: track.songFile,
-      imageSrc: track.albumCover || STOCK_PHOTO,
-      artist: track.artistMain,
-      album: track.albumTitle,
-      year: track.yearReleased,
-    }));
-}
-
-function transformArtistData(artists: any[], transformedAlbums: any[]) {
-  const albumsByArtist: Record<string, number> = transformedAlbums.reduce(
-    (acc: Record<string, number>, album) => {
-      acc[album.artist] = (acc[album.artist] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
-
-  return artists
-    .filter(artist => artist.artistMain)
-    .map((artist, index) => ({
-      id: artist.id || index + 1,
-      index: index + 1,
-      imageSrc: artist.albumCover || STOCK_PHOTO,
-      artistName: artist.artistMain,
-      albumsCount: String(albumsByArtist[artist.artistMain] || 0),
-    }));
-}
 async function fetchAlbums() {
   try {
     const data = await albumService.findMany(100, 0);
 
-    return data?.albums;
+    return data?.albums || [];
   } catch (error) {
     console.warn(
       "Failed to fetch albums from GraphQL, using empty array:",
@@ -109,10 +55,10 @@ async function fetchAlbums() {
 async function fetchTracks() {
   try {
     const data = await trackService.findMany(100, 0);
-    return data?.tracks;
+    return data?.tracks || [];
   } catch (error) {
     console.warn(
-      "Failed to fetch tracks from GraphQL, using empty array:",
+      "Failed to fetch albums from GraphQL, using empty array:",
       (error as Error)?.message
     );
     return [];
@@ -122,10 +68,10 @@ async function fetchTracks() {
 async function fetchArtists() {
   try {
     const data = await artistService.findMany(100, 0);
-    return data?.artists;
+    return data?.artists || [];
   } catch (error) {
     console.warn(
-      "Failed to fetch artists from GraphQL, using empty array:",
+      "Failed to fetch albums from GraphQL, using empty array:",
       (error as Error)?.message
     );
     return [];

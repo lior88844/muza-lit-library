@@ -178,8 +178,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <ToastContainer />
+          <ScrollRestoration />
         </Providers>
-        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
