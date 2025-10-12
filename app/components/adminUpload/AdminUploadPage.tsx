@@ -19,7 +19,7 @@ export interface UploadItem {
   albumLookup?: AlbumLookupResult; // Backend lookup result
   isLookingUp?: boolean; // Whether we're currently looking up the album
   manualAlbumId?: number; // Manually entered album ID
-  coverImage?: File; // Manually uploaded cover image
+  coverImageUrl?: string; // Manually entered cover image URL
   loadingState?: {
     status: "loading" | "loaded" | "error";
     loadedFiles: number; // how many files read from disk
@@ -43,8 +43,7 @@ interface AdminUploadPageProps {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: number) => void;
   onManualIdChange: (itemId: string, albumId: number | undefined) => void;
-  onCoverUpload: (itemId: string, file: File) => void;
-  onCoverRemove: (itemId: string) => void;
+  onCoverUrlChange: (itemId: string, url: string | undefined) => void;
 }
 
 const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
@@ -62,8 +61,7 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
   onPageChange,
   onItemsPerPageChange,
   onManualIdChange,
-  onCoverUpload,
-  onCoverRemove,
+  onCoverUrlChange,
 }) => {
   const totalItems = uploadedItems.length;
   const hasSelectedItems = selectedItems.size > 0;
@@ -96,8 +94,7 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
               onPageChange={onPageChange}
               onItemsPerPageChange={onItemsPerPageChange}
               onManualIdChange={onManualIdChange}
-              onCoverUpload={onCoverUpload}
-              onCoverRemove={onCoverRemove}
+              onCoverUrlChange={onCoverUrlChange}
             />
           </div>
         )}

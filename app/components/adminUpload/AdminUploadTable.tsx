@@ -98,8 +98,7 @@ interface AdminUploadTableProps {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: number) => void;
   onManualIdChange: (itemId: string, albumId: number | undefined) => void;
-  onCoverUpload: (itemId: string, file: File) => void;
-  onCoverRemove: (itemId: string) => void;
+  onCoverUrlChange: (itemId: string, url: string | undefined) => void;
 }
 
 const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
@@ -117,8 +116,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   onPageChange,
   onItemsPerPageChange,
   onManualIdChange,
-  onCoverUpload,
-  onCoverRemove,
+  onCoverUrlChange,
 }) => {
   const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -223,8 +221,12 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                   </div>
                   {item.loadingState?.status === "loaded" && item.metadata ? (
                     <span className="admin-upload-table__album-text">
-                      {item.metadata.album || "Unknown Album"} -{" "}
-                      {item.metadata.albumartist ||
+                      {item.albumLookup?.albumName ||
+                        item.metadata.album ||
+                        "Unknown Album"}{" "}
+                      -{" "}
+                      {item.albumLookup?.artistName ||
+                        item.metadata.albumartist ||
                         item.metadata.artist ||
                         "Unknown Artist"}
                     </span>
@@ -263,11 +265,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             <DataSourceCell item={item} onManualIdChange={onManualIdChange} />
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--cover">
-            <CoverCell
-              item={item}
-              onCoverUpload={onCoverUpload}
-              onCoverRemove={onCoverRemove}
-            />
+            <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--errors">
             {item.errorCode ? (

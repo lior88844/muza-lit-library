@@ -1,57 +1,30 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import MuzaIcon from "~/icons/MuzaIcon";
 import type { UploadItem } from "./AdminUploadPage";
 
 interface CoverCellProps {
   item: UploadItem;
-  onCoverUpload: (itemId: string, file: File) => void;
-  onCoverRemove: (itemId: string) => void;
+  onCoverUrlChange: (itemId: string, url: string | undefined) => void;
 }
 
-const CoverCell: React.FC<CoverCellProps> = ({
-  item,
-  onCoverUpload,
-  onCoverRemove,
-}) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
+  const [inputValue, setInputValue] = useState(item.coverImageUrl || "");
 
-  // Handle image URL creation and cleanup
-  useEffect(() => {
-    if (item.coverImage) {
-      console.log("Creating object URL for cover image:", item.coverImage.name);
-      const url = URL.createObjectURL(item.coverImage);
-      console.log("Created URL:", url);
-      setImageUrl(url);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setInputValue(value);
 
-      // Cleanup function
-      return () => {
-        console.log("Cleaning up URL:", url);
-        URL.revokeObjectURL(url);
-      };
-    } else {
-      setImageUrl(null);
-    }
-  }, [item.coverImage]);
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
+      // Pass the URL value to parent, or undefined if empty
+      onCoverUrlChange(item.id, value.trim() || undefined);
+    },
+    [item.id, onCoverUrlChange]
+  );
 
   const handleRemoveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onCoverRemove(item.id);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      console.log("Uploading cover image:", file.name, file.type, file.size);
-      onCoverUpload(item.id, file);
-    } else if (file) {
-      console.warn("Invalid file type for cover image:", file.type, file.name);
-      alert("Please select a valid image file (JPG, PNG, GIF, WEBP, etc.)");
-    }
+    setInputValue("");
+    onCoverUrlChange(item.id, undefined);
   };
 
   // Don't show anything for items with critical error 1001 (no FLAC files)
@@ -89,18 +62,21 @@ const CoverCell: React.FC<CoverCellProps> = ({
     );
   }
 
-  // Show manually uploaded cover image
-  if (item.coverImage && imageUrl) {
+  // Show manually entered cover image URL
+  if (item.coverImageUrl) {
     return (
       <div className="admin-upload-table__cover-cell">
         <div className="admin-upload-table__cover-image-container">
           <img
-            src={imageUrl}
+            src={item.coverImageUrl}
             alt={`${item.name} cover`}
             className="admin-upload-table__cover-image"
             onError={e => {
-              console.error("Failed to load cover image:", e);
-              // Fallback to upload button if image fails to load
+              console.error(
+                "Failed to load cover image from URL:",
+                item.coverImageUrl
+              );
+              // Fallback to input field if image fails to load
               e.currentTarget.style.display = "none";
             }}
           />
@@ -119,28 +95,18 @@ const CoverCell: React.FC<CoverCellProps> = ({
     );
   }
 
-  // Show upload button if no cover was found
+  // Show input field for manual URL entry (similar to DataSourceCell)
   return (
     <div className="admin-upload-table__cover-cell">
-      <button
-        className="admin-upload-table__cover-upload-btn"
-        onClick={handleUploadClick}
-        aria-label="Upload cover image"
-      >
-        <MuzaIcon
-          iconName="upload"
-          className="admin-upload-table__upload-icon"
+      <div className="admin-upload-table__cover-input-wrapper">
+        <input
+          type="text"
+          placeholder="Img URL"
+          value={inputValue}
+          onChange={handleInputChange}
+          className="admin-upload-table__cover-url-input"
         />
-        <span className="admin-upload-table__upload-text">Image</span>
-      </button>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="admin-upload-table__cover-input"
-        aria-hidden="true"
-      />
+      </div>
     </div>
   );
 };

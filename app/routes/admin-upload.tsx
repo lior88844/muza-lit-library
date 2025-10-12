@@ -276,16 +276,16 @@ export default function AdminUpload() {
   const handleSelectAll = useCallback(
     (selected: boolean) => {
       if (selected) {
-        const allIndices = Array.from(
-          { length: uploadedItems.length },
-          (_, i) => i
-        );
-        setSelectedItems(new Set(allIndices));
+        // Only select items that don't have error code 1001 (All Files Invalid)
+        const selectableIndices = uploadedItems
+          .map((item, index) => (item.errorCode !== "1001" ? index : -1))
+          .filter(index => index !== -1);
+        setSelectedItems(new Set(selectableIndices));
       } else {
         setSelectedItems(new Set());
       }
     },
-    [uploadedItems.length]
+    [uploadedItems]
   );
 
   const handleCancelSelection = useCallback(() => {
@@ -312,36 +312,16 @@ export default function AdminUpload() {
     []
   );
 
-  const handleCoverUpload = useCallback((itemId: string, file: File) => {
-    console.log(
-      "Cover upload handler called for item:",
-      itemId,
-      "with file:",
-      file.name
-    );
-    setUploadedItems(prev =>
-      prev.map(item => {
-        if (item.id === itemId) {
-          console.log("Updating item with cover image:", item.name);
-          return { ...item, coverImage: file };
-        }
-        return item;
-      })
-    );
-  }, []);
-
-  const handleCoverRemove = useCallback((itemId: string) => {
-    console.log("Cover remove handler called for item:", itemId);
-    setUploadedItems(prev =>
-      prev.map(item => {
-        if (item.id === itemId) {
-          console.log("Removing cover image from item:", item.name);
-          return { ...item, coverImage: undefined };
-        }
-        return item;
-      })
-    );
-  }, []);
+  const handleCoverUrlChange = useCallback(
+    (itemId: string, url: string | undefined) => {
+      setUploadedItems(prev =>
+        prev.map(item =>
+          item.id === itemId ? { ...item, coverImageUrl: url } : item
+        )
+      );
+    },
+    []
+  );
 
   const handleCancel = useCallback(() => {
     setUploadedItems([]);
@@ -367,8 +347,7 @@ export default function AdminUpload() {
       onPageChange={setCurrentPage}
       onItemsPerPageChange={setItemsPerPage}
       onManualIdChange={handleManualIdChange}
-      onCoverUpload={handleCoverUpload}
-      onCoverRemove={handleCoverRemove}
+      onCoverUrlChange={handleCoverUrlChange}
     />
   );
 }
