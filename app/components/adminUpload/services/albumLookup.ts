@@ -1,5 +1,5 @@
 import type { DiscoverMetadata } from "~/lib/flacMetadata";
-import { apiClient } from "~/lib/apiClient";
+import { adminApiClient } from "./adminApiClient";
 
 export interface AlbumLookupResult {
   found: boolean;
@@ -22,9 +22,12 @@ export async function discoverAlbum(
   metadata: DiscoverMetadata
 ): Promise<AlbumLookupResult> {
   try {
-    const response = await apiClient.post<DiscoverResponse>("/admin/discover", {
-      metadata: [metadata],
-    });
+    const response = await adminApiClient.post<DiscoverResponse>(
+      "/admin/discover",
+      {
+        metadata: [metadata],
+      }
+    );
 
     if (response.data.results && response.data.results.length > 0) {
       const result = response.data.results[0];
