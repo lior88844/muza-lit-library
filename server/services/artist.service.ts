@@ -1,6 +1,6 @@
-import type { Album, Artist } from "server/schemas";
+import type { AlbumArtist } from "server/db/album-artist.entity";
 import { db } from "../db/connection";
-import type { AlbumArtist } from "server/schemas/album-artist.schema";
+import type { Artist } from "server/db/artist.entity";
 
 // Types for transformed data
 interface ArtistWithAlbums extends Artist {
@@ -20,7 +20,7 @@ export class ArtistService {
       offset,
     });
     return {
-      artists: this.transformArtistData(artistsResult),
+      artists: this.transformArtistData(artistsResult as ArtistWithAlbums[]),
     };
   }
 

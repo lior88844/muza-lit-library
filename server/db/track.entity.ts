@@ -11,6 +11,12 @@ import {
   numeric,
 } from "drizzle-orm/pg-core";
 import { albums } from "./album.entity";
+import {
+  createInsertSchema,
+  createUpdateSchema,
+  createSelectSchema,
+} from "drizzle-zod";
+import z from "zod";
 
 export enum AudioFormatEnum {
   FLAC = "FLAC",
@@ -34,7 +40,6 @@ export const tracks = pgTable("tracks", {
   disambiguation: varchar("disambiguation", { length: 255 }),
   albumId: integer("album_id").references(() => albums.id),
   trackNumber: integer("track_number"),
-  discNumber: integer("disc_number").default(1),
   duration: integer("duration"), // in seconds
   isrc: varchar("isrc", { length: 12 }),
   mbId: uuid("mb_id"),
@@ -56,3 +61,14 @@ export const tracks = pgTable("tracks", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const TrackSchema = createSelectSchema(tracks);
+
+export const CreateTrackSchema = createInsertSchema(tracks);
+
+export const UpdateTrackSchema = createUpdateSchema(tracks);
+
+// Type exports
+export type Track = z.infer<typeof TrackSchema>;
+export type CreateTrack = z.infer<typeof CreateTrackSchema>;
+export type UpdateTrack = z.infer<typeof UpdateTrackSchema>;
