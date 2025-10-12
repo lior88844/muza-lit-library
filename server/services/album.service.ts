@@ -1,8 +1,9 @@
-import { eq, desc, count } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { db } from "../db/connection";
-import { albums, ArtistRoleEnum } from "../db/schema";
-import type { Album, Artist, Track } from "server/schemas";
-import type { AlbumArtist } from "server/schemas/album-artist.schema";
+import type { AlbumArtist } from "server/db/album-artist.entity";
+import type { Artist } from "server/db/artist.entity";
+import { albums, type Album } from "server/db/album.entity";
+import { ArtistRoleEnum } from "server/db/track-artist.entity";
 
 // Types for transformed data
 interface AlbumWithArtistsAndTracks extends Album {
@@ -26,7 +27,9 @@ export class AlbumService {
     });
 
     return {
-      albums: this.transformAlbumData(albumsResult),
+      albums: this.transformAlbumData(
+        albumsResult as AlbumWithArtistsAndTracks[]
+      ),
     };
   }
 

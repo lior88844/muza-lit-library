@@ -6,7 +6,7 @@ import {
   type Artist,
   type Track,
   type TrackArtist,
-} from "../schemas/index";
+} from "../db/schema";
 
 interface TrackWithArtists extends Track {
   trackArtists: (TrackArtist & { artist: Artist })[];

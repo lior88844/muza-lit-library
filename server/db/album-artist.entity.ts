@@ -9,6 +9,12 @@ import {
 import { artists } from "./artist.entity";
 import { albums } from "./album.entity";
 import { ArtistRoleEnum } from "./track-artist.entity";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
+import z from "zod";
 
 // Enum for artist roles in albums
 export const albumArtistRoleEnum = pgEnum(
@@ -53,3 +59,14 @@ export const albumArtists = pgTable(
     ),
   ]
 );
+
+export const AlbumArtistSchema = createSelectSchema(albumArtists);
+
+export const CreateAlbumArtistSchema = createInsertSchema(albumArtists);
+
+export const UpdateAlbumArtistSchema = createUpdateSchema(albumArtists);
+
+// Type exports
+export type AlbumArtist = z.infer<typeof AlbumArtistSchema>;
+export type CreateAlbumArtist = z.infer<typeof CreateAlbumArtistSchema>;
+export type UpdateAlbumArtist = z.infer<typeof UpdateAlbumArtistSchema>;

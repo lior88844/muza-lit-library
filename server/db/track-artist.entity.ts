@@ -8,6 +8,12 @@ import {
 } from "drizzle-orm/pg-core";
 import { artists } from "./artist.entity";
 import { tracks } from "./track.entity";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
+import z from "zod";
 
 export enum ArtistRoleEnum {
   MainArtist = "MainArtist",
@@ -63,3 +69,14 @@ export const trackArtists = pgTable(
     ),
   ]
 );
+
+export const TrackArtistSchema = createSelectSchema(trackArtists);
+
+export const CreateTrackArtistSchema = createInsertSchema(trackArtists);
+
+export const UpdateTrackArtistSchema = createUpdateSchema(trackArtists);
+
+// Type exports
+export type TrackArtist = z.infer<typeof TrackArtistSchema>;
+export type CreateTrackArtist = z.infer<typeof CreateTrackArtistSchema>;
+export type UpdateTrackArtist = z.infer<typeof UpdateTrackArtistSchema>;

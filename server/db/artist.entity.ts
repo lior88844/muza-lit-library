@@ -10,6 +10,12 @@ import {
   pgEnum,
   json,
 } from "drizzle-orm/pg-core";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
+import z from "zod";
 
 export enum ArtistTypeEnum {
   Person = "Person",
@@ -62,3 +68,14 @@ export const artists = pgTable("artists", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const ArtistSchema = createSelectSchema(artists);
+
+export const CreateArtistSchema = createInsertSchema(artists);
+
+export const UpdateArtistSchema = createUpdateSchema(artists);
+
+// Type exports
+export type Artist = z.infer<typeof ArtistSchema>;
+export type CreateArtist = z.infer<typeof CreateArtistSchema>;
+export type UpdateArtist = z.infer<typeof UpdateArtistSchema>;
