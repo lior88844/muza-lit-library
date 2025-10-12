@@ -7,7 +7,7 @@ import {
 import { z } from "zod";
 
 // Artist role enum for validation
-export const ArtistRoleSchema = z.nativeEnum(ArtistRoleEnum);
+export const ArtistRoleSchema = z.enum(ArtistRoleEnum);
 
 // Generate schemas from Drizzle table
 export const TrackArtistSchema = createSelectSchema(trackArtists, {
@@ -30,7 +30,6 @@ export const TrackWithArtistsSchema = z.object({
   disambiguation: z.string().max(255).optional(),
   albumId: z.number().optional(),
   trackNumber: z.number().int().positive().optional(),
-  discNumber: z.number().int().positive().default(1),
   duration: z.number().int().positive().optional(),
   isrc: z.string().max(12).optional(),
   mbId: z.string().uuid().optional(),

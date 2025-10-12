@@ -27,7 +27,7 @@ const clientDir = path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
 
-function getRandomItems(array: any[], count: number) {
+function getRandomItems(array: unknown[], count: number) {
   if (array.length <= count) {
     return array;
   }
@@ -43,7 +43,7 @@ async function fetchAlbums() {
     return data?.albums || [];
   } catch (error) {
     console.warn(
-      "Failed to fetch albums from GraphQL, using empty array:",
+      "Failed to fetch albums, using empty array:",
       (error as Error)?.message
     );
     return [];
@@ -56,7 +56,7 @@ async function fetchTracks() {
     return data?.tracks || [];
   } catch (error) {
     console.warn(
-      "Failed to fetch albums from GraphQL, using empty array:",
+      "Failed to fetch tracks, using empty array:",
       (error as Error)?.message
     );
     return [];
@@ -69,7 +69,7 @@ async function fetchArtists() {
     return data?.artists || [];
   } catch (error) {
     console.warn(
-      "Failed to fetch albums from GraphQL, using empty array:",
+      "Failed to fetch artists, using empty array:",
       (error as Error)?.message
     );
     return [];
@@ -79,7 +79,7 @@ async function fetchArtists() {
 // File operations
 function loadStaticData() {
   console.log("Loading mock data from:", staticDataFilePath);
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     fs.readFile(staticDataFilePath, "utf-8", (err, data) => {
       if (err) {
         console.error("Error reading mock data file:", err);
@@ -120,9 +120,9 @@ async function initializeApp() {
             fetchArtists(),
           ]);
 
-        console.log(`Loaded ${albumsData?.length} albums from GraphQL`);
-        console.log(`Loaded ${tracksData?.length} tracks from GraphQL`);
-        console.log(`Loaded ${artistsData?.length} artists from GraphQL`);
+        console.log(`Loaded ${albumsData?.length} albums`);
+        console.log(`Loaded ${tracksData?.length} tracks`);
+        console.log(`Loaded ${artistsData?.length} artists`);
 
         const response = {
           albums: {
@@ -132,7 +132,7 @@ async function initializeApp() {
           },
           artists: getRandomItems(artistsData, 125),
           songs: getRandomItems(tracksData, 100000),
-          sidebar: (allData as any)?.sidebar || [],
+          sidebar: (allData as Record<string, unknown>)?.sidebar || [],
         };
 
         console.log(
