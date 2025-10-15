@@ -1,23 +1,38 @@
-// Modal backdrop overlay
-.modal-backdrop {
+// SCSS Variables
+$modal-transition-duration: 0.3s;
+$modal-transition-easing: ease;
+$modal-backdrop-blur: 3px;
+$modal-backdrop-opacity: 0.1;
+$modal-z-index: 1001;
+
+// Mixins
+@mixin modal-transition($properties...) {
+  transition: $properties $modal-transition-duration $modal-transition-easing;
+}
+
+@mixin modal-backdrop-base {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1001;
+  z-index: $modal-z-index;
+}
+
+// Modal backdrop overlay
+.modal-backdrop {
+  @include modal-backdrop-base;
+
+  background-color: rgba(255, 255, 255, $modal-backdrop-opacity);
+  backdrop-filter: blur($modal-backdrop-blur);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition:
-    opacity 0.3s ease,
-    backdrop-filter 0.3s ease,
-    visibility 0.3s ease;
+
+  @include modal-transition(opacity, backdrop-filter, visibility);
 
   &.modal-open {
     opacity: 1;
@@ -26,77 +41,101 @@
   }
 }
 
+// Additional SCSS Variables
+$modal-max-width: 450px;
+$modal-border-radius: var(--muza-border-radius-md, 8px);
+$modal-shadow:
+  0px 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0px 4px 6px -2px rgba(0, 0, 0, 0.05);
+$modal-border: 1px solid var(--colors_border_light, #e5e7eb);
+$modal-font-family:
+  var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+
 // Main modal container
 .create-playlist-modal {
   position: relative;
   background: var(--colors_background_light, #ffffff);
-  border-radius: var(--muza-border-radius-md, 8px);
-  box-shadow:
-    0px 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0px 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--colors_border_light, #e5e7eb);
+  border-radius: $modal-border-radius;
+  box-shadow: $modal-shadow;
+  border: $modal-border;
   width: 100%;
-  max-width: 450px;
+  max-width: $modal-max-width;
   margin: var(--muza-spacing-xl, 24px);
-  font-family:
-    var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+  font-family: $modal-font-family;
   overflow: visible;
   opacity: 0;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
+
+  @include modal-transition(transform, opacity);
 
   &.modal-open {
     opacity: 1;
   }
 
+  // Typography Variables
+  $modal-title-font-size: 20px;
+  $modal-title-font-weight: var(--muza-font-weight-bold, 600);
+  $modal-title-color: var(--colors_foreground_light, #030712);
+  $modal-title-line-height: 1;
+
   .modal-title {
-    font-size: 20px;
-    font-weight: var(--muza-font-weight-bold, 600);
-    color: var(--colors_foreground_light, #030712);
-    line-height: 1;
+    font-size: $modal-title-font-size;
+    font-weight: $modal-title-font-weight;
+    color: $modal-title-color;
+    line-height: $modal-title-line-height;
     margin: 0;
   }
 
-  // Close button
+  // Close button variables
+  $close-button-size: 24px;
+  $close-button-font-size: 20px;
+  $close-button-color: var(--muza-secondary-text-color, #6b7280);
+  $close-button-opacity: 0.7;
+  $close-button-hover-opacity: 1;
+  $close-button-transition: opacity 0.15s ease;
+
   .close-button {
     position: absolute;
     top: var(--muza-spacing-lg, 16px);
     right: var(--muza-spacing-lg, 16px);
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: $close-button-font-size;
     cursor: pointer;
-    color: var(--muza-secondary-text-color, #6b7280);
+    color: $close-button-color;
     padding: var(--muza-spacing-xs, 4px);
     border-radius: var(--muza-border-radius-sm, 4px);
-    width: 24px;
-    height: 24px;
+    width: $close-button-size;
+    height: $close-button-size;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.7;
-    transition: opacity 0.15s ease;
+    opacity: $close-button-opacity;
+    transition: $close-button-transition;
 
     &:hover {
-      opacity: 1;
+      opacity: $close-button-hover-opacity;
     }
   }
+
+  // Layout variables
+  $modal-content-padding: var(--muza-spacing-xl, 24px);
+  $modal-content-gap: var(--muza-spacing-lg, 16px);
+  $modal-header-gap: var(--muza-spacing-sm, 8px);
 
   // Modal content
   .modal-content {
     position: relative;
-    padding: var(--muza-spacing-xl, 24px);
+    padding: $modal-content-padding;
     display: flex;
     flex-direction: column;
-    gap: var(--muza-spacing-lg, 16px);
+    gap: $modal-content-gap;
   }
 
   // Modal header
   .modal-header {
     display: flex;
     flex-direction: column;
-    gap: var(--muza-spacing-sm, 8px);
+    gap: $modal-header-gap;
     width: 100%;
   }
 
@@ -104,23 +143,51 @@
   .modal-content-inner {
     display: flex;
     flex-direction: column;
-    gap: var(--muza-spacing-lg, 16px);
+    gap: $modal-content-gap;
     width: 100%;
   }
+
+  // Form variables
+  $form-group-gap: var(--muza-spacing-sm, 8px);
+  $form-label-font-size: 14px;
+  $form-label-font-weight: var(--muza-font-weight-medium, 500);
+  $form-label-color: var(--colors_foreground_light, #030712);
 
   // Form groups
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: var(--muza-spacing-sm, 8px);
+    gap: $form-group-gap;
     width: 100%;
 
     label {
-      font-size: 14px;
-      font-weight: var(--muza-font-weight-medium, 500);
-      color: var(--colors_foreground_light, #030712);
+      font-size: $form-label-font-size;
+      font-weight: $form-label-font-weight;
+      color: $form-label-color;
       margin: 0;
     }
+  }
+
+  // Toggle variables
+  $toggle-wrapper-gap: var(--muza-spacing-sm, 8px);
+  $toggle-size: 36px;
+  $toggle-height: 18px;
+  $toggle-handle-size: 16px;
+  $toggle-icon-size: 16px;
+  $toggle-label-font-size: 16px;
+  $toggle-label-font-weight: var(--muza-font-weight-medium, 500);
+  $toggle-label-color: var(--colors_foreground_light, #030712);
+  $toggle-active-color: #1d4ed8;
+  $toggle-inactive-color: var(--colors_border_light, #e5e7eb);
+  $toggle-shadow:
+    0px 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0px 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  // Toggle mixin
+  @mixin toggle-base {
+    width: $toggle-size;
+    height: $toggle-height;
+    cursor: pointer;
   }
 
   // Modal-specific toggle styling to match Figma design
@@ -128,7 +195,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--muza-spacing-sm, 8px);
+    gap: $toggle-wrapper-gap;
     position: relative;
     z-index: 2;
 
@@ -140,31 +207,25 @@
       z-index: 1;
 
       .toggle {
-        width: 36px;
-        height: 18px;
-        cursor: pointer;
+        @include toggle-base;
 
         .slider {
-          background-color: var(--colors_border_light, #e5e7eb);
+          background-color: $toggle-inactive-color;
           border-radius: 9999px;
-          box-shadow:
-            0px 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0px 4px 6px -2px rgba(0, 0, 0, 0.05);
+          box-shadow: $toggle-shadow;
           pointer-events: none;
 
           &:before {
             left: 1px;
             bottom: 1px;
             background-color: var(--colors_background_light, #ffffff);
-            box-shadow:
-              0px 10px 15px -3px rgba(0, 0, 0, 0.1),
-              0px 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: $toggle-shadow;
             pointer-events: none;
           }
         }
 
         input:checked + .slider {
-          background-color: #1d4ed8;
+          background-color: $toggle-active-color;
         }
 
         input:checked + .slider:before {
@@ -173,9 +234,9 @@
       }
 
       .label {
-        font-size: 16px;
-        font-weight: var(--muza-font-weight-medium, 500);
-        color: var(--colors_foreground_light, #030712);
+        font-size: $toggle-label-font-size;
+        font-weight: $toggle-label-font-weight;
+        color: $toggle-label-color;
         line-height: 1;
         display: flex;
         align-items: center;
@@ -185,8 +246,8 @@
 
         &::before {
           content: "";
-          width: 16px;
-          height: 16px;
+          width: $toggle-icon-size;
+          height: $toggle-icon-size;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23030712' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='12' cy='16' r='1'%3E%3C/circle%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E");
           background-size: contain;
           background-repeat: no-repeat;
@@ -195,16 +256,41 @@
       }
     }
 
+    // Privacy explanation variables
+    $privacy-explanation-font-size: 16px;
+    $privacy-explanation-font-weight: var(--muza-font-weight-regular, 400);
+    $privacy-explanation-color: var(--colors_muted_foreground_light, #6b7280);
+    $privacy-explanation-line-height: 20px;
+    $privacy-explanation-letter-spacing: 0.25px;
+    $privacy-explanation-margin-left: 44px; // Align with the text after the toggle
+    $privacy-explanation-margin-right: 60px;
+
     .privacy-explanation {
-      font-size: 16px;
-      font-weight: var(--muza-font-weight-regular, 400);
-      color: var(--colors_muted_foreground_light, #6b7280);
-      line-height: 20px;
-      letter-spacing: 0.25px;
+      font-size: $privacy-explanation-font-size;
+      font-weight: $privacy-explanation-font-weight;
+      color: $privacy-explanation-color;
+      line-height: $privacy-explanation-line-height;
+      letter-spacing: $privacy-explanation-letter-spacing;
       margin: 0;
-      margin-left: 44px; // Align with the text after the toggle
+      margin-left: $privacy-explanation-margin-left;
+      margin-right: $privacy-explanation-margin-right;
     }
   }
+
+  // Input variables
+  $input-padding: 8px 12px;
+  $input-font-size: 16px;
+  $input-color: #030712;
+  $input-background: var(--colors_background_light, #ffffff);
+  $input-border: 1px solid var(--colors_border_light, #e5e7eb);
+  $input-border-radius: 9999px;
+  $input-height: 36px;
+  $input-font-family:
+    var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+  $input-letter-spacing: 0.25px;
+  $input-placeholder-color: var(--colors_muted_foreground_light, #6b7280);
+  $input-focus-border-color: var(--muza-secondary-text-color, #6b7280);
+  $input-focus-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
 
   // Modal-specific input styling to match Figma design
   .input-wrapper {
@@ -218,33 +304,32 @@
     }
 
     input {
-      padding: 8px 12px;
-      font-size: 16px;
-      color: #030712;
-      background-color: var(--colors_background_light, #ffffff);
-      border: 1px solid var(--colors_border_light, #e5e7eb);
-      border-radius: 9999px;
-      height: 36px;
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
-      letter-spacing: 0.25px;
+      padding: $input-padding;
+      font-size: $input-font-size;
+      color: $input-color;
+      background-color: $input-background;
+      border: $input-border;
+      border-radius: $input-border-radius;
+      height: $input-height;
+      font-family: $input-font-family;
+      letter-spacing: $input-letter-spacing;
 
       &::placeholder {
-        color: var(--colors_muted_foreground_light, #6b7280);
+        color: $input-placeholder-color;
       }
 
       &:focus {
         outline: none;
-        border-color: var(--muza-secondary-text-color, #6b7280);
-        box-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
+        border-color: $input-focus-border-color;
+        box-shadow: $input-focus-shadow;
       }
 
       &.success {
         border-color: var(--colors_border_light, #e5e7eb);
 
         &:focus {
-          border-color: var(--muza-secondary-text-color, #6b7280);
-          box-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
+          border-color: $input-focus-border-color;
+          box-shadow: $input-focus-shadow;
         }
       }
     }
@@ -257,26 +342,39 @@
     }
   }
 
+  // Button variables
+  $button-gap: var(--muza-spacing-lg, 16px);
+  $button-padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+  $button-border-radius: 9999px;
+  $button-font-size: 16px;
+  $button-font-weight: var(--muza-font-weight-medium, 500);
+  $button-transition: background-color 0.15s ease;
+
+  // Button mixin
+  @mixin button-base {
+    flex: 1;
+    padding: $button-padding;
+    border: none;
+    border-radius: $button-border-radius;
+    font-size: $button-font-size;
+    font-weight: $button-font-weight;
+    cursor: pointer;
+    transition: $button-transition;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   // Modal buttons
   .modal-buttons {
     display: flex;
-    gap: var(--muza-spacing-lg, 16px);
+    gap: $button-gap;
     align-self: flex-end;
 
     .cancel-button {
-      flex: 1;
-      padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+      @include button-base;
       background: var(--colors_secondary_light, #f3f4f6);
       color: var(--colors_secondary_foreground_light, #111827);
-      border: none;
-      border-radius: 9999px;
-      font-size: 16px;
-      font-weight: var(--muza-font-weight-medium, 500);
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
 
       &:hover {
         background: var(--muza-button-hover-background, #dddddd);
@@ -284,19 +382,9 @@
     }
 
     .create-button {
-      flex: 1;
-      padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+      @include button-base;
       background: var(--colors_primary_light, #1d4ed8);
       color: var(--colors_primary_foreground_light, #f9fafb);
-      border: none;
-      border-radius: 9999px;
-      font-size: 16px;
-      font-weight: var(--muza-font-weight-medium, 500);
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
 
       &:hover {
         background: var(--colors_primary_dark, #2563eb);
