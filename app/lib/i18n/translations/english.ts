@@ -49,7 +49,9 @@ const english = {
   "playlist.visibility": "Visibility",
   "playlist.public": "Public",
   "playlist.private": "Private",
-  "playlist.makePrivate": "Make private",
+  "playlist.makePrivate": "Keep private",
+  "playlist.privateExplanation":
+    "Your playlist will not be visible nor accessible by anyone.",
   "playlist.create": "Create",
   "playlist.cancel": "Cancel",
 

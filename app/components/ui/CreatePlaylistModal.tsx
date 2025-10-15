@@ -87,6 +87,9 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
                   onChange={handleToggleChange}
                   label={t("playlist.makePrivate")}
                 />
+                <p className="privacy-explanation">
+                  {t("playlist.privateExplanation")}
+                </p>
               </div>
             </div>
           </div>
