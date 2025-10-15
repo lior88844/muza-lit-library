@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import * as fs from "fs";
+import { fileURLToPath } from "url";
 import { AlbumService } from "./services/album.service";
 import { ArtistService } from "./services/artist.service";
 import { TrackService } from "./services/track.service";
@@ -22,6 +23,7 @@ process.on("uncaughtException", error => {
 });
 
 const PORT = process.env.PORT || 3000;
+const STOCK_PHOTO = "/art/muza.png";
 
 const clientDir = path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
@@ -105,6 +107,9 @@ async function initializeApp() {
   try {
     console.log("Initializing application...");
     const app = express();
+
+    // Middleware
+    app.use(express.json());
 
     // API endpoints
     app.get("/staticData/allData.json", async (req, res) => {

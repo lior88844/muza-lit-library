@@ -15,6 +15,15 @@ export interface FlacMetadata {
   musicbrainzReleaseGroupId?: string;
 }
 
+// Complete metadata for admin discover endpoint
+export interface DiscoverMetadata {
+  artist: string;
+  album: string;
+  title: string;
+  trackTotal?: number;
+  musicbrainzAlbumId?: string;
+}
+
 /**
  * Extract metadata from a FLAC file
  */
@@ -85,4 +94,52 @@ export async function extractAlbumMetadata(
 
   // Use the first FLAC file to get album metadata
   return await extractFlacMetadata(flacFiles[0]);
+}
+
+/**
+ * Extract complete metadata from a FLAC file for the admin discover endpoint
+ */
+export async function extractDiscoverMetadata(
+  file: File
+): Promise<DiscoverMetadata | null> {
+  try {
+    const metadata = await parseBlob(file);
+
+    // Extract musicbrainz album ID if available
+    const musicbrainzAlbumId = Array.isArray(
+      metadata.common.musicbrainz_albumid
+    )
+      ? metadata.common.musicbrainz_albumid[0]
+      : metadata.common.musicbrainz_albumid;
+
+    return {
+      artist: metadata.common.artist || "Unknown Artist",
+      album: metadata.common.album || "Unknown Album",
+      title: metadata.common.title || file.name.replace(/\.flac$/i, ""),
+      trackTotal: metadata.common.track?.of || undefined,
+      musicbrainzAlbumId: musicbrainzAlbumId || undefined,
+    };
+  } catch (error) {
+    console.error("Error extracting discover metadata:", error);
+    return null;
+  }
+}
+
+/**
+ * Extract complete metadata from the first FLAC file in a folder for discover endpoint
+ */
+export async function extractAlbumDiscoverMetadata(
+  files: File[]
+): Promise<DiscoverMetadata | null> {
+  const flacFiles = files.filter(
+    file =>
+      file.name.toLowerCase().endsWith(".flac") || file.type === "audio/flac"
+  );
+
+  if (flacFiles.length === 0) {
+    return null;
+  }
+
+  // Use the first FLAC file to get album metadata
+  return await extractDiscoverMetadata(flacFiles[0]);
 }

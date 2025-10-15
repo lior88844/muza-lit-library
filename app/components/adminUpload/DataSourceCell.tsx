@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { FaSpinner } from "react-icons/fa";
 import MuzaIcon from "~/icons/MuzaIcon";
 import type { UploadItem } from "./AdminUploadPage";
 
@@ -29,8 +30,8 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
     [item.id, onManualIdChange]
   );
 
-  // Don't show anything for items with errors 1001 or 1002
-  if (item.errorCode === "1001" || item.errorCode === "1002") {
+  // Don't show anything for items with critical error 1001 (no FLAC files)
+  if (item.errorCode === "1001") {
     return <div className="admin-upload-table__data-source-loading">-</div>;
   }
 
@@ -38,10 +39,7 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   if (item.isLookingUp) {
     return (
       <div className="admin-upload-table__data-source-loading">
-        <MuzaIcon
-          iconName="LoaderCircle"
-          className="admin-upload-table__loading-spinner"
-        />
+        <FaSpinner className="admin-upload-table__loading-spinner" />
       </div>
     );
   }
@@ -64,7 +62,9 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   // Show input field for manual ID entry
   return (
     <div className="admin-upload-table__data-source-input">
-      <div className="admin-upload-table__input-wrapper">
+      <div
+        className={`admin-upload-table__input-wrapper ${!item.hasValidId && !item.isLookingUp ? "admin-upload-table__input-wrapper--error" : ""}`}
+      >
         <input
           type="number"
           placeholder="Type in ID"

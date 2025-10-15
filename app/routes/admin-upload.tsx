@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
+import { extractAlbumDiscoverMetadata } from "~/lib/flacMetadata";
 import { extractAlbumMetadataSimple } from "~/lib/utils/simpleFlacMetadata";
-import { lookupAlbum } from "~/components/adminUpload/services/albumLookup";
+import { discoverAlbum } from "~/components/adminUpload/services/albumLookup";
+import { adminApiClient } from "~/components/adminUpload/services/adminApiClient";
 
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
@@ -36,6 +38,10 @@ export default function AdminUpload() {
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [isScanning, setIsScanning] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccessMessage, setUploadSuccessMessage] = useState<
+    string | null
+  >(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -75,8 +81,18 @@ export default function AdminUpload() {
       flacFolderMap.get(folderPath)!.push(file);
     });
 
-    // Create items for folders with FLAC files
-    for (const [path, folderFiles] of Array.from(flacFolderMap.entries())) {
+    // Filter out parent folders that have child folders in the list
+    const allFolderPaths = Array.from(flacFolderMap.keys());
+    const filteredFolderPaths = allFolderPaths.filter(path => {
+      // Keep this folder if no other folder in the list has it as a prefix (i.e., it's not a parent)
+      return !allFolderPaths.some(
+        otherPath => otherPath !== path && otherPath.startsWith(path + "/")
+      );
+    });
+
+    // Create items for folders with FLAC files (excluding parent folders)
+    for (const path of filteredFolderPaths) {
+      const folderFiles = flacFolderMap.get(path)!;
       const totalSize = folderFiles.reduce((sum, file) => sum + file.size, 0);
       const folderName =
         path === "root" ? "Music Folder" : path.split("/").pop() || path;
@@ -93,28 +109,49 @@ export default function AdminUpload() {
         files: folderFiles,
         path,
         errorCode: skippedCount > 0 ? ("1002" as const) : undefined,
-        isLookingUp: skippedCount === 0, // Only look up if there are no errors
+        isLookingUp: true, // Start lookup for all items with FLAC files
+        loadingState: {
+          status: "loading",
+          loadedFiles: 0,
+          totalFiles: folderFiles.length,
+          progress: 0,
+        },
       };
 
       newItems.push(newItem);
     }
 
-    // Create error items for folders with no FLAC files
-    Array.from(allFolderMap.entries()).forEach(([path, allFiles]) => {
-      if (!flacFolderMap.has(path)) {
-        const folderName =
-          path === "root" ? "Music Folder" : path.split("/").pop() || path;
+    // Create error items for folders with no FLAC files (excluding parent folders)
+    const allFoldersWithoutFlac = Array.from(allFolderMap.keys()).filter(
+      path => !flacFolderMap.has(path)
+    );
 
-        newItems.push({
-          id: `error-folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          name: folderName,
-          type: "folder",
-          size: 0,
-          files: [],
-          path,
-          errorCode: "1001" as const,
-        });
-      }
+    const filteredErrorFolderPaths = allFoldersWithoutFlac.filter(path => {
+      // Keep this folder if no other folder in allFolderMap has it as a prefix
+      return !Array.from(allFolderMap.keys()).some(
+        otherPath => otherPath !== path && otherPath.startsWith(path + "/")
+      );
+    });
+
+    filteredErrorFolderPaths.forEach(path => {
+      const folderName =
+        path === "root" ? "Music Folder" : path.split("/").pop() || path;
+
+      newItems.push({
+        id: `error-folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: folderName,
+        type: "folder",
+        size: 0,
+        files: [],
+        path,
+        errorCode: "1001" as const,
+        loadingState: {
+          status: "error",
+          loadedFiles: 0,
+          totalFiles: 0,
+          progress: 0,
+        },
+      });
     });
 
     setUploadedItems(prev => [...prev, ...newItems]);
@@ -125,103 +162,340 @@ export default function AdminUpload() {
       setIsScanning(false);
     }, 2000);
 
-    // Process metadata extraction and album lookup for each valid folder
+    // Process metadata extraction and album discovery for each valid folder
     for (const item of newItems) {
-      if (item.files.length > 0 && !item.errorCode) {
+      // Only process items without critical errors (error code 1001)
+      if (item.files.length > 0 && item.errorCode !== "1001") {
         try {
-          // Extract metadata from the folder
-          const metadata = extractAlbumMetadataSimple(item.files);
+          // Simulate loading progress for files
+          const totalFiles = item.files.length;
+          for (let i = 0; i < totalFiles; i++) {
+            const loadedFiles = i + 1;
+            const progress = Math.round((loadedFiles / totalFiles) * 100);
 
-          if (metadata) {
-            // Update item with metadata
-            setUploadedItems(prev =>
-              prev.map(prevItem =>
-                prevItem.id === item.id ? { ...prevItem, metadata } : prevItem
-              )
-            );
-
-            // Look up album in backend
-            const albumLookup = await lookupAlbum(metadata);
-
-            // Update item with lookup result and remove loading state
+            // Update loading progress
             setUploadedItems(prev =>
               prev.map(prevItem =>
                 prevItem.id === item.id
-                  ? { ...prevItem, albumLookup, isLookingUp: false }
+                  ? {
+                      ...prevItem,
+                      loadingState: {
+                        status: "loading",
+                        loadedFiles,
+                        totalFiles,
+                        progress,
+                      },
+                    }
                   : prevItem
               )
+            );
+
+            // Small delay to show progress (remove in production if files load instantly)
+            if (i < totalFiles - 1) {
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+          }
+
+          // Extract simple metadata from the first FLAC file
+          const simpleMetadata = extractAlbumMetadataSimple(item.files);
+
+          // Mark as fully loaded with metadata
+          setUploadedItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? {
+                    ...prevItem,
+                    metadata: simpleMetadata || undefined,
+                    loadingState: {
+                      status: "loaded",
+                      loadedFiles: totalFiles,
+                      totalFiles,
+                      progress: 100,
+                    },
+                  }
+                : prevItem
+            )
+          );
+
+          // Extract complete metadata from the first FLAC file
+          const metadata = await extractAlbumDiscoverMetadata(item.files);
+
+          if (metadata) {
+            // Discover album in backend
+            const albumLookup = await discoverAlbum(metadata);
+
+            // Update item with lookup result and remove loading state
+            setUploadedItems(prev =>
+              prev.map(prevItem => {
+                if (prevItem.id === item.id) {
+                  const hasValidId =
+                    albumLookup?.found ||
+                    (prevItem.manualAlbumId !== undefined &&
+                      prevItem.manualAlbumId > 0);
+                  const hasValidCover = !!(
+                    albumLookup?.coverUrl || prevItem.coverImageUrl
+                  );
+                  const isUploadReady =
+                    hasValidId && hasValidCover && prevItem.files.length > 0;
+
+                  return {
+                    ...prevItem,
+                    albumLookup,
+                    isLookingUp: false,
+                    hasValidId,
+                    hasValidCover,
+                    isUploadReady,
+                  };
+                }
+                return prevItem;
+              })
             );
           } else {
             // Failed to extract metadata
             setUploadedItems(prev =>
-              prev.map(prevItem =>
-                prevItem.id === item.id
-                  ? { ...prevItem, isLookingUp: false }
-                  : prevItem
-              )
+              prev.map(prevItem => {
+                if (prevItem.id === item.id) {
+                  const hasValidId = !!(
+                    prevItem.manualAlbumId !== undefined &&
+                    prevItem.manualAlbumId > 0
+                  );
+                  const hasValidCover = !!prevItem.coverImageUrl;
+                  const isUploadReady =
+                    hasValidId && hasValidCover && prevItem.files.length > 0;
+
+                  return {
+                    ...prevItem,
+                    isLookingUp: false,
+                    hasValidId,
+                    hasValidCover,
+                    isUploadReady,
+                  };
+                }
+                return prevItem;
+              })
             );
           }
         } catch (error) {
-          console.error("Error processing album metadata:", error);
+          console.error("Error processing album discovery:", error);
           // Remove loading state on error
           setUploadedItems(prev =>
-            prev.map(prevItem =>
-              prevItem.id === item.id
-                ? { ...prevItem, isLookingUp: false }
-                : prevItem
-            )
+            prev.map(prevItem => {
+              if (prevItem.id === item.id) {
+                const hasValidId = !!(
+                  prevItem.manualAlbumId !== undefined &&
+                  prevItem.manualAlbumId > 0
+                );
+                const hasValidCover = !!prevItem.coverImageUrl;
+                const isUploadReady =
+                  hasValidId && hasValidCover && prevItem.files.length > 0;
+
+                return {
+                  ...prevItem,
+                  isLookingUp: false,
+                  hasValidId,
+                  hasValidCover,
+                  isUploadReady,
+                  loadingState: {
+                    status: "error",
+                    loadedFiles: item.files.length,
+                    totalFiles: item.files.length,
+                    progress: 0,
+                  },
+                };
+              }
+              return prevItem;
+            })
           );
         }
       }
     }
   }, []);
 
-  const handleItemSelect = useCallback((index: number, selected: boolean) => {
-    setSelectedItems(prev => {
-      const newSet = new Set(prev);
-      if (selected) {
-        newSet.add(index);
-      } else {
-        newSet.delete(index);
+  const handleItemSelect = useCallback(
+    (index: number, selected: boolean) => {
+      const item = uploadedItems[index];
+
+      // Don't allow selection if item has critical errors, is not upload ready, or is already uploaded
+      if (
+        selected &&
+        (item.errorCode === "1001" || !item.isUploadReady || item.isUploaded)
+      ) {
+        return;
       }
-      return newSet;
-    });
-  }, []);
+
+      setSelectedItems(prev => {
+        const newSet = new Set(prev);
+        if (selected) {
+          newSet.add(index);
+        } else {
+          newSet.delete(index);
+        }
+        return newSet;
+      });
+    },
+    [uploadedItems]
+  );
 
   const handleSelectAll = useCallback(
     (selected: boolean) => {
       if (selected) {
-        const allIndices = Array.from(
-          { length: uploadedItems.length },
-          (_, i) => i
-        );
-        setSelectedItems(new Set(allIndices));
+        // Only select items that don't have error code 1001 (All Files Invalid), are upload ready, and not uploaded
+        const selectableIndices = uploadedItems
+          .map((item, index) =>
+            item.errorCode !== "1001" && item.isUploadReady && !item.isUploaded
+              ? index
+              : -1
+          )
+          .filter(index => index !== -1);
+        setSelectedItems(new Set(selectableIndices));
       } else {
         setSelectedItems(new Set());
       }
     },
-    [uploadedItems.length]
+    [uploadedItems]
   );
 
   const handleCancelSelection = useCallback(() => {
     setSelectedItems(new Set());
   }, []);
 
-  const handleProcessUpload = useCallback(() => {
+  const handleProcessUpload = useCallback(async () => {
     const selectedItemList = Array.from(selectedItems).map(
       index => uploadedItems[index]
     );
-    // TODO: Process selected items
-    // eslint-disable-next-line no-console
-    console.log("Processing items:", selectedItemList);
+
+    // Filter to only include items that are upload ready
+    const uploadableItems = selectedItemList.filter(
+      item => item.isUploadReady && item.files.length > 0
+    );
+
+    if (uploadableItems.length === 0) {
+      // eslint-disable-next-line no-console
+      console.warn("No uploadable items selected");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const uploadedItemIds: string[] = [];
+
+      // Process each album upload
+      for (const item of uploadableItems) {
+        // Get album ID (from lookup or manual entry)
+        const mbId = item.albumLookup?.mbId || item.manualAlbumId?.toString();
+
+        // Get cover image URL (from lookup or manual entry)
+        const albumCover = item.albumLookup?.coverUrl || item.coverImageUrl;
+
+        // Create FormData for file upload
+        const formData = new FormData();
+
+        // Add album metadata
+        formData.append("mbId", mbId!);
+        formData.append("albumCover", albumCover!);
+
+        // Add FLAC files only
+        item.files.forEach((file, index) => {
+          formData.append(`files`, file);
+        });
+
+        // Upload to API
+        const response = await adminApiClient.post(
+          "/admin/upload-album",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // eslint-disable-next-line no-console
+        console.log(`Upload successful for album ${mbId}:`, response.data);
+        uploadedItemIds.push(item.id);
+      }
+
+      // Mark uploaded items as uploaded
+      setUploadedItems(prev =>
+        prev.map(item =>
+          uploadedItemIds.includes(item.id)
+            ? { ...item, isUploaded: true }
+            : item
+        )
+      );
+
+      // Clear selection after successful upload
+      setSelectedItems(new Set());
+
+      // Show success message
+      setUploadSuccessMessage(
+        `Successfully uploaded ${uploadedItemIds.length} album${uploadedItemIds.length > 1 ? "s" : ""}!`
+      );
+
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        setUploadSuccessMessage(null);
+      }, 5000);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Upload failed:", error);
+      // Handle error (show notification, etc.)
+    } finally {
+      setIsUploading(false);
+    }
   }, [selectedItems, uploadedItems]);
 
   const handleManualIdChange = useCallback(
     (itemId: string, albumId: number | undefined) => {
       setUploadedItems(prev =>
-        prev.map(item =>
-          item.id === itemId ? { ...item, manualAlbumId: albumId } : item
-        )
+        prev.map(item => {
+          if (item.id === itemId) {
+            const hasValidId = albumId !== undefined && albumId > 0;
+            const hasValidCover = !!(
+              item.albumLookup?.coverUrl || item.coverImageUrl
+            );
+            const isUploadReady =
+              hasValidId && hasValidCover && item.files.length > 0;
+
+            return {
+              ...item,
+              manualAlbumId: albumId,
+              hasValidId,
+              hasValidCover,
+              isUploadReady,
+            };
+          }
+          return item;
+        })
+      );
+    },
+    []
+  );
+
+  const handleCoverUrlChange = useCallback(
+    (itemId: string, url: string | undefined) => {
+      setUploadedItems(prev =>
+        prev.map(item => {
+          if (item.id === itemId) {
+            const hasValidId = !!(
+              item.albumLookup?.found ||
+              (item.manualAlbumId !== undefined && item.manualAlbumId > 0)
+            );
+            const hasValidCover = !!url;
+            const isUploadReady =
+              hasValidId && hasValidCover && item.files.length > 0;
+
+            return {
+              ...item,
+              coverImageUrl: url,
+              hasValidId,
+              hasValidCover,
+              isUploadReady,
+            };
+          }
+          return item;
+        })
       );
     },
     []
@@ -240,6 +514,8 @@ export default function AdminUpload() {
       uploadedItems={uploadedItems}
       selectedItems={selectedItems}
       isScanning={isScanning}
+      isUploading={isUploading}
+      uploadSuccessMessage={uploadSuccessMessage}
       currentPage={currentPage}
       itemsPerPage={itemsPerPage}
       onFileUpload={handleFileUpload}
@@ -251,6 +527,7 @@ export default function AdminUpload() {
       onPageChange={setCurrentPage}
       onItemsPerPageChange={setItemsPerPage}
       onManualIdChange={handleManualIdChange}
+      onCoverUrlChange={handleCoverUrlChange}
     />
   );
 }

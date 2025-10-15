@@ -21,7 +21,7 @@ $admin-table-header-checkbox-width: 50px;
 $admin-table-header-folder-width: 180px;
 $admin-table-header-upload-min-width: 400px;
 $admin-table-header-data-source-width: 100px;
-$admin-table-header-cover-width: 70px;
+$admin-table-header-cover-width: 80px;
 $admin-table-tooltip-min-width: 280px;
 $admin-table-tooltip-max-width: 320px;
 $admin-table-tooltip-padding: 12px;
@@ -35,6 +35,7 @@ $admin-table-success-icon-size: 12px;
 $admin-table-error-1001-bg: #dc2626;
 $admin-table-error-1002-bg: #ea580c;
 $admin-table-success-bg: #15803d;
+$admin-table-uploaded-bg: #7c3aed; // violet-600
 $admin-table-tooltip-bg: #1f2937;
 $admin-table-tooltip-title-color: #f9fafb;
 $admin-table-tooltip-desc-color: #d1d5db;
@@ -250,12 +251,25 @@ $admin-table-badge-text-color: #f9fafb;
     background-color: var(--colors_secondary_light);
     border-radius: calc(var(--border_radius_full) * 1px);
     flex-shrink: 0;
+    transition: background-color 0.3s ease;
+
+    &--loaded {
+      background-color: $admin-table-success-bg;
+    }
   }
 
   &__status-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: $admin-table-icon-size;
     height: $admin-table-icon-size;
     color: var(--colors_secondary_foreground_light);
+    transition: color 0.3s ease;
+
+    .admin-upload-table__upload-status--loaded & {
+      color: $admin-table-badge-text-color;
+    }
 
     i {
       width: 100%;
@@ -282,6 +296,7 @@ $admin-table-badge-text-color: #f9fafb;
   &__upload-info {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     justify-content: space-between;
     gap: var(--muza-spacing-sm);
   }
@@ -637,8 +652,16 @@ $admin-table-badge-text-color: #f9fafb;
   &__upload-info {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: var(--muza-spacing-sm);
     flex-wrap: wrap;
+  }
+
+  &__album-text {
+    font-size: $admin-table-font-size-base;
+    font-weight: var(--muza-font-weight-bold);
+    color: var(--colors_foreground_light);
+    line-height: $admin-table-line-height-base;
   }
 
   &__upload-icon {
@@ -725,7 +748,29 @@ $admin-table-badge-text-color: #f9fafb;
     white-space: nowrap;
   }
 
+  &__uploaded-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: $admin-table-badge-padding;
+    border-radius: $admin-table-badge-border-radius;
+    background-color: $admin-table-uploaded-bg;
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: $admin-table-font-size-small;
+    font-weight: 400;
+    line-height: 1;
+    color: $admin-table-badge-text-color;
+    white-space: nowrap;
+  }
+
   &__success-icon {
+    width: $admin-table-success-icon-size;
+    height: $admin-table-success-icon-size;
+    color: $admin-table-badge-text-color;
+  }
+
+  &__uploaded-icon {
     width: $admin-table-success-icon-size;
     height: $admin-table-success-icon-size;
     color: $admin-table-badge-text-color;
@@ -795,7 +840,7 @@ $admin-table-badge-text-color: #f9fafb;
   &__loading-spinner {
     width: 16px;
     height: 16px;
-    color: var(--muza-color-gray-500);
+    color: var(--colors_primary_light);
     animation: spin 1s linear infinite;
   }
 
@@ -833,6 +878,13 @@ $admin-table-badge-text-color: #f9fafb;
   &__input-wrapper {
     width: 100%;
     max-width: 100px;
+
+    &--error {
+      .admin-upload-table__id-input {
+        border-color: #dc2626; // red-600
+        box-shadow: 0 0 0 1px #dc2626; // red-600
+      }
+    }
   }
 
   &__id-input {
@@ -859,7 +911,112 @@ $admin-table-badge-text-color: #f9fafb;
     // Firefox
     &[type="number"] {
       -moz-appearance: textfield;
+      appearance: textfield;
     }
+
+    &::placeholder {
+      color: #6b7280; // gray-500
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0.25px;
+    }
+
+    &:focus {
+      border-color: var(--muza-color-primary, #2563eb);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    &:invalid {
+      border-color: #ef4444; // red-500
+    }
+  }
+
+  // Cover cell styles
+  &__cover-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+  }
+
+  &__cover-image-container {
+    position: relative;
+    width: 50px;
+    height: 50px;
+  }
+
+  &__cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--muza-border-radius-sm);
+    border: 1px solid var(--colors_border_light);
+  }
+
+  &__cover-remove-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background-color: var(--colors_secondary_light, #f3f4f6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+    i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    &:hover {
+      background-color: var(--colors_muted_light, #f9fafb);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  &__remove-icon {
+    width: 10px;
+    height: 10px;
+    color: #ffffff;
+  }
+
+  &__cover-input-wrapper {
+    width: 100%;
+    max-width: 180px;
+
+    &--error {
+      .admin-upload-table__cover-url-input {
+        border-color: #dc2626; // red-600
+        box-shadow: 0 0 0 1px #dc2626; // red-600
+      }
+    }
+  }
+
+  &__cover-url-input {
+    width: 100%;
+    height: 36px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb; // gray-200
+    border-radius: 9999px;
+    background-color: #ffffff;
+    font-size: 16px;
+    line-height: 20px;
+    color: #111827; // gray-900
+    outline: none;
+    transition: border-color 0.2s ease;
+    font-family: "Founders Grotesk", sans-serif;
 
     &::placeholder {
       color: #6b7280; // gray-500

@@ -26,6 +26,25 @@ $admin-page-gap: 0;
   padding: var(--muza-spacing-md) 0;
 }
 
+.admin-upload-success-message {
+  padding: var(--muza-spacing-md) var(--muza-spacing-xxl);
+  background-color: #15803d; // green-700
+  border-bottom: 1px solid #16a34a; // green-600
+}
+
+.admin-upload-success-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-upload-success-text {
+  color: #f9fafb; // gray-50
+  font-size: 16px;
+  font-weight: 500;
+  font-family: var(--typography_font_family_font_sans);
+}
+
 .admin-upload-table-section {
   flex: 1;
   display: flex;

@@ -1,11 +1,11 @@
-import { getAccessToken } from "../appData/authStore";
+import { getAccessToken } from "~/appData/authStore";
 import _axios, { type AxiosRequestHeaders } from "axios";
 
-const axios = _axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "",
+const adminAxios = _axios.create({
+  baseURL: import.meta.env.VITE_ADMIN_API_BASE_URL || "",
 });
 
-axios.interceptors.request.use(config => {
+adminAxios.interceptors.request.use(config => {
   const token = getAccessToken();
   if (token) {
     if (!config.headers) {
@@ -16,4 +16,4 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-export const apiClient = axios;
+export const adminApiClient = adminAxios;
