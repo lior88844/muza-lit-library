@@ -21,7 +21,7 @@ $admin-table-header-checkbox-width: 50px;
 $admin-table-header-folder-width: 180px;
 $admin-table-header-upload-min-width: 400px;
 $admin-table-header-data-source-width: 100px;
-$admin-table-header-cover-width: 70px;
+$admin-table-header-cover-width: 80px;
 $admin-table-tooltip-min-width: 280px;
 $admin-table-tooltip-max-width: 320px;
 $admin-table-tooltip-padding: 12px;
@@ -35,6 +35,7 @@ $admin-table-success-icon-size: 12px;
 $admin-table-error-1001-bg: #dc2626;
 $admin-table-error-1002-bg: #ea580c;
 $admin-table-success-bg: #15803d;
+$admin-table-uploaded-bg: #7c3aed; // violet-600
 $admin-table-tooltip-bg: #1f2937;
 $admin-table-tooltip-title-color: #f9fafb;
 $admin-table-tooltip-desc-color: #d1d5db;
@@ -747,7 +748,29 @@ $admin-table-badge-text-color: #f9fafb;
     white-space: nowrap;
   }
 
+  &__uploaded-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: $admin-table-badge-padding;
+    border-radius: $admin-table-badge-border-radius;
+    background-color: $admin-table-uploaded-bg;
+    font-family: "Founders Grotesk", sans-serif;
+    font-size: $admin-table-font-size-small;
+    font-weight: 400;
+    line-height: 1;
+    color: $admin-table-badge-text-color;
+    white-space: nowrap;
+  }
+
   &__success-icon {
+    width: $admin-table-success-icon-size;
+    height: $admin-table-success-icon-size;
+    color: $admin-table-badge-text-color;
+  }
+
+  &__uploaded-icon {
     width: $admin-table-success-icon-size;
     height: $admin-table-success-icon-size;
     color: $admin-table-badge-text-color;
@@ -855,6 +878,13 @@ $admin-table-badge-text-color: #f9fafb;
   &__input-wrapper {
     width: 100%;
     max-width: 100px;
+
+    &--error {
+      .admin-upload-table__id-input {
+        border-color: #dc2626; // red-600
+        box-shadow: 0 0 0 1px #dc2626; // red-600
+      }
+    }
   }
 
   &__id-input {
@@ -965,6 +995,13 @@ $admin-table-badge-text-color: #f9fafb;
   &__cover-input-wrapper {
     width: 100%;
     max-width: 180px;
+
+    &--error {
+      .admin-upload-table__cover-url-input {
+        border-color: #dc2626; // red-600
+        box-shadow: 0 0 0 1px #dc2626; // red-600
+      }
+    }
   }
 
   &__cover-url-input {

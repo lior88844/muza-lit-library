@@ -63,6 +63,14 @@ const SuccessBadge: React.FC = () => (
   </div>
 );
 
+// Uploaded Badge Component
+const UploadedBadge: React.FC = () => (
+  <div className="admin-upload-table__uploaded-badge">
+    <MuzaIcon iconName="Check" className="admin-upload-table__uploaded-icon" />
+    Uploaded
+  </div>
+);
+
 export interface UploadItem {
   id: string;
   name: string;
@@ -75,18 +83,25 @@ export interface UploadItem {
   albumLookup?: AlbumLookupResult; // Backend lookup result
   isLookingUp?: boolean; // Whether we're currently looking up the album
   manualAlbumId?: number; // Manually entered album ID
+  coverImageUrl?: string; // Cover image URL
   loadingState?: {
     status: "loading" | "loaded" | "error";
     loadedFiles: number; // how many files read from disk
     totalFiles: number; // total files in folder
     progress: number; // 0-100 percentage
   };
+  // Validation states for upload
+  hasValidId?: boolean; // Whether album has a valid ID (from lookup or manual entry)
+  hasValidCover?: boolean; // Whether album has a valid cover image
+  isUploadReady?: boolean; // Whether album is ready for upload (has both ID and cover)
+  isUploaded?: boolean; // Whether album has been uploaded
 }
 
 interface AdminUploadTableProps {
   items: UploadItem[];
   selectedItems: Set<number>;
   isScanning: boolean;
+  isUploading: boolean;
   currentPage: number;
   itemsPerPage: number;
   totalItems: number;
@@ -105,6 +120,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   items,
   selectedItems,
   isScanning,
+  isUploading,
   currentPage,
   itemsPerPage,
   totalItems,
@@ -160,14 +176,18 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--checkbox">
             <div
-              className={`admin-upload-table__checkbox-wrapper ${isSelected ? "admin-upload-table__checkbox-wrapper--checked" : ""} ${item.errorCode === "1001" ? "admin-upload-table__checkbox-wrapper--disabled" : ""}`}
+              className={`admin-upload-table__checkbox-wrapper ${isSelected ? "admin-upload-table__checkbox-wrapper--checked" : ""} ${item.errorCode === "1001" || !item.isUploadReady || item.isUploaded ? "admin-upload-table__checkbox-wrapper--disabled" : ""}`}
             >
               <input
                 type="checkbox"
                 checked={isSelected}
                 onChange={handleItemSelectChange(globalIndex)}
                 className="admin-upload-table__checkbox"
-                disabled={item.errorCode === "1001"}
+                disabled={
+                  item.errorCode === "1001" ||
+                  !item.isUploadReady ||
+                  item.isUploaded
+                }
               />
               <div className="admin-upload-table__checkbox-visual">
                 <MuzaIcon
@@ -268,7 +288,9 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--errors">
-            {item.errorCode ? (
+            {item.isUploaded ? (
+              <UploadedBadge />
+            ) : item.errorCode ? (
               <ErrorBadge errorCode={item.errorCode} />
             ) : (
               <SuccessBadge />
@@ -421,10 +443,10 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             className="admin-upload-table__cancel-button"
           />
           <MuzaButton
-            content="Process & Upload"
-            iconName="upload"
+            content={isUploading ? "Uploading..." : "Process & Upload"}
+            iconName={isUploading ? "Clock8" : "upload"}
             onClick={onProcessUpload}
-            disabled={!hasSelectedItems}
+            disabled={!hasSelectedItems || isUploading}
             className="admin-upload-table__process-button"
           />
         </div>

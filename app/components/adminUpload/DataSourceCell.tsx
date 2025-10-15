@@ -62,7 +62,9 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   // Show input field for manual ID entry
   return (
     <div className="admin-upload-table__data-source-input">
-      <div className="admin-upload-table__input-wrapper">
+      <div
+        className={`admin-upload-table__input-wrapper ${!item.hasValidId && !item.isLookingUp ? "admin-upload-table__input-wrapper--error" : ""}`}
+      >
         <input
           type="number"
           placeholder="Type in ID"

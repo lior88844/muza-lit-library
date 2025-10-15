@@ -4,6 +4,7 @@ import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
 import { extractAlbumDiscoverMetadata } from "~/lib/flacMetadata";
 import { extractAlbumMetadataSimple } from "~/lib/utils/simpleFlacMetadata";
 import { discoverAlbum } from "~/components/adminUpload/services/albumLookup";
+import { adminApiClient } from "~/components/adminUpload/services/adminApiClient";
 
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
@@ -37,6 +38,10 @@ export default function AdminUpload() {
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [isScanning, setIsScanning] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccessMessage, setUploadSuccessMessage] = useState<
+    string | null
+  >(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -221,64 +226,126 @@ export default function AdminUpload() {
 
             // Update item with lookup result and remove loading state
             setUploadedItems(prev =>
-              prev.map(prevItem =>
-                prevItem.id === item.id
-                  ? { ...prevItem, albumLookup, isLookingUp: false }
-                  : prevItem
-              )
+              prev.map(prevItem => {
+                if (prevItem.id === item.id) {
+                  const hasValidId =
+                    albumLookup?.found ||
+                    (prevItem.manualAlbumId !== undefined &&
+                      prevItem.manualAlbumId > 0);
+                  const hasValidCover = !!(
+                    albumLookup?.coverUrl || prevItem.coverImageUrl
+                  );
+                  const isUploadReady =
+                    hasValidId && hasValidCover && prevItem.files.length > 0;
+
+                  return {
+                    ...prevItem,
+                    albumLookup,
+                    isLookingUp: false,
+                    hasValidId,
+                    hasValidCover,
+                    isUploadReady,
+                  };
+                }
+                return prevItem;
+              })
             );
           } else {
             // Failed to extract metadata
             setUploadedItems(prev =>
-              prev.map(prevItem =>
-                prevItem.id === item.id
-                  ? { ...prevItem, isLookingUp: false }
-                  : prevItem
-              )
+              prev.map(prevItem => {
+                if (prevItem.id === item.id) {
+                  const hasValidId = !!(
+                    prevItem.manualAlbumId !== undefined &&
+                    prevItem.manualAlbumId > 0
+                  );
+                  const hasValidCover = !!prevItem.coverImageUrl;
+                  const isUploadReady =
+                    hasValidId && hasValidCover && prevItem.files.length > 0;
+
+                  return {
+                    ...prevItem,
+                    isLookingUp: false,
+                    hasValidId,
+                    hasValidCover,
+                    isUploadReady,
+                  };
+                }
+                return prevItem;
+              })
             );
           }
         } catch (error) {
           console.error("Error processing album discovery:", error);
           // Remove loading state on error
           setUploadedItems(prev =>
-            prev.map(prevItem =>
-              prevItem.id === item.id
-                ? {
-                    ...prevItem,
-                    isLookingUp: false,
-                    loadingState: {
-                      status: "error",
-                      loadedFiles: item.files.length,
-                      totalFiles: item.files.length,
-                      progress: 0,
-                    },
-                  }
-                : prevItem
-            )
+            prev.map(prevItem => {
+              if (prevItem.id === item.id) {
+                const hasValidId = !!(
+                  prevItem.manualAlbumId !== undefined &&
+                  prevItem.manualAlbumId > 0
+                );
+                const hasValidCover = !!prevItem.coverImageUrl;
+                const isUploadReady =
+                  hasValidId && hasValidCover && prevItem.files.length > 0;
+
+                return {
+                  ...prevItem,
+                  isLookingUp: false,
+                  hasValidId,
+                  hasValidCover,
+                  isUploadReady,
+                  loadingState: {
+                    status: "error",
+                    loadedFiles: item.files.length,
+                    totalFiles: item.files.length,
+                    progress: 0,
+                  },
+                };
+              }
+              return prevItem;
+            })
           );
         }
       }
     }
   }, []);
 
-  const handleItemSelect = useCallback((index: number, selected: boolean) => {
-    setSelectedItems(prev => {
-      const newSet = new Set(prev);
-      if (selected) {
-        newSet.add(index);
-      } else {
-        newSet.delete(index);
+  const handleItemSelect = useCallback(
+    (index: number, selected: boolean) => {
+      const item = uploadedItems[index];
+
+      // Don't allow selection if item has critical errors, is not upload ready, or is already uploaded
+      if (
+        selected &&
+        (item.errorCode === "1001" || !item.isUploadReady || item.isUploaded)
+      ) {
+        return;
       }
-      return newSet;
-    });
-  }, []);
+
+      setSelectedItems(prev => {
+        const newSet = new Set(prev);
+        if (selected) {
+          newSet.add(index);
+        } else {
+          newSet.delete(index);
+        }
+        return newSet;
+      });
+    },
+    [uploadedItems]
+  );
 
   const handleSelectAll = useCallback(
     (selected: boolean) => {
       if (selected) {
-        // Only select items that don't have error code 1001 (All Files Invalid)
+        // Only select items that don't have error code 1001 (All Files Invalid), are upload ready, and not uploaded
         const selectableIndices = uploadedItems
-          .map((item, index) => (item.errorCode !== "1001" ? index : -1))
+          .map((item, index) =>
+            item.errorCode !== "1001" && item.isUploadReady && !item.isUploaded
+              ? index
+              : -1
+          )
           .filter(index => index !== -1);
         setSelectedItems(new Set(selectableIndices));
       } else {
@@ -292,21 +359,115 @@ export default function AdminUpload() {
     setSelectedItems(new Set());
   }, []);
 
-  const handleProcessUpload = useCallback(() => {
+  const handleProcessUpload = useCallback(async () => {
     const selectedItemList = Array.from(selectedItems).map(
       index => uploadedItems[index]
     );
-    // TODO: Process selected items
-    // eslint-disable-next-line no-console
-    console.log("Processing items:", selectedItemList);
+
+    // Filter to only include items that are upload ready
+    const uploadableItems = selectedItemList.filter(
+      item => item.isUploadReady && item.files.length > 0
+    );
+
+    if (uploadableItems.length === 0) {
+      // eslint-disable-next-line no-console
+      console.warn("No uploadable items selected");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const uploadedItemIds: string[] = [];
+
+      // Process each album upload
+      for (const item of uploadableItems) {
+        // Get album ID (from lookup or manual entry)
+        const mbId = item.albumLookup?.mbId || item.manualAlbumId?.toString();
+
+        // Get cover image URL (from lookup or manual entry)
+        const albumCover = item.albumLookup?.coverUrl || item.coverImageUrl;
+
+        // Create FormData for file upload
+        const formData = new FormData();
+
+        // Add album metadata
+        formData.append("mbId", mbId!);
+        formData.append("albumCover", albumCover!);
+
+        // Add FLAC files only
+        item.files.forEach((file, index) => {
+          formData.append(`files`, file);
+        });
+
+        // Upload to API
+        const response = await adminApiClient.post(
+          "/admin/upload-album",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // eslint-disable-next-line no-console
+        console.log(`Upload successful for album ${mbId}:`, response.data);
+        uploadedItemIds.push(item.id);
+      }
+
+      // Mark uploaded items as uploaded
+      setUploadedItems(prev =>
+        prev.map(item =>
+          uploadedItemIds.includes(item.id)
+            ? { ...item, isUploaded: true }
+            : item
+        )
+      );
+
+      // Clear selection after successful upload
+      setSelectedItems(new Set());
+
+      // Show success message
+      setUploadSuccessMessage(
+        `Successfully uploaded ${uploadedItemIds.length} album${uploadedItemIds.length > 1 ? "s" : ""}!`
+      );
+
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        setUploadSuccessMessage(null);
+      }, 5000);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Upload failed:", error);
+      // Handle error (show notification, etc.)
+    } finally {
+      setIsUploading(false);
+    }
   }, [selectedItems, uploadedItems]);
 
   const handleManualIdChange = useCallback(
     (itemId: string, albumId: number | undefined) => {
       setUploadedItems(prev =>
-        prev.map(item =>
-          item.id === itemId ? { ...item, manualAlbumId: albumId } : item
-        )
+        prev.map(item => {
+          if (item.id === itemId) {
+            const hasValidId = albumId !== undefined && albumId > 0;
+            const hasValidCover = !!(
+              item.albumLookup?.coverUrl || item.coverImageUrl
+            );
+            const isUploadReady =
+              hasValidId && hasValidCover && item.files.length > 0;
+
+            return {
+              ...item,
+              manualAlbumId: albumId,
+              hasValidId,
+              hasValidCover,
+              isUploadReady,
+            };
+          }
+          return item;
+        })
       );
     },
     []
@@ -315,9 +476,26 @@ export default function AdminUpload() {
   const handleCoverUrlChange = useCallback(
     (itemId: string, url: string | undefined) => {
       setUploadedItems(prev =>
-        prev.map(item =>
-          item.id === itemId ? { ...item, coverImageUrl: url } : item
-        )
+        prev.map(item => {
+          if (item.id === itemId) {
+            const hasValidId = !!(
+              item.albumLookup?.found ||
+              (item.manualAlbumId !== undefined && item.manualAlbumId > 0)
+            );
+            const hasValidCover = !!url;
+            const isUploadReady =
+              hasValidId && hasValidCover && item.files.length > 0;
+
+            return {
+              ...item,
+              coverImageUrl: url,
+              hasValidId,
+              hasValidCover,
+              isUploadReady,
+            };
+          }
+          return item;
+        })
       );
     },
     []
@@ -336,6 +514,8 @@ export default function AdminUpload() {
       uploadedItems={uploadedItems}
       selectedItems={selectedItems}
       isScanning={isScanning}
+      isUploading={isUploading}
+      uploadSuccessMessage={uploadSuccessMessage}
       currentPage={currentPage}
       itemsPerPage={itemsPerPage}
       onFileUpload={handleFileUpload}

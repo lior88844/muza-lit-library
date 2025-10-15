@@ -98,7 +98,9 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   // Show input field for manual URL entry (similar to DataSourceCell)
   return (
     <div className="admin-upload-table__cover-cell">
-      <div className="admin-upload-table__cover-input-wrapper">
+      <div
+        className={`admin-upload-table__cover-input-wrapper ${!item.hasValidCover && !item.isLookingUp ? "admin-upload-table__cover-input-wrapper--error" : ""}`}
+      >
         <input
           type="text"
           placeholder="Img URL"

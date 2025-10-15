@@ -26,12 +26,19 @@ export interface UploadItem {
     totalFiles: number; // total files in folder
     progress: number; // 0-100 percentage
   };
+  // Validation states for upload
+  hasValidId?: boolean; // Whether album has a valid ID (from lookup or manual entry)
+  hasValidCover?: boolean; // Whether album has a valid cover image
+  isUploadReady?: boolean; // Whether album is ready for upload (has both ID and cover)
+  isUploaded?: boolean; // Whether album has been uploaded
 }
 
 interface AdminUploadPageProps {
   uploadedItems: UploadItem[];
   selectedItems: Set<number>;
   isScanning: boolean;
+  isUploading: boolean;
+  uploadSuccessMessage: string | null;
   currentPage: number;
   itemsPerPage: number;
   onFileUpload: (files: File[]) => void;
@@ -50,6 +57,8 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
   uploadedItems,
   selectedItems,
   isScanning,
+  isUploading,
+  uploadSuccessMessage,
   currentPage,
   itemsPerPage,
   onFileUpload,
@@ -83,6 +92,7 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
               items={uploadedItems}
               selectedItems={selectedItems}
               isScanning={isScanning}
+              isUploading={isUploading}
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
               totalItems={totalItems}
