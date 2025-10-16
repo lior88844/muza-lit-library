@@ -2,25 +2,18 @@ import {
   pgTable,
   serial,
   integer,
-  pgEnum,
   index,
   uniqueIndex,
+  text,
 } from "drizzle-orm/pg-core";
 import { artists } from "./artist.entity";
 import { albums } from "./album.entity";
-import { ArtistRoleEnum } from "./track-artist.entity";
 import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
 import z from "zod";
-
-// Enum for artist roles in albums
-export const albumArtistRoleEnum = pgEnum(
-  "album_artist_role",
-  Object.values(ArtistRoleEnum) as [string, ...string[]]
-);
 
 // Junction table for album-artist relationships
 export const albumArtists = pgTable(
@@ -33,10 +26,9 @@ export const albumArtists = pgTable(
     artistId: integer("artist_id")
       .notNull()
       .references(() => artists.id, { onDelete: "cascade" }),
-    role: albumArtistRoleEnum("role")
-      .notNull()
-      .default(ArtistRoleEnum.MainArtist),
-    order: integer("order").default(0), // For ordering artists (main artist first, etc.)
+    role: text("role"),
+    order: integer("order").notNull(),
+    join: text("join").default(""),
   },
   table => [
     // Composite index for efficient album-artist lookups

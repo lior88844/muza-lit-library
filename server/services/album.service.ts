@@ -3,7 +3,6 @@ import { db } from "../db/connection";
 import type { AlbumArtist } from "../db/album-artist.entity";
 import type { Artist } from "../db/artist.entity";
 import { albums, type Album } from "../db/album.entity";
-import { ArtistRoleEnum } from "../db/track-artist.entity";
 
 // Types for transformed data
 interface AlbumWithArtistsAndTracks extends Album {
@@ -38,10 +37,7 @@ export class AlbumService {
    */
   transformAlbumData(albums: AlbumWithArtistsAndTracks[]) {
     return albums.map(album => {
-      const mainArtist =
-        album.albumArtists.find(
-          artist => artist.role === ArtistRoleEnum.MainArtist
-        ) || album.albumArtists[0];
+      const mainArtist = album.albumArtists[0];
       return {
         id: album.id,
         imageSrc: album.coverArt,

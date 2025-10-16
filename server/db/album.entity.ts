@@ -8,7 +8,7 @@ import {
   text,
   uuid,
   pgEnum,
-  json,
+  numeric,
 } from "drizzle-orm/pg-core";
 import {
   createSelectSchema,
@@ -51,25 +51,22 @@ export const albums = pgTable("albums", {
   sortTitle: varchar("sort_title", { length: 255 }),
   disambiguation: varchar("disambiguation", { length: 255 }),
   releaseDate: timestamp("release_date"),
-  originalReleaseDate: timestamp("original_release_date"),
   albumType: albumTypeEnum("album_type").default("Album"),
   status: releaseStatusEnum("status").default("Official"),
   packaging: varchar("packaging", { length: 100 }),
-  country: varchar("country", { length: 2 }), // ISO 3166-1 alpha-2
-  language: varchar("language", { length: 3 }), // ISO 639-3
-  script: varchar("script", { length: 4 }), // ISO 15924
+  country: varchar("country", { length: 2 }),
+  language: varchar("language", { length: 3 }),
+  script: varchar("script", { length: 4 }),
   mbId: uuid("mb_id"),
+  discogsId: numeric("discogs_id", { mode: "number" }),
   mbReleaseGroupId: uuid("mb_release_group_id"),
   barcode: varchar("barcode", { length: 50 }),
   catalogNumber: varchar("catalog_number", { length: 100 }),
   label: varchar("label", { length: 255 }),
   coverArt: text("cover_art"),
   trackCount: integer("track_count").default(0),
-  discCount: integer("disc_count").default(1),
-  duration: integer("duration"), // in seconds
-  genres: text("genres").array(), // PostgreSQL array
-  tags: text("tags").array(), // PostgreSQL array
-  credits: json("credits").$type<Record<string, unknown>>(), // JSON object
+  genres: text("genres").array(),
+  tags: text("tags").array(),
   notes: text("notes"),
   quality: integer("quality").default(0),
   popularity: integer("popularity").default(0),
