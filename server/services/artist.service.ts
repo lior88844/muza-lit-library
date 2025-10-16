@@ -1,6 +1,6 @@
-import type { AlbumArtist } from "server/db/album-artist.entity";
+import type { AlbumArtist } from "@server/db/album-artist.entity";
 import { db } from "../db/connection";
-import type { Artist } from "server/db/artist.entity";
+import type { Artist } from "@server/db/artist.entity";
 
 // Types for transformed data
 interface ArtistWithAlbums extends Artist {
