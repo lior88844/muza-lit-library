@@ -37,7 +37,7 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  // Remove the early return to allow transitions
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,8 +63,11 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="create-playlist-modal">
+    <div
+      className={`modal-backdrop ${isOpen ? "modal-open" : ""}`}
+      onClick={handleBackdropClick}
+    >
+      <div className={`create-playlist-modal ${isOpen ? "modal-open" : ""}`}>
         <div className="modal-content">
           <div className="modal-header">
             <h1 className="modal-title">{t("playlist.new")}</h1>
@@ -87,6 +90,9 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
                   onChange={handleToggleChange}
                   label={t("playlist.makePrivate")}
                 />
+                <p className="privacy-explanation">
+                  {t("playlist.privateExplanation")}
+                </p>
               </div>
             </div>
           </div>

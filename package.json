@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "lint:check": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "react-router typegen && tsc",
+    "test": "echo 'No tests specified' && exit 0",
     "prepare": "husky"
   },
   "lint-staged": {
