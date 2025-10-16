@@ -27,7 +27,7 @@ export async function discoverAlbum(
 ): Promise<AlbumLookupResult> {
   try {
     const response = await adminApiClient.post<DiscoverResponse>(
-      "/admin/discover",
+      "/api/admin/discover",
       {
         metadata: [metadata],
       }
