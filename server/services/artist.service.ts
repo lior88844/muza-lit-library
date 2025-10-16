@@ -1,4 +1,4 @@
-import type { AlbumArtist } from "../db/album-artist.entity";
+import type { AlbumArtist } from "@server/db/album-artist.entity";
 import { db } from "../db/connection";
 import type { Artist } from "../db/artist.entity";
 
