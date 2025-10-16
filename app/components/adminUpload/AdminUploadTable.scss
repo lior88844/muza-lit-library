@@ -34,6 +34,8 @@ $admin-table-badge-border-radius: 2px;
 $admin-table-success-icon-size: 12px;
 $admin-table-error-1001-bg: #dc2626;
 $admin-table-error-1002-bg: #ea580c;
+$admin-table-error-1003-bg: #ea580c;
+$admin-table-error-1004-bg: #ea580c;
 $admin-table-success-bg: #15803d;
 $admin-table-uploaded-bg: #7c3aed; // violet-600
 $admin-table-tooltip-bg: #1f2937;
@@ -729,6 +731,16 @@ $admin-table-badge-text-color: #f9fafb;
     // Orange badge for error 1002 (partial invalid)
     &--1002 {
       background-color: $admin-table-error-1002-bg;
+    }
+
+    // Orange badge for error 1003 (album already exists)
+    &--1003 {
+      background-color: $admin-table-error-1003-bg;
+    }
+
+    // Orange badge for error 1004 (discovery service error)
+    &--1004 {
+      background-color: $admin-table-error-1004-bg;
     }
   }
 

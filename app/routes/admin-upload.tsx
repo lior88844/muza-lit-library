@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
-import { AdminUploadPage, type UploadItem } from "~/components/adminUpload";
+import { AdminUploadPage } from "~/components/adminUpload";
 import { extractAlbumDiscoverMetadata } from "~/lib/flacMetadata";
 import { extractAlbumMetadataSimple } from "~/lib/utils/simpleFlacMetadata";
 import { discoverAlbum } from "~/components/adminUpload/services/albumLookup";
@@ -9,30 +9,16 @@ import { adminApiClient } from "~/components/adminUpload/services/adminApiClient
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
+import type { UploadItem } from "../components/adminUpload/types/UploadItem";
+import { UploadErrorCodeEnum } from "../components/adminUpload/types/ErrorCode";
 
 const isFlacFile = (file: File): boolean => {
   const fileName = file.name.toLowerCase();
   return fileName.endsWith(".flac");
 };
-
-// Error codes and their explanations
-const ERROR_CODES = {
-  1001: {
-    code: "1001",
-    title: "All Files Invalid",
-    description:
-      "No FLAC files found in this folder. All files were skipped because they are not in FLAC format.",
-  },
-  1002: {
-    code: "1002",
-    title: "Partial Upload",
-    description:
-      "Some files were skipped because they are not in FLAC format. Only FLAC files will be processed.",
-  },
-} as const;
-
-type ErrorCode = keyof typeof ERROR_CODES;
-
+const isAudioFile = (file: File): boolean => {
+  return file.type.startsWith("audio/");
+};
 export default function AdminUpload() {
   const navigate = useNavigate();
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([]);
@@ -47,16 +33,16 @@ export default function AdminUpload() {
 
   const handleFileUpload = useCallback(async (files: File[]) => {
     const newItems: UploadItem[] = [];
-
+    const filesToHandle = files.filter(file => isAudioFile(file));
     // Filter for FLAC files only
-    const flacFiles = files.filter(isFlacFile);
+    const flacFiles = filesToHandle.filter(isFlacFile);
 
     // Group all files by folder path to track folders with no FLAC files
     const allFolderMap = new Map<string, File[]>();
     const flacFolderMap = new Map<string, File[]>();
 
     // First, group all files by folder
-    files.forEach(file => {
+    filesToHandle.forEach(file => {
       const path = file.webkitRelativePath || file.name;
       const folderPath = path.includes("/")
         ? path.substring(0, path.lastIndexOf("/"))
@@ -108,7 +94,8 @@ export default function AdminUpload() {
         size: totalSize,
         files: folderFiles,
         path,
-        errorCode: skippedCount > 0 ? ("1002" as const) : undefined,
+        errorCode:
+          skippedCount > 0 ? UploadErrorCodeEnum.PARTIAL_UPLOAD : undefined,
         isLookingUp: true, // Start lookup for all items with FLAC files
         loadingState: {
           status: "loading",
@@ -144,7 +131,7 @@ export default function AdminUpload() {
         size: 0,
         files: [],
         path,
-        errorCode: "1001" as const,
+        errorCode: UploadErrorCodeEnum.ALL_FILES_INVALID,
         loadingState: {
           status: "error",
           loadedFiles: 0,
@@ -165,7 +152,10 @@ export default function AdminUpload() {
     // Process metadata extraction and album discovery for each valid folder
     for (const item of newItems) {
       // Only process items without critical errors (error code 1001)
-      if (item.files.length > 0 && item.errorCode !== "1001") {
+      if (
+        item.files.length > 0 &&
+        item.errorCode !== UploadErrorCodeEnum.ALL_FILES_INVALID
+      ) {
         try {
           // Simulate loading progress for files
           const totalFiles = item.files.length;
@@ -229,7 +219,7 @@ export default function AdminUpload() {
               prev.map(prevItem => {
                 if (prevItem.id === item.id) {
                   const hasValidId =
-                    albumLookup?.found ||
+                    !!albumLookup?.mbId ||
                     (prevItem.manualAlbumId !== undefined &&
                       prevItem.manualAlbumId > 0);
                   const hasValidCover = !!(
@@ -245,6 +235,7 @@ export default function AdminUpload() {
                     hasValidId,
                     hasValidCover,
                     isUploadReady,
+                    errorCode: albumLookup?.error,
                   };
                 }
                 return prevItem;
@@ -318,7 +309,9 @@ export default function AdminUpload() {
       // Don't allow selection if item has critical errors, is not upload ready, or is already uploaded
       if (
         selected &&
-        (item.errorCode === "1001" || !item.isUploadReady || item.isUploaded)
+        (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID ||
+          !item.isUploadReady ||
+          item.isUploaded)
       ) {
         return;
       }
@@ -342,7 +335,9 @@ export default function AdminUpload() {
         // Only select items that don't have error code 1001 (All Files Invalid), are upload ready, and not uploaded
         const selectableIndices = uploadedItems
           .map((item, index) =>
-            item.errorCode !== "1001" && item.isUploadReady && !item.isUploaded
+            item.errorCode !== UploadErrorCodeEnum.ALL_FILES_INVALID &&
+            item.isUploadReady &&
+            !item.isUploaded
               ? index
               : -1
           )
@@ -384,6 +379,7 @@ export default function AdminUpload() {
       for (const item of uploadableItems) {
         // Get album ID (from lookup or manual entry)
         const mbId = item.albumLookup?.mbId || item.manualAlbumId?.toString();
+        const discogsId = item.albumLookup?.discogsId || null;
 
         // Get cover image URL (from lookup or manual entry)
         const albumCover = item.albumLookup?.coverUrl || item.coverImageUrl;
@@ -394,6 +390,7 @@ export default function AdminUpload() {
         // Add album metadata
         formData.append("mbId", mbId!);
         formData.append("albumCover", albumCover!);
+        formData.append("discogsId", discogsId!);
 
         // Add FLAC files only
         item.files.forEach((file, index) => {
@@ -402,7 +399,7 @@ export default function AdminUpload() {
 
         // Upload to API
         const response = await adminApiClient.post(
-          "/admin/upload-album",
+          "/api/admin/upload-album",
           formData,
           {
             headers: {
@@ -479,7 +476,7 @@ export default function AdminUpload() {
         prev.map(item => {
           if (item.id === itemId) {
             const hasValidId = !!(
-              item.albumLookup?.found ||
+              !!item.albumLookup?.mbId ||
               (item.manualAlbumId !== undefined && item.manualAlbumId > 0)
             );
             const hasValidCover = !!url;

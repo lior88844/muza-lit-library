@@ -1,23 +1,10 @@
 import type { DiscoverMetadata } from "~/lib/flacMetadata";
 import { adminApiClient } from "./adminApiClient";
-
-export interface AlbumLookupResult {
-  found: boolean;
-  mbId?: string;
-  coverUrl?: string;
-  albumName?: string;
-  artistName?: string;
-  message?: string;
-}
-
-interface DiscoverResponse {
-  results: Array<{
-    mbId: string;
-    coverUrl: string | null;
-    albumName?: string;
-    artistName?: string;
-  }>;
-}
+import type {
+  AlbumLookupResult,
+  DiscoverResponse,
+} from "../types/DiscoverResponse";
+import { UploadErrorCodeEnum } from "../types/ErrorCode";
 
 /**
  * Call the admin discover endpoint to look up album information
@@ -33,32 +20,25 @@ export async function discoverAlbum(
       }
     );
 
-    if (response.data.results && response.data.results.length > 0) {
-      const result = response.data.results[0];
+    const result = response.data.results[0];
 
-      // Extract album and artist names from response, fallback to metadata
-      const albumName = result.albumName || metadata.album;
-      const artistName = result.artistName || metadata.artist;
-
-      return {
-        found: true,
-        mbId: result.mbId,
-        coverUrl: result.coverUrl || undefined,
-        albumName: result.albumName,
-        artistName: result.artistName,
-        message: `Found album: "${albumName}" by ${artistName}`,
-      };
-    } else {
-      return {
-        found: false,
-        message: `Album "${metadata.album}" by ${metadata.artist} not found`,
-      };
-    }
+    return {
+      mbId: result.mbId,
+      discogsId: result.discogsId || null,
+      coverUrl: result.coverUrl || null,
+      albumName: result.albumName,
+      artistName: result.artistName,
+      error: result.error,
+    };
   } catch (error) {
     console.error("Error discovering album:", error);
     return {
-      found: false,
-      message: "Error connecting to discovery service",
+      mbId: null,
+      discogsId: null,
+      coverUrl: null,
+      albumName: metadata.album,
+      artistName: metadata.artist,
+      error: UploadErrorCodeEnum.DISCOVERY_SERVICE_ERROR,
     };
   }
 }

@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { FaSpinner } from "react-icons/fa";
 import MuzaIcon from "~/icons/MuzaIcon";
-import type { UploadItem } from "./AdminUploadPage";
+import type { UploadItem } from "./types/UploadItem";
+import { UploadErrorCodeEnum } from "./types/ErrorCode";
 
 interface DataSourceCellProps {
   item: UploadItem;
@@ -31,7 +32,7 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   );
 
   // Don't show anything for items with critical error 1001 (no FLAC files)
-  if (item.errorCode === "1001") {
+  if (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID) {
     return <div className="admin-upload-table__data-source-loading">-</div>;
   }
 
@@ -45,7 +46,7 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   }
 
   // Show "ID found" badge if album was found
-  if (item.albumLookup?.found) {
+  if (item.albumLookup?.mbId) {
     return (
       <div className="admin-upload-table__data-source-found">
         <div className="admin-upload-table__id-found-badge">

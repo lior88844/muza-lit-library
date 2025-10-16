@@ -3,32 +3,20 @@ import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
 import DataSourceCell from "./DataSourceCell";
 import CoverCell from "./CoverCell";
-import type { SimpleFlacMetadata } from "~/lib/utils/simpleFlacMetadata";
-import type { AlbumLookupResult } from "./services/albumLookup";
 import "./AdminUploadTable.scss";
-
-// Error codes and their explanations
-const ERROR_CODES = {
-  1001: {
-    code: "1001",
-    title: "All Files Invalid",
-    description:
-      "No FLAC files found in this folder. All files were skipped because they are not in FLAC format.",
-  },
-  1002: {
-    code: "1002",
-    title: "Partial Upload",
-    description:
-      "Some files were skipped because they are not in FLAC format. Only FLAC files will be processed.",
-  },
-} as const;
+import { UPLOAD_ERROR_CODES, UploadErrorCodeEnum } from "./types/ErrorCode";
+import type { UploadItem } from "./types/UploadItem";
 
 // Error Badge Component with Tooltip
-const ErrorBadge: React.FC<{ errorCode: "1001" | "1002" }> = ({
+const ErrorBadge: React.FC<{ errorCode: UploadErrorCodeEnum }> = ({
   errorCode,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const errorInfo = ERROR_CODES[errorCode];
+  const errorInfo = UPLOAD_ERROR_CODES[errorCode] || {
+    code: errorCode,
+    title: "Unknown Error",
+    description: "Unknown error occurred.",
+  };
 
   return (
     <div
@@ -70,32 +58,6 @@ const UploadedBadge: React.FC = () => (
     Uploaded
   </div>
 );
-
-export interface UploadItem {
-  id: string;
-  name: string;
-  type: "folder";
-  size: number;
-  files: File[]; // Array of files in the folder
-  path: string;
-  errorCode?: "1001" | "1002"; // Optional error code
-  metadata?: SimpleFlacMetadata; // Extracted FLAC metadata
-  albumLookup?: AlbumLookupResult; // Backend lookup result
-  isLookingUp?: boolean; // Whether we're currently looking up the album
-  manualAlbumId?: number; // Manually entered album ID
-  coverImageUrl?: string; // Cover image URL
-  loadingState?: {
-    status: "loading" | "loaded" | "error";
-    loadedFiles: number; // how many files read from disk
-    totalFiles: number; // total files in folder
-    progress: number; // 0-100 percentage
-  };
-  // Validation states for upload
-  hasValidId?: boolean; // Whether album has a valid ID (from lookup or manual entry)
-  hasValidCover?: boolean; // Whether album has a valid cover image
-  isUploadReady?: boolean; // Whether album is ready for upload (has both ID and cover)
-  isUploaded?: boolean; // Whether album has been uploaded
-}
 
 interface AdminUploadTableProps {
   items: UploadItem[];
@@ -176,7 +138,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
           </td>
           <td className="admin-upload-table__cell admin-upload-table__cell--checkbox">
             <div
-              className={`admin-upload-table__checkbox-wrapper ${isSelected ? "admin-upload-table__checkbox-wrapper--checked" : ""} ${item.errorCode === "1001" || !item.isUploadReady || item.isUploaded ? "admin-upload-table__checkbox-wrapper--disabled" : ""}`}
+              className={`admin-upload-table__checkbox-wrapper ${isSelected ? "admin-upload-table__checkbox-wrapper--checked" : ""} ${item.errorCode === 1001 || !item.isUploadReady || item.isUploaded ? "admin-upload-table__checkbox-wrapper--disabled" : ""}`}
             >
               <input
                 type="checkbox"
@@ -184,7 +146,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                 onChange={handleItemSelectChange(globalIndex)}
                 className="admin-upload-table__checkbox"
                 disabled={
-                  item.errorCode === "1001" ||
+                  item.errorCode === 1001 ||
                   !item.isUploadReady ||
                   item.isUploaded
                 }

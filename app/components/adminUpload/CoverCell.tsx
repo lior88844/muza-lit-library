@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import MuzaIcon from "~/icons/MuzaIcon";
-import type { UploadItem } from "./AdminUploadPage";
+import type { UploadItem } from "./types/UploadItem";
+import { UploadErrorCodeEnum } from "./types/ErrorCode";
 
 interface CoverCellProps {
   item: UploadItem;
@@ -28,7 +29,7 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   };
 
   // Don't show anything for items with critical error 1001 (no FLAC files)
-  if (item.errorCode === "1001") {
+  if (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID) {
     return <div className="admin-upload-table__cover-cell">-</div>;
   }
 

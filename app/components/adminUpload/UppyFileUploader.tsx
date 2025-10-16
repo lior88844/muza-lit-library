@@ -52,7 +52,6 @@ const UppyFileUploader: React.FC<UppyFileUploaderProps> = ({
       locale: {
         strings: {
           dropPasteFiles: "Drop folders here or %{browse}",
-          browse: "browse",
         },
       },
     });
