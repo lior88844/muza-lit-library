@@ -1,9 +1,9 @@
 import { desc } from "drizzle-orm";
 import { db } from "../db/connection";
-import type { AlbumArtist } from "@server/db/album-artist.entity";
-import type { Artist } from "@server/db/artist.entity";
-import { albums, type Album } from "@server/db/album.entity";
-import { ArtistRoleEnum } from "@server/db/track-artist.entity";
+import type { AlbumArtist } from "../db/album-artist.entity";
+import type { Artist } from "../db/artist.entity";
+import { albums, type Album } from "../db/album.entity";
+import { ArtistRoleEnum } from "../db/track-artist.entity";
 
 // Types for transformed data
 interface AlbumWithArtistsAndTracks extends Album {
