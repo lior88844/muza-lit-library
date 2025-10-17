@@ -251,6 +251,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
                     isPlaying={false}
                     showHoverActions={false}
                     playlistMode={true}
+                    draggable={isOpen}
                     onRemoveSong={removeSongFromPlaylist}
                   />
                 </div>

@@ -51,7 +51,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPlaylistDrawerOpen, setIsPlaylistDrawerOpen] = useState(false);
+  const { isPlaylistDrawerOpen, setIsPlaylistDrawerOpen } =
+    useCurrentPlayerStore();
   const [currentPlaylistId, setCurrentPlaylistId] = useState<
     string | undefined
   >(undefined);
