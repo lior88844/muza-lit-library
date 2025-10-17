@@ -101,7 +101,7 @@ const english = {
 
   // Media Header
   "common.playAlbum": "Play Album",
-  "common.playPlaylist": "Play Playlist",
+  "common.playPlaylist": "Play",
   "common.playArtist": "Play Artist",
   "common.pause": "Pause",
   "common.backToPlaylists": "Back to Playlists",

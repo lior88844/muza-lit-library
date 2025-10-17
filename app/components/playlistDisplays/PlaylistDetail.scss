@@ -64,6 +64,27 @@
     gap: var(--muza-spacing-lg, 16px);
     align-items: center;
     justify-content: flex-start;
+    gap: var(--muza-spacing-sm, 8px);
+    .muza-button {
+      height: fit-content;
+      width: fit-content;
+      padding: 8px 12px 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--muza-spacing-sm, 8px);
+      border-radius: 9999px;
+      border: 1px solid var(--muza-light-border-color, #e5e7eb);
+      span {
+        font-size: var(--muza-songline-title-font-size, 16px);
+      }
+    }
+
+    // First button (ellipsis/menu button) with 1:1 aspect ratio
+    .muza-button:first-child {
+      aspect-ratio: 1 / 1;
+      padding: 8px;
+    }
   }
 }
 
