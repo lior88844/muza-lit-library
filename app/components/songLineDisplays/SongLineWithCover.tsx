@@ -107,7 +107,6 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   return (
     <div
       className={`song-line-with-cover ${isPlaying ? "playing" : ""} ${draggable ? "draggable" : ""}`}
-      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       draggable={draggable}
@@ -116,7 +115,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
     >
       <div className="song-line-with-cover__content">
         {/* Album Cover */}
-        <div className="song-line-with-cover__cover">
+        <div className="song-line-with-cover__cover" onClick={handleClick}>
           <img
             src={details.imageSrc || "/art/imag_1.jpg"}
             alt={`${details.title} cover`}
