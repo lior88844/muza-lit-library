@@ -39,10 +39,6 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
     });
   };
 
-  const handleAdminUploadClick = () => {
-    navigate("/admin-upload");
-  };
-
   return (
     <div className="music-topbar">
       <div className="topbar">
@@ -68,13 +64,6 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
           <button className="upload-music-button" onClick={handleUploadClick}>
             {t("upload.uploadMusic")}
             <MuzaIcon iconName="upload" />
-          </button>
-          <button
-            className="upload-music-button admin-upload-button"
-            onClick={handleAdminUploadClick}
-          >
-            {t("upload.uploadAdmin")}
-            <MuzaIcon iconName="heart" />
           </button>
           <div className="user-menu">
             {auth.isAuthenticated ? (
