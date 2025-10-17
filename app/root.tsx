@@ -52,9 +52,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPlaylistDrawerOpen, setIsPlaylistDrawerOpen] = useState(false);
-  const [currentPlaylist, setCurrentPlaylist] = useState<
-    MusicPlaylist | undefined
+  const [currentPlaylistId, setCurrentPlaylistId] = useState<
+    string | undefined
   >(undefined);
+
+  // Get the current playlist from the store to keep it reactive
+  const currentPlaylist = useMusicLibraryStore(state =>
+    currentPlaylistId
+      ? state.playlists.find(p => p.id === currentPlaylistId)
+      : undefined
+  );
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Check if we're on the upload pages
@@ -71,14 +78,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   // Handle playlist drawer state changes
   const handleOpenPlaylistDrawer = (playlist?: MusicPlaylist) => {
-    setCurrentPlaylist(playlist);
+    setCurrentPlaylistId(playlist?.id);
     setIsPlaylistDrawerOpen(true);
     setIsSidebarCollapsed(true);
   };
 
   const handleClosePlaylistDrawer = () => {
     setIsPlaylistDrawerOpen(false);
-    setCurrentPlaylist(undefined);
+    setCurrentPlaylistId(undefined);
     setIsSidebarCollapsed(false);
   };
 
@@ -86,9 +93,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
+  const { updatePlaylist } = useMusicLibraryStore();
+
   const handleSavePlaylist = (playlist: Partial<MusicPlaylist>) => {
     // Handle playlist save logic here
     console.log("Saving playlist:", playlist);
+    if (currentPlaylistId) {
+      updatePlaylist(currentPlaylistId, playlist);
+    }
   };
 
   useEffect(() => {

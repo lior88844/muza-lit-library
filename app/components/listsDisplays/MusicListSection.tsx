@@ -96,6 +96,7 @@ const MusicListSectionComponent: React.FC<
               }
             }}
             isPlaying={song.id === globalSelectedSong?.id && !!isPlaying}
+            draggable={true}
           />
         ));
       default:

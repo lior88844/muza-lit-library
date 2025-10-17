@@ -3,7 +3,6 @@ import "./SongLineWithCover.scss";
 import type { SongDetails } from "../../appData/models";
 import { formatSongNumber } from "../../appData/utils";
 import MuzaIcon from "~/icons/MuzaIcon";
-import { toast } from "react-toastify";
 import { useTranslation } from "../../lib/i18n/translations";
 
 interface SongLineProps {
@@ -13,6 +12,9 @@ interface SongLineProps {
   mediaType?: "song" | "album";
   showPreview?: boolean; // Add preview badge option
   showHoverActions?: boolean; // Control hover action visibility
+  draggable?: boolean; // Enable drag functionality
+  playlistMode?: boolean; // Enable playlist-specific behavior
+  onRemoveSong?: (song: SongDetails) => void; // Callback for removing song from playlist
 }
 
 const formatDuration = (seconds: number): string => {
@@ -34,15 +36,43 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   mediaType = "song",
   showPreview = false,
   showHoverActions = true,
+  draggable = false,
+  playlistMode = false,
+  onRemoveSong,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const { t } = useTranslation();
 
   const addToLibrary = () => {
-    toast(t(`${mediaType}.addedToLibrary`), {
-      position: "bottom-center",
-      hideProgressBar: true,
-    });
+    // Song added to library - no notification needed
+  };
+
+  const handleDragStart = (e: React.DragEvent) => {
+    if (!draggable) return;
+
+    setIsDragging(true);
+
+    const dragData = {
+      type: "song",
+      song: details,
+    };
+
+    e.dataTransfer.setData("application/json", JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    onClick(e);
   };
 
   const renderIcon = () => {
@@ -76,10 +106,13 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
 
   return (
     <div
-      className={`song-line-with-cover ${isPlaying ? "playing" : ""}`}
-      onClick={onClick}
+      className={`song-line-with-cover ${isPlaying ? "playing" : ""} ${draggable ? "draggable" : ""}`}
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      draggable={draggable}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <div className="song-line-with-cover__content">
         {/* Album Cover */}
@@ -89,7 +122,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             alt={`${details.title} cover`}
             className="cover-image"
           />
-          {isHovered && (
+          {isHovered && !playlistMode && (
             <div className="play-overlay">
               <button
                 className="play-button"
@@ -128,33 +161,69 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
 
         {/* Right Section with Gradient */}
         <div className="song-line-with-cover__actions">
-          {showHoverActions && isHovered && (
-            <button
-              className="ellipsis-btn"
-              title="More options"
-              onClick={e => {
-                e.stopPropagation();
-                // Handle more options
-              }}
-            >
-              <MuzaIcon iconName="ellipsis" />
-            </button>
+          {playlistMode ? (
+            // Playlist mode: show only duration, with trash and checkbox on hover
+            <>
+              {isHovered && (
+                <>
+                  <button
+                    className="trash-btn"
+                    title="Remove from playlist"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onRemoveSong?.(details);
+                    }}
+                  >
+                    <MuzaIcon iconName="trash" />
+                  </button>
+                  <button
+                    className="checkbox-btn"
+                    title="Select song"
+                    onClick={e => {
+                      e.stopPropagation();
+                      // Handle song selection
+                    }}
+                  >
+                    <MuzaIcon iconName="EmptySquare" />
+                  </button>
+                </>
+              )}
+              <span className="duration">
+                {details.time ? formatDuration(details.time) : "00:00"}
+              </span>
+            </>
+          ) : (
+            // Regular mode: show existing behavior
+            <>
+              {showHoverActions && isHovered && (
+                <button
+                  className="ellipsis-btn"
+                  title="More options"
+                  onClick={e => {
+                    e.stopPropagation();
+                    // Handle more options
+                  }}
+                >
+                  <MuzaIcon iconName="ellipsis" />
+                </button>
+              )}
+
+              <button
+                className="add-btn"
+                title="Add to library"
+                onClick={e => {
+                  e.stopPropagation();
+                  addToLibrary();
+                }}
+              >
+                <MuzaIcon iconName="plus" />
+              </button>
+
+              <span className="duration">
+                {details.time ? formatDuration(details.time) : "00:00"}
+              </span>
+            </>
           )}
-
-          <button
-            className="add-btn"
-            title="Add to library"
-            onClick={e => {
-              e.stopPropagation();
-              addToLibrary();
-            }}
-          >
-            <MuzaIcon iconName="plus" />
-          </button>
-
-          <span className="duration">
-            {details.time ? formatDuration(details.time) : "00:00"}
-          </span>
         </div>
       </div>
     </div>

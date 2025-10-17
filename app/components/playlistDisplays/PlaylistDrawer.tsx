@@ -4,7 +4,9 @@ import { useTranslation } from "~/lib/i18n/translations";
 import MuzaIcon from "~/icons/MuzaIcon";
 import MuzaButton from "~/controls/MuzaButton";
 import MuzaInputField from "~/controls/MuzaInputField";
-import type { MusicPlaylist } from "~/appData/models";
+import type { MusicPlaylist, SongDetails } from "~/appData/models";
+import { useMusicLibraryStore } from "~/appData/musicStore";
+import SongLineWithCover from "~/components/songLineDisplays/SongLineWithCover";
 import "./PlaylistDrawer.scss";
 
 interface PlaylistDrawerProps {
@@ -22,6 +24,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { updatePlaylist } = useMusicLibraryStore();
   const [playlistName, setPlaylistName] = useState(playlist?.title || "");
   const [playlistDescription, setPlaylistDescription] = useState(
     playlist?.description || ""
@@ -47,6 +50,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
     setIsDragOver(true);
   }, []);
 
@@ -55,16 +59,79 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
+  // Helper functions for adding items to playlist
+  const addSongToPlaylist = useCallback(
+    (song: SongDetails) => {
+      if (!playlist?.id) return;
 
-    // Handle dropped files or data
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      // TODO: Process dropped files and add to playlist
-    }
-  }, []);
+      // Check if song already exists in playlist
+      const existingSong = playlist.songs?.find(
+        existingSong =>
+          existingSong.id === song.id ||
+          (existingSong.title === song.title &&
+            existingSong.artist === song.artist)
+      );
+
+      if (existingSong) {
+        return;
+      }
+
+      const updatedSongs = [...(playlist.songs || []), song];
+      updatePlaylist(playlist.id, { songs: updatedSongs });
+      onSavePlaylist({ songs: updatedSongs });
+    },
+    [playlist, updatePlaylist, onSavePlaylist]
+  );
+
+  // Helper function for removing songs from playlist
+  const removeSongFromPlaylist = useCallback(
+    (songToRemove: SongDetails) => {
+      if (!playlist?.id) return;
+
+      const updatedSongs =
+        playlist.songs?.filter(
+          song =>
+            song.id !== songToRemove.id &&
+            !(
+              song.title === songToRemove.title &&
+              song.artist === songToRemove.artist
+            )
+        ) || [];
+
+      updatePlaylist(playlist.id, { songs: updatedSongs });
+      onSavePlaylist({ songs: updatedSongs });
+    },
+    [playlist, updatePlaylist, onSavePlaylist]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+
+      // Handle dropped files or data
+      const files = Array.from(e.dataTransfer.files);
+      const dragData = e.dataTransfer.getData("application/json");
+
+      if (files.length > 0) {
+        // TODO: Process dropped files and add to playlist
+      }
+
+      if (dragData) {
+        try {
+          const data = JSON.parse(dragData);
+
+          // Handle only songs
+          if (data.type === "song" && data.song) {
+            addSongToPlaylist(data.song);
+          }
+        } catch (error) {
+          // Silently handle parsing errors
+        }
+      }
+    },
+    [addSongToPlaylist]
+  );
 
   const handleSave = () => {
     const updatedPlaylist = {
@@ -160,6 +227,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
         </div>
 
         <div className="playlist-drawer__song-list">
+          {/* Main drop zone - always visible at the top */}
           <div
             className={`playlist-drawer__drop-zone ${isDragOver ? "playlist-drawer__drop-zone--active" : ""}`}
             onDragOver={handleDragOver}
@@ -168,6 +236,27 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
           >
             <span>{t("playlist.dropSongsHere")}</span>
           </div>
+
+          {/* Display current playlist songs below the drop zone */}
+          {playlist?.songs && playlist.songs.length > 0 && (
+            <div className="playlist-drawer__songs">
+              {playlist.songs.map((song, index) => (
+                <div
+                  key={song.id || index}
+                  className="playlist-drawer__song-item"
+                >
+                  <SongLineWithCover
+                    details={{ ...song, index: index + 1 }}
+                    onClick={() => {}}
+                    isPlaying={false}
+                    showHoverActions={false}
+                    playlistMode={true}
+                    onRemoveSong={removeSongFromPlaylist}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

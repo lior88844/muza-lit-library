@@ -62,6 +62,35 @@ music-sidebar {
 
 /* Playlist drawer styles - handled by component */
 
+/* Global drag and drop styles */
+.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+.drag-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(59, 130, 246, 0.1);
+  pointer-events: none;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .drag-indicator {
+    background: var(--muza-toggle-active-color, #3b82f6);
+    color: white;
+    padding: var(--muza-spacing-md, 12px) var(--muza-spacing-lg, 16px);
+    border-radius: var(--muza-border-radius-md, 8px);
+    font-weight: var(--muza-font-weight-medium, 500);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+}
+
 /* Global heading styles - override with page-specific styles as needed */
 h1 {
   font-size: 32px;
