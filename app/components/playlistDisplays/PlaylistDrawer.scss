@@ -117,6 +117,11 @@
 
   &:focus {
     outline: none;
+    border: none;
+    box-shadow: none;
+  }
+  &:active {
+    border: none;
   }
 }
 
@@ -135,6 +140,11 @@
 
   &:focus {
     outline: none;
+    border: none;
+    box-shadow: none;
+  }
+  &:active {
+    border: none;
   }
 }
 
@@ -166,7 +176,7 @@
 .playlist-drawer__controls {
   display: flex;
   gap: var(--muza-spacing-sm, 8px);
-  align-items: center;
+  align-items: stretch;
 }
 
 .playlist-drawer__sort-button {
@@ -203,27 +213,15 @@
 
 .playlist-drawer__search-input {
   width: 100%;
+  height: 100%;
   padding: var(--muza-spacing-xs, 4px) var(--muza-spacing-md, 12px);
   background-color: var(--colors_background_light, #ffffff);
   border: 1px solid var(--colors_border_light, #e5e7eb);
   border-radius: 9999px;
-
-  /* Design values for search bar */
   overflow: hidden;
   color: var(--base-muted-foreground, #6b7280);
   text-overflow: ellipsis;
-
-  /* text small/leading-normal/regular */
-  font-family: var(--typography-font-family-font-sans, "Founders Grotesk");
-  font-size: var(--typography-base-sizes-small-font-size, 16px);
-  font-style: normal;
-  font-weight: var(--font-weight-Regular, 400);
-  line-height: var(--typography-base-sizes-small-line-height, 20px); /* 125% */
-  letter-spacing: var(--typography-base-sizes-small-letter-spacing, 0.25px);
-
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  padding-left: 36px;
   flex: 1 0 0;
 
   &::placeholder {

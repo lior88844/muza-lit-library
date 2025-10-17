@@ -108,12 +108,14 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
               onChange={e => setPlaylistName(e.target.value)}
               placeholder={t("playlist.enterName")}
               className="playlist-drawer__title-input"
+              name="playlist-name"
             />
             <MuzaInputField
               value={playlistDescription}
               onChange={e => setPlaylistDescription(e.target.value)}
               placeholder={t("playlist.enterDescription")}
               className="playlist-drawer__description-input"
+              name="playlist-description"
             />
           </div>
 
