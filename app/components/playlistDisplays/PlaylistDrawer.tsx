@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useTranslation } from "~/lib/i18n/translations";
 import MuzaIcon from "~/icons/MuzaIcon";
 import MuzaButton from "~/controls/MuzaButton";
@@ -20,6 +21,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
   onSavePlaylist,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [playlistName, setPlaylistName] = useState(playlist?.title || "");
   const [playlistDescription, setPlaylistDescription] = useState(
     playlist?.description || ""
@@ -78,6 +80,13 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
     onClose();
   };
 
+  const handleNavigateToPlaylist = () => {
+    if (playlist) {
+      navigate("/playlist", { state: { playlist } });
+      onClose(); // Close the drawer after navigation
+    }
+  };
+
   return (
     <div className={`playlist-drawer ${isOpen ? "playlist-drawer--open" : ""}`}>
       <div className="playlist-drawer__header">
@@ -91,7 +100,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
           <button className="playlist-drawer__button" onClick={handleClose}>
             <MuzaIcon iconName="ellipsis" />
           </button>
-          <button className="playlist-drawer__button" onClick={handleClose}>
+          <button
+            className="playlist-drawer__button"
+            onClick={handleNavigateToPlaylist}
+          >
             <MuzaIcon iconName="MoveDiagonal" />
           </button>
           <button className="playlist-drawer__button" onClick={handleClose}>
