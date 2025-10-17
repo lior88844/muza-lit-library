@@ -65,11 +65,16 @@
   width: 36px;
   height: 36px;
   aspect-ratio: 1/1;
+  border-radius: 9999px;
+  border: 1px solid var(--colors_border_light, #e5e7eb);
   cursor: pointer;
-
-  .muza-icon {
-    width: 16px;
+  &:hover {
+    transition: background-color 0.2s ease;
+    background-color: var(--muza-hover-background, #eeeeee);
+  }
+  svg {
     height: 16px;
+    width: 16px;
   }
 }
 
@@ -161,7 +166,7 @@
 .playlist-drawer__controls {
   display: flex;
   gap: var(--muza-spacing-sm, 8px);
-  align-items: flex-start;
+  align-items: center;
 }
 
 .playlist-drawer__sort-button {
@@ -169,7 +174,7 @@
   align-items: center;
   gap: var(--muza-spacing-sm, 8px);
   padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
-  height: 36px;
+  height: fit-content;
   background-color: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   border: 1px solid var(--colors_border_light, #e5e7eb);
@@ -179,9 +184,15 @@
   color: var(--muza-track-title-color, #111827);
   cursor: pointer;
   transition: background-color 0.2s ease;
-
+  width: fit-content;
   &:hover {
     background-color: var(--muza-hover-background, #eeeeee);
+  }
+
+  span {
+    font-size: var(--muza-songline-title-font-size, 16px);
+    font-weight: var(--muza-font-weight-medium, 500);
+    color: var(--muza-track-title-color, #111827);
   }
 
   .muza-icon {
@@ -191,19 +202,32 @@
 }
 
 .playlist-drawer__search-input {
-  flex: 1;
-  height: 36px;
+  width: 100%;
   padding: var(--muza-spacing-xs, 4px) var(--muza-spacing-md, 12px);
   background-color: var(--colors_background_light, #ffffff);
   border: 1px solid var(--colors_border_light, #e5e7eb);
   border-radius: 9999px;
-  font-size: var(--muza-songline-title-font-size, 16px);
-  font-weight: var(--muza-font-weight-normal, 400);
-  color: var(--muza-secondary-text-color, #5f5f5f);
-  letter-spacing: 0.25px;
+
+  /* Design values for search bar */
+  overflow: hidden;
+  color: var(--base-muted-foreground, #6b7280);
+  text-overflow: ellipsis;
+
+  /* text small/leading-normal/regular */
+  font-family: var(--typography-font-family-font-sans, "Founders Grotesk");
+  font-size: var(--typography-base-sizes-small-font-size, 16px);
+  font-style: normal;
+  font-weight: var(--font-weight-Regular, 400);
+  line-height: var(--typography-base-sizes-small-line-height, 20px); /* 125% */
+  letter-spacing: var(--typography-base-sizes-small-letter-spacing, 0.25px);
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  flex: 1 0 0;
 
   &::placeholder {
-    color: var(--muza-secondary-text-color, #5f5f5f);
+    color: var(--base-muted-foreground, #6b7280);
   }
 
   &:focus {

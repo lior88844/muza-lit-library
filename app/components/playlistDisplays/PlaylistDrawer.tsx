@@ -132,7 +132,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
             onClick={() => {}}
             className="playlist-drawer__sort-button"
             content={t("playlist.sort")}
-            iconName="grip-vertical"
+            iconName="ArrowUpDown"
           />
 
           <MuzaInputField
@@ -141,6 +141,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({
             placeholder={t("playlist.filterPlaceholder")}
             className="playlist-drawer__search-input"
             leadingIcon="search"
+            name="playlist-drawer-search-input"
           />
         </div>
 
