@@ -76,12 +76,6 @@ const callback = {
   id: "callback",
 } as RouteConfigEntry;
 
-const adminPortal = {
-  file: "routes/admin-portal.tsx",
-  path: "admin-portal",
-  id: "admin-portal",
-} as RouteConfigEntry;
-
 export default [
   home,
   album,
@@ -95,5 +89,4 @@ export default [
   playlist,
   login,
   callback,
-  adminPortal,
 ] satisfies RouteConfig;
