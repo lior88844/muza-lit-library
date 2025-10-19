@@ -51,12 +51,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if we're on the upload pages
+  // Check if we're on upload pages or any admin pages
   const isUploadPage = location.pathname === "/upload";
-  const isAdminUploadPage = location.pathname === "/admin-upload";
-  const isAnyUploadPage = isUploadPage || isAdminUploadPage;
+  const isAdminPage = location.pathname.startsWith("/admin-");
+  const isAnyUploadPage = isUploadPage || isAdminPage;
 
-  // Stop music when navigating to upload pages
+  // Stop music when navigating to upload pages or any admin pages
   useEffect(() => {
     if (isAnyUploadPage) {
       setIsPlaying(false);
