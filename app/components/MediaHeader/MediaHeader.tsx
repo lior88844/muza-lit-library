@@ -190,10 +190,49 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
             <div className="info-section">
               <div className="titles-section" data-name="Titles">
                 <div className="title-metadata-group">
-                  {/* MediaInfo content inlined */}
+                  {/* Playlist Badge and Metadata */}
+                  {mediaType === "playlist" && (
+                    <div className="playlist-badge-section">
+                      <div className="playlist-badge" data-name="Badge">
+                        <div className="badge-icon">
+                          <MuzaIcon iconName="ListMusic" />
+                        </div>
+                        <span className="badge-text">Playlist</span>
+                      </div>
+                      <span className="metadata-separator">•</span>
+                      <span className="metadata-text">
+                        {songs.length} Songs
+                      </span>
+                      <span className="metadata-separator">•</span>
+                      <span className="metadata-text">
+                        {Math.floor(
+                          songs.reduce(
+                            (total, song) => total + (song.time || 0),
+                            0
+                          ) / 60
+                        )}
+                        h{" "}
+                        {Math.floor(
+                          songs.reduce(
+                            (total, song) => total + (song.time || 0),
+                            0
+                          ) % 60
+                        )}
+                        min
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Title */}
                   <div className="title-info title-info--left">
                     <div className="album-title">{getMediaTitle()}</div>
-                    {creator && (
+                    {mediaType === "playlist" && (
+                      <div className="playlist-description">
+                        {(media as MusicPlaylist).description ||
+                          "Description goes here"}
+                      </div>
+                    )}
+                    {mediaType !== "playlist" && creator && (
                       <div className="creator-name">
                         {label && `${label} `}
                         {creator}
@@ -201,10 +240,15 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                     )}
                   </div>
 
-                  <MediaMetadata {...metadataProps} />
-                  {/* Visibility Badge - separate from metadata per Figma */}
+                  {/* User Info Section for Playlists */}
                   {mediaType === "playlist" && (
-                    <div className="visibility-badge-section">
+                    <div className="user-info-section">
+                      <div className="user-info">
+                        <div className="user-avatar">
+                          <img src="/art/imag_1.jpg" alt="User Avatar" />
+                        </div>
+                        <span className="user-name">User&apos;s Name</span>
+                      </div>
                       <div className="visibility-badge" data-name="Badge">
                         <div className="badge-icon">
                           <MuzaIcon iconName="globe" />
@@ -216,6 +260,11 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                         </span>
                       </div>
                     </div>
+                  )}
+
+                  {/* Non-playlist metadata */}
+                  {mediaType !== "playlist" && (
+                    <MediaMetadata {...metadataProps} />
                   )}
                 </div>
 

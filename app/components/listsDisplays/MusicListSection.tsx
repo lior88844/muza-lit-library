@@ -42,6 +42,7 @@ const MusicListSectionComponent: React.FC<
     setIsPlaying,
     isPlaying,
     togglePlayPause,
+    isPlaylistDrawerOpen,
   } = useCurrentPlayerStore();
 
   const handleShowAll = () => {
@@ -96,6 +97,7 @@ const MusicListSectionComponent: React.FC<
               }
             }}
             isPlaying={song.id === globalSelectedSong?.id && !!isPlaying}
+            draggable={isPlaylistDrawerOpen}
           />
         ));
       default:

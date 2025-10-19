@@ -54,16 +54,17 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
           customActions={
             <div className="playlist-actions">
               <MuzaButton
-                iconName="plus"
-                onClick={() => {}}
-                size="medium"
-                data-name="Add-Download Button"
-              />
-              <MuzaButton
                 iconName="ellipsis"
                 onClick={() => {}}
                 size="medium"
                 data-name="Menu Button"
+              />
+              <MuzaButton
+                iconName="pencil"
+                onClick={() => {}}
+                size="medium"
+                data-name="Edit Button"
+                content="Edit"
               />
             </div>
           }

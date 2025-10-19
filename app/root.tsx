@@ -20,9 +20,10 @@ import { useEffect, useState } from "react";
 import { useCurrentPlayerStore } from "./appData/currentPlayerStore";
 import MuzaMusicPlayer from "./components/componentsWithLogic/MuzaMusicPlayer";
 import { useTranslation } from "./lib/i18n/translations";
-import type { SongDetails } from "./appData/models";
+import type { SongDetails, MusicPlaylist } from "./appData/models";
 import { apiClient } from "./lib/apiClient";
 import Providers from "./Providers";
+import PlaylistDrawer from "./components/playlistDisplays/PlaylistDrawer";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -50,6 +51,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isPlaylistDrawerOpen, setIsPlaylistDrawerOpen } =
+    useCurrentPlayerStore();
+  const [currentPlaylistId, setCurrentPlaylistId] = useState<
+    string | undefined
+  >(undefined);
+
+  // Get the current playlist from the store to keep it reactive
+  const currentPlaylist = useMusicLibraryStore(state =>
+    currentPlaylistId
+      ? state.playlists.find(p => p.id === currentPlaylistId)
+      : undefined
+  );
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Check if we're on the upload pages
   const isUploadPage = location.pathname === "/upload";
@@ -62,6 +76,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
       setIsPlaying(false);
     }
   }, [isAnyUploadPage, setIsPlaying]);
+
+  // Handle playlist drawer state changes
+  const handleOpenPlaylistDrawer = (playlist?: MusicPlaylist) => {
+    setCurrentPlaylistId(playlist?.id);
+    setIsPlaylistDrawerOpen(true);
+    setIsSidebarCollapsed(true);
+  };
+
+  const handleClosePlaylistDrawer = () => {
+    setIsPlaylistDrawerOpen(false);
+    setCurrentPlaylistId(undefined);
+    setIsSidebarCollapsed(false);
+  };
+
+  const handleToggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
+  const { updatePlaylist } = useMusicLibraryStore();
+
+  const handleSavePlaylist = (playlist: Partial<MusicPlaylist>) => {
+    // Handle playlist save logic here
+    console.log("Saving playlist:", playlist);
+    if (currentPlaylistId) {
+      updatePlaylist(currentPlaylistId, playlist);
+    }
+  };
 
   useEffect(() => {
     const {
@@ -161,19 +202,34 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Providers>
-          <div className="body">
+          <div
+            className={`body ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}
+          >
             {!isAnyUploadPage && (
               <MusicSidebar
                 logoAlt={t("library.musicLibrary")}
                 logoSrc="/icons/muza.svg"
                 sections={sidebarSections}
                 playlists={playlists}
+                isCollapsed={isSidebarCollapsed}
+                onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
+                onToggleCollapse={handleToggleSidebar}
               />
             )}
 
             <div className="content">
               {!isAnyUploadPage && <MusicTopbar />}
-              {content || children}
+              <main>
+                {content || children}
+                {!isAnyUploadPage && (
+                  <PlaylistDrawer
+                    isOpen={isPlaylistDrawerOpen}
+                    onClose={handleClosePlaylistDrawer}
+                    playlist={currentPlaylist}
+                    onSavePlaylist={handleSavePlaylist}
+                  />
+                )}
+              </main>
               {!isAnyUploadPage && <MuzaMusicPlayer />}
             </div>
           </div>

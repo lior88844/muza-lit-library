@@ -12,6 +12,9 @@ interface MusicSidebarProps {
   logoAlt?: string;
   sections: Section[];
   playlists?: MusicPlaylist[];
+  isCollapsed?: boolean;
+  onOpenPlaylistDrawer?: (playlist?: MusicPlaylist) => void;
+  onToggleCollapse?: () => void;
 }
 
 const MusicSidebar: React.FC<MusicSidebarProps> = ({
@@ -19,12 +22,19 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   logoAlt = "Logo",
   sections,
   playlists = [],
+  isCollapsed = false,
+  onOpenPlaylistDrawer,
+  onToggleCollapse,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { createPlaylist } = useMusicLibraryStore();
-  const [isCollapsed, setIsCollapsed] = useState(false); // Start open by default
+  const [internalCollapsed, setInternalCollapsed] = useState(false); // Start open by default
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Use external collapsed state if provided, otherwise use internal state
+  const collapsedState =
+    isCollapsed !== undefined ? isCollapsed : internalCollapsed;
 
   const handleItemClick = (item: MenuItem) => {
     if (item.action) {
@@ -39,10 +49,16 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   };
 
   const handleSidebarToggle = () => {
-    setIsCollapsed(!isCollapsed);
+    if (isCollapsed !== undefined && onToggleCollapse) {
+      // External control - trigger parent callback
+      onToggleCollapse();
+      return;
+    }
+    setInternalCollapsed(!internalCollapsed);
   };
 
   const handleCreatePlaylist = () => {
+    // Always open modal first for playlist creation
     setIsModalOpen(true);
   };
 
@@ -66,6 +82,11 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
     // Add to store
     createPlaylist(newPlaylist);
     setIsModalOpen(false);
+
+    // Open drawer with the newly created playlist
+    if (onOpenPlaylistDrawer) {
+      onOpenPlaylistDrawer(newPlaylist);
+    }
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => {
@@ -76,14 +97,14 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         onClick={() => handleItemClick(item)}
       >
         <MuzaIcon iconName={item.svg} />
-        {!isCollapsed && <span>{t(item.text)}</span>}
+        {!collapsedState && <span>{t(item.text)}</span>}
       </a>
     );
   };
 
   const renderSection = (section: Section, index: number) => (
     <div key={index} className="section">
-      {section.title && !isCollapsed && (
+      {section.title && !collapsedState && (
         <div className="section-title">{t(section.title)}</div>
       )}
       {section.items.map(renderMenuItem)}
@@ -97,12 +118,12 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
       onClick={() => handlePlaylistClick(playlist)}
     >
       <MuzaIcon iconName="playlist" />
-      {!isCollapsed && <span>{playlist.title}</span>}
+      {!collapsedState && <span>{playlist.title}</span>}
     </div>
   );
 
   return (
-    <div className={`music-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+    <div className={`music-sidebar ${collapsedState ? "collapsed" : ""}`}>
       <div className="logo">
         <img src={logoSrc} alt={logoAlt} />
       </div>
@@ -110,7 +131,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
       <div className="sidebar-content">
         <div className="nav-sections">{sections.map(renderSection)}</div>
 
-        {playlists.length > 0 && !isCollapsed && (
+        {playlists.length > 0 && !collapsedState && (
           <div className="playlists-section">
             <div className="playlists-header">
               <div className="playlists-title">{t("nav.playlists")}</div>
@@ -129,10 +150,10 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         <button
           className="sidebar-header-button"
           onClick={handleSidebarToggle}
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsedState ? "Expand sidebar" : "Collapse sidebar"}
         >
           <MuzaIcon
-            iconName={isCollapsed ? "PanelLeftOpen" : "PanelLeftClose"}
+            iconName={collapsedState ? "PanelLeftOpen" : "PanelLeftClose"}
           />
         </button>
       </div>
