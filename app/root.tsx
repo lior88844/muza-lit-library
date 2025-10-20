@@ -65,17 +65,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Check if we're on the upload pages
+  // Check if we're on pages that should hide the main music UI
   const isUploadPage = location.pathname === "/upload";
   const isAdminUploadPage = location.pathname === "/admin-upload";
-  const isAnyUploadPage = isUploadPage || isAdminUploadPage;
+  const isAdminPortalPage = location.pathname === "/admin-portal";
+  const isMinimalLayoutPage =
+    isUploadPage || isAdminUploadPage || isAdminPortalPage;
 
   // Stop music when navigating to upload pages
   useEffect(() => {
-    if (isAnyUploadPage) {
+    if (isMinimalLayoutPage) {
       setIsPlaying(false);
     }
-  }, [isAnyUploadPage, setIsPlaying]);
+  }, [isMinimalLayoutPage, setIsPlaying]);
 
   // Handle playlist drawer state changes
   const handleOpenPlaylistDrawer = (playlist?: MusicPlaylist) => {
@@ -205,7 +207,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div
             className={`body ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}
           >
-            {!isAnyUploadPage && (
+            {!isMinimalLayoutPage && (
               <MusicSidebar
                 logoAlt={t("library.musicLibrary")}
                 logoSrc="/icons/muza.svg"
@@ -218,10 +220,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             )}
 
             <div className="content">
-              {!isAnyUploadPage && <MusicTopbar />}
+              {!isMinimalLayoutPage && <MusicTopbar />}
               <main>
                 {content || children}
-                {!isAnyUploadPage && (
+                {!isMinimalLayoutPage && (
                   <PlaylistDrawer
                     isOpen={isPlaylistDrawerOpen}
                     onClose={handleClosePlaylistDrawer}
@@ -230,7 +232,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   />
                 )}
               </main>
-              {!isAnyUploadPage && <MuzaMusicPlayer />}
+              {!isMinimalLayoutPage && <MuzaMusicPlayer />}
             </div>
           </div>
           <ToastContainer />
