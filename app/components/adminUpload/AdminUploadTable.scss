@@ -258,6 +258,10 @@ $admin-table-badge-text-color: #f9fafb;
     &--loaded {
       background-color: $admin-table-success-bg;
     }
+
+    &--uploading {
+      background-color: var(--muza-light-border-color);
+    }
   }
 
   &__status-icon {
@@ -339,7 +343,7 @@ $admin-table-badge-text-color: #f9fafb;
     height: 100%;
     background-color: var(--colors_primary_light);
     border-radius: calc(var(--border_radius_full) * 1px);
-    transition: width 0.3s ease;
+    transition: width 0.1s ease;
   }
 
   &__footer {
@@ -664,6 +668,10 @@ $admin-table-badge-text-color: #f9fafb;
     font-weight: var(--muza-font-weight-bold);
     color: var(--colors_foreground_light);
     line-height: $admin-table-line-height-base;
+
+    &--error {
+      color: #dc2626; // red-600
+    }
   }
 
   &__upload-icon {
@@ -853,6 +861,13 @@ $admin-table-badge-text-color: #f9fafb;
     width: 16px;
     height: 16px;
     color: var(--colors_primary_light);
+    animation: spin 1s linear infinite;
+  }
+
+  &__upload-spinner {
+    width: 16px;
+    height: 16px;
+    color: var(--muza-secondary-text-color);
     animation: spin 1s linear infinite;
   }
 
