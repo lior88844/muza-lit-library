@@ -9,7 +9,7 @@ import { useLoaderData } from "react-router";
 import "../styles/scrollbar.scss";
 import "../styles/variables.scss";
 import "../styles/main.scss";
-import { fetchAlbumById } from "../../server";
+import { fetchAlbumById } from "../../server/data";
 import AlbumInfoModal from "../components/albumDisplays/AlbumInfoModal";
 
 export async function loader({ params }: { params: { id: string } }) {

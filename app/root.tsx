@@ -22,7 +22,7 @@ import { useTranslation } from "./lib/i18n/translations";
 import type { SongDetails, MusicPlaylist } from "./appData/models";
 import Providers from "./Providers";
 import PlaylistDrawer from "./components/playlistDisplays/PlaylistDrawer";
-import { fetchAllData } from "../server";
+import { fetchAllData } from "../server/data";
 
 export async function loader({ request: _req }: Route.LoaderArgs) {
   const res = await fetchAllData();
