@@ -3,6 +3,7 @@ import "./PlaylistGrid.scss";
 import CreatePlaylistCard from "./CreatePlaylistCard";
 import PlaylistCover from "../albumDisplays/PlaylistCover";
 import { useTranslation } from "~/lib/i18n/translations";
+import { generatePlaylistCoverImages } from "~/lib/utils";
 
 interface PlaylistGridProps {
   playlists: any[];
@@ -17,16 +18,19 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  // Filter out playlists with no songs
+  const playlistsWithSongs = playlists.filter(
+    playlist => playlist.songs && playlist.songs.length > 0
+  );
+
   return (
     <div className="playlist-grid">
       <CreatePlaylistCard onClick={onCreatePlaylist} />
 
-      {playlists.map((playlist, index) => (
+      {playlistsWithSongs.map((playlist, index) => (
         <PlaylistCover
           key={playlist.id || index}
-          albumImages={
-            playlist.albumImages || [playlist.imageSrc || "/art/muza.png"]
-          }
+          albumImages={generatePlaylistCoverImages(playlist)}
           title={playlist.title || playlist.name}
           songsCount={playlist.songs?.length?.toString() || "0"}
           userName={playlist.userName || playlist.author || t("common.unknown")}
