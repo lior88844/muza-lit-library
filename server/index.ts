@@ -20,10 +20,11 @@ process.on("uncaughtException", error => {
 const PORT = process.env.PORT || 3000;
 
 // Determine the correct paths based on environment
-const isProduction = process.env.NODE_ENV === "production";
-const clientDir = isProduction
+const BUILD_PATH = "./build/server/index.js";
+const DEVELOPMENT = process.env.NODE_ENV === "development";
+const clientDir = DEVELOPMENT
   ? path.resolve("./build/client")
-  : path.resolve("./server/reactServer/client");
+  : path.resolve("./build/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
 
@@ -154,43 +155,40 @@ async function initializeApp() {
     // Middleware
     app.use(express.json());
 
-    // Static file serving
-    console.log("Setting up static file serving from:", clientDir);
-    app.use(express.static(clientDir));
-
-    // Serve static assets from app directory
-    const appDir = path.resolve("./app");
-    console.log("Setting up app static file serving from:", appDir);
-    app.use("/app", express.static(appDir));
-
-    // Serve static files from the public directory
-    console.log("Setting up public file serving from:", publicDir);
-    app.use(express.static(publicDir));
-
     // Health check endpoint
     app.get("/health", (req, res) => {
-      console.log("GET /health - Serving OK");
       res.send("OK");
     });
+    console.log({ isDevelopment: DEVELOPMENT });
 
-    // Handle favicon requests
-    app.get("/favicon.ico", (req, res) => {
-      console.log("GET /favicon.ico - Serving favicon");
-      res.status(204).end(); // No content response
-    });
-
-    app.get("/", (req, res) => {
-      console.log("GET / - Serving index.html");
-      res.sendFile(path.join(clientDir, "index.html"));
-    });
-
-    // Catch-all middleware for client-side routing
-    app.use((req, res) => {
-      console.log(
-        `GET ${req.path} - Serving index.html for client-side routing`
+    if (DEVELOPMENT) {
+      console.log("Starting development server");
+      const viteDevServer = await import("vite").then(vite =>
+        vite.createServer({
+          server: { middlewareMode: true },
+        })
       );
-      res.sendFile(path.join(clientDir, "index.html"));
-    });
+      app.use(viteDevServer.middlewares);
+      app.use(async (req, res, next) => {
+        try {
+          const source = await viteDevServer.ssrLoadModule("./server/app.ts");
+          return await source.app(req, res, next);
+        } catch (error) {
+          if (typeof error === "object" && error instanceof Error) {
+            viteDevServer.ssrFixStacktrace(error);
+          }
+          next(error);
+        }
+      });
+    } else {
+      console.log("Starting production server");
+      app.use(
+        "/assets",
+        express.static("build/client/assets", { immutable: true, maxAge: "1y" })
+      );
+      app.use(express.static("build/client", { maxAge: "1h" }));
+      app.use(await import(BUILD_PATH).then(mod => mod.app));
+    }
 
     // Start server
     const server = app.listen(PORT, () => {

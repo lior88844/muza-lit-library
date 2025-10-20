@@ -27,7 +27,6 @@ export const db = drizzle(client, {
 export async function testConnection(): Promise<boolean> {
   try {
     await client`SELECT 1 as test`;
-    console.log("✅ Database connection established successfully");
     return true;
   } catch (error) {
     console.error("❌ Database connection failed:", error);
