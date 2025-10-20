@@ -4,7 +4,6 @@ import type { SongDetails } from "~/appData/models";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import { toast } from "react-toastify";
 import { useTranslation } from "~/lib/i18n/translations";
-import { generatePlaylistCoverImages } from "~/lib/utils";
 
 // Import remaining sub-components
 import MediaCover from "./components/MediaCover/MediaCover";

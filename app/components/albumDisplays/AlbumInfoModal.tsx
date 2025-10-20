@@ -91,7 +91,7 @@ const AlbumInfoModal: React.FC<AlbumInfoProps> = ({
                     Track Count
                   </div>
                   <div className="album-info-modal__info-value">
-                    {album.trackCount}
+                    {album.tracks.length}
                   </div>
                 </div>
                 {album.label && (

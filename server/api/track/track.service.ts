@@ -15,7 +15,7 @@ export function formatTrack(dbTrack: TrackWithArtists): TrackResponse {
   const mainArtist = dbTrack.trackArtists[0];
   return {
     id: dbTrack.id,
-    index: dbTrack.id,
+    index: dbTrack.trackNumber || 0,
     title: dbTrack.title,
     time: dbTrack.duration,
     audioUrl: dbTrack.fileId ? getTrackFilePathFromFileId(dbTrack.fileId) : "",

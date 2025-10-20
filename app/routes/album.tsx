@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { AlbumDetail, SongDetails } from "~/appData/models";
+import type { SongDetails } from "~/appData/models";
 import { useMusicLibraryStore } from "~/appData/musicStore";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import MediaHeader from "~/components/MediaHeader";
@@ -71,20 +71,15 @@ export default function AlbumPage() {
       />
       <div className="album-song-list">
         {album.tracks.map(track => {
-          const songDetails = recentlyPlayed.find(
-            (s: SongDetails) => s.id === track.id
-          );
-          if (!songDetails) return null;
-
           return (
             <SongLine
               key={track.id}
-              details={songDetails}
+              details={track}
               onClick={() => {
                 if (selectedSong?.id === track.id) {
                   togglePlayPause();
                 } else {
-                  setSelectedSong(songDetails);
+                  setSelectedSong(track);
                   setIsPlaying(true);
                 }
               }}
