@@ -12,8 +12,6 @@ import {
 import type { Route } from "./+types/root";
 
 import "./app.scss";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import MusicSidebar from "./components/sections/MusicSidebar";
 import MusicTopbar from "./components/sections/MusicTopbar";
 import { useMusicLibraryStore } from "./appData/musicStore";
@@ -26,7 +24,7 @@ import Providers from "./Providers";
 import PlaylistDrawer from "./components/playlistDisplays/PlaylistDrawer";
 import { fetchAllData } from "../server";
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request: _req }: Route.LoaderArgs) {
   const res = await fetchAllData();
   return res;
 }
@@ -211,7 +209,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               {!isMinimalLayoutPage && <MuzaMusicPlayer />}
             </div>
           </div>
-          <ToastContainer />
         </Providers>
         <ScrollRestoration />
         <Scripts />

@@ -1,6 +1,8 @@
 import { WebStorageStateStore } from "oidc-client-ts";
 import { useMemo } from "react";
 import { AuthProvider, type AuthProviderProps } from "react-oidc-context";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const cognitoAuthConfig = useMemo<AuthProviderProps>(
@@ -28,5 +30,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     }),
     []
   );
-  return <AuthProvider {...cognitoAuthConfig}>{children}</AuthProvider>;
+  return (
+    <AuthProvider {...cognitoAuthConfig}>
+      {children}
+      <ToastContainer />
+    </AuthProvider>
+  );
 }
