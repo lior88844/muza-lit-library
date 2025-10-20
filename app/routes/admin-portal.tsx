@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import "./AdminPortal.scss";
 import MuzaIcon from "~/icons/MuzaIcon";
+import AdminPortalTableBody from "~/components/adminPortal/AdminPortalTableBody";
 
 interface SectionData {
   id: number;
@@ -195,66 +196,11 @@ export default function AdminPortal() {
             </div>
 
             {/* Table Body */}
-            <div className="admin-portal-table-body">
-              {sections.map((section, index) => (
-                <div key={section.id} className="admin-portal-table-row">
-                  <div className="admin-portal-table-column admin-portal-table-column-number">
-                    <div className="admin-portal-table-cell">
-                      <span>{index + 1}</span>
-                    </div>
-                  </div>
-                  <div className="admin-portal-table-column admin-portal-table-column-section">
-                    <div className="admin-portal-table-cell">
-                      <input
-                        type="text"
-                        value={section.name}
-                        onChange={e =>
-                          handleSectionNameChange(section.id, e.target.value)
-                        }
-                        className="admin-portal-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="admin-portal-table-column admin-portal-table-column-type">
-                    <div className="admin-portal-table-cell">
-                      <div className="admin-portal-dropdown">
-                        <button className="admin-portal-dropdown-btn">
-                          <span>{section.type}</span>
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                          >
-                            <path
-                              d="M4 6L8 10L12 6"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="admin-portal-table-column admin-portal-table-column-content">
-                    <div className="admin-portal-table-cell">
-                      <button className="admin-portal-edit-btn">
-                        {section.content}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="admin-portal-table-column admin-portal-table-column-track">
-                    <div className="admin-portal-table-cell">
-                      <span className="admin-portal-track-number">
-                        {section.trackNumber}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <AdminPortalTableBody
+              sections={sections}
+              handleSectionNameChange={handleSectionNameChange}
+              handleSectionTypeChange={handleSectionTypeChange}
+            />
           </div>
 
           {/* Table Footer */}
