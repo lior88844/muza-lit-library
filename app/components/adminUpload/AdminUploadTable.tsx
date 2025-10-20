@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { FaSpinner } from "react-icons/fa";
 import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
 import DataSourceCell from "./DataSourceCell";
@@ -184,14 +185,24 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                   item.loadingState?.status === "loaded"
                     ? "admin-upload-table__upload-status--loaded"
                     : ""
+                } ${
+                  isUploading && selectedItems.has(globalIndex)
+                    ? "admin-upload-table__upload-status--uploading"
+                    : ""
                 }`}
               >
-                <MuzaIcon
-                  iconName={
-                    item.loadingState?.status === "loaded" ? "Check" : "Clock8"
-                  }
-                  className="admin-upload-table__status-icon"
-                />
+                {isUploading && selectedItems.has(globalIndex) ? (
+                  <FaSpinner className="admin-upload-table__upload-spinner" />
+                ) : (
+                  <MuzaIcon
+                    iconName={
+                      item.loadingState?.status === "loaded"
+                        ? "Check"
+                        : "Clock8"
+                    }
+                    className="admin-upload-table__status-icon"
+                  />
+                )}
               </div>
               <div className="admin-upload-table__upload-content">
                 <div className="admin-upload-table__upload-info">
@@ -201,7 +212,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                       className="admin-upload-table__type-icon"
                     />
                   </div>
-                  {item.loadingState?.status === "loaded" && item.metadata ? (
+                  {item.metadata ? (
                     <span className="admin-upload-table__album-text">
                       {item.albumLookup?.albumName ||
                         item.metadata.album ||
@@ -212,13 +223,31 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                         item.metadata.artist ||
                         "Unknown Artist"}
                     </span>
+                  ) : item.isLookingUp ? (
+                    <>
+                      <span className="admin-upload-table__size-text">
+                        {formatFileSize(item.size)}
+                      </span>
+                      <span className="admin-upload-table__status-text">
+                        Processing...
+                      </span>
+                    </>
                   ) : (
                     <>
                       <span className="admin-upload-table__size-text">
                         {formatFileSize(item.size)}
                       </span>
                       <span className="admin-upload-table__status-text">
-                        Loading
+                        Ready
+                      </span>
+                    </>
+                  )}
+
+                  {/* Show upload progress only during actual upload */}
+                  {item.loadingState?.status === "loading" && isUploading && (
+                    <>
+                      <span className="admin-upload-table__status-text">
+                        Uploading...
                       </span>
                       <span className="admin-upload-table__percentage">
                         {item.loadingState?.progress ?? 0}%
@@ -232,14 +261,17 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                     </>
                   )}
                 </div>
-                <div className="admin-upload-table__progress-bar">
-                  <div
-                    className="admin-upload-table__progress-fill"
-                    style={{
-                      width: `${item.loadingState?.progress ?? 0}%`,
-                    }}
-                  />
-                </div>
+                {/* Show progress bar only during actual upload */}
+                {item.loadingState?.status === "loading" && isUploading && (
+                  <div className="admin-upload-table__progress-bar">
+                    <div
+                      className="admin-upload-table__progress-fill"
+                      style={{
+                        width: `${item.loadingState?.progress ?? 0}%`,
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </td>
