@@ -10,6 +10,7 @@ import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import { toast } from "react-toastify";
 import AlbumInfoModal from "~/components/albumDisplays/AlbumInfoModal";
 import { useTranslation } from "~/lib/i18n/translations";
+import { generatePlaylistCoverImages } from "~/lib/utils";
 
 // Import remaining sub-components
 import MediaCover from "./components/MediaCover/MediaCover";
@@ -86,13 +87,8 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
       return (media as Artist).imageUrl || "";
     }
     if (mediaType === "playlist") {
-      // For playlists, return array of first 4 song images for collage
-      const playlistImages = songs
-        .slice(0, 4)
-        .map(song => song.imageSrc || "/art/imag_1.jpg");
-      return playlistImages.length >= 4
-        ? playlistImages
-        : (media as MusicPlaylist).imageSrc || "";
+      // For playlists, generate collage from playlist songs
+      return generatePlaylistCoverImages(media as MusicPlaylist);
     }
     return (media as Album | MusicPlaylist).imageSrc || "";
   };

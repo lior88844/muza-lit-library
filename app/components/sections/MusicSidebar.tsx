@@ -6,6 +6,7 @@ import type { MenuItem, Section, MusicPlaylist } from "~/appData/models";
 import { useNavigate } from "react-router";
 import { useTranslation } from "~/lib/i18n/translations";
 import { useMusicLibraryStore } from "~/appData/musicStore";
+import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 
 interface MusicSidebarProps {
   logoSrc: string;
@@ -29,6 +30,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { createPlaylist } = useMusicLibraryStore();
+  const { openPlaylistDrawer } = useCurrentPlayerStore();
   const [internalCollapsed, setInternalCollapsed] = useState(false); // Start open by default
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -83,10 +85,8 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
     createPlaylist(newPlaylist);
     setIsModalOpen(false);
 
-    // Open drawer with the newly created playlist
-    if (onOpenPlaylistDrawer) {
-      onOpenPlaylistDrawer(newPlaylist);
-    }
+    // Open drawer with the newly created playlist using global store
+    openPlaylistDrawer(newPlaylist.id);
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => {
@@ -122,6 +122,11 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
     </div>
   );
 
+  // Filter out playlists with no songs
+  const playlistsWithSongs = playlists.filter(
+    playlist => playlist.songs && playlist.songs.length > 0
+  );
+
   return (
     <div className={`music-sidebar ${collapsedState ? "collapsed" : ""}`}>
       <div className="logo">
@@ -131,7 +136,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
       <div className="sidebar-content">
         <div className="nav-sections">{sections.map(renderSection)}</div>
 
-        {playlists.length > 0 && !collapsedState && (
+        {playlistsWithSongs.length > 0 && !collapsedState && (
           <div className="playlists-section">
             <div className="playlists-header">
               <div className="playlists-title">{t("nav.playlists")}</div>
@@ -140,7 +145,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
               </button>
             </div>
             <div className="playlists-list">
-              {playlists.map(renderPlaylist)}
+              {playlistsWithSongs.map(renderPlaylist)}
             </div>
           </div>
         )}

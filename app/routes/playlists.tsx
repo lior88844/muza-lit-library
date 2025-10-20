@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { useMusicLibraryStore } from "~/appData/musicStore";
+import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import PlaylistGrid from "~/components/listsDisplays/PlaylistGrid";
 import CreatePlaylistModal from "~/components/ui/CreatePlaylistModal";
 import { useState } from "react";
@@ -12,6 +13,7 @@ import "../styles/main.scss";
 export default function Playlists() {
   const { t } = useTranslation();
   const { playlists, createPlaylist } = useMusicLibraryStore();
+  const { openPlaylistDrawer } = useCurrentPlayerStore();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,6 +49,9 @@ export default function Playlists() {
     }
 
     setIsModalOpen(false);
+
+    // Open the playlist drawer with the newly created playlist
+    openPlaylistDrawer(newPlaylist.id);
   };
 
   return (

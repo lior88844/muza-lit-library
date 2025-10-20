@@ -21,12 +21,11 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     isPlaying,
     setIsPlaying,
     togglePlayPause,
+    openPlaylistDrawer,
   } = useCurrentPlayerStore();
-  const { recentlyPlayed } = useMusicLibraryStore();
 
-  // For demo purposes, use some songs from recentlyPlayed as playlist songs
-  // In a real app, the playlist would have its own songs array
-  const playlistSongs = recentlyPlayed.slice(0, 8);
+  // Use the actual playlist songs
+  const playlistSongs = playlist?.songs || [];
 
   const handleSongClick = (song: SongDetails) => {
     if (selectedSong?.id === song.id) {
@@ -41,6 +40,10 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
 
   const isCurrentSongPlaying = (song: SongDetails) => {
     return selectedSong?.id === song.id && !!isPlaying;
+  };
+
+  const handleEditClick = () => {
+    openPlaylistDrawer(playlist?.id);
   };
 
   return (
@@ -61,7 +64,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
               />
               <MuzaButton
                 iconName="pencil"
-                onClick={() => {}}
+                onClick={handleEditClick}
                 size="medium"
                 data-name="Edit Button"
                 content="Edit"
