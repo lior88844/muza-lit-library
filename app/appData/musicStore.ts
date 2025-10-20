@@ -28,6 +28,10 @@ type musicLibraryStore = {
   setPlaylists: (playlists: MusicPlaylist[]) => void;
   setSidebarSections: (sections: Section[]) => void;
   createPlaylist: (playlist: MusicPlaylist) => void;
+  updatePlaylist: (
+    playlistId: string,
+    updatedPlaylist: Partial<MusicPlaylist>
+  ) => void;
   incrementPlayCount: (songId: string) => void;
 };
 
@@ -65,6 +69,18 @@ export const useMusicLibraryStore = create<musicLibraryStore>((set, get) => ({
   createPlaylist: (playlist: MusicPlaylist) =>
     set(state => ({
       playlists: [...state.playlists, playlist],
+    })),
+
+  updatePlaylist: (
+    playlistId: string,
+    updatedPlaylist: Partial<MusicPlaylist>
+  ) =>
+    set(state => ({
+      playlists: state.playlists.map(playlist =>
+        playlist.id === playlistId
+          ? { ...playlist, ...updatedPlaylist }
+          : playlist
+      ),
     })),
 
   incrementPlayCount: (songId: string) => {

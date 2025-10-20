@@ -55,6 +55,15 @@ const english = {
   "playlist.create": "Create",
   "playlist.cancel": "Cancel",
 
+  // Playlist Drawer
+  "playlist.playlist": "Playlist",
+  "playlist.enterName": "Enter playlist name",
+  "playlist.enterDescription": "Enter playlist description",
+  "playlist.sort": "Sort",
+  "playlist.filterPlaceholder": "Filter playlist on song, artist or album",
+  "playlist.dropSongsHere": "Drop Songs here",
+  "playlist.createNew": "Create New Playlist",
+
   // Album Info Modal - Labels
   "albumInfo.tenorSaxophone": "Tenor Saxophone",
   "albumInfo.piano": "Piano",
@@ -92,7 +101,7 @@ const english = {
 
   // Media Header
   "common.playAlbum": "Play Album",
-  "common.playPlaylist": "Play Playlist",
+  "common.playPlaylist": "Play",
   "common.playArtist": "Play Artist",
   "common.pause": "Pause",
   "common.backToPlaylists": "Back to Playlists",
@@ -154,7 +163,6 @@ const english = {
 
   // Create Playlist Card
   "playlist.createCard": "Create Playlist",
-  "playlist.createNew": "Create New Playlist",
 
   // Context and General
   "general.error": "Error",

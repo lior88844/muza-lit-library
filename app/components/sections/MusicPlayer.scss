@@ -1,7 +1,7 @@
 .music-player {
-  position: fixed;
+  position: absolute;
   bottom: var(--muza-spacing-xl, 24px);
-  left: calc(var(--muza-sidebar-width, 240px) + var(--muza-spacing-xl, 24px));
+  left: var(--muza-spacing-xl, 24px);
   right: var(--muza-spacing-xl, 24px);
   z-index: 1000;
 

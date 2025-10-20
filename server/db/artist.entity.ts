@@ -9,6 +9,7 @@ import {
   uuid,
   pgEnum,
   json,
+  numeric,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -56,6 +57,7 @@ export const artists = pgTable("artists", {
   endDate: timestamp("end_date"),
   ended: boolean("ended").default(false),
   mbId: uuid("mb_id"),
+  discogsId: numeric("discogs_id", { mode: "number" }),
   bio: text("biography"),
   tags: text("tags").array(), // PostgreSQL array
   image: text("image"),

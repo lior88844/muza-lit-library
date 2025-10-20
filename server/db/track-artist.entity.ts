@@ -2,9 +2,9 @@ import {
   pgTable,
   serial,
   integer,
-  pgEnum,
   index,
   uniqueIndex,
+  text,
 } from "drizzle-orm/pg-core";
 import { artists } from "./artist.entity";
 import { tracks } from "./track.entity";
@@ -14,25 +14,6 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import z from "zod";
-
-export enum ArtistRoleEnum {
-  MainArtist = "MainArtist",
-  FeaturedArtist = "FeaturedArtist",
-  Producer = "Producer",
-  Composer = "Composer",
-  Lyricist = "Lyricist",
-  Remixer = "Remixer",
-  Arranger = "Arranger",
-  Performer = "Performer",
-  GuestArtist = "GuestArtist",
-  Other = "Other",
-}
-
-// Enum for artist roles in tracks
-export const artistRoleEnum = pgEnum(
-  "artist_role",
-  Object.values(ArtistRoleEnum) as [string, ...string[]]
-);
 
 // Junction table for track-artist relationships
 export const trackArtists = pgTable(
@@ -45,8 +26,8 @@ export const trackArtists = pgTable(
     artistId: integer("artist_id")
       .notNull()
       .references(() => artists.id, { onDelete: "cascade" }),
-    role: artistRoleEnum("role").notNull().default(ArtistRoleEnum.MainArtist),
-    order: integer("order").default(0), // For ordering artists (main artist first, etc.)
+    role: text("role"),
+    order: integer("order").notNull(), // For ordering artists (main artist first, etc.)
   },
   table => [
     // Composite index for efficient track-artist lookups

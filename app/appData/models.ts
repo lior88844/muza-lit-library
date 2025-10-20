@@ -64,6 +64,7 @@ export type MusicPlaylist = {
   name?: string;
   author?: string;
   imageSrc?: string;
+  description?: string;
   songs: SongDetails[];
   suggestions?: SongDetails[];
   visibility?: string;

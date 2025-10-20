@@ -1,6 +1,6 @@
 import { desc, count } from "drizzle-orm";
 import { db } from "../db/connection";
-import { tracks, ArtistRoleEnum } from "../db/schema";
+import { tracks } from "../db/schema";
 import {
   type Album,
   type Artist,
@@ -20,9 +20,7 @@ export class TrackService {
    * Map database track to Track type
    */
   private mapDbTrackToTrack(dbTrack: TrackWithArtists) {
-    const mainArtist = dbTrack.trackArtists.find(
-      trackArtist => trackArtist.role === ArtistRoleEnum.MainArtist
-    );
+    const mainArtist = dbTrack.trackArtists[0];
     return {
       id: dbTrack.id,
       index: dbTrack.id,

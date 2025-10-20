@@ -4,6 +4,7 @@
   position: sticky;
   top: 0;
   background-color: var(--colors_background_light, #fff);
+  z-index: 100; /* Ensure it stays above content */
 
   .topbar {
     display: flex;

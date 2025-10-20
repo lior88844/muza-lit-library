@@ -6,11 +6,13 @@ type currentPlayerStore = {
   selectedPlaListOrAlbum: Album | null;
   isPlaying: boolean;
   playCountIncremented: boolean;
+  isPlaylistDrawerOpen: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
   setSelectedSong: (song: SongDetails) => void;
   setSelectedPlaListOrAlbum: (album: Album) => void;
   togglePlayPause: () => void;
   setPlayCountIncremented: (incremented: boolean) => void;
+  setIsPlaylistDrawerOpen: (isOpen: boolean) => void;
 };
 
 export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
@@ -18,6 +20,7 @@ export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
   isPlaying: false,
   selectedPlaListOrAlbum: null,
   playCountIncremented: false,
+  isPlaylistDrawerOpen: false,
 
   setSelectedSong: (song: SongDetails) =>
     set({ selectedSong: song, playCountIncremented: false }),
@@ -30,4 +33,7 @@ export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
 
   setPlayCountIncremented: (incremented: boolean) =>
     set({ playCountIncremented: incremented }),
+
+  setIsPlaylistDrawerOpen: (isOpen: boolean) =>
+    set({ isPlaylistDrawerOpen: isOpen }),
 }));
