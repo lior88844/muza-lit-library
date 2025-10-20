@@ -11,6 +11,11 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
 
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -21,12 +26,67 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragOver(false);
+  const handleFolderDrop = useCallback(
+    async (items: DataTransferItemList) => {
+      const files: File[] = [];
 
-      const files = Array.from(e.dataTransfer.files);
+      const processItem = async (item: DataTransferItem, path = "") => {
+        const entry = item.webkitGetAsEntry?.();
+        if (!entry) return;
+
+        if (entry.isFile) {
+          const file = await new Promise<File>(resolve => {
+            (entry as FileSystemFileEntry).file(resolve);
+          });
+
+          const relativePath = path + entry.name;
+          Object.defineProperty(file, "webkitRelativePath", {
+            value: relativePath,
+            writable: false,
+            enumerable: true,
+            configurable: true,
+          });
+
+          files.push(file);
+        } else if (entry.isDirectory) {
+          const dirReader = (entry as FileSystemDirectoryEntry).createReader();
+
+          const readAllEntries = async (): Promise<FileSystemEntry[]> => {
+            const allEntries: FileSystemEntry[] = [];
+
+            const readBatch = (): Promise<void> => {
+              return new Promise((resolve, reject) => {
+                dirReader.readEntries(entries => {
+                  if (entries.length === 0) {
+                    resolve();
+                    return;
+                  }
+
+                  allEntries.push(...entries);
+                  readBatch().then(resolve).catch(reject);
+                }, reject);
+              });
+            };
+
+            await readBatch();
+            return allEntries;
+          };
+
+          const entries = await readAllEntries();
+
+          for (const subEntry of entries) {
+            await processItem(
+              { webkitGetAsEntry: () => subEntry } as DataTransferItem,
+              path + entry.name + "/"
+            );
+          }
+        }
+      };
+
+      for (let i = 0; i < items.length; i++) {
+        await processItem(items[i]);
+      }
+
       if (files.length > 0) {
         onFileUpload(files);
       }
@@ -34,13 +94,44 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
     [onFileUpload]
   );
 
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+
+      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+        const items = Array.from(e.dataTransfer.items);
+        const hasWebkitSupport = items.some(item => item.webkitGetAsEntry);
+
+        if (hasWebkitSupport) {
+          handleFolderDrop(e.dataTransfer.items);
+          return;
+        }
+      }
+
+      const files = Array.from(e.dataTransfer.files);
+      const hasFolders = files.some(file => !file.type && file.size < 1000);
+
+      if (hasFolders) {
+        alert(
+          'Please use the "browse folders" button to upload folders. Drag & drop only works for individual files in this browser.'
+        );
+        return;
+      }
+
+      if (files.length > 0) {
+        onFileUpload(files);
+      }
+    },
+    [onFileUpload, handleFolderDrop]
+  );
+
   const handleBrowseClick = useCallback(() => {
-    // Only folder selection
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = true;
     input.accept = ".flac,audio/flac";
-    input.webkitdirectory = true; // Enable folder selection only
+    input.webkitdirectory = true;
     input.onchange = e => {
       const target = e.target as HTMLInputElement;
       const files = Array.from(target.files || []);
@@ -51,12 +142,11 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
     input.click();
   }, [onFileUpload]);
 
-  // Always show the drop area, even when files are uploaded
-
   return (
     <div className="admin-file-drop-area">
       <div
         className={`admin-file-drop-area__zone ${isDragOver ? "admin-file-drop-area__zone--drag-over" : ""}`}
+        onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -68,20 +158,16 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({
 
           <div className="admin-file-drop-area__text">
             <span className="admin-file-drop-area__main-text">
-              Drag folders here{" "}
+              Drag FLAC files or folders here{" "}
             </span>
             <button
               type="button"
               className="admin-file-drop-area__browse-button"
               onClick={handleBrowseClick}
             >
-              or browse
+              or browse folders
             </button>
           </div>
-
-          <p className="admin-file-drop-area__support-text">
-            Only FLAC files from folders will be processed
-          </p>
         </div>
       </div>
     </div>
