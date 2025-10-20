@@ -69,13 +69,13 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({
             {t("upload.uploadMusic")}
             <MuzaIcon iconName="upload" />
           </button>
-          <button
+          {/* <button
             className="admin-upload-button"
             onClick={handleAdminUploadClick}
           >
             {t("upload.uploadAdmin")}
             <MuzaIcon iconName="adminUpload" />
-          </button>
+          </button> */}
           <div className="user-menu">
             {auth.isAuthenticated ? (
               <div className="user-dropdown">
