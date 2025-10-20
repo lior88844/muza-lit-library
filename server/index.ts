@@ -1,10 +1,16 @@
 import express from "express";
 import path from "path";
 import * as fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import { findManyAlbums } from "./api/album/album.service";
 import { findArtistById, findManyArtists } from "./api/artist/artist.service";
 import { findManyTracks } from "./api/track/track.service";
 import { findAlbumById } from "./api/album/album.service";
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Add global error handlers to prevent unexpected exits
 process.on("unhandledRejection", (reason, promise) => {
@@ -20,7 +26,8 @@ process.on("uncaughtException", error => {
 const PORT = process.env.PORT || 3000;
 
 // Determine the correct paths based on environment
-const BUILD_PATH = "./build/server/index.js";
+// Use path.join with __dirname to construct the correct path relative to this file
+const BUILD_PATH = path.join(__dirname, "../build/server/index.js");
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const clientDir = DEVELOPMENT
   ? path.resolve("./build/client")
@@ -172,7 +179,7 @@ async function initializeApp() {
       app.use(async (req, res, next) => {
         try {
           const source = await viteDevServer.ssrLoadModule("./server/app.ts");
-          return await source.app(req, res, next);
+          return await source.handler(req, res, next);
         } catch (error) {
           if (typeof error === "object" && error instanceof Error) {
             viteDevServer.ssrFixStacktrace(error);
@@ -187,7 +194,11 @@ async function initializeApp() {
         express.static("build/client/assets", { immutable: true, maxAge: "1y" })
       );
       app.use(express.static("build/client", { maxAge: "1h" }));
-      app.use(await import(BUILD_PATH).then(mod => mod.app));
+
+      // Import the handler using file:// URL for ES modules
+      const buildUrl = new URL(`file://${BUILD_PATH}`);
+      const { handler } = await import(buildUrl.href);
+      app.use(handler);
     }
 
     // Start server

@@ -37,6 +37,7 @@ RUN adduser --system --uid 1001 nextjs
 # Copy the built application
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/server ./server
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 

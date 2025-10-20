@@ -4,6 +4,13 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import flowbiteReact from "flowbite-react/plugin/vite";
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
+  build: {
+    rollupOptions: isSsrBuild
+      ? {
+          input: "./server/app.ts",
+        }
+      : undefined,
+  },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths(), flowbiteReact()],
-});
+}));
