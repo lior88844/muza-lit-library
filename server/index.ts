@@ -19,7 +19,11 @@ process.on("uncaughtException", error => {
 
 const PORT = process.env.PORT || 3000;
 
-const clientDir = path.resolve("./server/reactServer/client");
+// Determine the correct paths based on environment
+const isProduction = process.env.NODE_ENV === "production";
+const clientDir = isProduction
+  ? path.resolve("./build/client")
+  : path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
 
