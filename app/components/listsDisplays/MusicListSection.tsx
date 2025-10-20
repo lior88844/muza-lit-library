@@ -1,6 +1,6 @@
 import React from "react";
 import "./MusicListSection.scss";
-import AlbumDetails from "../albumDisplays/AlbumDetails";
+import AlbumPreview from "../albumDisplays/AlbumPreview";
 import ArtistDetails from "../artistDisplays/ArtistDetails";
 import PlaylistCover from "../albumDisplays/PlaylistCover";
 import SongLineWithCover from "../songLineDisplays/SongLineWithCover";
@@ -55,7 +55,7 @@ const MusicListSectionComponent: React.FC<
     switch (type) {
       case "album":
         return albums!.map(album => (
-          <AlbumDetails
+          <AlbumPreview
             key={album.id}
             details={album}
             onAlbumClick={() => onAlbumClick?.(album)}

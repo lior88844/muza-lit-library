@@ -1,50 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 import "./MediaHeader.scss";
-import type {
-  Album,
-  SongDetails,
-  MusicPlaylist,
-  Artist,
-} from "~/appData/models";
+import type { SongDetails } from "~/appData/models";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import { toast } from "react-toastify";
-import AlbumInfoModal from "~/components/albumDisplays/AlbumInfoModal";
 import { useTranslation } from "~/lib/i18n/translations";
 import { generatePlaylistCoverImages } from "~/lib/utils";
 
 // Import remaining sub-components
 import MediaCover from "./components/MediaCover/MediaCover";
-import MediaMetadata from "./components/MediaMetadata/MediaMetadata";
+import MediaMetadata, {
+  type MediaMetadataProps,
+} from "./components/MediaMetadata/MediaMetadata";
 import MuzaButton from "~/controls/MuzaButton";
 import MuzaIcon from "~/icons/MuzaIcon";
 import { FaPause, FaPlay } from "react-icons/fa";
+import { PlaylistVisibilityEnum } from "../../../server/db/playlist.entity";
 
 interface MediaHeaderProps {
   // Generic media object that works for albums, playlists, etc.
-  media: Album | MusicPlaylist | Artist;
   songs: SongDetails[];
   mediaType: "album" | "playlist" | "artist";
+  title: string;
+  imageSrc: string;
+  creator?: string;
+  visibility?: PlaylistVisibilityEnum;
+  mediaMetadata: Omit<MediaMetadataProps, "type">;
   // Optional customization
+  onInfoClick?: () => void;
   showBackButton?: boolean;
   customActions?: React.ReactNode;
 }
 
 const MediaHeader: React.FC<MediaHeaderProps> = ({
-  media,
   songs,
   mediaType,
+  title,
+  imageSrc,
+  creator,
+  visibility,
+  mediaMetadata,
   showBackButton = true,
   customActions,
+  onInfoClick,
 }) => {
   const { t } = useTranslation();
-  const {
-    selectedSong,
-    setSelectedSong,
-    setSelectedPlaListOrAlbum,
-    isPlaying,
-    setIsPlaying,
-  } = useCurrentPlayerStore();
-  const [isModalOpen, setModalOpen] = useState(false);
+  const { setSelectedSong, isPlaying, setIsPlaying } = useCurrentPlayerStore();
 
   const addToLibrary = () => {
     toast(t(`${mediaType}.addedToLibrary`), {
@@ -58,13 +58,8 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
       // If currently playing, pause
       setIsPlaying(false);
     } else {
-      // If not playing, start playing the media
       if (songs.length > 0) {
         setSelectedSong(songs[0]);
-        // Only set album context for albums, not playlists
-        if (mediaType === "album") {
-          setSelectedPlaListOrAlbum(media as Album);
-        }
         setIsPlaying(true);
       }
     }
@@ -74,75 +69,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
     window.history.back();
   };
 
-  // Helper function to safely get title
-  const getMediaTitle = () => {
-    if (mediaType === "artist") {
-      return (media as Artist).name || "";
-    }
-    return (media as Album | MusicPlaylist).title || "";
-  };
-
-  const getMediaImageSrc = () => {
-    if (mediaType === "artist") {
-      return (media as Artist).imageUrl || "";
-    }
-    if (mediaType === "playlist") {
-      // For playlists, generate collage from playlist songs
-      return generatePlaylistCoverImages(media as MusicPlaylist);
-    }
-    return (media as Album | MusicPlaylist).imageSrc || "";
-  };
-
-  // Dynamic content based on media type
-  const getCreatorInfo = () => {
-    switch (mediaType) {
-      case "album":
-        return { creator: (media as Album).artist, label: "" };
-      case "playlist":
-        return {
-          creator: (media as MusicPlaylist).author || "",
-          label: t("common.by"),
-        };
-      case "artist":
-        return { creator: "", label: "" }; // Artists don't have creators
-      default:
-        return { creator: "", label: "" };
-    }
-  };
-
-  const getMetadataProps = () => {
-    switch (mediaType) {
-      case "album": {
-        const album = media as Album;
-        return {
-          type: "album" as const,
-          year: album.year,
-          songCount: songs.length,
-        };
-      }
-      case "playlist":
-        return {
-          type: "playlist" as const,
-          songCount: songs.length,
-          // Note: visibility is now handled as separate badge
-        };
-      case "artist": {
-        const artist = media as Artist;
-        return {
-          type: "artist" as const,
-          followerCount: 0, // Would need to be added to Artist interface
-        };
-      }
-      default:
-        return {
-          type: "album" as const,
-          songCount: songs.length,
-        };
-    }
-  };
-
   const getPlayButtonText = () => {
-    const action = isPlaying ? "pause" : "play";
     switch (mediaType) {
       case "album":
         return isPlaying ? t("common.pause") : t("common.playAlbum");
@@ -154,9 +81,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
         return isPlaying ? t("common.pause") : t("common.play");
     }
   };
-
-  const { creator, label } = getCreatorInfo();
-  const metadataProps = getMetadataProps();
 
   return (
     <>
@@ -178,8 +102,8 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
         <div className="media-header" data-name="Media-Header">
           <div className="media-content-section media-content-section--horizontal">
             <MediaCover
-              imageSrc={getMediaImageSrc()}
-              title={getMediaTitle()}
+              imageSrc={imageSrc}
+              title={title}
               mediaType={mediaType}
             />
 
@@ -221,18 +145,9 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
 
                   {/* Title */}
                   <div className="title-info title-info--left">
-                    <div className="album-title">{getMediaTitle()}</div>
-                    {mediaType === "playlist" && (
-                      <div className="playlist-description">
-                        {(media as MusicPlaylist).description ||
-                          "Description goes here"}
-                      </div>
-                    )}
-                    {mediaType !== "playlist" && creator && (
-                      <div className="creator-name">
-                        {label && `${label} `}
-                        {creator}
-                      </div>
+                    <div className="album-title">{title}</div>
+                    {creator && (
+                      <div className="playlist-description">{creator}</div>
                     )}
                   </div>
 
@@ -250,7 +165,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                           <MuzaIcon iconName="globe" />
                         </div>
                         <span className="badge-text">
-                          {(media as MusicPlaylist).visibility === "private"
+                          {visibility === PlaylistVisibilityEnum.Private
                             ? t("common.private")
                             : t("common.public")}
                         </span>
@@ -260,7 +175,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
 
                   {/* Non-playlist metadata */}
                   {mediaType !== "playlist" && (
-                    <MediaMetadata {...metadataProps} />
+                    <MediaMetadata type={mediaType} {...mediaMetadata} />
                   )}
                 </div>
 
@@ -292,7 +207,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                         />
                         <MuzaButton
                           iconName="info"
-                          onClick={() => setModalOpen(true)}
+                          onClick={onInfoClick}
                           size="medium"
                           data-name="Info Button"
                         />
@@ -311,11 +226,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           </div>
         </div>
       </div>
-
-      <AlbumInfoModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-      />
     </>
   );
 };

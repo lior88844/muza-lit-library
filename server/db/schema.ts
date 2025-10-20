@@ -4,3 +4,7 @@ export * from "./track.entity";
 export * from "./track-artist.entity";
 export * from "./album-artist.entity";
 export * from "./relations";
+export * from "./playlist.entity";
+export * from "./playlist-tracks.entity";
+export * from "./playlist-shares.entity";
+export * from "./user-library.entity";

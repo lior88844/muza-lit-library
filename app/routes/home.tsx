@@ -19,7 +19,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   const onAlbumClick = (album: Album) => {
-    navigate("/album", { state: { album } });
+    navigate(`/albums/${album.id}`);
   };
 
   const handleShowAll = (sectionTitle: string) => {

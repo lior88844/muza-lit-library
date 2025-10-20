@@ -4,6 +4,10 @@ import { albums } from "./album.entity";
 import { tracks } from "./track.entity";
 import { trackArtists } from "./track-artist.entity";
 import { albumArtists } from "./album-artist.entity";
+import { playlists } from "./playlist.entity";
+import { playlistTracks } from "./playlist-tracks.entity";
+import { playlistShares } from "./playlist-shares.entity";
+import { userLibrary } from "./user-library.entity";
 
 // Relations
 export const artistsRelations = relations(artists, ({ many }) => ({
@@ -43,3 +47,28 @@ export const albumArtistsRelations = relations(albumArtists, ({ one }) => ({
     references: [artists.id],
   }),
 }));
+
+export const playlistsRelations = relations(playlists, ({ many }) => ({
+  tracks: many(playlistTracks),
+  shares: many(playlistShares),
+}));
+
+export const playlistTracksRelations = relations(playlistTracks, ({ one }) => ({
+  playlist: one(playlists, {
+    fields: [playlistTracks.playlistId],
+    references: [playlists.id],
+  }),
+  track: one(tracks, {
+    fields: [playlistTracks.trackId],
+    references: [tracks.id],
+  }),
+}));
+
+export const playlistSharesRelations = relations(playlistShares, ({ one }) => ({
+  playlist: one(playlists, {
+    fields: [playlistShares.playlistId],
+    references: [playlists.id],
+  }),
+}));
+
+export const userLibraryRelations = relations(userLibrary, () => ({}));

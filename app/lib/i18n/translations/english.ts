@@ -75,6 +75,12 @@ const english = {
   "albumInfo.recordedBy": "Recorded by",
   "albumInfo.producedBy": "Produced by",
   "albumInfo.label": "Label",
+  "albumInfo.albumType": "Album Type",
+  "albumInfo.status": "Status",
+  "albumInfo.trackCount": "Track Count",
+  "albumInfo.genres": "Genres",
+  "albumInfo.tags": "Tags",
+  "albumInfo.notes": "Notes",
 
   // Album Info Modal - Sample Data (these might be dynamic in real app)
   "albumInfo.ballads": "Ballads",

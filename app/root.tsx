@@ -6,6 +6,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useLocation,
 } from "react-router";
 import type { Route } from "./+types/root";
@@ -21,9 +22,14 @@ import { useCurrentPlayerStore } from "./appData/currentPlayerStore";
 import MuzaMusicPlayer from "./components/componentsWithLogic/MuzaMusicPlayer";
 import { useTranslation } from "./lib/i18n/translations";
 import type { SongDetails, MusicPlaylist } from "./appData/models";
-import { apiClient } from "./lib/apiClient";
 import Providers from "./Providers";
 import PlaylistDrawer from "./components/playlistDisplays/PlaylistDrawer";
+import { fetchAllData } from "../server";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const res = await fetchAllData();
+  return res;
+}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -51,6 +57,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const data = useLoaderData<typeof loader>();
+
   const {
     isPlaylistDrawerOpen,
     currentPlaylistDrawerId,
@@ -118,79 +126,50 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     const { selectedSong, setSelectedSong } = useCurrentPlayerStore.getState();
 
-    apiClient
-      .get("/staticData/allData.json")
-      .then(response => {
-        if (!response.status) {
-          apiClient.get("./staticData/allData.json").then(response => {
-            if (!response.status) throw new Error(t("general.networkError"));
-            return response.data;
-          });
-        } else {
-          return response.data;
-        }
-      })
-      .then(data => {
-        setFeatured(data.albums.featured || []);
-        setNewReleases(data.albums.newReleases.slice(0, 5) || []);
-        setRecommended(data.albums.recommended || []);
-        setArtists(data.artists);
-        setRecentlyPlayed(data.songs);
+    const albums = data?.albums;
+    const artists = data?.artists || [];
+    const songs = data?.songs || [];
 
-        const processedPlaylists = (data.playlists || []).map(
-          (playlist: any) => {
-            const playlistSongs = (playlist.songs || [])
-              .map((id: string) =>
-                data.songs.find(
-                  (song: SongDetails) =>
-                    parseInt(song.id || "0") === parseInt(id)
-                )
-              )
-              .filter(
-                (song: SongDetails | undefined): song is SongDetails =>
-                  song !== undefined
-              );
+    setFeatured(albums.featured);
+    setNewReleases((albums.newReleases || []).slice(0, 5));
+    setRecommended(albums.recommended || []);
+    setArtists(artists);
+    setRecentlyPlayed(songs);
 
-            const playlistSuggestions = (playlist.suggestions || [])
-              .map((songId: string) =>
-                data.songs.find(
-                  (song: SongDetails) =>
-                    parseInt(song.id || "0") === parseInt(songId)
-                )
-              )
-              .filter(
-                (song: SongDetails | undefined): song is SongDetails =>
-                  song !== undefined
-              );
-
-            return {
-              ...playlist,
-              songs: playlistSongs,
-              suggestions: playlistSuggestions,
-              author: playlist.author,
-            };
-          }
+    const processedPlaylists = (data?.playlists || []).map((playlist: any) => {
+      const playlistSongs = (playlist.songs || [])
+        .map((id: number) => songs.find((song: SongDetails) => song.id === id))
+        .filter(
+          (song: SongDetails | undefined): song is SongDetails =>
+            song !== undefined
         );
 
-        setPlaylists(processedPlaylists);
-        setSidebarSections(data.sidebar.sections);
+      const playlistSuggestions = (playlist.suggestions || [])
+        .map((songId: number) =>
+          songs.find((song: SongDetails) => song.id === songId)
+        )
+        .filter(
+          (song: SongDetails | undefined): song is SongDetails =>
+            song !== undefined
+        );
 
-        if (data.songs.length > 0 && !selectedSong) {
-          setSelectedSong(data.songs[0]);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [t]);
+      return {
+        ...playlist,
+        songs: playlistSongs,
+        suggestions: playlistSuggestions,
+        author: playlist.author,
+      };
+    });
 
-  const content = loading ? (
-    <p>{t("general.loading")}</p>
-  ) : error ? (
-    <p>{t("general.errorWithMessage").replace("{error}", error)}</p>
-  ) : null;
+    setPlaylists(processedPlaylists);
+    setSidebarSections(data?.sidebar?.sections || []);
+
+    if (songs.length > 0 && !selectedSong) {
+      setSelectedSong(songs[0]);
+    }
+  }, [data]);
+
+  const content = null;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -235,8 +214,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <ToastContainer />
-          <ScrollRestoration />
         </Providers>
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>

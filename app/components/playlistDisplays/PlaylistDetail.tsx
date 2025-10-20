@@ -7,17 +7,16 @@ import MediaHeader from "~/components/MediaHeader/MediaHeader";
 import SongLineWithCover from "~/components/songLineDisplays/SongLineWithCover";
 import MuzaButton from "~/controls/MuzaButton";
 import { useTranslation } from "~/lib/i18n/translations";
+import type { PlaylistVisibilityEnum } from "../../../server/db/playlist.entity";
 
 interface PlaylistDetailProps {
   playlist: MusicPlaylist;
 }
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
-  const { t } = useTranslation();
   const {
     selectedSong,
     setSelectedSong,
-    setSelectedPlaListOrAlbum,
     isPlaying,
     setIsPlaying,
     togglePlayPause,
@@ -50,9 +49,15 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     <div className="playlist-detail">
       <div className="playlist-detail__container">
         <MediaHeader
-          media={playlist}
           songs={playlistSongs}
           mediaType="playlist"
+          title={playlist.title}
+          imageSrc={playlist.imageSrc || ""}
+          mediaMetadata={{
+            songCount: playlistSongs.length,
+          }}
+          visibility={playlist.visibility as PlaylistVisibilityEnum}
+          creator={playlist.author}
           showBackButton={true}
           customActions={
             <div className="playlist-actions">

@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import "./AlbumDetails.scss";
+import "./AlbumPreview.scss";
 import type { Album } from "~/appData/models";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import MuzaIcon from "~/icons/MuzaIcon";
 import AlbumInfoModal from "./AlbumInfoModal";
-import { addToLibrary } from "~/lib/utils";
 import HoverOverlay from "~/components/ui/HoverOverlay";
 
-interface AlbumDetailsProps {
+interface AlbumPreviewProps {
   details: Album;
   onAlbumClick: () => void;
 }
 
-const AlbumDetails: React.FC<AlbumDetailsProps> = ({
+const AlbumPreview: React.FC<AlbumPreviewProps> = ({
   details,
   onAlbumClick,
 }) => {
@@ -60,6 +59,8 @@ const AlbumDetails: React.FC<AlbumDetailsProps> = ({
         </div>
       </div>
       <AlbumInfoModal
+        // @ts-expect-error TODO: We need to get all album data always, somehow.
+        album={details}
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
       />
@@ -67,4 +68,4 @@ const AlbumDetails: React.FC<AlbumDetailsProps> = ({
   );
 };
 
-export default AlbumDetails;
+export default AlbumPreview;

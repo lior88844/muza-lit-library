@@ -32,7 +32,7 @@ type musicLibraryStore = {
     playlistId: string,
     updatedPlaylist: Partial<MusicPlaylist>
   ) => void;
-  incrementPlayCount: (songId: string) => void;
+  incrementPlayCount: (songId: number) => void;
 };
 
 export const useMusicLibraryStore = create<musicLibraryStore>((set, get) => ({
@@ -83,7 +83,7 @@ export const useMusicLibraryStore = create<musicLibraryStore>((set, get) => ({
       ),
     })),
 
-  incrementPlayCount: (songId: string) => {
+  incrementPlayCount: (songId: number) => {
     const state = get();
     const updatedRecentlyPlayed = state.recentlyPlayed.map(song =>
       song.id === songId ? { ...song, plays: (song.plays || 0) + 1 } : song

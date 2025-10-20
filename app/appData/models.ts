@@ -1,13 +1,13 @@
 export interface SongDetails {
   index?: number;
   title: string;
-  time?: number;
+  time: number | null;
   imageSrc?: string;
   artist?: string;
   audioUrl?: string;
   album?: string;
   year?: number;
-  id?: string;
+  id?: number;
   plays?: number;
 }
 
@@ -22,20 +22,88 @@ export interface Section {
   items: MenuItem[];
 }
 export interface Album {
-  id: string;
+  id: number;
   imageSrc: string;
   title: string;
-  subTitle: string;
+  releaseDate: Date | null;
   artist: string;
   songs?: number[];
   genre?: string;
-  year?: number;
 }
 
-export interface Artist {
-  id: string;
+export interface AlbumArtist {
+  id: number;
   name: string;
-  imageUrl: string;
+  role: string | null;
+  order: number;
+  join: string | null;
+  type: string | null;
+  gender: string | null;
+  area: string | null;
+  image: string | null;
+  bio: string | null;
+  tags: string[] | null;
+  links: Record<string, string> | null;
+  popularity: number;
+  verified: boolean;
+}
+
+export interface AlbumTrack {
+  id: number;
+  title: string;
+  sortTitle: string | null;
+  disambiguation: string | null;
+  trackNumber: number | null;
+  duration: number | null;
+  isrc: string | null;
+  format: string | null;
+  bitrate: number | null;
+  sampleRate: number | null;
+  channels: number | null;
+  encoding: string | null;
+  genres: string[] | null;
+  tags: string[] | null;
+  explicit: boolean;
+  playCount: number;
+  popularity: number;
+  verified: boolean;
+  lastPlayed: Date | null;
+}
+
+export interface AlbumDetail {
+  id: number;
+  title: string;
+  sortTitle: string | null;
+  disambiguation: string | null;
+  releaseDate: Date | null;
+  albumType: string;
+  status: string;
+  packaging: string | null;
+  country: string | null;
+  language: string | null;
+  script: string | null;
+  barcode: string | null;
+  catalogNumber: string | null;
+  label: string | null;
+  coverArt: string | null;
+  trackCount: number;
+  genres: string[] | null;
+  tags: string[] | null;
+  notes: string | null;
+  quality: number;
+  popularity: number;
+  verified: boolean;
+  imageSrc: string;
+  artist: string;
+  songs: number[];
+  albumArtists: AlbumArtist[];
+  tracks: AlbumTrack[];
+}
+export interface Artist {
+  id: number;
+  index: number;
+  imageUrl: string | null;
+  name: string;
   albumsCount: number;
 }
 
@@ -79,5 +147,5 @@ export type PlayerDetails = {
   artist?: string;
   album?: string;
   year?: number;
-  id?: string;
+  id?: number;
 };

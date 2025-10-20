@@ -2,7 +2,7 @@ import React from "react";
 import "./MediaMetadata.scss";
 import { useTranslation } from "~/lib/i18n/translations";
 
-interface MediaMetadataProps {
+export interface MediaMetadataProps {
   type: "album" | "playlist" | "artist";
   year?: string | number;
   songCount?: number;

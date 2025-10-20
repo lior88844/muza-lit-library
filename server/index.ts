@@ -1,15 +1,10 @@
 import express from "express";
 import path from "path";
 import * as fs from "fs";
-import { fileURLToPath } from "url";
-import { AlbumService } from "./services/album.service";
-import { ArtistService } from "./services/artist.service";
-import { TrackService } from "./services/track.service";
-
-// Initialize services
-const artistService = new ArtistService();
-const albumService = new AlbumService();
-const trackService = new TrackService();
+import { findManyAlbums } from "./api/album/album.service";
+import { findArtistById, findManyArtists } from "./api/artist/artist.service";
+import { findManyTracks } from "./api/track/track.service";
+import { findAlbumById } from "./api/album/album.service";
 
 // Add global error handlers to prevent unexpected exits
 process.on("unhandledRejection", (reason, promise) => {
@@ -23,13 +18,12 @@ process.on("uncaughtException", error => {
 });
 
 const PORT = process.env.PORT || 3000;
-const STOCK_PHOTO = "/art/muza.png";
 
 const clientDir = path.resolve("./server/reactServer/client");
 const publicDir = path.resolve("./public");
 const staticDataFilePath = path.join(publicDir, "/staticData/allData.json");
 
-function getRandomItems(array: unknown[], count: number) {
+function getRandomItems<T>(array: T[], count: number) {
   if (array.length <= count) {
     return array;
   }
@@ -40,21 +34,23 @@ function getRandomItems(array: unknown[], count: number) {
 
 async function fetchAlbums() {
   try {
-    const data = await albumService.findMany(100, 0);
+    const data = await findManyAlbums(100, 0);
 
     return data?.albums || [];
   } catch (error) {
-    console.warn(
-      "Failed to fetch albums, using empty array:",
-      (error as Error)?.message
-    );
+    console.log(error);
+
+    // console.warn(
+    //   "Failed to fetch albums, using empty array:",
+    //   (error as Error)?.message
+    // );
     return [];
   }
 }
 
 async function fetchTracks() {
   try {
-    const data = await trackService.findMany(100, 0);
+    const data = await findManyTracks(100, 0);
     return data?.tracks || [];
   } catch (error) {
     console.warn(
@@ -67,7 +63,7 @@ async function fetchTracks() {
 
 async function fetchArtists() {
   try {
-    const data = await artistService.findMany(100, 0);
+    const data = await findManyArtists(100, 0);
     return data?.artists || [];
   } catch (error) {
     console.warn(
@@ -91,7 +87,6 @@ function loadStaticData() {
       }
       try {
         const parsedData = JSON.parse(data);
-        console.log("Mock data loaded successfully");
         resolve(parsedData);
       } catch (parseError) {
         console.error("Error parsing JSON:", parseError);
@@ -101,7 +96,51 @@ function loadStaticData() {
     });
   });
 }
+export const fetchAllData = async () => {
+  const [allData, albumsData, tracksData, artistsData] = await Promise.all([
+    loadStaticData(),
+    fetchAlbums(),
+    fetchTracks(),
+    fetchArtists(),
+  ]);
 
+  console.log(`Loaded ${albumsData?.length} albums`);
+  console.log(`Loaded ${tracksData?.length} tracks`);
+  console.log(`Loaded ${artistsData?.length} artists`);
+
+  return {
+    albums: {
+      featured: getRandomItems(albumsData, 125),
+      newReleases: getRandomItems(albumsData, 125),
+      recommended: getRandomItems(albumsData, 125),
+    },
+    artists: getRandomItems(artistsData, 125),
+    songs: getRandomItems(tracksData, 100000),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sidebar: (allData as Record<string, unknown>)?.sidebar || ([] as any),
+    playlists: [],
+  };
+};
+
+export const fetchAlbumById = async (id: number) => {
+  try {
+    const albumData = await findAlbumById(id);
+    return albumData;
+  } catch (error) {
+    console.error("Failed to fetch album:", (error as Error)?.message);
+    return null;
+  }
+};
+
+export const fetchArtistById = async (id: number) => {
+  try {
+    const artistData = await findArtistById(id);
+    return artistData;
+  } catch (error) {
+    console.error("Failed to fetch artist:", (error as Error)?.message);
+    return null;
+  }
+};
 // Main application logic
 async function initializeApp() {
   try {
@@ -110,48 +149,6 @@ async function initializeApp() {
 
     // Middleware
     app.use(express.json());
-
-    // API endpoints
-    app.get("/staticData/allData.json", async (req, res) => {
-      try {
-        console.log("GET /staticData/allData.json - Request received");
-
-        // Load data
-        const [allData, albumsData, tracksData, artistsData] =
-          await Promise.all([
-            loadStaticData(),
-            fetchAlbums(),
-            fetchTracks(),
-            fetchArtists(),
-          ]);
-
-        console.log(`Loaded ${albumsData?.length} albums`);
-        console.log(`Loaded ${tracksData?.length} tracks`);
-        console.log(`Loaded ${artistsData?.length} artists`);
-
-        const response = {
-          albums: {
-            featured: getRandomItems(albumsData, 125),
-            newReleases: getRandomItems(albumsData, 125),
-            recommended: getRandomItems(albumsData, 125),
-          },
-          artists: getRandomItems(artistsData, 125),
-          songs: getRandomItems(tracksData, 100000),
-          sidebar: (allData as Record<string, unknown>)?.sidebar || [],
-        };
-
-        console.log(
-          `Sending response with ${response.albums?.newReleases?.length || 0} albums, ${response.artists?.length || 0} artists and ${response.songs?.length || 0} songs`
-        );
-        res.json(response);
-      } catch (error) {
-        console.error(
-          "Error handling /staticData/allData.json request:",
-          error
-        );
-        res.status(500).json({ error: "Internal server error" });
-      }
-    });
 
     // Static file serving
     console.log("Setting up static file serving from:", clientDir);

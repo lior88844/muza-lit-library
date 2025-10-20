@@ -2,8 +2,6 @@ import React from "react";
 import type { UploadFormData, TrackMetadata } from "~/appData/uploadStore";
 import type { Album, SongDetails } from "~/appData/models";
 import MediaHeader from "~/components/MediaHeader";
-import UploadSongLine from "~/components/upload/UploadSongLine";
-import AlbumHeader from "~/components/albumDisplays/AlbumHeader";
 import SongLine from "~/components/songLineDisplays/SongLine";
 import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
 import "./UploadStepThree.scss";
@@ -41,15 +39,12 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
   // Transform upload data into Album format
   const transformToAlbum = (): Album => {
     return {
-      id: `upload-preview-${Date.now()}`,
+      id: Date.now(),
       imageSrc: getCoverImageUrl(),
       title: formData.albumTitle || "Untitled Album",
-      subTitle: `Album • ${trackMetadata.length} Song${trackMetadata.length !== 1 ? "s" : ""}`,
+      releaseDate: new Date(formData.recordingDate),
       artist: formData.mainArtist || "Unknown Artist",
       songs: trackMetadata.map((_, index) => index + 1),
-      year: formData.recordingDate
-        ? new Date(formData.recordingDate).getFullYear()
-        : undefined,
     };
   };
 
@@ -69,7 +64,7 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
       };
 
       return {
-        id: track.id,
+        id: Date.now(),
         index: index + 1,
         title: track.songName || "Untitled",
         artist: track.composer || formData.mainArtist || "Unknown Artist",
@@ -89,9 +84,15 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
     <div className="upload-step-three">
       <div className="album-preview">
         <MediaHeader
-          media={album}
           songs={songDetails}
           mediaType="album"
+          title={album.title}
+          imageSrc={album.imageSrc || ""}
+          mediaMetadata={{
+            songCount: songDetails.length,
+            year: album.releaseDate?.getFullYear(),
+          }}
+          creator={album.artist}
           showBackButton={false}
           customActions={<div></div>}
         />
