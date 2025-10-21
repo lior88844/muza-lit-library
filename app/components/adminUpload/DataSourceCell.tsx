@@ -49,13 +49,19 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   if (item.albumLookup?.mbId) {
     return (
       <div className="admin-upload-table__data-source-found">
-        <div className="admin-upload-table__id-found-badge">
-          <MuzaIcon
-            iconName="Check"
-            className="admin-upload-table__check-icon"
-          />
-          ID found
-        </div>
+        <a
+          href={`https://musicbrainz.org/release/${item.albumLookup.mbId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="admin-upload-table__id-found-badge">
+            <MuzaIcon
+              iconName="Check"
+              className="admin-upload-table__check-icon"
+            />
+            ID found
+          </div>
+        </a>
       </div>
     );
   }
