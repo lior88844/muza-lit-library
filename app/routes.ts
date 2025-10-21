@@ -13,4 +13,5 @@ export default [
   route("playlist", "./routes/playlist.tsx"),
   route("login", "./routes/login.tsx"),
   route("auth/callback", "./routes/callback.tsx"),
+  route("health", "./routes/health.tsx"),
 ] satisfies RouteConfig;
