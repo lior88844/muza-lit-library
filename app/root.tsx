@@ -1,6 +1,5 @@
 import './app.scss'
 
-import { ThemeModeScript } from 'flowbite-react'
 import { useEffect, useState } from 'react'
 import { useMemo } from 'react'
 import {
@@ -174,7 +173,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Meta />
         <Links />
-        <ThemeModeScript />
       </head>
       <body>
         <Providers>
