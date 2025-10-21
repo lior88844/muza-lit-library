@@ -1,4 +1,4 @@
-@use "../styles/variables.scss";
+@use '../styles/variables.scss';
 
 .admin-portal {
   background: var(--muza-input-bg, #ffffff);
@@ -31,8 +31,7 @@
     background: var(--colors_secondary_light, #f3f4f6);
     border: none;
     border-radius: 9999px;
-    padding: calc(var(--muza-spacing-sm, 8px) + 2px)
-      var(--muza-spacing-lg, 16px);
+    padding: calc(var(--muza-spacing-sm, 8px) + 2px) var(--muza-spacing-lg, 16px);
     font-family: var(--typography_font_family_font_sans, Founders Grotesk);
     font-size: var(--muza-primary-font-size, 14px);
     font-weight: var(--muza-font-weight-medium, 500);
@@ -200,8 +199,7 @@
     background: var(--colors_secondary_light, #f3f4f6);
     border: none;
     border-radius: 9999px;
-    padding: calc(var(--muza-spacing-sm, 8px) + 2px)
-      var(--muza-spacing-lg, 16px);
+    padding: calc(var(--muza-spacing-sm, 8px) + 2px) var(--muza-spacing-lg, 16px);
     font-family: var(--typography_font_family_font_sans, Founders Grotesk);
     font-size: var(--muza-primary-font-size, 14px);
     font-weight: var(--muza-font-weight-medium, 500);

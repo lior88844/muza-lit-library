@@ -1,28 +1,30 @@
-import React from "react";
-import AdminUploadHeader from "./AdminUploadHeader";
-import AdminFileDropArea from "./AdminFileDropArea";
-import AdminUploadTable from "./AdminUploadTable";
-import "./AdminUploadPage.scss";
-import type { UploadItem } from "./types/UploadItem";
+import './AdminUploadPage.scss'
+
+import React from 'react'
+
+import AdminFileDropArea from './AdminFileDropArea'
+import AdminUploadHeader from './AdminUploadHeader'
+import AdminUploadTable from './AdminUploadTable'
+import type { UploadItem } from './types/UploadItem'
 
 interface AdminUploadPageProps {
-  uploadedItems: UploadItem[];
-  selectedItems: Set<number>;
-  isScanning: boolean;
-  isUploading: boolean;
-  uploadSuccessMessage: string | null;
-  currentPage: number;
-  itemsPerPage: number;
-  onFileUpload: (files: File[]) => void;
-  onItemSelect: (index: number, selected: boolean) => void;
-  onSelectAll: (selected: boolean) => void;
-  onCancelSelection: () => void;
-  onProcessUpload: () => void;
-  onCancel: () => void;
-  onPageChange: (page: number) => void;
-  onItemsPerPageChange: (itemsPerPage: number) => void;
-  onManualIdChange: (itemId: string, albumId: number | undefined) => void;
-  onCoverUrlChange: (itemId: string, url: string | undefined) => void;
+  uploadedItems: UploadItem[]
+  selectedItems: Set<number>
+  isScanning: boolean
+  isUploading: boolean
+  uploadSuccessMessage: string | null
+  currentPage: number
+  itemsPerPage: number
+  onFileUpload: (files: File[]) => void
+  onItemSelect: (index: number, selected: boolean) => void
+  onSelectAll: (selected: boolean) => void
+  onCancelSelection: () => void
+  onProcessUpload: () => void
+  onCancel: () => void
+  onPageChange: (page: number) => void
+  onItemsPerPageChange: (itemsPerPage: number) => void
+  onManualIdChange: (itemId: string, albumId: number | undefined) => void
+  onCoverUrlChange: (itemId: string, url: string | undefined) => void
 }
 
 const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
@@ -44,22 +46,22 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
   onManualIdChange,
   onCoverUrlChange,
 }) => {
-  const totalItems = uploadedItems.length;
-  const hasSelectedItems = selectedItems.size > 0;
+  const totalItems = uploadedItems.length
+  const hasSelectedItems = selectedItems.size > 0
 
   return (
-    <div className="admin-upload-page">
+    <div className='admin-upload-page'>
       <AdminUploadHeader onCancel={onCancel} />
 
-      <div className="admin-upload-content">
+      <div className='admin-upload-content'>
         {/* Always show drag area - positioned above the table */}
-        <div className="admin-upload-drop-section">
+        <div className='admin-upload-drop-section'>
           <AdminFileDropArea onFileUpload={onFileUpload} />
         </div>
 
         {/* Show table only when items are uploaded */}
         {uploadedItems.length > 0 && (
-          <div className="admin-upload-table-section">
+          <div className='admin-upload-table-section'>
             <AdminUploadTable
               items={uploadedItems}
               selectedItems={selectedItems}
@@ -82,7 +84,7 @@ const AdminUploadPage: React.FC<AdminUploadPageProps> = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminUploadPage;
+export default AdminUploadPage

@@ -1,14 +1,16 @@
-import React from "react";
-import "./UploadFooter.scss";
-import MuzaIcon from "~/icons/MuzaIcon";
+import './UploadFooter.scss'
+
+import React from 'react'
+
+import MuzaIcon from '~/icons/MuzaIcon'
 
 interface UploadFooterProps {
-  currentStep: number;
-  onNext: () => void;
-  onPrevious?: () => void;
-  isNextDisabled: boolean;
-  showBack?: boolean;
-  nextLabel?: string;
+  currentStep: number
+  onNext: () => void
+  onPrevious?: () => void
+  isNextDisabled: boolean
+  showBack?: boolean
+  nextLabel?: string
 }
 
 const UploadFooter: React.FC<UploadFooterProps> = ({
@@ -17,30 +19,28 @@ const UploadFooter: React.FC<UploadFooterProps> = ({
   onPrevious,
   isNextDisabled,
   showBack = false,
-  nextLabel = "Next",
+  nextLabel = 'Next',
 }) => {
   const steps = [
-    { number: 1, label: "Upload Files" },
-    { number: 2, label: "Complete Metadata" },
-    { number: 3, label: "Preview & Publish" },
-  ];
+    { number: 1, label: 'Upload Files' },
+    { number: 2, label: 'Complete Metadata' },
+    { number: 3, label: 'Preview & Publish' },
+  ]
 
   return (
-    <div className="upload-footer">
-      <div className="stepper">
-        <div className="stepper-container">
+    <div className='upload-footer'>
+      <div className='stepper'>
+        <div className='stepper-container'>
           {steps.map((step, index) => (
             <React.Fragment key={step.number}>
-              <div
-                className={`step ${currentStep === step.number ? "active" : ""}`}
-              >
-                <div className="step-number">{step.number}</div>
-                <div className="step-label">{step.label}</div>
+              <div className={`step ${currentStep === step.number ? 'active' : ''}`}>
+                <div className='step-number'>{step.number}</div>
+                <div className='step-label'>{step.label}</div>
               </div>
 
               {index < steps.length - 1 && (
-                <div className="step-connector">
-                  <MuzaIcon iconName="line-container" />
+                <div className='step-connector'>
+                  <MuzaIcon iconName='line-container' />
                 </div>
               )}
             </React.Fragment>
@@ -48,23 +48,19 @@ const UploadFooter: React.FC<UploadFooterProps> = ({
         </div>
       </div>
 
-      <div className="footer-buttons">
+      <div className='footer-buttons'>
         {showBack && (
-          <button className="back-button" onClick={onPrevious}>
+          <button className='back-button' onClick={onPrevious}>
             Back
           </button>
         )}
 
-        <button
-          className="next-button"
-          onClick={onNext}
-          disabled={isNextDisabled}
-        >
+        <button className='next-button' onClick={onNext} disabled={isNextDisabled}>
           {nextLabel}
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UploadFooter;
+export default UploadFooter

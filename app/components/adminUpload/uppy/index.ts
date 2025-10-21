@@ -1,1 +1,1 @@
-export { default as UppyFileUploader } from "./UppyFileUploader";
+export { default as UppyFileUploader } from './UppyFileUploader'

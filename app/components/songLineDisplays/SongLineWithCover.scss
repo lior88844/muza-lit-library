@@ -45,11 +45,7 @@
     }
 
     .song-line-with-cover__actions {
-      background: linear-gradient(
-        90deg,
-        rgba(249, 250, 251, 0) 4.82%,
-        var(--muza-hover-background, #f9fafb) 19.26%
-      );
+      background: linear-gradient(90deg, rgba(249, 250, 251, 0) 4.82%, var(--muza-hover-background, #f9fafb) 19.26%);
 
       .ellipsis-btn {
         opacity: 1;
@@ -167,8 +163,7 @@
     gap: var(--muza-spacing-xs, 8px);
 
     .song-title {
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
       font-size: 16px;
       font-weight: var(--muza-font-weight-medium, 500);
       line-height: 20px;
@@ -184,8 +179,7 @@
     display: flex;
     align-items: center;
     gap: var(--muza-spacing-xs, 8px);
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     font-weight: var(--muza-font-weight-normal, 400);
     line-height: 1;
@@ -221,11 +215,7 @@
     align-items: center;
     gap: var(--muza-spacing-sm, 12px);
     height: 100%;
-    background: linear-gradient(
-      90deg,
-      var(--base-background-0, rgba(255, 255, 255, 0)) 4.82%,
-      var(--base-background, #fff) 19.26%
-    );
+    background: linear-gradient(90deg, var(--base-background-0, rgba(255, 255, 255, 0)) 4.82%, var(--base-background, #fff) 19.26%);
     padding-left: var(--muza-spacing-xl, 24px);
     padding-right: var(--muza-spacing-sm, 12px);
     position: relative;
@@ -286,8 +276,7 @@
 
     .duration {
       width: 36px;
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
       font-size: 14px;
       font-weight: var(--muza-font-weight-normal, 400);
       line-height: 16px;

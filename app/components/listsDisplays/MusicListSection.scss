@@ -4,9 +4,7 @@
   align-items: center;
   min-height: var(--muza-section-header-min-height, 32px);
   margin-top: var(--muza-section-header-margin-top, 2rem);
-  padding: var(--muza-section-header-padding-top, 0.3rem)
-    var(--muza-spacing-md, 8px)
-    var(--muza-section-header-padding-bottom, 0.3rem);
+  padding: var(--muza-section-header-padding-top, 0.3rem) var(--muza-spacing-md, 8px) var(--muza-section-header-padding-bottom, 0.3rem);
   border-top: 2px solid var(--muza-section-border-color, #a9a9a9);
   border-bottom: 1px solid var(--muza-section-border-color, #a9a9a9);
   h2 {

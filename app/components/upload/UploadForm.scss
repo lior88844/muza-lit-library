@@ -1,11 +1,10 @@
-@use "../../styles/variables.scss";
+@use '../../styles/variables.scss';
 
 .upload-form {
   // Local variables with fallbacks - updated for new design
   --form-bg: var(--colors_muted_light, #f9fafb);
   --form-border: var(--colors_border_light, #e5e7eb);
-  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 40px)
-    var(--muza-spacing-sm, 10px) var(--muza-spacing-xxl, 40px);
+  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 40px) var(--muza-spacing-sm, 10px) var(--muza-spacing-xxl, 40px);
   --card-bg: var(--colors_background_light, #ffffff);
   --card-radius: var(--muza-border-radius-md, 6px);
   --card-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-lg, 16px);
@@ -15,8 +14,7 @@
   --gap-xl: var(--muza-spacing-xl, 24px);
   --gap-sm: var(--muza-spacing-sm, 8px);
   --gap-md: var(--muza-spacing-md, 12px);
-  --font-family:
-    var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+  --font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
   --font-size-base: var(--muza-primary-font-size, 14px);
   --font-weight-normal: var(--muza-font-weight-normal, 400);
   --font-weight-medium: var(--muza-font-weight-medium, 500);
@@ -291,9 +289,7 @@
         }
 
         &.has-leading-icon {
-          padding-left: calc(
-            var(--gap-md) + var(--icon-size) + var(--muza-spacing-xs, 4px)
-          );
+          padding-left: calc(var(--gap-md) + var(--icon-size) + var(--muza-spacing-xs, 4px));
         }
       }
 
@@ -311,7 +307,7 @@
       margin-top: var(--gap-sm);
     }
   }
-  input[type="date"]::-webkit-calendar-picker-indicator {
+  input[type='date']::-webkit-calendar-picker-indicator {
     display: none;
   }
   &:-webkit-scrollbar {

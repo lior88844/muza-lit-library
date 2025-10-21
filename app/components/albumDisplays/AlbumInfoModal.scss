@@ -18,11 +18,7 @@
     background: var(--colors_background_light, #ffffff);
     border-radius: var(--muza-border-radius-md, 8px);
     overflow: hidden;
-    box-shadow: var(
-      --muza-box-shadow,
-      0 8px 12px 6px rgba(0, 0, 0, 0.15),
-      0 4px 4px 0 rgba(0, 0, 0, 0.3)
-    );
+    box-shadow: var(--muza-box-shadow, 0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px 0 rgba(0, 0, 0, 0.3));
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -36,8 +32,7 @@
     display: flex;
     align-items: flex-end;
     padding: var(--muza-spacing-lg, 16px) var(--muza-spacing-xl, 24px);
-    border-radius: var(--muza-border-radius-md, 8px)
-      var(--muza-border-radius-md, 8px) 0 0;
+    border-radius: var(--muza-border-radius-md, 8px) var(--muza-border-radius-md, 8px) 0 0;
     overflow: hidden;
   }
 
@@ -48,8 +43,7 @@
 
   &__title {
     margin: 0;
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 36px;
     font-weight: var(--muza-font-weight-bold-extra, 700);
     line-height: 36px;
@@ -58,8 +52,7 @@
 
   &__artist {
     margin: 0;
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 24px;
     font-weight: var(--muza-font-weight-normal, 400);
     line-height: 1;
@@ -125,8 +118,7 @@
   }
 
   &__info-label {
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     font-weight: var(--muza-font-weight-normal, 400);
     line-height: 20px;
@@ -137,8 +129,7 @@
   }
 
   &__info-value {
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     font-weight: var(--muza-font-weight-normal, 400);
     line-height: 20px;

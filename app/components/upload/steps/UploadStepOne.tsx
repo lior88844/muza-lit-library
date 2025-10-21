@@ -1,25 +1,23 @@
-import React from "react";
-import UploadForm from "../UploadForm";
-import UploadFileArea from "../UploadFileArea";
-import type { UploadFormData, Musician } from "~/appData/uploadStore";
-import "./UploadStepOne.scss";
+import './UploadStepOne.scss'
+
+import React from 'react'
+
+import type { Musician, UploadFormData } from '~/store/uploadStore'
+
+import UploadFileArea from '../UploadFileArea'
+import UploadForm from '../UploadForm'
 
 interface UploadStepOneProps {
-  formData: UploadFormData;
-  musicians: Musician[];
-  audioFiles: File[]; // Add audioFiles prop
-  onFormDataChange: (
-    field: string
-  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  onMusicianChange: (
-    index: number,
-    field: keyof Musician
-  ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAddMusician: () => void;
-  onRemoveMusician: (index: number) => void;
-  onCoverUpload: (file: File) => void;
-  onFileUpload: (files: File[]) => void;
-  onFindAlbumDetails?: () => void;
+  formData: UploadFormData
+  musicians: Musician[]
+  audioFiles: File[] // Add audioFiles prop
+  onFormDataChange: (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onMusicianChange: (index: number, field: keyof Musician) => (e: React.ChangeEvent<HTMLInputElement>) => void
+  onAddMusician: () => void
+  onRemoveMusician: (index: number) => void
+  onCoverUpload: (file: File) => void
+  onFileUpload: (files: File[]) => void
+  onFindAlbumDetails?: () => void
 }
 
 const UploadStepOne: React.FC<UploadStepOneProps> = ({
@@ -36,17 +34,17 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
 }) => {
   const handleFindAlbumDetails = () => {
     if (onFindAlbumDetails) {
-      onFindAlbumDetails();
+      onFindAlbumDetails()
     } else {
       // Default behavior - could show a message or do nothing
-      console.log("Find album details functionality not implemented yet");
+      console.log('Find album details functionality not implemented yet')
     }
-  };
+  }
 
   return (
-    <div className="upload-step-one">
-      <div className="upload-container">
-        <div className="upload-left">
+    <div className='upload-step-one'>
+      <div className='upload-container'>
+        <div className='upload-left'>
           <UploadForm
             formData={formData}
             musicians={musicians}
@@ -58,16 +56,12 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
           />
         </div>
 
-        <div className="upload-right">
-          <UploadFileArea
-            onCoverUpload={onCoverUpload}
-            onFileUpload={onFileUpload}
-            uploadedFiles={audioFiles}
-          />
+        <div className='upload-right'>
+          <UploadFileArea onCoverUpload={onCoverUpload} onFileUpload={onFileUpload} uploadedFiles={audioFiles} />
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UploadStepOne;
+export default UploadStepOne

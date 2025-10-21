@@ -1,27 +1,23 @@
-import type { SimpleFlacMetadata } from "./utils/simpleFlacMetadata";
+import type { SimpleFlacMetadata } from './utils/simpleFlacMetadata'
 
 export interface AlbumLookupResult {
-  found: boolean;
-  albumId?: number;
-  confidence?: number;
-  message?: string;
+  found: boolean
+  albumId?: number
+  confidence?: number
+  message?: string
 }
 
 /**
  * Mock backend service to check if an album exists based on metadata
  * In a real implementation, this would make an API call to your backend
  */
-export async function lookupAlbum(
-  metadata: SimpleFlacMetadata
-): Promise<AlbumLookupResult> {
+export async function lookupAlbum(metadata: SimpleFlacMetadata): Promise<AlbumLookupResult> {
   // Simulate network delay
-  await new Promise(resolve =>
-    setTimeout(resolve, 1000 + Math.random() * 2000)
-  );
+  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
 
   // Mock logic: randomly determine if album is found
   // In reality, this would search by album title, artist, and other metadata
-  const found = Math.random() > 0.4; // 60% chance of finding the album
+  const found = Math.random() > 0.4 // 60% chance of finding the album
 
   if (found) {
     return {
@@ -29,12 +25,12 @@ export async function lookupAlbum(
       albumId: Math.floor(Math.random() * 10000) + 1,
       confidence: Math.floor(Math.random() * 30) + 70, // 70-100% confidence
       message: `Found album: "${metadata.album}" by ${metadata.albumartist || metadata.artist}`,
-    };
+    }
   } else {
     return {
       found: false,
       message: `Album "${metadata.album}" by ${metadata.albumartist || metadata.artist} not found in database`,
-    };
+    }
   }
 }
 

@@ -136,19 +136,16 @@ aws ecs update-service \
 ### Common Issues
 
 1. **Build fails in GitHub Actions**
-
    - Check that all dependencies are properly listed in `package.json`
    - Verify the Dockerfile syntax and build context
    - Check GitHub Actions logs for specific error messages
 
 2. **Container won't start**
-
    - Verify environment variables are correctly set in Terraform
    - Check ECS task logs in CloudWatch
    - Ensure the application can bind to port 3000
 
 3. **Health check fails**
-
    - Verify the `/staticData/allData.json` endpoint is accessible
    - Check if API endpoints are reachable from the container
    - Review application logs for errors

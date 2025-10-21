@@ -1,8 +1,7 @@
 .upload-step-two {
   // Local variables with fallbacks
   --cell-padding: var(--muza-spacing-lg, 16px);
-  --cell-number-padding: var(--muza-spacing-md, 12px)
-    var(--muza-spacing-lg, 16px) var(--muza-spacing-md, 12px)
+  --cell-number-padding: var(--muza-spacing-md, 12px) var(--muza-spacing-lg, 16px) var(--muza-spacing-md, 12px)
     calc(var(--muza-spacing-xl, 24px) + var(--muza-spacing-lg, 16px));
   --button-size: var(--muza-spacing-xl, 24px);
   --icon-size: var(--muza-spacing-lg, 16px);
@@ -48,7 +47,7 @@
       color: var(--muted-text);
       font-weight: var(--font-medium);
 
-      [class*="column-"] {
+      [class*='column-'] {
         padding: var(--cell-padding);
       }
 
@@ -242,10 +241,7 @@
     }
 
     .empty-state {
-      padding: calc(
-          var(--muza-spacing-xxl, 32px) + var(--muza-spacing-lg, 16px)
-        )
-        var(--cell-padding);
+      padding: calc(var(--muza-spacing-xxl, 32px) + var(--muza-spacing-lg, 16px)) var(--cell-padding);
       text-align: center;
       color: var(--muted-text);
 

@@ -69,7 +69,7 @@ icon-playlist {
   }
 
   &__title {
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-weight: 500;
     font-size: 16px;
     line-height: 20px;
@@ -86,7 +86,7 @@ icon-playlist {
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-weight: 400;
     font-size: 16px;
     line-height: 20px;
@@ -115,7 +115,7 @@ icon-playlist {
 
   // Hover effects - controlled by CSS hover and Radix dropdown state
   &:hover .playlist-cover__image-container,
-  &:has([data-state="open"]) .playlist-cover__image-container {
+  &:has([data-state='open']) .playlist-cover__image-container {
     transform: scale(1.02);
     transition: transform 0.2s ease;
   }

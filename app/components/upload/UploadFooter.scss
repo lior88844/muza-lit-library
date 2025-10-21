@@ -53,9 +53,7 @@
 
         &.active {
           .step-number {
-            background-color: var(
-              --colors_background_light
-            ); // White background
+            background-color: var(--colors_background_light); // White background
             color: var(--colors_foreground_light); // Dark text
           }
         }

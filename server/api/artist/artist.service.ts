@@ -1,12 +1,13 @@
-import type { AlbumArtist } from "../../db/album-artist.entity";
-import { db } from "../../db/connection";
-import { artists, type Artist } from "../../db/artist.entity";
-import type { ArtistResponse } from "./types/ArtistResponse";
-import { eq } from "drizzle-orm";
+import { eq } from 'drizzle-orm'
+
+import type { AlbumArtist } from '../../db/album-artist.entity'
+import { type Artist, artists } from '../../db/artist.entity'
+import { db } from '../../db/connection'
+import type { ArtistResponse } from './types/ArtistResponse'
 
 // Types for transformed data
 interface ArtistWithAlbums extends Artist {
-  albumArtists: AlbumArtist[];
+  albumArtists: AlbumArtist[]
 }
 
 export async function findArtistById(id: number) {
@@ -15,8 +16,8 @@ export async function findArtistById(id: number) {
     with: {
       albumArtists: true,
     },
-  });
-  return artist;
+  })
+  return artist
 }
 
 /**
@@ -29,10 +30,10 @@ export async function findManyArtists(limit = 20, offset = 0) {
     },
     limit,
     offset,
-  });
+  })
   return {
     artists: transformArtistData(artistsResult as ArtistWithAlbums[]),
-  };
+  }
 }
 
 /**
@@ -47,5 +48,5 @@ function transformArtistData(artists: ArtistWithAlbums[]): ArtistResponse[] {
       imageUrl: artist.image,
       name: artist.name,
       albumsCount: artist.albumArtists.length,
-    }));
+    }))
 }

@@ -36,21 +36,20 @@ npm install muza-react-library
 ### Music Player
 
 ```jsx
-import { MusicPlayer } from "muza-react-library";
-
-<MusicPlayer
+import { MusicPlayer } from 'muza-react-library'
+;<MusicPlayer
   details={{
-    audioUrl: "song.mp3",
-    imageSrc: "album.jpg",
-    title: "Song Title",
-    artist: "Artist Name",
-    album: "Album Name",
+    audioUrl: 'song.mp3',
+    imageSrc: 'album.jpg',
+    title: 'Song Title',
+    artist: 'Artist Name',
+    album: 'Album Name',
     year: 2023,
     isPlaying: true,
   }}
-  onPrevious={() => console.log("Previous")}
-  onNext={() => console.log("Next")}
-/>;
+  onPrevious={() => console.log('Previous')}
+  onNext={() => console.log('Next')}
+/>
 ```
 
 ### Song Components
@@ -140,18 +139,18 @@ Muza includes a built-in translation system that supports multiple languages for
 Import the `useTranslation` hook in any component to access translated strings:
 
 ```jsx
-import { useTranslation } from "~/lib/i18n/translations";
+import { useTranslation } from '~/lib/i18n/translations'
 
 function MyComponent() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div>
-      <h1>{t("page.home")}</h1>
-      <button>{t("playlist.create")}</button>
-      <span>{t("common.unknown")}</span>
+      <h1>{t('page.home')}</h1>
+      <button>{t('playlist.create')}</button>
+      <span>{t('common.unknown')}</span>
     </div>
-  );
+  )
 }
 ```
 
@@ -174,35 +173,32 @@ The translation system includes keys for:
 ```typescript
 // app/lib/i18n/translations/hebrew.ts
 const hebrew = {
-  "nav.home": "בית",
-  "nav.explore": "גלה",
-  "nav.playlists": "רשימות השמעה",
-  "nav.albums": "אלבומים",
-  "nav.artists": "אמנים",
-  "nav.songs": "שירים",
-  "page.home": "בית",
-  "page.explore": "גלה",
+  'nav.home': 'בית',
+  'nav.explore': 'גלה',
+  'nav.playlists': 'רשימות השמעה',
+  'nav.albums': 'אלבומים',
+  'nav.artists': 'אמנים',
+  'nav.songs': 'שירים',
+  'page.home': 'בית',
+  'page.explore': 'גלה',
   // ... add all other keys
-};
+}
 
-export default hebrew;
+export default hebrew
 ```
 
 2. Change language programmatically:
 
 ```jsx
 function LanguageSwitcher() {
-  const { changeLanguage, currentLanguage } = useTranslation();
+  const { changeLanguage, currentLanguage } = useTranslation()
 
   return (
-    <select
-      value={currentLanguage}
-      onChange={e => changeLanguage(e.target.value)}
-    >
-      <option value="english">English</option>
-      <option value="hebrew">עברית</option>
+    <select value={currentLanguage} onChange={e => changeLanguage(e.target.value)}>
+      <option value='english'>English</option>
+      <option value='hebrew'>עברית</option>
     </select>
-  );
+  )
 }
 ```
 
@@ -211,33 +207,33 @@ function LanguageSwitcher() {
 ```typescript
 const english = {
   // Navigation and Sidebar
-  "nav.home": "Home",
-  "nav.explore": "Explore",
+  'nav.home': 'Home',
+  'nav.explore': 'Explore',
 
   // Page Titles
-  "page.home": "Home",
+  'page.home': 'Home',
 
   // Section Titles
-  "section.newReleases": "New Releases",
+  'section.newReleases': 'New Releases',
 
   // Common Labels
-  "common.album": "Album",
-  "common.songs": "Songs",
+  'common.album': 'Album',
+  'common.songs': 'Songs',
 
   // Player Controls
-  "player.shuffle": "Shuffle",
-  "player.repeat": "Repeat",
+  'player.shuffle': 'Shuffle',
+  'player.repeat': 'Repeat',
 
   // Forms and Inputs
-  "form.required": "*",
-  "form.searchPlaceholder": "Search...",
+  'form.required': '*',
+  'form.searchPlaceholder': 'Search...',
 
   // Modals
-  "playlist.new": "New Playlist",
-  "playlist.create": "Create",
-};
+  'playlist.new': 'New Playlist',
+  'playlist.create': 'Create',
+}
 
-export default english;
+export default english
 ```
 
 ### Features

@@ -1,10 +1,7 @@
 .upload-step-three {
   // Local variables with fallbacks
   --preview-padding: var(--muza-spacing-xl, 24px)
-    calc(
-      var(--muza-spacing-xxl, 32px) + var(--muza-spacing-xl, 24px) +
-        var(--muza-spacing-xs, 4px)
-    );
+    calc(var(--muza-spacing-xxl, 32px) + var(--muza-spacing-xl, 24px) + var(--muza-spacing-xs, 4px));
   --section-spacing: var(--muza-spacing-lg, 16px);
   --border-color: var(--muza-light-border-color, #e5e7eb);
 

@@ -1,17 +1,18 @@
-import { desc } from "drizzle-orm";
-import { db } from "../../db/connection";
-import type { AlbumArtist } from "../../db/album-artist.entity";
-import type { Artist } from "../../db/artist.entity";
-import { albums, type Album } from "../../db/album.entity";
-import type { MiniAlbumResponse } from "./types/MiniAlbumResponse";
-import { formatTrack } from "../track/track.service";
-import type { TrackWithArtists } from "../track/types/TrackWithArtists";
-import type { AlbumResponse } from "./types/AlbumResponse";
+import { desc } from 'drizzle-orm'
+
+import { type Album, albums } from '../../db/album.entity'
+import type { AlbumArtist } from '../../db/album-artist.entity'
+import type { Artist } from '../../db/artist.entity'
+import { db } from '../../db/connection'
+import { formatTrack } from '../track/track.service'
+import type { TrackWithArtists } from '../track/types/TrackWithArtists'
+import type { AlbumResponse } from './types/AlbumResponse'
+import type { MiniAlbumResponse } from './types/MiniAlbumResponse'
 
 // Types for transformed data
 interface AlbumWithArtistsAndTracks extends Album {
-  albumArtists: (AlbumArtist & { artist: Artist })[];
-  tracks: TrackWithArtists[];
+  albumArtists: (AlbumArtist & { artist: Artist })[]
+  tracks: TrackWithArtists[]
 }
 
 /**
@@ -26,11 +27,11 @@ export async function findManyAlbums(limit = 20, offset = 0) {
       tracks: { columns: { id: true } },
     },
     orderBy: desc(albums.createdAt),
-  });
+  })
 
   return {
     albums: formatMiniAlbum(albumsResult as AlbumWithArtistsAndTracks[]),
-  };
+  }
 }
 
 /**
@@ -51,51 +52,47 @@ export async function findAlbumById(id: number) {
         orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
       },
     },
-  });
+  })
 
   if (!albumResult) {
-    return null;
+    return null
   }
 
-  return transformDetailedAlbumData(albumResult as AlbumWithArtistsAndTracks);
+  return transformDetailedAlbumData(albumResult as AlbumWithArtistsAndTracks)
 }
 
 /**
  * Transform album data for frontend consumption
  */
-function formatMiniAlbum(
-  albums: AlbumWithArtistsAndTracks[]
-): MiniAlbumResponse[] {
+function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbumResponse[] {
   return albums.map(album => {
-    const mainArtist = album.albumArtists[0];
+    const mainArtist = album.albumArtists[0]
     return {
       id: album.id,
-      imageSrc: album.coverArt || "",
+      imageSrc: album.coverArt || '',
       title: album.title,
       releaseDate: album.releaseDate,
       artist: mainArtist?.artist.name,
       songs: album.tracks.map(track => track.id),
-    };
-  });
+    }
+  })
 }
 
 /**
  * Transform detailed album data for frontend consumption
  */
-function transformDetailedAlbumData(
-  album: AlbumWithArtistsAndTracks
-): AlbumResponse {
+function transformDetailedAlbumData(album: AlbumWithArtistsAndTracks): AlbumResponse {
   return {
     ...album,
     artist: formatAlbumArtist(album.albumArtists[0]),
     otherArtists: album.albumArtists.slice(1).map(formatAlbumArtist),
     tracks: album.tracks.map(track => formatTrack(track)),
-  };
+  }
 }
 const formatAlbumArtist = (albumArtist: AlbumArtist & { artist: Artist }) => {
   return {
     ...albumArtist,
     ...albumArtist.artist,
     artist: undefined,
-  };
-};
+  }
+}

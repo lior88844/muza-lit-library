@@ -1,4 +1,4 @@
-@use "../../styles/variables.scss";
+@use '../../styles/variables.scss';
 
 // Local variables for AdminUploadTable component
 $admin-table-min-width: 800px;
@@ -160,8 +160,7 @@ $admin-table-badge-text-color: #f9fafb;
     }
 
     &--upload {
-      padding: var(--muza-spacing-sm) var(--muza-spacing-lg)
-        var(--muza-spacing-sm) var(--muza-spacing-sm);
+      padding: var(--muza-spacing-sm) var(--muza-spacing-lg) var(--muza-spacing-sm) var(--muza-spacing-sm);
     }
 
     &--errors {
@@ -718,7 +717,7 @@ $admin-table-badge-text-color: #f9fafb;
     justify-content: center;
     padding: $admin-table-badge-padding;
     border-radius: $admin-table-badge-border-radius;
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-size: $admin-table-font-size-small;
     font-weight: 400;
     line-height: 1;
@@ -760,7 +759,7 @@ $admin-table-badge-text-color: #f9fafb;
     padding: $admin-table-badge-padding;
     border-radius: $admin-table-badge-border-radius;
     background-color: $admin-table-success-bg;
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-size: $admin-table-font-size-small;
     font-weight: 400;
     line-height: 1;
@@ -776,7 +775,7 @@ $admin-table-badge-text-color: #f9fafb;
     padding: $admin-table-badge-padding;
     border-radius: $admin-table-badge-border-radius;
     background-color: $admin-table-uploaded-bg;
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-size: $admin-table-font-size-small;
     font-weight: 400;
     line-height: 1;
@@ -814,7 +813,7 @@ $admin-table-badge-text-color: #f9fafb;
     pointer-events: none;
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: 100%;
       right: $admin-table-tooltip-arrow-offset;
@@ -824,7 +823,7 @@ $admin-table-badge-text-color: #f9fafb;
   }
 
   &__tooltip-title {
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-size: $admin-table-font-size-small;
     font-weight: 500;
     color: $admin-table-tooltip-title-color;
@@ -832,7 +831,7 @@ $admin-table-badge-text-color: #f9fafb;
   }
 
   &__tooltip-description {
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-size: 13px;
     font-weight: 400;
     line-height: 1.4;
@@ -926,7 +925,7 @@ $admin-table-badge-text-color: #f9fafb;
     color: #111827; // gray-900
     outline: none;
     transition: border-color 0.2s ease;
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
 
     // Hide number input spinner arrows
     &::-webkit-outer-spin-button,
@@ -936,7 +935,7 @@ $admin-table-badge-text-color: #f9fafb;
     }
 
     // Firefox
-    &[type="number"] {
+    &[type='number'] {
       -moz-appearance: textfield;
       appearance: textfield;
     }
@@ -1043,7 +1042,7 @@ $admin-table-badge-text-color: #f9fafb;
     color: #111827; // gray-900
     outline: none;
     transition: border-color 0.2s ease;
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
 
     &::placeholder {
       color: #6b7280; // gray-500

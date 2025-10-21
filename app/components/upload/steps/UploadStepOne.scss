@@ -2,10 +2,8 @@
 :root {
   --upload-bg: var(--colors_background_light, #ffffff);
   --upload-border: var(--colors_border_light, #e5e7eb);
-  --upload-font:
-    var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
-  --upload-padding-lg: var(--muza-spacing-xxl, 32px)
-    calc(var(--muza-spacing-xl, 24px) + var(--muza-spacing-lg, 16px));
+  --upload-font: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
+  --upload-padding-lg: var(--muza-spacing-xxl, 32px) calc(var(--muza-spacing-xl, 24px) + var(--muza-spacing-lg, 16px));
   --upload-footer-space: 84px;
 }
 

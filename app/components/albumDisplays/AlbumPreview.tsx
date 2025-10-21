@@ -1,60 +1,60 @@
-import React, { useState } from "react";
-import "./AlbumPreview.scss";
-import type { Album } from "~/appData/models";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import MuzaIcon from "~/icons/MuzaIcon";
-import AlbumInfoModal from "./AlbumInfoModal";
-import HoverOverlay from "~/components/ui/HoverOverlay";
+import './AlbumPreview.scss'
+
+import React, { useState } from 'react'
+
+import HoverOverlay from '~/components/ui/HoverOverlay'
+import MuzaIcon from '~/icons/MuzaIcon'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import type { Album } from '~/store/models'
+
+import AlbumInfoModal from './AlbumInfoModal'
 
 interface AlbumPreviewProps {
-  details: Album;
-  onAlbumClick: () => void;
+  details: Album
+  onAlbumClick: () => void
 }
 
-const AlbumPreview: React.FC<AlbumPreviewProps> = ({
-  details,
-  onAlbumClick,
-}) => {
-  const { isPlaying, setIsPlaying } = useCurrentPlayerStore();
-  const [isModalOpen, setModalOpen] = useState(false);
+const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick }) => {
+  const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
+  const [isModalOpen, setModalOpen] = useState(false)
 
   const handlePlayPause = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsPlaying(!isPlaying);
-  };
+    e.stopPropagation()
+    setIsPlaying(!isPlaying)
+  }
 
   return (
-    <div className="album-details-card">
-      <div className="image-container" onClick={onAlbumClick}>
+    <div className='album-details-card'>
+      <div className='image-container' onClick={onAlbumClick}>
         <img src={details.imageSrc} alt={details.title} />
         <HoverOverlay
           isPlaying={!!isPlaying}
           onPlayPause={handlePlayPause}
           actions={[
             {
-              icon: "ellipsis",
+              icon: 'ellipsis',
               onClick: e => e.stopPropagation(),
-              title: "More options",
+              title: 'More options',
             },
           ]}
         />
       </div>
-      <div className="info">
-        <div className="title">{details.title}</div>
-        <div className="artist">{details.artist}</div>
-        <div className="subtitle">{details.genre && `${details.genre} • `}</div>
-        <div className="buttons">
-          <button className="icon-button">
-            <MuzaIcon iconName="dots" />
+      <div className='info'>
+        <div className='title'>{details.title}</div>
+        <div className='artist'>{details.artist}</div>
+        <div className='subtitle'>{details.genre && `${details.genre} • `}</div>
+        <div className='buttons'>
+          <button className='icon-button'>
+            <MuzaIcon iconName='dots' />
           </button>
-          <button className="icon-button">
-            <MuzaIcon iconName="info" />
+          <button className='icon-button'>
+            <MuzaIcon iconName='info' />
           </button>
-          <button className="icon-button">
-            <MuzaIcon iconName="plus" />
+          <button className='icon-button'>
+            <MuzaIcon iconName='plus' />
           </button>
-          <button className="icon-button">
-            <MuzaIcon iconName="shuffle" />
+          <button className='icon-button'>
+            <MuzaIcon iconName='shuffle' />
           </button>
         </div>
       </div>
@@ -65,7 +65,7 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({
         onClose={() => setModalOpen(false)}
       />
     </div>
-  );
-};
+  )
+}
 
-export default AlbumPreview;
+export default AlbumPreview

@@ -91,8 +91,7 @@
   }
 
   .track-title {
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     font-weight: 500;
     line-height: 20px;
@@ -110,8 +109,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     line-height: 1;
     color: var(--muza-track-artist-color, #6b7280);
@@ -172,8 +170,7 @@
   }
 
   .duration {
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     color: var(--muza-primary-text-color, #333333);
     line-height: 1;

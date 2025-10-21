@@ -1,119 +1,101 @@
-import React from "react";
-import "./PlaylistCover.scss";
-import HoverOverlay from "~/components/ui/HoverOverlay";
-import DropdownMenu from "~/components/ui/DropdownMenu";
-import type { DropdownMenuItem } from "~/components/ui/DropdownMenu";
-import MuzaIcon from "~/icons/MuzaIcon";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import type { MusicPlaylist } from "~/appData/models";
+import './PlaylistCover.scss'
+
+import React from 'react'
+
+import type { DropdownMenuItem } from '~/components/ui/DropdownMenu'
+import DropdownMenu from '~/components/ui/DropdownMenu'
+import HoverOverlay from '~/components/ui/HoverOverlay'
+import MuzaIcon from '~/icons/MuzaIcon'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import type { MusicPlaylist } from '~/store/models'
 
 interface PlaylistCoverProps {
-  albumImages: string[];
-  title: string;
-  songsCount: string;
-  userName: string;
-  playlist?: MusicPlaylist;
-  onSelect?: (data: {
-    title: string;
-    songsCount: string;
-    albumImages: string[];
-    userName: string;
-  }) => void;
+  albumImages: string[]
+  title: string
+  songsCount: string
+  userName: string
+  playlist?: MusicPlaylist
+  onSelect?: (data: { title: string; songsCount: string; albumImages: string[]; userName: string }) => void
 }
 
-const PlaylistCover: React.FC<PlaylistCoverProps> = ({
-  albumImages,
-  title,
-  songsCount,
-  userName,
-  playlist,
-  onSelect,
-}) => {
-  const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } =
-    useCurrentPlayerStore();
+const PlaylistCover: React.FC<PlaylistCoverProps> = ({ albumImages, title, songsCount, userName, playlist, onSelect }) => {
+  const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } = useCurrentPlayerStore()
 
   const handleClick = () => {
-    onSelect?.({ title, songsCount, albumImages, userName });
-  };
+    onSelect?.({ title, songsCount, albumImages, userName })
+  }
 
   const handlePlayPlaylist = () => {
     if (playlist && playlist.songs && playlist.songs.length > 0) {
-      setSelectedSong(playlist.songs[0]);
-      setIsPlaying(true);
+      setSelectedSong(playlist.songs[0])
+      setIsPlaying(true)
     }
-  };
+  }
 
   const handleShare = () => {
     // TODO: Implement share functionality
-  };
+  }
 
   const handleRemoveFromLibrary = () => {
     // TODO: Implement remove from library functionality
-  };
+  }
 
   const dropdownMenuItems: DropdownMenuItem[] = [
     {
-      id: "share",
-      title: "Share",
-      icon: "share",
+      id: 'share',
+      title: 'Share',
+      icon: 'share',
       onClick: handleShare,
     },
     {
-      id: "remove-from-library",
-      title: "Remove from library",
-      icon: "minus",
+      id: 'remove-from-library',
+      title: 'Remove from library',
+      icon: 'minus',
       onClick: handleRemoveFromLibrary,
     },
-  ];
+  ]
 
   // Ensure we have 4 images, pad with first image if needed
-  const safeAlbumImages = Array.isArray(albumImages) ? albumImages : [];
-  const paddedImages = [...safeAlbumImages];
+  const safeAlbumImages = Array.isArray(albumImages) ? albumImages : []
+  const paddedImages = [...safeAlbumImages]
   while (paddedImages.length < 4) {
-    paddedImages.push(paddedImages[0] || "");
+    paddedImages.push(paddedImages[0] || '')
   }
 
   return (
-    <div className="playlist-cover" onClick={handleClick}>
-      <div className="playlist-cover__image-container">
-        <div className="playlist-cover__collage">
+    <div className='playlist-cover' onClick={handleClick}>
+      <div className='playlist-cover__image-container'>
+        <div className='playlist-cover__collage'>
+          <div className='playlist-cover__image playlist-cover__image--top-left' style={{ backgroundImage: `url('${paddedImages[0]}')` }} />
           <div
-            className="playlist-cover__image playlist-cover__image--top-left"
-            style={{ backgroundImage: `url('${paddedImages[0]}')` }}
-          />
-          <div
-            className="playlist-cover__image playlist-cover__image--top-right"
+            className='playlist-cover__image playlist-cover__image--top-right'
             style={{ backgroundImage: `url('${paddedImages[1]}')` }}
           />
           <div
-            className="playlist-cover__image playlist-cover__image--bottom-left"
+            className='playlist-cover__image playlist-cover__image--bottom-left'
             style={{ backgroundImage: `url('${paddedImages[2]}')` }}
           />
           <div
-            className="playlist-cover__image playlist-cover__image--bottom-right"
+            className='playlist-cover__image playlist-cover__image--bottom-right'
             style={{ backgroundImage: `url('${paddedImages[3]}')` }}
           />
         </div>
         <HoverOverlay
           showPlayButton={true}
           onPlayPause={e => {
-            e.stopPropagation();
-            handlePlayPlaylist();
+            e.stopPropagation()
+            handlePlayPlaylist()
           }}
           actions={[
             {
-              icon: "ellipsis",
+              icon: 'ellipsis',
               onClick: e => e.stopPropagation(),
-              title: "More options",
+              title: 'More options',
               customComponent: (
                 <DropdownMenu
                   trigger={
-                    <button
-                      className="hover-overlay-btn"
-                      onClick={e => e.stopPropagation()}
-                      title="More options"
-                    >
-                      <MuzaIcon iconName="ellipsis" />
+                    <button className='hover-overlay-btn' onClick={e => e.stopPropagation()} title='More options'>
+                      <MuzaIcon iconName='ellipsis' />
                     </button>
                   }
                   items={dropdownMenuItems}
@@ -123,18 +105,16 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
           ]}
         />
       </div>
-      <div className="playlist-cover__info">
-        <div className="playlist-cover__title">{title}</div>
-        <div className="playlist-cover__details">
-          <span className="playlist-cover__songs-count">
-            {songsCount} Songs
-          </span>
-          <span className="playlist-cover__separator">•</span>
-          <span className="playlist-cover__user-name">{userName}</span>
+      <div className='playlist-cover__info'>
+        <div className='playlist-cover__title'>{title}</div>
+        <div className='playlist-cover__details'>
+          <span className='playlist-cover__songs-count'>{songsCount} Songs</span>
+          <span className='playlist-cover__separator'>•</span>
+          <span className='playlist-cover__user-name'>{userName}</span>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PlaylistCover;
+export default PlaylistCover
