@@ -14,17 +14,21 @@ interface PlaylistGridProps {
   onCreatePlaylist: () => void
 }
 
-const PlaylistGrid: React.FC<PlaylistGridProps> = ({ playlists, onPlaylistClick, onCreatePlaylist }) => {
+const PlaylistGrid: React.FC<PlaylistGridProps> = ({
+  playlists,
+  onPlaylistClick,
+  onCreatePlaylist,
+}) => {
   const { t } = useTranslation()
 
   // Filter out playlists with no songs
-  const playlistsWithSongs = playlists.filter(playlist => playlist.songs && playlist.songs.length > 0)
+  // const playlistsWithSongs = playlists.filter(playlist => playlist.songs && playlist.songs.length > 0)
 
   return (
     <div className='playlist-grid'>
       <CreatePlaylistCard onClick={onCreatePlaylist} />
 
-      {playlistsWithSongs.map((playlist, index) => (
+      {playlists.map((playlist, index) => (
         <PlaylistCover
           key={playlist.id || index}
           albumImages={generatePlaylistCoverImages(playlist)}

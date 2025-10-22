@@ -1,5 +1,9 @@
 import { index, route, type RouteConfig } from '@react-router/dev/routes'
-const resourcesRoutes = [route('/api/health', './routes/resources/health.ts'), route('/api/library', './routes/resources/library.ts')]
+const resourcesRoutes = [
+  route('/api/health', './routes/resources/health.ts'),
+  route('/api/library', './routes/resources/library.ts'),
+  route('/api/playlist', './routes/resources/playlist.ts'),
+]
 
 export default [
   index('./routes/home.tsx'),
@@ -11,7 +15,7 @@ export default [
   route('upload', './routes/upload.tsx'),
   route('admin-upload', './routes/admin-upload.tsx'),
   route('playlists', './routes/playlists.tsx'),
-  route('playlist', './routes/playlist.tsx'),
+  route('playlists/:id', './routes/playlist.tsx'),
   route('login', './routes/login.tsx'),
   route('auth/callback', './routes/callback.tsx'),
   ...resourcesRoutes,

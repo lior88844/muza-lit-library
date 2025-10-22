@@ -6,8 +6,10 @@ import { useNavigate } from 'react-router'
 import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MenuItem, MusicPlaylist, Section } from '~/store/models'
+
+import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+import { useAddPlaylist } from '../../store/media/useAddPlaylist'
 
 interface MusicSidebarProps {
   logoSrc: string
@@ -15,7 +17,7 @@ interface MusicSidebarProps {
   sections: Section[]
   playlists?: MusicPlaylist[]
   isCollapsed?: boolean
-  onOpenPlaylistDrawer?: (playlist?: MusicPlaylist) => void
+  _onOpenPlaylistDrawer?: (playlist?: MusicPlaylist) => void
   onToggleCollapse?: () => void
 }
 
@@ -25,12 +27,12 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   sections,
   playlists = [],
   isCollapsed = false,
-  onOpenPlaylistDrawer,
+  _onOpenPlaylistDrawer,
   onToggleCollapse,
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { openPlaylistDrawer } = useCurrentPlayerStore()
+  const { addPlaylist, loading } = useAddPlaylist()
   const [internalCollapsed, setInternalCollapsed] = useState(false) // Start open by default
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -46,7 +48,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   }
 
   const handlePlaylistClick = (playlist: MusicPlaylist) => {
-    // Navigate to playlist page or handle playlist selection
+    navigate(`/playlists/${playlist.id}`)
   }
 
   const handleSidebarToggle = () => {
@@ -67,24 +69,9 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
     setIsModalOpen(false)
   }
 
-  const handleCreatePlaylistSubmit = (name: string, visibility: string) => {
-    // Create the new playlist
-    const newPlaylist = {
-      id: Date.now(), // Simple ID generation
-      title: name,
-      name,
-      visibility,
-      songs: [],
-      suggestions: [],
-      imageSrc: '', // Will be set when songs are added
-      createdAt: new Date().toISOString(),
-    }
-
-    // TODO: Submit to server action to create playlist
+  const handleCreatePlaylistSubmit = async (name: string, visibility: PlaylistVisibilityEnum) => {
+    await addPlaylist(name, visibility)
     setIsModalOpen(false)
-
-    // Open drawer with the newly created playlist
-    openPlaylistDrawer(newPlaylist.id)
   }
 
   const renderMenuItem = (item: MenuItem, index: number) => {
@@ -104,14 +91,20 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   )
 
   const renderPlaylist = (playlist: MusicPlaylist, index: number) => (
-    <div key={playlist.id || index} className='playlist-item' onClick={() => handlePlaylistClick(playlist)}>
+    <div
+      key={playlist.id || index}
+      className='playlist-item'
+      onClick={() => handlePlaylistClick(playlist)}
+    >
       <MuzaIcon iconName='playlist' />
       {!collapsedState && <span>{playlist.title}</span>}
     </div>
   )
 
   // Filter out playlists with no songs
-  const playlistsWithSongs = playlists.filter(playlist => playlist.songs && playlist.songs.length > 0)
+  const playlistsWithSongs = playlists.filter(
+    playlist => playlist.songs && playlist.songs.length > 0
+  )
 
   return (
     <div className={`music-sidebar ${collapsedState ? 'collapsed' : ''}`}>
@@ -145,7 +138,11 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
         </button>
       </div>
 
-      <CreatePlaylistModal isOpen={isModalOpen} onClose={handleModalClose} onCreatePlaylist={handleCreatePlaylistSubmit} />
+      <CreatePlaylistModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onCreatePlaylist={handleCreatePlaylistSubmit}
+      />
     </div>
   )
 }

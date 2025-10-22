@@ -4,18 +4,19 @@ import { toast } from 'react-toastify'
 import type { MediaTypeEnum, UserLibrary } from '../../../server/db/user-library.entity'
 import { useTranslation } from '../../lib/i18n/translations'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
-import { useMedia, useUpdateLibrary } from './mediaContext'
+import { useMedia } from './mediaContext'
 
 export const useToggleAddLibrary = () => {
   const fetcher = useFetcherAsync<{ success: boolean; error: string; data: UserLibrary }>()
   const data = useMedia()
   const { library } = data
-  const updateLibrary = useUpdateLibrary()
   const { t } = useTranslation()
 
   const getIsInLibrary = useCallback(
     (resourceType: MediaTypeEnum, resourceId: number) => {
-      return library?.some(item => item.resourceId === resourceId && item.resourceType === resourceType)
+      return library?.some(
+        item => item.resourceId === resourceId && item.resourceType === resourceType
+      )
     },
     [library]
   )
@@ -38,10 +39,12 @@ export const useToggleAddLibrary = () => {
           // Update the library state in context
           if (isInLibrary) {
             // Remove from library
-            const updatedLibrary = library.filter(item => !(item.resourceId === resourceId && item.resourceType === resourceType))
-            updateLibrary(updatedLibrary)
+            const updatedLibrary = library.filter(
+              item => !(item.resourceId === resourceId && item.resourceType === resourceType)
+            )
+            data.library = updatedLibrary
           } else {
-            updateLibrary([...library, result.data])
+            data.library = [...library, result.data]
           }
 
           toast(t(`${resourceType}.${isInLibrary ? 'removedFromLibrary' : 'addedToLibrary'}`), {
@@ -65,7 +68,7 @@ export const useToggleAddLibrary = () => {
         return false
       }
     },
-    [fetcher, t, getIsInLibrary, library, updateLibrary]
+    [getIsInLibrary, fetcher, t, library, data]
   )
 
   return { toggleAddLibrary, loading: fetcher.state === 'loading', getIsInLibrary }

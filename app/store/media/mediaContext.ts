@@ -28,9 +28,3 @@ export function useMedia() {
 
   return media
 }
-export const useUpdateLibrary = () => {
-  const media = useMedia()
-  return (library: UserLibrary[]) => {
-    media.library = library
-  }
-}

@@ -1,3 +1,5 @@
+import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'
+
 export interface SongDetails {
   index?: number
   title: string
@@ -135,8 +137,8 @@ export type MusicPlaylist = {
   description?: string
   songs: SongDetails[]
   suggestions?: SongDetails[]
-  visibility?: string
-  createdAt?: string
+  visibility?: PlaylistVisibilityEnum
+  createdAt?: Date
 }
 
 export type PlayerDetails = {

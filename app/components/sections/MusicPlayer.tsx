@@ -42,6 +42,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   // Control state
   const [shuffle, setShuffle] = useState(false)
   const [repeat, setRepeat] = useState(false)
+  const isFirstLoad = useRef(true)
 
   // Helper functions
   const formatTime = (seconds: number): string => {
@@ -152,6 +153,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   }
 
   const togglePlayPause = () => {
+    isFirstLoad.current = false
     if (isLoading) return
     const newPlayingState = !details.isPlaying
     setIsPlaying(newPlayingState)
@@ -161,25 +163,9 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     onUpdate?.({ ...details })
   }
 
-  // Effects
-  // useEffect(() => {
-  //   setIsPlaying(details.isPlaying || false);
-  // }, [details.isPlaying, setIsPlaying]);
-
-  // useEffect(() => {
-  //   const audio = playerRef.current;
-  //   if (!audio) return;
-
-  //   if (details.isPlaying && !isLoading) {
-  //     playAudio();
-  //   } else if (!details.isPlaying) {
-  //     audio.pause();
-  //   }
-  // }, [details.isPlaying, isLoading, playAudio]);
-
   useEffect(() => {
     const audio = playerRef.current
-    if (!audio || !details.audioUrl) return
+    if (!audio || !details.audioUrl || isFirstLoad.current) return
 
     // Audio event handlers
     const handleLoadedData = () => {
@@ -246,7 +232,15 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       audio.removeEventListener('waiting', handleLoadStart)
       audio.removeEventListener('canplay', handleCanPlay)
     }
-  }, [details.audioUrl, details.isPlaying, onPlayCountIncrement, onSongEnded, playAudio, setIsPlaying, volume])
+  }, [
+    details.audioUrl,
+    details.isPlaying,
+    onPlayCountIncrement,
+    onSongEnded,
+    playAudio,
+    setIsPlaying,
+    volume,
+  ])
 
   return (
     <div className='music-player'>
@@ -286,11 +280,19 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               <MuzaIcon iconName='shuffle' />
             </button>
 
-            <button className='control-btn previous' onClick={onPrevious} aria-label={t('player.previous')}>
+            <button
+              className='control-btn previous'
+              onClick={onPrevious}
+              aria-label={t('player.previous')}
+            >
               <MuzaIcon iconName='skip-back' />
             </button>
 
-            <button className='control-btn play' onClick={togglePlayPause} aria-label={t('player.playPause')}>
+            <button
+              className='control-btn play'
+              onClick={togglePlayPause}
+              aria-label={t('player.playPause')}
+            >
               {isLoading ? (
                 <FaSpinner className='spinner' />
               ) : details.isPlaying ? (

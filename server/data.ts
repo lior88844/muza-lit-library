@@ -7,6 +7,7 @@ import path from 'path'
 
 import { findAlbumById, findManyAlbums } from './api/album/album.service'
 import { findArtistById, findManyArtists } from './api/artist/artist.service'
+import { getUserPlaylists } from './api/playlist/playlist.service'
 import { findManyTracks } from './api/track/track.service'
 import { getUserLibrary } from './api/user-library/user-library.service'
 
@@ -76,17 +77,16 @@ function loadStaticData() {
 }
 
 export const fetchAllData = async (userId?: number) => {
-  const [allData, albumsData, tracksData, artistsData, libraryData] = await Promise.all([
-    loadStaticData(),
-    fetchAlbums(),
-    fetchTracks(),
-    fetchArtists(),
-    userId ? getUserLibrary(userId) : Promise.resolve([]),
-  ])
-  console.log(`Loaded ${albumsData?.length} albums`)
-  console.log(`Loaded ${tracksData?.length} tracks`)
-  console.log(`Loaded ${artistsData?.length} artists`)
-  console.log(`Loaded ${libraryData?.length} library items`)
+  const [allData, albumsData, tracksData, artistsData, libraryData, playlistsData] =
+    await Promise.all([
+      loadStaticData(),
+      fetchAlbums(),
+      fetchTracks(),
+      fetchArtists(),
+      userId ? getUserLibrary(userId) : Promise.resolve([]),
+      userId ? getUserPlaylists(userId) : Promise.resolve([]),
+    ])
+
   return {
     albums: {
       featured: getRandomItems(albumsData, 125),
@@ -98,7 +98,7 @@ export const fetchAllData = async (userId?: number) => {
     library: libraryData || [],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sidebar: (allData as Record<string, unknown>)?.sidebar || ([] as any),
-    playlists: [],
+    playlists: playlistsData || [],
   }
 }
 

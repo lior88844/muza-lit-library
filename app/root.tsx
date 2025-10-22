@@ -24,7 +24,7 @@ import { useTranslation } from './lib/i18n/translations'
 import Providers from './Providers'
 import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'
-import type { MusicPlaylist, SongDetails } from './store/models'
+import type { MusicPlaylist } from './store/models'
 import { userContext } from './store/router-context'
 export const authMiddleware: MiddlewareFunction = async ({ context }) => {
   // const user = await getOidcUser();
@@ -77,24 +77,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   // Process playlists once with useMemo
   const processedData = useMemo(() => {
     const songs = data?.songs || []
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const processedPlaylists = (data?.playlists || []).map((playlist: any) => {
-      const playlistSongs = (playlist.songs || [])
-        .map((id: number) => songs.find((song: SongDetails) => song.id === id))
-        .filter((song: SongDetails | undefined): song is SongDetails => song !== undefined)
-
-      const playlistSuggestions = (playlist.suggestions || [])
-        .map((songId: number) => songs.find((song: SongDetails) => song.id === songId))
-        .filter((song: SongDetails | undefined): song is SongDetails => song !== undefined)
-
-      return {
-        ...playlist,
-        songs: playlistSongs,
-        suggestions: playlistSuggestions,
-        author: playlist.author,
-      }
-    })
-
     return {
       albums: {
         featured: data?.albums?.featured || [],
@@ -104,7 +86,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       artists: data?.artists || [],
       songs,
       library: data?.library || [],
-      playlists: processedPlaylists,
+      playlists: data?.playlists || [],
       sidebar: {
         sections: data?.sidebar?.sections || [],
       },
@@ -114,10 +96,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = processedData.sidebar.sections
   const playlists = processedData.playlists
 
-  const { isPlaylistDrawerOpen, currentPlaylistDrawerId, openPlaylistDrawer, closePlaylistDrawer } = useCurrentPlayerStore()
+  const { isPlaylistDrawerOpen, currentPlaylistDrawerId, openPlaylistDrawer, closePlaylistDrawer } =
+    useCurrentPlayerStore()
 
   // Get the current playlist from processed data
-  const currentPlaylist = currentPlaylistDrawerId ? playlists.find(p => p.id === currentPlaylistDrawerId) : undefined
+  const currentPlaylist = currentPlaylistDrawerId
+    ? playlists.find(p => p.id === currentPlaylistDrawerId)
+    : undefined
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -147,11 +132,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const handleToggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed)
-  }
-
-  const handleSavePlaylist = (/* playlist: Partial<MusicPlaylist> */) => {
-    // Handle playlist save logic here - submit to server
-    // TODO: Submit to server action
   }
 
   // Initialize current player with first song only once
@@ -185,7 +165,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   sections={sidebarSections}
                   playlists={playlists}
                   isCollapsed={isSidebarCollapsed}
-                  onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
+                  _onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
                   onToggleCollapse={handleToggleSidebar}
                 />
               )}
@@ -199,7 +179,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       isOpen={isPlaylistDrawerOpen}
                       onClose={handleClosePlaylistDrawer}
                       playlist={currentPlaylist}
-                      onSavePlaylist={handleSavePlaylist}
                     />
                   )}
                 </main>
@@ -226,7 +205,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? '404' : 'Error'
-    details = error.status === 404 ? 'The requested page could not be found.' : error.statusText || details
+    details =
+      error.status === 404 ? 'The requested page could not be found.' : error.statusText || details
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message
     stack = error.stack

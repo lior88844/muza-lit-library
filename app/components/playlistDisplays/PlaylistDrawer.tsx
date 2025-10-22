@@ -10,22 +10,26 @@ import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 
+import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
+
 interface PlaylistDrawerProps {
   isOpen: boolean
   onClose: () => void
   playlist?: MusicPlaylist
-  onSavePlaylist: (playlist: Partial<MusicPlaylist>) => void
 }
 
-const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playlist, onSavePlaylist }) => {
+const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playlist }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [playlistName, setPlaylistName] = useState(playlist?.title || '')
   const [playlistDescription, setPlaylistDescription] = useState(playlist?.description || '')
-  const [isPublic, setIsPublic] = useState<boolean>(playlist?.visibility === 'Public' || true)
+  const [isPublic, setIsPublic] = useState<boolean>(
+    playlist?.visibility === PlaylistVisibilityEnum.Public || true
+  )
   const [searchQuery, setSearchQuery] = useState('')
   const [isDragOver, setIsDragOver] = useState(false)
-
+  const { updatePlaylist } = useUpdatePlaylist()
   // Update playlist name, description and visibility when playlist prop changes
   useEffect(() => {
     if (playlist?.title) {
@@ -35,7 +39,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
       setPlaylistDescription(playlist.description)
     }
     if (playlist?.visibility) {
-      setIsPublic(playlist.visibility === 'Public')
+      setIsPublic(playlist.visibility === PlaylistVisibilityEnum.Public)
     }
   }, [playlist?.title, playlist?.description, playlist?.visibility])
 
@@ -57,34 +61,30 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
 
       // Check if song already exists in playlist
       const existingSong = playlist.songs?.find(
-        existingSong => existingSong.id === song.id || (existingSong.title === song.title && existingSong.artist === song.artist)
+        existingSong =>
+          existingSong.id === song.id ||
+          (existingSong.title === song.title && existingSong.artist === song.artist)
       )
 
       if (existingSong) {
         return
       }
-
-      const updatedSongs = [...(playlist.songs || []), song]
-      // TODO: Submit to server action
-      onSavePlaylist({ songs: updatedSongs })
+      updatePlaylist(playlist.id, {
+        songs: [...playlist.songs, song],
+      })
     },
-    [playlist, onSavePlaylist]
+    [playlist, updatePlaylist]
   )
 
   // Helper function for removing songs from playlist
   const removeSongFromPlaylist = useCallback(
     (songToRemove: SongDetails) => {
       if (!playlist?.id) return
-
-      const updatedSongs =
-        playlist.songs?.filter(
-          song => song.id !== songToRemove.id && !(song.title === songToRemove.title && song.artist === songToRemove.artist)
-        ) || []
-
-      // TODO: Submit to server action
-      onSavePlaylist({ songs: updatedSongs })
+      updatePlaylist(playlist.id, {
+        songs: playlist.songs?.filter(song => song.id !== songToRemove.id) || [],
+      })
     },
-    [playlist, onSavePlaylist]
+    [playlist, updatePlaylist]
   )
 
   const handleDrop = useCallback(
@@ -125,7 +125,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
 
   const handleNavigateToPlaylist = () => {
     if (playlist) {
-      navigate('/playlist', { state: { playlist } })
+      navigate(`/playlists/${playlist.id}`)
       onClose() // Close the drawer after navigation
     }
   }
@@ -180,7 +180,12 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
         </div>
 
         <div className='playlist-drawer__controls'>
-          <MuzaButton onClick={() => {}} className='playlist-drawer__sort-button' content={t('playlist.sort')} iconName='ArrowUpDown' />
+          <MuzaButton
+            onClick={() => {}}
+            className='playlist-drawer__sort-button'
+            content={t('playlist.sort')}
+            iconName='ArrowUpDown'
+          />
 
           <MuzaInputField
             value={searchQuery}

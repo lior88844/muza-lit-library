@@ -26,7 +26,11 @@ const ErrorBadge: React.FC<{ errorCode: UploadErrorCodeEnum }> = ({ errorCode })
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <div className={`admin-upload-table__error-badge admin-upload-table__error-badge--${errorCode}`}>Error: {errorInfo.code}</div>
+      <div
+        className={`admin-upload-table__error-badge admin-upload-table__error-badge--${errorCode}`}
+      >
+        Error: {errorInfo.code}
+      </div>
       {showTooltip && (
         <div className='admin-upload-table__tooltip'>
           <div className='admin-upload-table__tooltip-title'>{errorInfo.title}</div>
@@ -127,11 +131,12 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
     return paginatedItems.map((item, index) => {
       const globalIndex = (currentPage - 1) * itemsPerPage + index
       const isSelected = selectedItems.has(globalIndex)
-      console.log(item)
 
       return (
         <tr key={item.id} className='admin-upload-table__row'>
-          <td className='admin-upload-table__cell admin-upload-table__cell--number'>{globalIndex + 1}</td>
+          <td className='admin-upload-table__cell admin-upload-table__cell--number'>
+            {globalIndex + 1}
+          </td>
           <td className='admin-upload-table__cell admin-upload-table__cell--checkbox'>
             <div
               className={`admin-upload-table__checkbox-wrapper ${isSelected ? 'admin-upload-table__checkbox-wrapper--checked' : ''} ${item.errorCode === 1001 || !item.isUploadReady || item.isUploaded ? 'admin-upload-table__checkbox-wrapper--disabled' : ''}`}
@@ -141,7 +146,11 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                 checked={isSelected}
                 onChange={handleItemSelectChange(globalIndex)}
                 className='admin-upload-table__checkbox'
-                disabled={(item.errorCode && BLOCKING_ERROR_CODES.includes(item.errorCode)) || !item.isUploadReady || item.isUploaded}
+                disabled={
+                  (item.errorCode && BLOCKING_ERROR_CODES.includes(item.errorCode)) ||
+                  !item.isUploadReady ||
+                  item.isUploaded
+                }
               />
               <div className='admin-upload-table__checkbox-visual'>
                 <MuzaIcon iconName='CheckmarkSquare' className='admin-upload-table__checkmark' />
@@ -164,14 +173,18 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             <div className='admin-upload-table__upload-item'>
               <div
                 className={`admin-upload-table__upload-status ${
-                  item.loadingState?.status === 'loaded' ? 'admin-upload-table__upload-status--loaded' : ''
+                  item.loadingState?.status === 'loaded'
+                    ? 'admin-upload-table__upload-status--loaded'
+                    : ''
                 } ${isUploading && selectedItems.has(globalIndex) ? 'admin-upload-table__upload-status--uploading' : ''}`}
               >
                 {isUploading && selectedItems.has(globalIndex) ? (
                   <FaSpinner className='admin-upload-table__upload-spinner' />
                 ) : (
                   <MuzaIcon
-                    iconName={item.loadingState?.status === 'loaded' && item.isUploaded ? 'Check' : 'Clock8'}
+                    iconName={
+                      item.loadingState?.status === 'loaded' && item.isUploaded ? 'Check' : 'Clock8'
+                    }
                     className='admin-upload-table__status-icon'
                   />
                 )}
@@ -184,16 +197,23 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                   {item.metadata ? (
                     <span className='admin-upload-table__album-text'>
                       {item.albumLookup?.albumName || item.metadata.album || 'Unknown Album'} -{' '}
-                      {item.albumLookup?.artistName || item.metadata.albumartist || item.metadata.artist || 'Unknown Artist'}
+                      {item.albumLookup?.artistName ||
+                        item.metadata.albumartist ||
+                        item.metadata.artist ||
+                        'Unknown Artist'}
                     </span>
                   ) : item.isLookingUp ? (
                     <>
-                      <span className='admin-upload-table__size-text'>{formatFileSize(item.size)}</span>
+                      <span className='admin-upload-table__size-text'>
+                        {formatFileSize(item.size)}
+                      </span>
                       <span className='admin-upload-table__status-text'>Processing...</span>
                     </>
                   ) : (
                     <>
-                      <span className='admin-upload-table__size-text'>{formatFileSize(item.size)}</span>
+                      <span className='admin-upload-table__size-text'>
+                        {formatFileSize(item.size)}
+                      </span>
                       <span className='admin-upload-table__status-text'>Ready</span>
                     </>
                   )}
@@ -202,7 +222,9 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                   {item.loadingState?.status === 'loading' && isUploading && (
                     <>
                       <span className='admin-upload-table__status-text'>Uploading...</span>
-                      <span className='admin-upload-table__percentage'>{item.loadingState?.progress ?? 0}%</span>
+                      <span className='admin-upload-table__percentage'>
+                        {item.loadingState?.progress ?? 0}%
+                      </span>
                       <div className='admin-upload-table__file-progress'>
                         <span className='admin-upload-table__progress-count'>
                           {item.loadingState?.loadedFiles ?? 0} / {item.files.length}
@@ -232,7 +254,13 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
           </td>
           <td className='admin-upload-table__cell admin-upload-table__cell--errors'>
-            {item.isUploaded ? <UploadedBadge /> : item.errorCode ? <ErrorBadge errorCode={item.errorCode} /> : <SuccessBadge />}
+            {item.isUploaded ? (
+              <UploadedBadge />
+            ) : item.errorCode ? (
+              <ErrorBadge errorCode={item.errorCode} />
+            ) : (
+              <SuccessBadge />
+            )}
           </td>
         </tr>
       )
@@ -278,7 +306,9 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
 
         <div className='admin-upload-table__page-numbers'>
           {pages}
-          <div className={`admin-upload-table__ellipsis ${endPage < totalPages ? '' : 'admin-upload-table__ellipsis--hidden'}`}>
+          <div
+            className={`admin-upload-table__ellipsis ${endPage < totalPages ? '' : 'admin-upload-table__ellipsis--hidden'}`}
+          >
             <MuzaIcon iconName='ellipsis' />
           </div>
         </div>
@@ -305,7 +335,9 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         <table className='admin-upload-table__table'>
           <thead className='admin-upload-table__head'>
             <tr className='admin-upload-table__header-row'>
-              <th className='admin-upload-table__header admin-upload-table__header--number'>{/* Empty header for row numbers */}</th>
+              <th className='admin-upload-table__header admin-upload-table__header--number'>
+                {/* Empty header for row numbers */}
+              </th>
               <th className='admin-upload-table__header admin-upload-table__header--checkbox'>
                 <div
                   className={`admin-upload-table__checkbox-wrapper ${isAllSelected ? 'admin-upload-table__checkbox-wrapper--checked' : ''}`}
@@ -317,15 +349,28 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                     className='admin-upload-table__checkbox'
                   />
                   <div className='admin-upload-table__checkbox-visual'>
-                    <MuzaIcon iconName='CheckmarkSquare' className='admin-upload-table__checkmark' />
+                    <MuzaIcon
+                      iconName='CheckmarkSquare'
+                      className='admin-upload-table__checkmark'
+                    />
                   </div>
                 </div>
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--folder'>Folder</th>
-              <th className='admin-upload-table__header admin-upload-table__header--upload'>Upload</th>
-              <th className='admin-upload-table__header admin-upload-table__header--data-source'>Data Source</th>
-              <th className='admin-upload-table__header admin-upload-table__header--cover'>Cover</th>
-              <th className='admin-upload-table__header admin-upload-table__header--errors'>Errors</th>
+              <th className='admin-upload-table__header admin-upload-table__header--folder'>
+                Folder
+              </th>
+              <th className='admin-upload-table__header admin-upload-table__header--upload'>
+                Upload
+              </th>
+              <th className='admin-upload-table__header admin-upload-table__header--data-source'>
+                Data Source
+              </th>
+              <th className='admin-upload-table__header admin-upload-table__header--cover'>
+                Cover
+              </th>
+              <th className='admin-upload-table__header admin-upload-table__header--errors'>
+                Errors
+              </th>
             </tr>
           </thead>
           <tbody className='admin-upload-table__body'>{renderTableRows()}</tbody>

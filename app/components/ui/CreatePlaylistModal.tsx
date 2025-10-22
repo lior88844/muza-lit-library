@@ -7,13 +7,19 @@ import ToggleButton from '~/controls/ToggleButton'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
 
+import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+
 interface CreatePlaylistModalProps {
   isOpen: boolean
   onClose: () => void
-  onCreatePlaylist: (name: string, visibility: string) => void
+  onCreatePlaylist: (name: string, visibility: PlaylistVisibilityEnum) => void
 }
 
-const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({ isOpen, onClose, onCreatePlaylist }) => {
+const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
+  isOpen,
+  onClose,
+  onCreatePlaylist,
+}) => {
   const { t } = useTranslation()
   const [playlistName, setPlaylistName] = useState('')
   const [isPrivate, setIsPrivate] = useState(false)
@@ -40,7 +46,7 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({ isOpen, onClo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (playlistName.trim()) {
-      const visibility = isPrivate ? t('playlist.private') : t('playlist.public')
+      const visibility = isPrivate ? PlaylistVisibilityEnum.Private : PlaylistVisibilityEnum.Public
       onCreatePlaylist(playlistName.trim(), visibility)
       setPlaylistName('')
       setIsPrivate(false)
@@ -78,7 +84,11 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({ isOpen, onClo
 
             <div className='form-group'>
               <div className='privacy-toggle-wrapper'>
-                <ToggleButton checked={isPrivate} onChange={handleToggleChange} label={t('playlist.makePrivate')} />
+                <ToggleButton
+                  checked={isPrivate}
+                  onChange={handleToggleChange}
+                  label={t('playlist.makePrivate')}
+                />
                 <p className='privacy-explanation'>{t('playlist.privateExplanation')}</p>
               </div>
             </div>
@@ -88,7 +98,12 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({ isOpen, onClo
             <button type='button' className='cancel-button' onClick={onClose}>
               {t('playlist.cancel')}
             </button>
-            <button type='button' className='create-button' onClick={handleSubmit} disabled={!playlistName.trim()}>
+            <button
+              type='button'
+              className='create-button'
+              onClick={handleSubmit}
+              disabled={!playlistName.trim()}
+            >
               {t('playlist.create')}
             </button>
           </div>
