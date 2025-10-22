@@ -9,7 +9,12 @@ interface ToggleButtonProps {
   onChange: (checked: boolean) => void
 }
 
-const ToggleButton: React.FC<ToggleButtonProps> = ({ checked, label = '', disabled = false, onChange }) => {
+const ToggleButton: React.FC<ToggleButtonProps> = ({
+  checked,
+  label = '',
+  disabled = false,
+  onChange,
+}) => {
   const handleToggle = () => {
     if (!disabled) {
       onChange(!checked)

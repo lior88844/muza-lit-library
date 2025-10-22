@@ -1,4 +1,9 @@
-import { addToLibrary, getUserLibrary, isInLibrary, removeFromLibrary } from '../../../server/api/user-library/user-library.service'
+import {
+  addToLibrary,
+  getUserLibrary,
+  isInLibrary,
+  removeFromLibrary,
+} from '../../../server/api/user-library/user-library.service'
 import { MediaTypeEnum, type UserLibrary } from '../../../server/db/user-library.entity'
 import { userContext } from '../../store/router-context'
 import type { Route } from './+types/library'
@@ -31,7 +36,11 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
   }
 
   try {
-    const isExisting = await isInLibrary(user.id, resourceType as MediaTypeEnum, parseInt(resourceId))
+    const isExisting = await isInLibrary(
+      user.id,
+      resourceType as MediaTypeEnum,
+      parseInt(resourceId)
+    )
     let data: UserLibrary | boolean = false
     if (!isExisting) {
       data = await addToLibrary(user.id, resourceType as MediaTypeEnum, parseInt(resourceId))

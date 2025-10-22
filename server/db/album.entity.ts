@@ -1,4 +1,15 @@
-import { boolean, integer, numeric, pgEnum, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  integer,
+  numeric,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
@@ -20,8 +31,14 @@ export enum ReleaseStatusEnum {
   PseudoRelease = 'Pseudo-Release',
 }
 
-export const albumTypeEnum = pgEnum('album_type', Object.values(AlbumTypeEnum) as [string, ...string[]])
-export const releaseStatusEnum = pgEnum('release_status', Object.values(ReleaseStatusEnum) as [string, ...string[]])
+export const albumTypeEnum = pgEnum(
+  'album_type',
+  Object.values(AlbumTypeEnum) as [string, ...string[]]
+)
+export const releaseStatusEnum = pgEnum(
+  'release_status',
+  Object.values(ReleaseStatusEnum) as [string, ...string[]]
+)
 
 // Albums table
 export const albums = pgTable('albums', {

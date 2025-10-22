@@ -1,4 +1,16 @@
-import { boolean, integer, json, numeric, pgEnum, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  integer,
+  json,
+  numeric,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
@@ -18,7 +30,10 @@ export enum GenderEnum {
 }
 
 // Enums
-export const artistTypeEnum = pgEnum('artist_type', Object.values(ArtistTypeEnum) as [string, ...string[]])
+export const artistTypeEnum = pgEnum(
+  'artist_type',
+  Object.values(ArtistTypeEnum) as [string, ...string[]]
+)
 
 export const genderEnum = pgEnum('gender', Object.values(GenderEnum) as [string, ...string[]])
 

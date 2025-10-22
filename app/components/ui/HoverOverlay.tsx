@@ -18,7 +18,12 @@ interface HoverOverlayProps {
   showPlayButton?: boolean
 }
 
-const HoverOverlay: React.FC<HoverOverlayProps> = ({ isPlaying = false, onPlayPause, actions = [], showPlayButton = true }) => {
+const HoverOverlay: React.FC<HoverOverlayProps> = ({
+  isPlaying = false,
+  onPlayPause,
+  actions = [],
+  showPlayButton = true,
+}) => {
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation()
     onPlayPause?.(e)

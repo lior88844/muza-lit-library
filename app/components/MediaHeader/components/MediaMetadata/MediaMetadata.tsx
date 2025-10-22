@@ -16,7 +16,14 @@ export interface MediaMetadataProps {
   separator?: string
 }
 
-const MediaMetadata: React.FC<MediaMetadataProps> = ({ type, year, songCount, duration, followerCount, separator = '•' }) => {
+const MediaMetadata: React.FC<MediaMetadataProps> = ({
+  type,
+  year,
+  songCount,
+  duration,
+  followerCount,
+  separator = '•',
+}) => {
   const { t } = useTranslation()
 
   const renderMetadataItems = () => {

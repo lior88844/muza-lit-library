@@ -46,7 +46,10 @@ export default function Login() {
           </div>
           <h2 className='mb-2 text-xl font-semibold text-gray-800'>Authentication Error</h2>
           <p className='mb-4 text-gray-600'>{auth.error.message}</p>
-          <button onClick={() => auth.signinRedirect()} className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'>
+          <button
+            onClick={() => auth.signinRedirect()}
+            className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
+          >
             Try Again
           </button>
         </div>

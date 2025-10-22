@@ -62,13 +62,16 @@ export default function Upload() {
     navigate('/')
   }
 
-  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    updateFormData(field as keyof typeof formData, e.target.value)
-  }
+  const handleInputChange =
+    (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      updateFormData(field as keyof typeof formData, e.target.value)
+    }
 
-  const handleMusicianChange = (index: number, field: keyof (typeof musicians)[0]) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateMusician(index, field, e.target.value)
-  }
+  const handleMusicianChange =
+    (index: number, field: keyof (typeof musicians)[0]) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateMusician(index, field, e.target.value)
+    }
 
   const handleFindAlbumDetails = () => {
     // TODO: Implement album details search functionality
@@ -157,7 +160,12 @@ export default function Upload() {
 
   return (
     <div className='upload-page'>
-      <UploadHeader title='Album Upload' onCancel={handleCancel} isTestMode={isTestMode} onTestModeToggle={handleTestModeToggle} />
+      <UploadHeader
+        title='Album Upload'
+        onCancel={handleCancel}
+        isTestMode={isTestMode}
+        onTestModeToggle={handleTestModeToggle}
+      />
 
       {renderStepContent()}
 

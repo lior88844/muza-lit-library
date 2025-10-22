@@ -92,11 +92,15 @@ export default function AdminPortal() {
   const [selectedPage, setSelectedPage] = useState('Home')
 
   const handleSectionNameChange = (id: number, newName: string) => {
-    setSections(prev => prev.map(section => (section.id === id ? { ...section, name: newName } : section)))
+    setSections(prev =>
+      prev.map(section => (section.id === id ? { ...section, name: newName } : section))
+    )
   }
 
   const handleSectionTypeChange = (id: number, newType: string) => {
-    setSections(prev => prev.map(section => (section.id === id ? { ...section, type: newType } : section)))
+    setSections(prev =>
+      prev.map(section => (section.id === id ? { ...section, type: newType } : section))
+    )
   }
 
   const handleSave = () => {
@@ -129,7 +133,13 @@ export default function AdminPortal() {
               <button className='admin-portal-dropdown-btn'>
                 <span>{selectedPage}</span>
                 <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                  <path d='M4 6L8 10L12 6' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+                  <path
+                    d='M4 6L8 10L12 6'
+                    stroke='currentColor'
+                    strokeWidth='1.5'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
                 </svg>
               </button>
             </div>

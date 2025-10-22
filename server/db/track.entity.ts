@@ -1,4 +1,15 @@
-import { boolean, integer, numeric, pgEnum, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  integer,
+  numeric,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
@@ -13,7 +24,10 @@ export enum AudioFormatEnum {
   OPUS = 'OPUS',
 }
 // Enums
-export const audioFormatEnum = pgEnum('audio_format', Object.values(AudioFormatEnum) as [string, ...string[]])
+export const audioFormatEnum = pgEnum(
+  'audio_format',
+  Object.values(AudioFormatEnum) as [string, ...string[]]
+)
 
 // Tracks table
 export const tracks = pgTable('tracks', {

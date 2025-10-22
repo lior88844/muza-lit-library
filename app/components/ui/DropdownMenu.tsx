@@ -26,7 +26,9 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, items, title }) =>
 
     return (
       <React.Fragment key={item.id}>
-        {shouldAddSeparator && <DropdownMenuPrimitive.Separator className='dropdown-menu__separator' />}
+        {shouldAddSeparator && (
+          <DropdownMenuPrimitive.Separator className='dropdown-menu__separator' />
+        )}
         <DropdownMenuPrimitive.Item
           className={`dropdown-menu__item ${item.destructive ? 'dropdown-menu__item--destructive' : ''}`}
           onClick={item.onClick}
@@ -46,7 +48,9 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, items, title }) =>
         <DropdownMenuPrimitive.Content className='dropdown-menu' sideOffset={4} align='end'>
           {title && (
             <>
-              <DropdownMenuPrimitive.Label className='dropdown-menu__title'>{title}</DropdownMenuPrimitive.Label>
+              <DropdownMenuPrimitive.Label className='dropdown-menu__title'>
+                {title}
+              </DropdownMenuPrimitive.Label>
               <DropdownMenuPrimitive.Separator className='dropdown-menu__separator' />
             </>
           )}

@@ -2,17 +2,31 @@ import { and, eq } from 'drizzle-orm'
 
 import { db } from '../../db/connection'
 import { userLibrary } from '../../db/user-library.entity'
-import { type CreateUserLibrary, MediaTypeEnum, type UserLibrary } from '../../db/user-library.entity'
+import {
+  type CreateUserLibrary,
+  MediaTypeEnum,
+  type UserLibrary,
+} from '../../db/user-library.entity'
 
 /**
  * Add an item to user's library
  */
-export async function addToLibrary(userId: number, resourceType: MediaTypeEnum, resourceId: number) {
+export async function addToLibrary(
+  userId: number,
+  resourceType: MediaTypeEnum,
+  resourceId: number
+) {
   // Check if item already exists in user's library
   const existingItem = await db
     .select()
     .from(userLibrary)
-    .where(and(eq(userLibrary.userId, userId), eq(userLibrary.resourceType, resourceType), eq(userLibrary.resourceId, resourceId)))
+    .where(
+      and(
+        eq(userLibrary.userId, userId),
+        eq(userLibrary.resourceType, resourceType),
+        eq(userLibrary.resourceId, resourceId)
+      )
+    )
     .limit(1)
 
   if (existingItem.length > 0) {
@@ -34,10 +48,20 @@ export async function addToLibrary(userId: number, resourceType: MediaTypeEnum, 
 /**
  * Remove an item from user's library
  */
-export async function removeFromLibrary(userId: number, resourceType: MediaTypeEnum, resourceId: number): Promise<boolean> {
+export async function removeFromLibrary(
+  userId: number,
+  resourceType: MediaTypeEnum,
+  resourceId: number
+): Promise<boolean> {
   const result = await db
     .delete(userLibrary)
-    .where(and(eq(userLibrary.userId, userId), eq(userLibrary.resourceType, resourceType), eq(userLibrary.resourceId, resourceId)))
+    .where(
+      and(
+        eq(userLibrary.userId, userId),
+        eq(userLibrary.resourceType, resourceType),
+        eq(userLibrary.resourceId, resourceId)
+      )
+    )
     .returning()
 
   return result.length > 0
@@ -46,7 +70,10 @@ export async function removeFromLibrary(userId: number, resourceType: MediaTypeE
 /**
  * Get user's library items
  */
-export async function getUserLibrary(userId: number, resourceType?: MediaTypeEnum): Promise<UserLibrary[]> {
+export async function getUserLibrary(
+  userId: number,
+  resourceType?: MediaTypeEnum
+): Promise<UserLibrary[]> {
   if (resourceType) {
     return await db
       .select()
@@ -60,11 +87,21 @@ export async function getUserLibrary(userId: number, resourceType?: MediaTypeEnu
 /**
  * Check if item exists in user's library
  */
-export async function isInLibrary(userId: number, resourceType: MediaTypeEnum, resourceId: number): Promise<boolean> {
+export async function isInLibrary(
+  userId: number,
+  resourceType: MediaTypeEnum,
+  resourceId: number
+): Promise<boolean> {
   const result = await db
     .select()
     .from(userLibrary)
-    .where(and(eq(userLibrary.userId, userId), eq(userLibrary.resourceType, resourceType), eq(userLibrary.resourceId, resourceId)))
+    .where(
+      and(
+        eq(userLibrary.userId, userId),
+        eq(userLibrary.resourceType, resourceType),
+        eq(userLibrary.resourceId, resourceId)
+      )
+    )
     .limit(1)
 
   return result.length > 0

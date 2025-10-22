@@ -43,7 +43,10 @@ export function useFetcherAsync<TData = unknown>() {
    * @returns Promise that resolves with the fetcher data or rejects with an error
    */
   const submit = useCallback(
-    (data: FormData | URLSearchParams | Record<string, string>, options?: FetcherSubmitOptions): Promise<TData> => {
+    (
+      data: FormData | URLSearchParams | Record<string, string>,
+      options?: FetcherSubmitOptions
+    ): Promise<TData> => {
       return new Promise((resolve, reject) => {
         // Store resolve/reject functions
         resolveRef.current = (data: TData) => {

@@ -11,7 +11,8 @@ export type ValidationRule =
   | { type: 'email'; message: string }
   | { type: 'custom'; validator: (value: string) => boolean; message: string }
 
-export interface MuzaInputFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface MuzaInputFieldProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string
   leadingIcon?: string
   trailingIcon?: string
@@ -61,7 +62,8 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
           if (!rule.value.test(val)) return { isValid: false, message: rule.message }
           break
         case 'email':
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return { isValid: false, message: rule.message }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))
+            return { isValid: false, message: rule.message }
           break
         case 'custom':
           if (!rule.validator(val)) return { isValid: false, message: rule.message }
@@ -116,7 +118,9 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
           </span>
         )}
       </div>
-      {(validationMessage || helperText) && <div className={`helper-text ${inputState}`}>{validationMessage || helperText}</div>}
+      {(validationMessage || helperText) && (
+        <div className={`helper-text ${inputState}`}>{validationMessage || helperText}</div>
+      )}
     </div>
   )
 }

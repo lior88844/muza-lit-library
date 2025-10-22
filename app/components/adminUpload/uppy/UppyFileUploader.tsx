@@ -13,7 +13,10 @@ interface UppyFileUploaderProps {
   allowFolders?: boolean
 }
 
-const UppyFileUploader: React.FC<UppyFileUploaderProps> = ({ onFileUpload, allowFolders = true }) => {
+const UppyFileUploader: React.FC<UppyFileUploaderProps> = ({
+  onFileUpload,
+  allowFolders = true,
+}) => {
   const uppyRef = useRef<Uppy | null>(null)
   const dashboardRef = useRef<HTMLDivElement>(null)
 

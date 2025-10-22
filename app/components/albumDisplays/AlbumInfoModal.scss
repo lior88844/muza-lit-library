@@ -18,7 +18,11 @@
     background: var(--colors_background_light, #ffffff);
     border-radius: var(--muza-border-radius-md, 8px);
     overflow: hidden;
-    box-shadow: var(--muza-box-shadow, 0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px 0 rgba(0, 0, 0, 0.3));
+    box-shadow: var(
+      --muza-box-shadow,
+      0 8px 12px 6px rgba(0, 0, 0, 0.15),
+      0 4px 4px 0 rgba(0, 0, 0, 0.3)
+    );
     max-height: 90vh;
     display: flex;
     flex-direction: column;

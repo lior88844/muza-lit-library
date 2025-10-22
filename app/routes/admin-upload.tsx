@@ -66,7 +66,9 @@ export default function AdminUpload() {
     const allFolderPaths = Array.from(flacFolderMap.keys())
     const filteredFolderPaths = allFolderPaths.filter(path => {
       // Keep this folder if no other folder in the list has it as a prefix (i.e., it's not a parent)
-      return !allFolderPaths.some(otherPath => otherPath !== path && otherPath.startsWith(path + '/'))
+      return !allFolderPaths.some(
+        otherPath => otherPath !== path && otherPath.startsWith(path + '/')
+      )
     })
 
     // Create items for folders with FLAC files (excluding parent folders)
@@ -100,11 +102,15 @@ export default function AdminUpload() {
     }
 
     // Create error items for folders with no FLAC files (excluding parent folders)
-    const allFoldersWithoutFlac = Array.from(allFolderMap.keys()).filter(path => !flacFolderMap.has(path))
+    const allFoldersWithoutFlac = Array.from(allFolderMap.keys()).filter(
+      path => !flacFolderMap.has(path)
+    )
 
     const filteredErrorFolderPaths = allFoldersWithoutFlac.filter(path => {
       // Keep this folder if no other folder in allFolderMap has it as a prefix
-      return !Array.from(allFolderMap.keys()).some(otherPath => otherPath !== path && otherPath.startsWith(path + '/'))
+      return !Array.from(allFolderMap.keys()).some(
+        otherPath => otherPath !== path && otherPath.startsWith(path + '/')
+      )
     })
 
     filteredErrorFolderPaths.forEach(path => {
@@ -174,7 +180,9 @@ export default function AdminUpload() {
             setUploadedItems(prev =>
               prev.map(prevItem => {
                 if (prevItem.id === item.id) {
-                  const hasValidId = !!albumLookup?.mbId || (prevItem.manualAlbumId !== undefined && prevItem.manualAlbumId > 0)
+                  const hasValidId =
+                    !!albumLookup?.mbId ||
+                    (prevItem.manualAlbumId !== undefined && prevItem.manualAlbumId > 0)
                   const hasValidCover = !!(albumLookup?.coverUrl || prevItem.coverImageUrl)
                   const isUploadReady = hasValidId && hasValidCover && prevItem.files.length > 0
 
@@ -207,7 +215,9 @@ export default function AdminUpload() {
           setUploadedItems(prev =>
             prev.map(prevItem => {
               if (prevItem.id === item.id) {
-                const hasValidId = !!(prevItem.manualAlbumId !== undefined && prevItem.manualAlbumId > 0)
+                const hasValidId = !!(
+                  prevItem.manualAlbumId !== undefined && prevItem.manualAlbumId > 0
+                )
                 const hasValidCover = !!prevItem.coverImageUrl
                 const isUploadReady = hasValidId && hasValidCover && prevItem.files.length > 0
 
@@ -238,7 +248,12 @@ export default function AdminUpload() {
       const item = uploadedItems[index]
 
       // Don't allow selection if item has critical errors, is not upload ready, or is already uploaded
-      if (selected && (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID || !item.isUploadReady || item.isUploaded)) {
+      if (
+        selected &&
+        (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID ||
+          !item.isUploadReady ||
+          item.isUploaded)
+      ) {
         return
       }
 
@@ -261,7 +276,11 @@ export default function AdminUpload() {
         // Only select items that don't have error code 1001 (All Files Invalid), are upload ready, and not uploaded
         const selectableIndices = uploadedItems
           .map((item, index) =>
-            item.errorCode !== UploadErrorCodeEnum.ALL_FILES_INVALID && item.isUploadReady && !item.isUploaded ? index : -1
+            item.errorCode !== UploadErrorCodeEnum.ALL_FILES_INVALID &&
+            item.isUploadReady &&
+            !item.isUploaded
+              ? index
+              : -1
           )
           .filter(index => index !== -1)
         setSelectedItems(new Set(selectableIndices))
@@ -280,7 +299,9 @@ export default function AdminUpload() {
     const selectedItemList = Array.from(selectedItems).map(index => uploadedItems[index])
 
     // Filter to only include items that are upload ready
-    const uploadableItems = selectedItemList.filter(item => item.isUploadReady && item.files.length > 0)
+    const uploadableItems = selectedItemList.filter(
+      item => item.isUploadReady && item.files.length > 0
+    )
 
     if (uploadableItems.length === 0) {
       // eslint-disable-next-line no-console
@@ -328,13 +349,17 @@ export default function AdminUpload() {
       }
 
       // Mark uploaded items as uploaded
-      setUploadedItems(prev => prev.map(item => (uploadedItemIds.includes(item.id) ? { ...item, isUploaded: true } : item)))
+      setUploadedItems(prev =>
+        prev.map(item => (uploadedItemIds.includes(item.id) ? { ...item, isUploaded: true } : item))
+      )
 
       // Clear selection after successful upload
       setSelectedItems(new Set())
 
       // Show success message
-      setUploadSuccessMessage(`Successfully uploaded ${uploadedItemIds.length} album${uploadedItemIds.length > 1 ? 's' : ''}!`)
+      setUploadSuccessMessage(
+        `Successfully uploaded ${uploadedItemIds.length} album${uploadedItemIds.length > 1 ? 's' : ''}!`
+      )
 
       // Hide success message after 5 seconds
       setTimeout(() => {
@@ -374,7 +399,10 @@ export default function AdminUpload() {
     setUploadedItems(prev =>
       prev.map(item => {
         if (item.id === itemId) {
-          const hasValidId = !!(!!item.albumLookup?.mbId || (item.manualAlbumId !== undefined && item.manualAlbumId > 0))
+          const hasValidId = !!(
+            !!item.albumLookup?.mbId ||
+            (item.manualAlbumId !== undefined && item.manualAlbumId > 0)
+          )
           const hasValidCover = !!url
           const isUploadReady = hasValidId && hasValidCover && item.files.length > 0
 

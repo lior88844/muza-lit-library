@@ -50,7 +50,10 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
     (acceptedFiles: File[]) => {
       // Filter out duplicate files (same name and size)
       const newFiles = acceptedFiles.filter(
-        newFile => !uploadedFiles.some(existingFile => existingFile.name === newFile.name && existingFile.size === newFile.size)
+        newFile =>
+          !uploadedFiles.some(
+            existingFile => existingFile.name === newFile.name && existingFile.size === newFile.size
+          )
       )
 
       // Add new files to existing files
@@ -114,20 +117,27 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
             <div className='cover-upload-button'>
               <MuzaIcon className='plus-icon-large' iconName='plus' />
             </div>
-            <span className='cover-upload-text'>{isCoverDragActive ? 'Drop cover image here' : 'Add cover image'}</span>
+            <span className='cover-upload-text'>
+              {isCoverDragActive ? 'Drop cover image here' : 'Add cover image'}
+            </span>
           </>
         )}
       </div>
 
       {/* File Upload Area */}
-      <div {...getFilesRootProps()} className={`file-upload-zone ${isFilesDragActive ? 'drag-active' : ''}`}>
+      <div
+        {...getFilesRootProps()}
+        className={`file-upload-zone ${isFilesDragActive ? 'drag-active' : ''}`}
+      >
         <input {...getFilesInputProps()} />
 
         <div className='upload-icon'>
           <MuzaIcon className='upload-icon' iconName='upload' />
         </div>
         <div className='upload-text'>
-          <p className='upload-primary'>{isFilesDragActive ? 'Drop audio files here' : 'Drag files here to upload'}</p>
+          <p className='upload-primary'>
+            {isFilesDragActive ? 'Drop audio files here' : 'Drag files here to upload'}
+          </p>
           <p className='upload-secondary'>or browse for files</p>
         </div>
 

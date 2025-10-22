@@ -1,7 +1,19 @@
 import './UploadStepTwo.scss'
 
-import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import React, { useEffect, useRef, useState } from 'react'
@@ -12,7 +24,11 @@ import type { TrackMetadata } from '~/store/uploadStore'
 
 interface UploadStepTwoProps {
   trackMetadata: TrackMetadata[]
-  onTrackMetadataChange: (trackId: string, field: keyof Omit<TrackMetadata, 'id' | 'file'>, value: string) => void
+  onTrackMetadataChange: (
+    trackId: string,
+    field: keyof Omit<TrackMetadata, 'id' | 'file'>,
+    value: string
+  ) => void
   onDeleteTrack: (trackId: string) => void
   onReorderTracks: (fromIndex: number, toIndex: number) => void
 }
@@ -25,7 +41,11 @@ interface PlaybackState {
 interface SortableTrackRowProps {
   track: TrackMetadata
   index: number
-  onTrackMetadataChange: (trackId: string, field: keyof Omit<TrackMetadata, 'id' | 'file'>, value: string) => void
+  onTrackMetadataChange: (
+    trackId: string,
+    field: keyof Omit<TrackMetadata, 'id' | 'file'>,
+    value: string
+  ) => void
   onDeleteTrack: (trackId: string) => void
   playbackState: PlaybackState
   onPlayPause: (trackId: string) => void
@@ -40,7 +60,9 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
   onPlayPause,
 }) => {
   const [isHovered, setIsHovered] = useState(false)
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: track.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: track.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -102,7 +124,11 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
 
       {/* Delete Button */}
       <div className='cell-actions'>
-        <button className='delete-button' onClick={() => onDeleteTrack(track.id)} title='Delete track'>
+        <button
+          className='delete-button'
+          onClick={() => onDeleteTrack(track.id)}
+          title='Delete track'
+        >
           <MuzaIcon iconName='trash' />
         </button>
       </div>
@@ -110,7 +136,12 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
   )
 }
 
-const UploadStepTwo: React.FC<UploadStepTwoProps> = ({ trackMetadata, onTrackMetadataChange, onDeleteTrack, onReorderTracks }) => {
+const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
+  trackMetadata,
+  onTrackMetadataChange,
+  onDeleteTrack,
+  onReorderTracks,
+}) => {
   const [playbackState, setPlaybackState] = useState<PlaybackState>({
     currentTrackId: null,
     isPlaying: false,
@@ -197,7 +228,10 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({ trackMetadata, onTrackMet
 
         {/* Table Body with Drag and Drop */}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={trackMetadata.map(track => track.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={trackMetadata.map(track => track.id)}
+            strategy={verticalListSortingStrategy}
+          >
             <div className='table-body'>
               {trackMetadata.map((track, index) => (
                 <SortableTrackRow

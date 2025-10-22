@@ -57,7 +57,9 @@ const AlbumInfoModal: React.FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =>
                 <h3 className='album-info-modal__group-title'>Album Information</h3>
                 <div className='album-info-modal__info-item'>
                   <div className='album-info-modal__info-label'>Release Date</div>
-                  <div className='album-info-modal__info-value'>{formatDate(album.releaseDate)}</div>
+                  <div className='album-info-modal__info-value'>
+                    {formatDate(album.releaseDate)}
+                  </div>
                 </div>
                 <div className='album-info-modal__info-item'>
                   <div className='album-info-modal__info-label'>Album Type</div>

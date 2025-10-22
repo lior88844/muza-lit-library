@@ -16,7 +16,14 @@ interface PlaylistDetailProps {
 }
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
-  const { selectedSong, setSelectedSong, isPlaying, setIsPlaying, togglePlayPause, openPlaylistDrawer } = useCurrentPlayerStore()
+  const {
+    selectedSong,
+    setSelectedSong,
+    isPlaying,
+    setIsPlaying,
+    togglePlayPause,
+    openPlaylistDrawer,
+  } = useCurrentPlayerStore()
 
   // Use the actual playlist songs
   const playlistSongs = playlist?.songs || []
@@ -57,8 +64,19 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
           showBackButton={true}
           customActions={
             <div className='playlist-actions'>
-              <MuzaButton iconName='ellipsis' onClick={() => {}} size='medium' data-name='Menu Button' />
-              <MuzaButton iconName='pencil' onClick={handleEditClick} size='medium' data-name='Edit Button' content='Edit' />
+              <MuzaButton
+                iconName='ellipsis'
+                onClick={() => {}}
+                size='medium'
+                data-name='Menu Button'
+              />
+              <MuzaButton
+                iconName='pencil'
+                onClick={handleEditClick}
+                size='medium'
+                data-name='Edit Button'
+                content='Edit'
+              />
             </div>
           }
         />
@@ -69,7 +87,10 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
             const showPreview = [3].includes(index)
 
             return (
-              <div key={song.id} className={`playlist-detail__song-item ${isCurrentSongPlaying(song) ? 'playing' : ''}`}>
+              <div
+                key={song.id}
+                className={`playlist-detail__song-item ${isCurrentSongPlaying(song) ? 'playing' : ''}`}
+              >
                 <SongLineWithCover
                   details={{ ...song, index: index + 1 }}
                   onClick={() => handleSongClick(song)}

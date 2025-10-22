@@ -52,7 +52,12 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
                 <div className='search-icon'>
                   <MuzaIcon iconName='search' />
                 </div>
-                <input type='text' placeholder={t('form.searchPlaceholder')} onChange={handleSearchInput} className='search-field' />
+                <input
+                  type='text'
+                  placeholder={t('form.searchPlaceholder')}
+                  onChange={handleSearchInput}
+                  className='search-field'
+                />
               </div>
               <div className='search-border' aria-hidden='true' />
             </div>
@@ -74,10 +79,15 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
             {auth.isAuthenticated ? (
               <div className='user-dropdown'>
                 <div className='user-icon' onClick={onUserIconClick}>
-                  <img src={getUserInfo(auth)?.picture || '/art/logo.jpg'} alt={getUserInfo(auth)?.name || t('topbar.user')} />
+                  <img
+                    src={getUserInfo(auth)?.picture || '/art/logo.jpg'}
+                    alt={getUserInfo(auth)?.name || t('topbar.user')}
+                  />
                 </div>
                 <div className='user-info'>
-                  <span className='user-name'>{getUserInfo(auth)?.name || getUserInfo(auth)?.email}</span>
+                  <span className='user-name'>
+                    {getUserInfo(auth)?.name || getUserInfo(auth)?.email}
+                  </span>
                   <button className='logout-button' onClick={handleLogoutClick} title='Logout'>
                     <MuzaIcon iconName='logout' />
                   </button>

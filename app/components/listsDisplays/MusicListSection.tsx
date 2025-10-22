@@ -20,7 +20,19 @@ const MusicListSectionComponent: React.FC<
     selectedSong?: SongDetails
     artists?: Artist[]
   }
-> = ({ title, subTitle, type, list, onShowAll, onAlbumClick, albums, songs, onSongClick, selectedSong, artists }) => {
+> = ({
+  title,
+  subTitle,
+  type,
+  list,
+  onShowAll,
+  onAlbumClick,
+  albums,
+  songs,
+  onSongClick,
+  selectedSong,
+  artists,
+}) => {
   const { t } = useTranslation()
   const {
     selectedSong: globalSelectedSong,
@@ -40,7 +52,9 @@ const MusicListSectionComponent: React.FC<
   const renderContent = () => {
     switch (type) {
       case 'album':
-        return albums!.map(album => <AlbumPreview key={album.id} details={album} onAlbumClick={() => onAlbumClick?.(album)} />)
+        return albums!.map(album => (
+          <AlbumPreview key={album.id} details={album} onAlbumClick={() => onAlbumClick?.(album)} />
+        ))
       case 'artist':
         return artists!.map((artist: any) => (
           <ArtistDetails

@@ -120,14 +120,22 @@
 
     // Right section gradient styling to match figma
     &__actions {
-      background: linear-gradient(to right, rgba(255, 255, 255, 0) 4.815%, rgba(255, 255, 255, 1) 19.261%);
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 4.815%,
+        rgba(255, 255, 255, 1) 19.261%
+      );
       padding-left: var(--muza-spacing-xl, 24px);
       padding-right: var(--muza-spacing-sm, 8px);
     }
 
     // Playing state gradient
     &.playing &__actions {
-      background: linear-gradient(to left, rgba(249, 250, 251, 1) 82.412%, rgba(249, 250, 251, 0) 95.192%);
+      background: linear-gradient(
+        to left,
+        rgba(249, 250, 251, 1) 82.412%,
+        rgba(249, 250, 251, 0) 95.192%
+      );
     }
   }
 }

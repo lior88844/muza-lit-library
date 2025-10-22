@@ -1,4 +1,12 @@
-import { index, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
+import {
+  index,
+  integer,
+  pgEnum,
+  pgTable,
+  serial,
+  timestamp,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
@@ -9,7 +17,10 @@ export enum MediaTypeEnum {
   Artist = 'artist',
 }
 
-export const libraryItemTypeEnum = pgEnum('library_item_type', Object.values(MediaTypeEnum) as [string, ...string[]])
+export const libraryItemTypeEnum = pgEnum(
+  'library_item_type',
+  Object.values(MediaTypeEnum) as [string, ...string[]]
+)
 
 export const userLibrary = pgTable(
   'user_library',

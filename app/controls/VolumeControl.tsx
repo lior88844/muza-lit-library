@@ -106,7 +106,13 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
         <svg viewBox='0 0 100 24'>
           <line className='track' x1='2' y1='12' x2='98' y2='12' />
           <line className='fill' x1='2' y1='12' x2={mapValueToPosition(value)} y2='12' />
-          <circle className='handle' cx={mapValueToPosition(value)} cy='12' r='8' onMouseDown={handleMouseDown} />
+          <circle
+            className='handle'
+            cx={mapValueToPosition(value)}
+            cy='12'
+            r='8'
+            onMouseDown={handleMouseDown}
+          />
         </svg>
       </div>
     </div>

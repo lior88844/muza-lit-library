@@ -160,7 +160,8 @@ $admin-table-badge-text-color: #f9fafb;
     }
 
     &--upload {
-      padding: var(--muza-spacing-sm) var(--muza-spacing-lg) var(--muza-spacing-sm) var(--muza-spacing-sm);
+      padding: var(--muza-spacing-sm) var(--muza-spacing-lg) var(--muza-spacing-sm)
+        var(--muza-spacing-sm);
     }
 
     &--errors {

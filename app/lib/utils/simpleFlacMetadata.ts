@@ -62,7 +62,9 @@ export function extractSimpleMetadata(file: File): SimpleFlacMetadata {
  * Extract album metadata from the first FLAC file in a folder
  */
 export function extractAlbumMetadataSimple(files: File[]): SimpleFlacMetadata | null {
-  const flacFiles = files.filter(file => file.name.toLowerCase().endsWith('.flac') || file.type === 'audio/flac')
+  const flacFiles = files.filter(
+    file => file.name.toLowerCase().endsWith('.flac') || file.type === 'audio/flac'
+  )
 
   if (flacFiles.length === 0) {
     return null

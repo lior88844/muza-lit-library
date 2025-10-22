@@ -56,7 +56,11 @@ type UploadStore = {
   setAudioFiles: (files: File[]) => void
 
   // Track metadata actions
-  updateTrackMetadata: (trackId: string, field: keyof Omit<TrackMetadata, 'id' | 'file'>, value: string) => void
+  updateTrackMetadata: (
+    trackId: string,
+    field: keyof Omit<TrackMetadata, 'id' | 'file'>,
+    value: string
+  ) => void
   deleteTrack: (trackId: string) => void
   reorderTracks: (fromIndex: number, toIndex: number) => void
   generateTrackMetadata: (files: File[], mainArtist: string) => void
@@ -137,7 +141,9 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
   // Musicians actions
   updateMusician: (index: number, field: keyof Musician, value: string) =>
     set(state => ({
-      musicians: state.musicians.map((musician, i) => (i === index ? { ...musician, [field]: value } : musician)),
+      musicians: state.musicians.map((musician, i) =>
+        i === index ? { ...musician, [field]: value } : musician
+      ),
     })),
 
   addMusician: () =>
@@ -161,9 +167,15 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
   },
 
   // Track metadata actions
-  updateTrackMetadata: (trackId: string, field: keyof Omit<TrackMetadata, 'id' | 'file'>, value: string) =>
+  updateTrackMetadata: (
+    trackId: string,
+    field: keyof Omit<TrackMetadata, 'id' | 'file'>,
+    value: string
+  ) =>
     set(state => ({
-      trackMetadata: state.trackMetadata.map(track => (track.id === trackId ? { ...track, [field]: value } : track)),
+      trackMetadata: state.trackMetadata.map(track =>
+        track.id === trackId ? { ...track, [field]: value } : track
+      ),
     })),
 
   deleteTrack: (trackId: string) =>
@@ -284,7 +296,8 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
         mainArtist: 'Test Artist',
         bandName: 'Test Band',
         recordingDate: '2024-01-15',
-        linerNotes: 'These are test liner notes for the mock album. This album was created for testing purposes.',
+        linerNotes:
+          'These are test liner notes for the mock album. This album was created for testing purposes.',
         otherCredits: 'Producer: Test Producer\nEngineer: Test Engineer\nMastered by: Test Master',
       },
       musicians: [
@@ -320,7 +333,8 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
     const { trackMetadata } = get()
     const updatedMetadata = trackMetadata.map((track, index) => ({
       ...track,
-      songName: ['Opening Track', 'Main Song', 'Ballad', 'Closing Track'][index] || `Track ${index + 1}`,
+      songName:
+        ['Opening Track', 'Main Song', 'Ballad', 'Closing Track'][index] || `Track ${index + 1}`,
       composer: index % 2 === 0 ? 'Test Artist' : 'Test Composer',
       duration: ['4:00', '3:30', '3:00', '3:15'][index] || '3:00',
     }))

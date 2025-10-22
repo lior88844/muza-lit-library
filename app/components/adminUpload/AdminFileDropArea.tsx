@@ -75,7 +75,10 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({ onFileUpload }) =
           const entries = await readAllEntries()
 
           for (const subEntry of entries) {
-            await processItem({ webkitGetAsEntry: () => subEntry } as DataTransferItem, path + entry.name + '/')
+            await processItem(
+              { webkitGetAsEntry: () => subEntry } as DataTransferItem,
+              path + entry.name + '/'
+            )
           }
         }
       }
@@ -110,7 +113,9 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({ onFileUpload }) =
       const hasFolders = files.some(file => !file.type && file.size < 1000)
 
       if (hasFolders) {
-        alert('Please use the "browse folders" button to upload folders. Drag & drop only works for individual files in this browser.')
+        alert(
+          'Please use the "browse folders" button to upload folders. Drag & drop only works for individual files in this browser.'
+        )
         return
       }
 
@@ -152,8 +157,14 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({ onFileUpload }) =
           </div>
 
           <div className='admin-file-drop-area__text'>
-            <span className='admin-file-drop-area__main-text'>Drag FLAC files or folders here </span>
-            <button type='button' className='admin-file-drop-area__browse-button' onClick={handleBrowseClick}>
+            <span className='admin-file-drop-area__main-text'>
+              Drag FLAC files or folders here{' '}
+            </span>
+            <button
+              type='button'
+              className='admin-file-drop-area__browse-button'
+              onClick={handleBrowseClick}
+            >
               or browse folders
             </button>
           </div>

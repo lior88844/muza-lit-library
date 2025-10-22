@@ -9,8 +9,13 @@ import type { Musician, UploadFormData } from '~/store/uploadStore'
 interface UploadFormProps {
   formData: UploadFormData
   musicians: Musician[]
-  onFormDataChange: (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  onMusicianChange: (index: number, field: keyof Musician) => (e: React.ChangeEvent<HTMLInputElement>) => void
+  onFormDataChange: (
+    field: string
+  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onMusicianChange: (
+    index: number,
+    field: keyof Musician
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => void
   onAddMusician: () => void
   onRemoveMusician: (index: number) => void
   onFindAlbumDetails?: () => void
@@ -53,7 +58,9 @@ const UploadForm: React.FC<UploadFormProps> = ({
           </div>
 
           <div className='section-description-row'>
-            <span className='section-description'>We add details if we find a match; otherwise fill in manually.</span>
+            <span className='section-description'>
+              We add details if we find a match; otherwise fill in manually.
+            </span>
             <button className='find-album-button' onClick={onFindAlbumDetails}>
               <MuzaIcon iconName='sparkles' className='sparkles-icon' />
               <span>Find Album Details</span>
@@ -121,7 +128,11 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
               {musicians.length > 1 && index > 0 && (
                 <div className='musician-actions'>
-                  <button className='delete-musician-button' onClick={() => onRemoveMusician(index)} type='button'>
+                  <button
+                    className='delete-musician-button'
+                    onClick={() => onRemoveMusician(index)}
+                    type='button'
+                  >
                     <MuzaIcon iconName='trash' className='trash-icon' />
                     <span>Delete</span>
                   </button>
@@ -149,7 +160,13 @@ const UploadForm: React.FC<UploadFormProps> = ({
           <div className='form-fields'>
             <div className='textarea-field'>
               <label htmlFor='linerNotes'>Liner Notes</label>
-              <textarea id='linerNotes' placeholder='' value={formData.linerNotes} onChange={onFormDataChange('linerNotes')} rows={4} />
+              <textarea
+                id='linerNotes'
+                placeholder=''
+                value={formData.linerNotes}
+                onChange={onFormDataChange('linerNotes')}
+                rows={4}
+              />
             </div>
 
             <div className='textarea-field'>

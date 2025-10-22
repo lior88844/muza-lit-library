@@ -9,7 +9,14 @@ import { MusicPlayer } from '../sections/MusicPlayer'
 export default function MuzaMusicPlayer() {
   const library = useMedia()
   const songs = library.songs
-  const { selectedSong, setSelectedSong, isPlaying, setIsPlaying, playCountIncremented, setPlayCountIncremented } = useCurrentPlayerStore()
+  const {
+    selectedSong,
+    setSelectedSong,
+    isPlaying,
+    setIsPlaying,
+    playCountIncremented,
+    setPlayCountIncremented,
+  } = useCurrentPlayerStore()
 
   const getCurrentSongIndex = () => {
     if (!selectedSong || !selectedSong.id) return -1

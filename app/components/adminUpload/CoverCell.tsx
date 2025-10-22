@@ -45,8 +45,16 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
     return (
       <div className='admin-upload-table__cover-cell'>
         <div className='admin-upload-table__cover-image-container'>
-          <img src={item.albumLookup.coverUrl} alt={`${item.name} cover`} className='admin-upload-table__cover-image' />
-          <button className='admin-upload-table__cover-remove-btn' onClick={handleRemoveClick} aria-label='Remove cover image'>
+          <img
+            src={item.albumLookup.coverUrl}
+            alt={`${item.name} cover`}
+            className='admin-upload-table__cover-image'
+          />
+          <button
+            className='admin-upload-table__cover-remove-btn'
+            onClick={handleRemoveClick}
+            aria-label='Remove cover image'
+          >
             <MuzaIcon iconName='Close' className='admin-upload-table__remove-icon' />
           </button>
         </div>
@@ -69,7 +77,11 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
               e.currentTarget.style.display = 'none'
             }}
           />
-          <button className='admin-upload-table__cover-remove-btn' onClick={handleRemoveClick} aria-label='Remove cover image'>
+          <button
+            className='admin-upload-table__cover-remove-btn'
+            onClick={handleRemoveClick}
+            aria-label='Remove cover image'
+          >
             <MuzaIcon iconName='Close' className='admin-upload-table__remove-icon' />
           </button>
         </div>

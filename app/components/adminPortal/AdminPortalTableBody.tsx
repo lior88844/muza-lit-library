@@ -14,7 +14,11 @@ interface AdminPortalTableBodyProps {
   handleSectionTypeChange: (id: number, newType: string) => void
 }
 
-export default function AdminPortalTableBody({ sections, handleSectionNameChange, handleSectionTypeChange }: AdminPortalTableBodyProps) {
+export default function AdminPortalTableBody({
+  sections,
+  handleSectionNameChange,
+  handleSectionTypeChange,
+}: AdminPortalTableBodyProps) {
   return (
     <div className='admin-portal-table-body'>
       {sections.map((section, index) => (

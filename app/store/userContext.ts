@@ -5,7 +5,9 @@ import { useAuth } from 'react-oidc-context'
 export { useAuth }
 
 export const getOidcUser = () => {
-  const oidcStorage = localStorage.getItem(`oidc.user:${import.meta.env.VITE_COGNITO_AUTHORITY}:${import.meta.env.VITE_COGNITO_CLIENT_ID}`)
+  const oidcStorage = localStorage.getItem(
+    `oidc.user:${import.meta.env.VITE_COGNITO_AUTHORITY}:${import.meta.env.VITE_COGNITO_CLIENT_ID}`
+  )
   if (!oidcStorage) {
     return null
   }

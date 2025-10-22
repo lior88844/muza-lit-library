@@ -116,7 +116,11 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
       <div className='song-line-with-cover__content'>
         {/* Album Cover */}
         <div className='song-line-with-cover__cover' onClick={handleClick}>
-          <img src={details.imageSrc || '/art/imag_1.jpg'} alt={`${details.title} cover`} className='cover-image' />
+          <img
+            src={details.imageSrc || '/art/imag_1.jpg'}
+            alt={`${details.title} cover`}
+            className='cover-image'
+          />
           {isHovered && !playlistMode && (
             <div className='play-overlay'>
               <button
@@ -145,7 +149,9 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
               <span className='separator'>•</span>
               <span className='album-name'>{details.album || 'Unknown Album'}</span>
               <span className='separator'>•</span>
-              <span className='play-count'>{details.plays ? formatPlayCount(details.plays) : '0'} Plays</span>
+              <span className='play-count'>
+                {details.plays ? formatPlayCount(details.plays) : '0'} Plays
+              </span>
             </div>
           </div>
         </div>
@@ -179,7 +185,9 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                   </button>
                 </>
               )}
-              <span className='duration'>{details.time ? formatDuration(details.time) : '00:00'}</span>
+              <span className='duration'>
+                {details.time ? formatDuration(details.time) : '00:00'}
+              </span>
             </>
           ) : (
             <>
@@ -207,7 +215,9 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                 <MuzaIcon iconName={isInLibrary ? 'heart' : 'plus'} />
               </button>
 
-              <span className='duration'>{details.time ? formatDuration(details.time) : '00:00'}</span>
+              <span className='duration'>
+                {details.time ? formatDuration(details.time) : '00:00'}
+              </span>
             </>
           )}
         </div>

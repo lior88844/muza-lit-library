@@ -4,7 +4,8 @@
   // Local variables with fallbacks - updated for new design
   --form-bg: var(--colors_muted_light, #f9fafb);
   --form-border: var(--colors_border_light, #e5e7eb);
-  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 40px) var(--muza-spacing-sm, 10px) var(--muza-spacing-xxl, 40px);
+  --form-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-xxl, 40px)
+    var(--muza-spacing-sm, 10px) var(--muza-spacing-xxl, 40px);
   --card-bg: var(--colors_background_light, #ffffff);
   --card-radius: var(--muza-border-radius-md, 6px);
   --card-padding: var(--muza-spacing-xl, 24px) var(--muza-spacing-lg, 16px);

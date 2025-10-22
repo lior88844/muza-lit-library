@@ -18,8 +18,15 @@ interface UploadStepThreeProps {
   onPublish?: () => void
 }
 
-const UploadStepThree: React.FC<UploadStepThreeProps> = ({ formData, trackMetadata, coverImage, onSave, onPublish }) => {
-  const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } = useCurrentPlayerStore()
+const UploadStepThree: React.FC<UploadStepThreeProps> = ({
+  formData,
+  trackMetadata,
+  coverImage,
+  onSave,
+  onPublish,
+}) => {
+  const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } =
+    useCurrentPlayerStore()
 
   const getCoverImageUrl = () => {
     if (coverImage) {

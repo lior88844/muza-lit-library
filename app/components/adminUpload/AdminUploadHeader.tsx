@@ -13,7 +13,12 @@ const AdminUploadHeader: React.FC<AdminUploadHeaderProps> = ({ onCancel }) => {
     <div className='admin-upload-header'>
       <div className='admin-upload-header__content'>
         <h1 className='admin-upload-header__title'>Muza Utils – File Upload</h1>
-        <MuzaButton content='Cancel all' onClick={onCancel} className='admin-upload-header__cancel-button' size='medium' />
+        <MuzaButton
+          content='Cancel all'
+          onClick={onCancel}
+          className='admin-upload-header__cancel-button'
+          size='medium'
+        />
       </div>
     </div>
   )

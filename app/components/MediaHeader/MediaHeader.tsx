@@ -88,7 +88,13 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
       <div className={`media-header-layout ${showBackButton ? 'has-back-button' : ''}`}>
         {showBackButton && (
           <div className='back-close-section' data-name='back & close'>
-            <MuzaButton iconName='ChevronDown' onClick={goBack} size='small' className='back-button' data-name='back' />
+            <MuzaButton
+              iconName='ChevronDown'
+              onClick={goBack}
+              size='small'
+              className='back-button'
+              data-name='back'
+            />
           </div>
         )}
 
@@ -112,8 +118,13 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                       <span className='metadata-text'>{songs.length} Songs</span>
                       <span className='metadata-separator'>•</span>
                       <span className='metadata-text'>
-                        {Math.floor(songs.reduce((total, song) => total + (song.time || 0), 0) / 60)}h{' '}
-                        {Math.floor(songs.reduce((total, song) => total + (song.time || 0), 0) % 60)}
+                        {Math.floor(
+                          songs.reduce((total, song) => total + (song.time || 0), 0) / 60
+                        )}
+                        h{' '}
+                        {Math.floor(
+                          songs.reduce((total, song) => total + (song.time || 0), 0) % 60
+                        )}
                         min
                       </span>
                     </div>
@@ -139,20 +150,29 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                           <MuzaIcon iconName='globe' />
                         </div>
                         <span className='badge-text'>
-                          {visibility === PlaylistVisibilityEnum.Private ? t('common.private') : t('common.public')}
+                          {visibility === PlaylistVisibilityEnum.Private
+                            ? t('common.private')
+                            : t('common.public')}
                         </span>
                       </div>
                     </div>
                   )}
 
                   {/* Non-playlist metadata */}
-                  {mediaType !== 'playlist' && <MediaMetadata type={mediaType} {...mediaMetadata} />}
+                  {mediaType !== 'playlist' && (
+                    <MediaMetadata type={mediaType} {...mediaMetadata} />
+                  )}
                 </div>
 
                 <div className='actions-section'>
                   {/* PlayButton content inlined */}
                   <div className='ctas-section' data-name='CTAs'>
-                    <button className='play-album-button' onClick={handlePlayPause} disabled={songs.length === 0} data-name='Button'>
+                    <button
+                      className='play-album-button'
+                      onClick={handlePlayPause}
+                      disabled={songs.length === 0}
+                      data-name='Button'
+                    >
                       <div className='play-icon'>{isPlaying ? <FaPause /> : <FaPlay />}</div>
                       <span className='play-text'>{getPlayButtonText()}</span>
                     </button>
@@ -168,8 +188,18 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                           size='medium'
                           data-name='Add-Download Button'
                         />
-                        <MuzaButton iconName='info' onClick={onInfoClick} size='medium' data-name='Info Button' />
-                        <MuzaButton iconName='ellipsis' onClick={() => {}} size='medium' data-name='Menu Button' />
+                        <MuzaButton
+                          iconName='info'
+                          onClick={onInfoClick}
+                          size='medium'
+                          data-name='Info Button'
+                        />
+                        <MuzaButton
+                          iconName='ellipsis'
+                          onClick={() => {}}
+                          size='medium'
+                          data-name='Menu Button'
+                        />
                       </>
                     )}
                   </div>

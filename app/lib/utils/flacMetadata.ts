@@ -68,7 +68,9 @@ export async function extractFlacMetadata(file: File): Promise<FlacMetadata | nu
  * Extract metadata from the first FLAC file in a folder to represent the album
  */
 export async function extractAlbumMetadata(files: File[]): Promise<FlacMetadata | null> {
-  const flacFiles = files.filter(file => file.name.toLowerCase().endsWith('.flac') || file.type === 'audio/flac')
+  const flacFiles = files.filter(
+    file => file.name.toLowerCase().endsWith('.flac') || file.type === 'audio/flac'
+  )
 
   if (flacFiles.length === 0) {
     return null

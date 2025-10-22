@@ -28,7 +28,13 @@ const MuzaButton: React.FC<MuzaButtonProps> = ({
   const buttonClasses = `muza-button ${sizeClass} ${className}`.trim()
 
   return (
-    <button className={buttonClasses} onClick={onClick} disabled={disabled} data-name={dataName} {...props}>
+    <button
+      className={buttonClasses}
+      onClick={onClick}
+      disabled={disabled}
+      data-name={dataName}
+      {...props}
+    >
       {iconName && <MuzaIcon iconName={iconName} />}
       {content && <span>{content}</span>}
     </button>

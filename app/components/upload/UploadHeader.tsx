@@ -9,7 +9,12 @@ interface UploadHeaderProps {
   onTestModeToggle?: (enabled: boolean) => void
 }
 
-const UploadHeader: React.FC<UploadHeaderProps> = ({ title, onCancel, isTestMode = false, onTestModeToggle }) => {
+const UploadHeader: React.FC<UploadHeaderProps> = ({
+  title,
+  onCancel,
+  isTestMode = false,
+  onTestModeToggle,
+}) => {
   const handleTitleClick = () => {
     if (onTestModeToggle) {
       onTestModeToggle(!isTestMode)

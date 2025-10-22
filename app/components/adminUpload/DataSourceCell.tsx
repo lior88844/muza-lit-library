@@ -46,7 +46,11 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({ item, onManualIdChange 
   if (item.albumLookup?.mbId) {
     return (
       <div className='admin-upload-table__data-source-found'>
-        <a href={`https://musicbrainz.org/release/${item.albumLookup.mbId}`} target='_blank' rel='noopener noreferrer'>
+        <a
+          href={`https://musicbrainz.org/release/${item.albumLookup.mbId}`}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
           <div className='admin-upload-table__id-found-badge'>
             <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
             ID found

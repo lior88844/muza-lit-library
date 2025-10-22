@@ -41,7 +41,9 @@ export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
 
   setCurrentPlaylistDrawerId: (id: number | undefined) => set({ currentPlaylistDrawerId: id }),
 
-  openPlaylistDrawer: (playlistId?: number) => set({ isPlaylistDrawerOpen: true, currentPlaylistDrawerId: playlistId }),
+  openPlaylistDrawer: (playlistId?: number) =>
+    set({ isPlaylistDrawerOpen: true, currentPlaylistDrawerId: playlistId }),
 
-  closePlaylistDrawer: () => set({ isPlaylistDrawerOpen: false, currentPlaylistDrawerId: undefined }),
+  closePlaylistDrawer: () =>
+    set({ isPlaylistDrawerOpen: false, currentPlaylistDrawerId: undefined }),
 }))

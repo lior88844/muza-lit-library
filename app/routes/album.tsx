@@ -36,14 +36,18 @@ export async function loader({ params }: { params: { id: string } }) {
 }
 
 export default function AlbumPage() {
-  const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } = useCurrentPlayerStore()
+  const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } =
+    useCurrentPlayerStore()
   const library = useMedia()
   const songs = library.songs
   const [isModalOpen, setModalOpen] = useState(false)
   const { album } = useLoaderData<typeof loader>()
 
   const albumSongs = useMemo(
-    () => album.tracks?.map(track => songs.find((s: SongDetails) => s.id === track.id)).filter(v => v !== undefined) || [],
+    () =>
+      album.tracks
+        ?.map(track => songs.find((s: SongDetails) => s.id === track.id))
+        .filter(v => v !== undefined) || [],
     [album.tracks, songs]
   )
 

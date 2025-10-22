@@ -21,7 +21,9 @@ const MuzaIcon: React.FC<MuzaIconProps> = ({ iconName, svgStyle, className }) =>
   }
 
   // Render the SVG content using `dangerouslySetInnerHTML`
-  return <i className={className} style={svgStyle} dangerouslySetInnerHTML={{ __html: svgContent }} />
+  return (
+    <i className={className} style={svgStyle} dangerouslySetInnerHTML={{ __html: svgContent }} />
+  )
 }
 
 export default MuzaIcon

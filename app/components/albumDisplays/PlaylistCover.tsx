@@ -15,10 +15,22 @@ interface PlaylistCoverProps {
   songsCount: string
   userName: string
   playlist?: MusicPlaylist
-  onSelect?: (data: { title: string; songsCount: string; albumImages: string[]; userName: string }) => void
+  onSelect?: (data: {
+    title: string
+    songsCount: string
+    albumImages: string[]
+    userName: string
+  }) => void
 }
 
-const PlaylistCover: React.FC<PlaylistCoverProps> = ({ albumImages, title, songsCount, userName, playlist, onSelect }) => {
+const PlaylistCover: React.FC<PlaylistCoverProps> = ({
+  albumImages,
+  title,
+  songsCount,
+  userName,
+  playlist,
+  onSelect,
+}) => {
   const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } = useCurrentPlayerStore()
 
   const handleClick = () => {
@@ -66,7 +78,10 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({ albumImages, title, songs
     <div className='playlist-cover' onClick={handleClick}>
       <div className='playlist-cover__image-container'>
         <div className='playlist-cover__collage'>
-          <div className='playlist-cover__image playlist-cover__image--top-left' style={{ backgroundImage: `url('${paddedImages[0]}')` }} />
+          <div
+            className='playlist-cover__image playlist-cover__image--top-left'
+            style={{ backgroundImage: `url('${paddedImages[0]}')` }}
+          />
           <div
             className='playlist-cover__image playlist-cover__image--top-right'
             style={{ backgroundImage: `url('${paddedImages[1]}')` }}
@@ -94,7 +109,11 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({ albumImages, title, songs
               customComponent: (
                 <DropdownMenu
                   trigger={
-                    <button className='hover-overlay-btn' onClick={e => e.stopPropagation()} title='More options'>
+                    <button
+                      className='hover-overlay-btn'
+                      onClick={e => e.stopPropagation()}
+                      title='More options'
+                    >
                       <MuzaIcon iconName='ellipsis' />
                     </button>
                   }

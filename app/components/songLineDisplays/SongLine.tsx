@@ -32,7 +32,12 @@ const formatPlayCount = (plays: number): string => {
   return `${millions.replace(/\.?0+$/, '')}M` // Remove trailing zeros
 }
 
-const SongLine: React.FC<SongLineProps> = ({ details, onClick, isPlaying, showPreview = false }) => {
+const SongLine: React.FC<SongLineProps> = ({
+  details,
+  onClick,
+  isPlaying,
+  showPreview = false,
+}) => {
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const [isHovered, setIsHovered] = useState(false)
   const isInLibrary = getIsInLibrary(MediaTypeEnum.Track, details.id)
