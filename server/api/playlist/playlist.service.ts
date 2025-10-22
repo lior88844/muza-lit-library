@@ -253,7 +253,8 @@ const formatMiniPlaylist = (playlist: PlaylistWithTracks): MiniPlaylistResponse 
   return {
     id: playlist.id,
     title: playlist.name,
-    author: playlist.userId.toString(),
+    // @TODO: Get the actual author of the playlist
+    author: 'Admin',
     imageSrc: playlist.coverImage || undefined,
     description: playlist.description || undefined,
     createdAt: playlist.createdAt!,
