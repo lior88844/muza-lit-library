@@ -17,7 +17,7 @@ export const playlists = pgTable('playlists', {
   userId: integer('user_id').notNull(),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
-  visibility: playlistVisibilityEnum('visibility').default(PlaylistVisibilityEnum.Private),
+  visibility: playlistVisibilityEnum('visibility').notNull(),
   coverImage: text('cover_image'),
   duration: integer('duration').default(0), // cached seconds
   trackCount: integer('track_count').default(0),

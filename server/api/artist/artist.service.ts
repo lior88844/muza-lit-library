@@ -42,9 +42,8 @@ export async function findManyArtists(limit = 20, offset = 0) {
 function transformArtistData(artists: ArtistWithAlbums[]): ArtistResponse[] {
   return artists
     .filter(artist => artist.name)
-    .map((artist, index) => ({
-      id: artist.id || index + 1,
-      index: index + 1,
+    .map(artist => ({
+      id: artist.id,
       imageUrl: artist.image,
       name: artist.name,
       albumsCount: artist.albumArtists.length,

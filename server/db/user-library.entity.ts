@@ -19,7 +19,7 @@ export enum MediaTypeEnum {
 
 export const libraryItemTypeEnum = pgEnum(
   'library_item_type',
-  Object.values(MediaTypeEnum) as [string, ...string[]]
+  Object.values(MediaTypeEnum) as [MediaTypeEnum, ...MediaTypeEnum[]]
 )
 
 export const userLibrary = pgTable(

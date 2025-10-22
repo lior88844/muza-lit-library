@@ -103,7 +103,6 @@ export interface AlbumDetail {
 }
 export interface Artist {
   id: number
-  index: number
   imageUrl: string | null
   name: string
   albumsCount: number

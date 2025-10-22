@@ -23,6 +23,13 @@ export const useToggleAddLibrary = () => {
   const toggleAddLibrary = useCallback(
     async (resourceType: MediaTypeEnum, resourceId: number) => {
       const isInLibrary = getIsInLibrary(resourceType, resourceId)
+      const originalLibrary = [...library]
+      const optimisticLibrary = isInLibrary
+        ? library.filter(
+            item => item.resourceId !== resourceId || item.resourceType !== resourceType
+          )
+        : [...library, { userId: 1, resourceType, resourceId, addedAt: new Date(), id: Date.now() }]
+      data.library = optimisticLibrary
       try {
         const result = await fetcher.submit(
           {
@@ -35,24 +42,19 @@ export const useToggleAddLibrary = () => {
           }
         )
 
-        if (result?.success) {
-          // Update the library state in context
-          if (isInLibrary) {
-            // Remove from library
-            const updatedLibrary = library.filter(
-              item => !(item.resourceId === resourceId && item.resourceType === resourceType)
-            )
-            data.library = updatedLibrary
-          } else {
-            data.library = [...library, result.data]
-          }
-
-          toast(t(`${resourceType}.${isInLibrary ? 'removedFromLibrary' : 'addedToLibrary'}`), {
-            position: 'bottom-center',
-            hideProgressBar: true,
-            autoClose: 1000,
-          })
+        if (result?.success && !isInLibrary) {
+          data.library = data.library.map(item =>
+            item.resourceId === resourceId && item.resourceType === resourceType
+              ? result.data
+              : item
+          )
+          // toast(t(`${resourceType}.${isInLibrary ? 'removedFromLibrary' : 'addedToLibrary'}`), {
+          //   position: 'bottom-center',
+          //   hideProgressBar: true,
+          //   autoClose: 1000,
+          // })
         } else {
+          data.library = originalLibrary
           toast.error(t('failedToAddToLibrary'), {
             position: 'bottom-center',
             hideProgressBar: true,
@@ -60,6 +62,7 @@ export const useToggleAddLibrary = () => {
         }
         return result
       } catch (error) {
+        data.library = originalLibrary
         console.error('Library action error:', error)
         toast.error(t('failedToAddToLibrary'), {
           position: 'bottom-center',

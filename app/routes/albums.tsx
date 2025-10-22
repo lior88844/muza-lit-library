@@ -3,6 +3,7 @@ import '../styles/scrollbar.scss'
 import '../styles/variables.scss'
 import '../styles/main.scss'
 
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
@@ -10,10 +11,18 @@ import { useTranslation } from '~/lib/i18n/translations'
 import { useMedia } from '~/store/media/mediaContext'
 import type { Album } from '~/store/models'
 
+import { MediaTypeEnum } from '../../server/db/user-library.entity'
+
 export default function Albums() {
   const { t } = useTranslation()
-  const library = useMedia()
-  const { newReleases, featured, recommended } = library.albums
+  const { library, albums } = useMedia()
+  const libraryAlbums = useMemo(() => {
+    const albumIds = library
+      .filter(item => item.resourceType === MediaTypeEnum.Album)
+      .map(i => i.resourceId)
+
+    return albums.newReleases.filter(album => albumIds.includes(album.id))
+  }, [albums, library])
 
   const navigate = useNavigate()
 
@@ -24,27 +33,8 @@ export default function Albums() {
   return (
     <main>
       <h1>{t('page.albums')}</h1>
-
-      <hr />
-      <h2>{t('section.featuredAlbums')}</h2>
       <div className='album-list'>
-        {featured.map((a: Album) => (
-          <AlbumPreview key={a.id} details={a} onAlbumClick={() => onAlbumClick(a)} />
-        ))}
-      </div>
-
-      <hr />
-      <h2>{t('section.newReleases')}</h2>
-      <div className='album-list'>
-        {newReleases.map((a: Album) => (
-          <AlbumPreview key={a.id} details={a} onAlbumClick={() => onAlbumClick(a)} />
-        ))}
-      </div>
-
-      <hr />
-      <h2>{t('section.recommendedAlbums')}</h2>
-      <div className='album-list'>
-        {recommended.map((a: Album) => (
+        {libraryAlbums.map(a => (
           <AlbumPreview key={a.id} details={a} onAlbumClick={() => onAlbumClick(a)} />
         ))}
       </div>

@@ -8,7 +8,7 @@ import type { Album, Artist, MusicListSection, SongDetails } from '~/store/model
 
 import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
-import ArtistDetails from '../artistDisplays/ArtistDetails'
+import ArtistPreview from '../artistDisplays/ArtistPreview'
 import SongLineWithCover from '../songLineDisplays/SongLineWithCover'
 
 const MusicListSectionComponent: React.FC<
@@ -57,7 +57,7 @@ const MusicListSectionComponent: React.FC<
         ))
       case 'artist':
         return artists!.map((artist: any) => (
-          <ArtistDetails
+          <ArtistPreview
             key={artist.id}
             details={{
               id: parseInt(artist.id.toString()),
