@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { FaSpinner } from 'react-icons/fa'
 
+import MuzaButton from '~/controls/MuzaButton'
 import MuzaIcon from '~/icons/MuzaIcon'
 
 import { UploadErrorCodeEnum } from './types/ErrorCode'
@@ -8,10 +9,15 @@ import type { UploadItem } from './types/UploadItem'
 
 interface DataSourceCellProps {
   item: UploadItem
-  onManualIdChange: (itemId: string, albumId: number | undefined) => void
+  onManualIdChange: (itemId: string, albumId: string) => void
+  onDiscoverAlbum: (item: UploadItem) => void
 }
 
-const DataSourceCell: React.FC<DataSourceCellProps> = ({ item, onManualIdChange }) => {
+const DataSourceCell: React.FC<DataSourceCellProps> = ({
+  item,
+  onManualIdChange,
+  onDiscoverAlbum,
+}) => {
   const [inputValue, setInputValue] = useState(item.manualAlbumId?.toString() || '')
 
   const handleInputChange = useCallback(
@@ -20,10 +26,7 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({ item, onManualIdChange 
       setInputValue(value)
 
       // Parse and validate the input
-      const numericValue = value ? parseInt(value, 10) : undefined
-      if (value === '' || (!isNaN(numericValue!) && numericValue! > 0)) {
-        onManualIdChange(item.id, numericValue)
-      }
+      onManualIdChange(item.id, value)
     },
     [item.id, onManualIdChange]
   )
@@ -43,36 +46,53 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({ item, onManualIdChange 
   }
 
   // Show "ID found" badge if album was found
-  if (item.albumLookup?.mbId) {
+  if (item.discoverRes?.mbId || item.discoverRes?.discogsId) {
     return (
-      <div className='admin-upload-table__data-source-found'>
+      <div className='admin-upload-table__data-source-id-found'>
         <a
-          href={`https://musicbrainz.org/release/${item.albumLookup.mbId}`}
+          href={`https://musicbrainz.org/release/${item.discoverRes.mbId}`}
           target='_blank'
           rel='noopener noreferrer'
         >
           <div className='admin-upload-table__id-found-badge'>
             <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
-            ID found
+            MB ID found
           </div>
         </a>
+        {item.discoverRes?.discogsId && (
+          <a
+            href={`https://www.discogs.com/release/${item.discoverRes.discogsId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <div className='admin-upload-table__id-found-badge'>
+              <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
+              Discogs ID found
+            </div>
+          </a>
+        )}
       </div>
     )
   }
-
+  const hasValidId = !!item.manualAlbumId && item.manualAlbumId.trim().length === 36
   // Show input field for manual ID entry
   return (
     <div className='admin-upload-table__data-source-input'>
       <div
-        className={`admin-upload-table__input-wrapper ${!item.hasValidId && !item.isLookingUp ? 'admin-upload-table__input-wrapper--error' : ''}`}
+        className={`admin-upload-table__input-wrapper ${!hasValidId && !item.isLookingUp ? 'admin-upload-table__input-wrapper--error' : ''}`}
       >
         <input
-          type='number'
-          placeholder='Type in ID'
+          placeholder='Type in MusicBrainz ID'
           value={inputValue}
           onChange={handleInputChange}
           min='1'
           className='admin-upload-table__id-input'
+        />
+        <MuzaButton
+          disabled={!hasValidId}
+          content='Scan'
+          onClick={() => onDiscoverAlbum(item)}
+          className='admin-upload-table__scan-btn'
         />
       </div>
     </div>

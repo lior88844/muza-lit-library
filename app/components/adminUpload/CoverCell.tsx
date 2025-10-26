@@ -11,7 +11,7 @@ interface CoverCellProps {
 }
 
 const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
-  const [inputValue, setInputValue] = useState(item.coverImageUrl || '')
+  const [inputValue, setInputValue] = useState(item.manualCoverImgUrl || '')
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +29,7 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
     setInputValue('')
     onCoverUrlChange(item.id, undefined)
   }
-
+  const hasValidCover = !!item.manualCoverImgUrl || !!item.discoverRes?.coverUrl
   // Don't show anything for items with critical error 1001 (no FLAC files)
   if (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID) {
     return <div className='admin-upload-table__cover-cell'>-</div>
@@ -41,12 +41,12 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   }
 
   // Show cover image if available from discovery
-  if (item.albumLookup?.coverUrl) {
+  if (item.discoverRes?.coverUrl) {
     return (
       <div className='admin-upload-table__cover-cell'>
         <div className='admin-upload-table__cover-image-container'>
           <img
-            src={item.albumLookup.coverUrl}
+            src={item.discoverRes.coverUrl}
             alt={`${item.name} cover`}
             className='admin-upload-table__cover-image'
           />
@@ -63,16 +63,16 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   }
 
   // Show manually entered cover image URL
-  if (item.coverImageUrl) {
+  if (item.manualCoverImgUrl) {
     return (
       <div className='admin-upload-table__cover-cell'>
         <div className='admin-upload-table__cover-image-container'>
           <img
-            src={item.coverImageUrl}
+            src={item.manualCoverImgUrl}
             alt={`${item.name} cover`}
             className='admin-upload-table__cover-image'
             onError={e => {
-              console.error('Failed to load cover image from URL:', item.coverImageUrl)
+              console.error('Failed to load cover image from URL:', item.manualCoverImgUrl)
               // Fallback to input field if image fails to load
               e.currentTarget.style.display = 'none'
             }}
@@ -93,7 +93,7 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   return (
     <div className='admin-upload-table__cover-cell'>
       <div
-        className={`admin-upload-table__cover-input-wrapper ${!item.hasValidCover && !item.isLookingUp ? 'admin-upload-table__cover-input-wrapper--error' : ''}`}
+        className={`admin-upload-table__cover-input-wrapper ${!hasValidCover && !item.isLookingUp ? 'admin-upload-table__cover-input-wrapper--error' : ''}`}
       >
         <input
           type='text'

@@ -66,7 +66,7 @@ export const links: Route.LinksFunction = () => [
     href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
   },
 ]
-
+const MINIMAL_LAYOUT_PAGES = ['/admin-upload', '/admin-portal', '/upload']
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
   const location = useLocation()
@@ -107,10 +107,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   // Check if we're on pages that should hide the main music UI
-  const isUploadPage = location.pathname === '/upload'
-  const isAdminUploadPage = location.pathname === '/admin-upload'
-  const isAdminPortalPage = location.pathname === '/admin-portal'
-  const isMinimalLayoutPage = isUploadPage || isAdminUploadPage || isAdminPortalPage
+  const isMinimalLayoutPage = MINIMAL_LAYOUT_PAGES.includes(location.pathname)
 
   // Stop music when navigating to upload pages
   useEffect(() => {
@@ -172,7 +169,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               <div className='content'>
                 {!isMinimalLayoutPage && <MusicTopbar />}
-                <main>
+                <main className={isMinimalLayoutPage ? 'minimal-layout-main' : ''}>
                   {content || children}
                   {!isMinimalLayoutPage && (
                     <PlaylistDrawer

@@ -1,4 +1,4 @@
-@use '../../styles/variables.scss';
+@use '../styles/variables.scss';
 
 // Local variables for AdminUploadPage component
 $admin-page-gap: 0;
@@ -6,7 +6,7 @@ $admin-page-gap: 0;
 .admin-upload-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
   background-color: var(--colors_background_light);
   font-family: var(--typography_font_family_font_sans);
 }

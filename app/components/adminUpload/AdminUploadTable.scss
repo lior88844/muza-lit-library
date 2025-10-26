@@ -19,9 +19,9 @@ $admin-table-line-height-small: 16px;
 $admin-table-header-number-width: 50px;
 $admin-table-header-checkbox-width: 50px;
 $admin-table-header-folder-width: 180px;
-$admin-table-header-upload-min-width: 400px;
-$admin-table-header-data-source-width: 100px;
-$admin-table-header-cover-width: 80px;
+$admin-table-header-upload-min-width: 300px;
+$admin-table-header-data-source-width: 250px;
+$admin-table-header-cover-width: 150px;
 $admin-table-tooltip-min-width: 280px;
 $admin-table-tooltip-max-width: 320px;
 $admin-table-tooltip-padding: 12px;
@@ -106,7 +106,6 @@ $admin-table-badge-text-color: #f9fafb;
     &--upload {
       width: auto;
       min-width: $admin-table-header-upload-min-width;
-      // This column will take up the most available space
     }
 
     &--data-source {
@@ -115,6 +114,7 @@ $admin-table-badge-text-color: #f9fafb;
     }
 
     &--cover {
+      text-align: center;
       width: $admin-table-header-cover-width;
       max-width: $admin-table-header-cover-width;
     }
@@ -796,49 +796,6 @@ $admin-table-badge-text-color: #f9fafb;
     color: $admin-table-badge-text-color;
   }
 
-  // Tooltip styles
-  &__tooltip {
-    position: absolute;
-    bottom: 100%;
-    right: 0;
-    margin-bottom: var(--muza-spacing-sm);
-    min-width: $admin-table-tooltip-min-width;
-    max-width: $admin-table-tooltip-max-width;
-    padding: $admin-table-tooltip-padding;
-    background-color: $admin-table-tooltip-bg;
-    border-radius: $admin-table-tooltip-border-radius;
-    box-shadow:
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    z-index: $admin-table-tooltip-z-index;
-    pointer-events: none;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      right: $admin-table-tooltip-arrow-offset;
-      border: $admin-table-tooltip-arrow-size solid transparent;
-      border-top-color: $admin-table-tooltip-bg;
-    }
-  }
-
-  &__tooltip-title {
-    font-family: 'Founders Grotesk', sans-serif;
-    font-size: $admin-table-font-size-small;
-    font-weight: 500;
-    color: $admin-table-tooltip-title-color;
-    margin-bottom: 4px;
-  }
-
-  &__tooltip-description {
-    font-family: 'Founders Grotesk', sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.4;
-    color: $admin-table-tooltip-desc-color;
-  }
-
   // Disabled checkbox styles
   &__checkbox-wrapper--disabled {
     opacity: $admin-table-disabled-opacity;
@@ -850,6 +807,12 @@ $admin-table-badge-text-color: #f9fafb;
   }
 
   // Data Source column styles
+  &__data-source-id-found {
+    display: flex;
+    flex-direction: row;
+    gap: var(--muza-spacing-sm);
+  }
+
   &__data-source-loading {
     display: flex;
     justify-content: center;
@@ -869,12 +832,6 @@ $admin-table-badge-text-color: #f9fafb;
     height: 16px;
     color: var(--muza-secondary-text-color);
     animation: spin 1s linear infinite;
-  }
-
-  &__data-source-found {
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   &__id-found-badge {
@@ -904,8 +861,10 @@ $admin-table-badge-text-color: #f9fafb;
 
   &__input-wrapper {
     width: 100%;
-    max-width: 100px;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--muza-spacing-sm);
     &--error {
       .admin-upload-table__id-input {
         border-color: #dc2626; // red-600
@@ -913,7 +872,6 @@ $admin-table-badge-text-color: #f9fafb;
       }
     }
   }
-
   &__id-input {
     width: 100%;
     height: 36px;
@@ -968,8 +926,8 @@ $admin-table-badge-text-color: #f9fafb;
 
   &__cover-image-container {
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
   }
 
   &__cover-image {
@@ -1062,6 +1020,10 @@ $admin-table-badge-text-color: #f9fafb;
     }
   }
 
+  &__scan-btn {
+    margin-left: var(--muza-spacing-sm);
+  }
+
   @keyframes spin {
     from {
       transform: rotate(0deg);
@@ -1069,5 +1031,32 @@ $admin-table-badge-text-color: #f9fafb;
     to {
       transform: rotate(360deg);
     }
+  }
+}
+
+// // Tooltip styles
+.tooltip {
+  min-width: $admin-table-tooltip-min-width;
+  max-width: $admin-table-tooltip-max-width;
+  padding: $admin-table-tooltip-padding;
+  background-color: $admin-table-tooltip-bg;
+  border-radius: $admin-table-tooltip-border-radius;
+  text-align: start;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  &__title {
+    font-size: $admin-table-font-size-small;
+    font-weight: 500;
+    color: $admin-table-tooltip-title-color;
+    margin-bottom: 4px;
+  }
+
+  &__description {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: $admin-table-tooltip-desc-color;
   }
 }

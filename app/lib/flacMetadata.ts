@@ -1,5 +1,7 @@
 import { parseBlob } from 'music-metadata'
 
+import type { UploadItem } from '~/components/adminUpload/types/UploadItem'
+
 export interface FlacMetadata {
   title?: string
   artist?: string
@@ -16,11 +18,17 @@ export interface FlacMetadata {
 }
 
 // Complete metadata for admin discover endpoint
-export interface DiscoverMetadata {
+export interface FileMetadata {
   artist: string
   album: string
   title: string
-  trackTotal?: number
+  trackTotal: number
+  musicbrainzAlbumId?: string
+}
+export interface DiscoverMetadata {
+  artist: string
+  album: string
+  tracks: { title: string; artist: string; discNumber?: number }[]
   musicbrainzAlbumId?: string
 }
 
@@ -92,7 +100,7 @@ export async function extractAlbumMetadata(files: File[]): Promise<FlacMetadata 
 /**
  * Extract complete metadata from a FLAC file for the admin discover endpoint
  */
-export async function extractDiscoverMetadata(file: File): Promise<DiscoverMetadata | null> {
+export async function extractDiscoverMetadata(file: File) {
   try {
     const metadata = await parseBlob(file)
 
@@ -105,8 +113,9 @@ export async function extractDiscoverMetadata(file: File): Promise<DiscoverMetad
       artist: metadata.common.artist || 'Unknown Artist',
       album: metadata.common.album || 'Unknown Album',
       title: metadata.common.title || file.name.replace(/\.flac$/i, ''),
-      trackTotal: metadata.common.track?.of || undefined,
+      trackTotal: metadata.common.track?.of || 0,
       musicbrainzAlbumId: musicbrainzAlbumId || undefined,
+      discNumber: metadata.common.disk?.no || undefined,
     }
   } catch (error) {
     console.error('Error extracting discover metadata:', error)
@@ -118,16 +127,55 @@ export async function extractDiscoverMetadata(file: File): Promise<DiscoverMetad
  * Extract complete metadata from the first FLAC file in a folder for discover endpoint
  */
 export async function extractAlbumDiscoverMetadata(
-  files: File[]
+  item: UploadItem
 ): Promise<DiscoverMetadata | null> {
-  const flacFiles = files.filter(
-    file => file.name.toLowerCase().endsWith('.flac') || file.type === 'audio/flac'
+  const metadataResults = await Promise.all(
+    item.files.map(async files => {
+      const metadata = await Promise.all(
+        files.map(async file => {
+          return await extractDiscoverMetadata(file)
+        })
+      )
+      return metadata.filter(metadata => metadata !== null)
+    })
+  )
+  const allMetadata = metadataResults.flat()
+  const artist = getMostCommonValue(allMetadata.map(metadata => metadata?.artist))
+  const album = getMostCommonValue(allMetadata.map(metadata => metadata?.album))
+  const musicbrainzAlbumId = getMostCommonValue(
+    allMetadata.map(metadata => metadata?.musicbrainzAlbumId)
+  )
+  const tracks = metadataResults
+    .map((metadatas, discNum) =>
+      metadatas.map(metadata => ({
+        title: metadata?.title || '',
+        artist: metadata?.artist || '',
+        discNumber: discNum + 1,
+      }))
+    )
+    .flat()
+  return {
+    artist,
+    album,
+    tracks,
+    musicbrainzAlbumId: musicbrainzAlbumId || undefined,
+  }
+}
+const getMostCommonValue = (values: (string | undefined | number)[]): string => {
+  const filteredValues = values.filter(value => value !== undefined && value !== null)
+  const valueCounts = filteredValues.reduce(
+    (acc, value) => {
+      if (value !== undefined && value !== null) {
+        acc[value] = (acc[value] || 0) + 1
+      }
+      return acc
+    },
+    {} as Record<string, number>
   )
 
-  if (flacFiles.length === 0) {
-    return null
+  if (Object.keys(valueCounts).length === 0) {
+    return ''
   }
 
-  // Use the first FLAC file to get album metadata
-  return await extractDiscoverMetadata(flacFiles[0])
+  return Object.keys(valueCounts).reduce((a, b) => (valueCounts[a] > valueCounts[b] ? a : b))
 }

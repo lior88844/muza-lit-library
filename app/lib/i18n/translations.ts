@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 // Translation type
 interface Translations {
@@ -8,6 +8,7 @@ interface Translations {
 // Current language state
 let currentLanguage = 'english'
 let translations: Translations = {}
+const updateCallbacks: Set<() => void> = new Set()
 
 // Load translation file dynamically
 const loadTranslations = async (language: string): Promise<Translations> => {
@@ -24,6 +25,7 @@ const loadTranslations = async (language: string): Promise<Translations> => {
       }
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Failed to load translations for language: ${language}`, error)
     return {}
   }
@@ -39,16 +41,32 @@ initializeTranslations()
 
 // Translation hook
 export const useTranslation = () => {
-  const [, forceUpdate] = useState({})
+  const [updateCounter, setUpdateCounter] = useState(0)
 
-  const t = useCallback((key: string, fallback?: string): string => {
-    return translations[key] || fallback || key
+  // Register this component for updates
+  useEffect(() => {
+    const updateCallback = () => setUpdateCounter(prev => prev + 1)
+    updateCallbacks.add(updateCallback)
+
+    return () => {
+      updateCallbacks.delete(updateCallback)
+    }
   }, [])
+
+  const t = useCallback(
+    (key: string, fallback?: string): string => {
+      // Access updateCounter to ensure re-render when translations change
+      return translations[key] || fallback || key
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updateCounter]
+  ) // Include updateCounter to ensure re-render when translations change
 
   const changeLanguage = useCallback(async (language: string) => {
     currentLanguage = language
     translations = await loadTranslations(language)
-    forceUpdate({}) // Force re-render
+    // Notify all registered components to update
+    updateCallbacks.forEach(callback => callback())
   }, [])
 
   return { t, changeLanguage, currentLanguage }

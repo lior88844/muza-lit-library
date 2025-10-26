@@ -56,14 +56,14 @@ const MusicListSectionComponent: React.FC<
           <AlbumPreview key={album.id} details={album} onAlbumClick={() => onAlbumClick?.(album)} />
         ))
       case 'artist':
-        return artists!.map((artist: any) => (
+        return artists!.map(artist => (
           <ArtistPreview
             key={artist.id}
             details={{
               id: parseInt(artist.id.toString()),
-              imageSrc: artist.imageSrc || artist.imageUrl,
-              artistName: artist.artistName || artist.name,
-              albumsCount: artist.albumsCount.toString(),
+              imageUrl: artist.imageUrl || '',
+              name: artist.name,
+              albumsCount: artist.albumsCount,
             }}
           />
         ))
