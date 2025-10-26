@@ -55,6 +55,7 @@ export const albums = pgTable('albums', {
   script: varchar('script', { length: 4 }),
   mbId: uuid('mb_id'),
   discogsId: numeric('discogs_id', { mode: 'number' }),
+  discNumber: integer('disc_number'),
   mbReleaseGroupId: uuid('mb_release_group_id'),
   barcode: varchar('barcode', { length: 50 }),
   catalogNumber: varchar('catalog_number', { length: 100 }),

@@ -37,6 +37,7 @@ export const tracks = pgTable('tracks', {
   disambiguation: varchar('disambiguation', { length: 255 }),
   albumId: integer('album_id').references(() => albums.id),
   trackNumber: integer('track_number'),
+  discNumber: integer('disc_number'),
   duration: integer('duration'), // in seconds
   isrc: varchar('isrc', { length: 12 }),
   mbId: uuid('mb_id'),
