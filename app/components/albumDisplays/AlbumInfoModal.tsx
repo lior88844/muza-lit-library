@@ -73,25 +73,46 @@ const AlbumInfoModal: React.FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =>
                   <div className='album-info-modal__info-label'>Track Count</div>
                   <div className='album-info-modal__info-value'>{album.tracks.length}</div>
                 </div>
-                {album.label && (
-                  <div className='album-info-modal__info-item'>
-                    <div className='album-info-modal__info-label'>Label</div>
-                    <div className='album-info-modal__info-value'>{album.label}</div>
-                  </div>
-                )}
-                {album.catalogNumber && (
-                  <div className='album-info-modal__info-item'>
-                    <div className='album-info-modal__info-label'>Catalog Number</div>
-                    <div className='album-info-modal__info-value'>{album.catalogNumber}</div>
-                  </div>
-                )}
-                {album.barcode && (
-                  <div className='album-info-modal__info-item'>
-                    <div className='album-info-modal__info-label'>Barcode</div>
-                    <div className='album-info-modal__info-value'>{album.barcode}</div>
-                  </div>
-                )}
               </div>
+
+              {/* Labels */}
+              {album.labels && album.labels.length > 0 && (
+                <div className='album-info-modal__info-group'>
+                  <h3 className='album-info-modal__group-title'>Labels</h3>
+                  {album.labels.map(label => (
+                    <div key={label.id} className='album-info-modal__info-item'>
+                      <div className='album-info-modal__info-label'>
+                        {label.name}
+                        {label.labelCode && ` (${label.labelCode})`}
+                      </div>
+                      <div className='album-info-modal__info-value'>
+                        {label.catalogNumber && `Catalog: ${label.catalogNumber}`}
+                        {label.country && ` • ${label.country}`}
+                        {label.disambiguation && ` • ${label.disambiguation}`}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Barcode and Catalog Number */}
+              {(album.barcode || album.catalogNumber) && (
+                <div className='album-info-modal__info-group'>
+                  <h3 className='album-info-modal__group-title'>Identifiers</h3>
+                  {album.catalogNumber && (
+                    <div className='album-info-modal__info-item'>
+                      <div className='album-info-modal__info-label'>Catalog Number</div>
+                      <div className='album-info-modal__info-value'>{album.catalogNumber}</div>
+                    </div>
+                  )}
+                  {album.barcode && (
+                    <div className='album-info-modal__info-item'>
+                      <div className='album-info-modal__info-label'>Barcode</div>
+                      <div className='album-info-modal__info-value'>{album.barcode}</div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Genres and Tags */}
               {album.genres && album.genres.length > 0 && (

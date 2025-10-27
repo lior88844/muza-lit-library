@@ -1,4 +1,6 @@
 import { desc } from 'drizzle-orm'
+import type { AlbumLabel } from 'server/db/album-label.entity'
+import type { Label } from 'server/db/label.entity'
 
 import { type Album, albums } from '../../db/album.entity'
 import type { AlbumArtist } from '../../db/album-artist.entity'
@@ -6,13 +8,18 @@ import type { Artist } from '../../db/artist.entity'
 import { db } from '../../db/connection'
 import { formatTrack } from '../track/track.service'
 import type { TrackWithArtists } from '../track/types/TrackWithArtists'
-import type { AlbumResponse } from './types/AlbumResponse'
+import type { AlbumResponse, LabelResponse } from './types/AlbumResponse'
 import type { MiniAlbumResponse } from './types/MiniAlbumResponse'
+
+interface AlbumLabelWithLabel extends AlbumLabel {
+  label: Label
+}
 
 // Types for transformed data
 interface AlbumWithArtistsAndTracks extends Album {
   albumArtists: (AlbumArtist & { artist: Artist })[]
-  tracks: TrackWithArtists[]
+  tracks: Omit<TrackWithArtists, 'album'>[]
+  albumLabels?: AlbumLabelWithLabel[]
 }
 
 /**
@@ -51,14 +58,17 @@ export async function findAlbumById(id: number) {
         },
         orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
       },
+      albumLabels: {
+        with: { label: true },
+        orderBy: (albumLabels, { asc }) => [asc(albumLabels.order)],
+      },
     },
   })
 
   if (!albumResult) {
     return null
   }
-
-  return transformDetailedAlbumData(albumResult as AlbumWithArtistsAndTracks)
+  return transformDetailedAlbumData(albumResult)
 }
 
 /**
@@ -86,7 +96,8 @@ function transformDetailedAlbumData(album: AlbumWithArtistsAndTracks): AlbumResp
     ...album,
     artist: formatAlbumArtist(album.albumArtists[0]),
     otherArtists: album.albumArtists.slice(1).map(formatAlbumArtist),
-    tracks: album.tracks.map(track => formatTrack(track)),
+    tracks: album.tracks.map(track => formatTrack({ ...track, album: album })),
+    labels: (album.albumLabels || []).map(formatAlbumLabel),
   }
 }
 const formatAlbumArtist = (albumArtist: AlbumArtist & { artist: Artist }) => {
@@ -94,5 +105,12 @@ const formatAlbumArtist = (albumArtist: AlbumArtist & { artist: Artist }) => {
     ...albumArtist,
     ...albumArtist.artist,
     artist: undefined,
+  }
+}
+const formatAlbumLabel = (albumLabel: AlbumLabelWithLabel): LabelResponse => {
+  return {
+    ...albumLabel.label,
+    catalogNumber: albumLabel.catalogNumber,
+    order: albumLabel.order,
   }
 }
