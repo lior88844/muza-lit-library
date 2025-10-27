@@ -22,6 +22,7 @@ interface AdminUploadTableProps {
   onPageChange: (page: number) => void
   onItemsPerPageChange: (itemsPerPage: number) => void
   onManualIdChange: (itemId: string, albumId: string | undefined) => void
+  onManualDiscogsIdChange: (itemId: string, discogsId: string | undefined) => void
   onCoverUrlChange: (itemId: string, url: string | undefined) => void
   onDiscoverAlbum: (item: UploadItem) => void
 }
@@ -39,6 +40,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   onPageChange,
   onItemsPerPageChange,
   onManualIdChange,
+  onManualDiscogsIdChange,
   onCoverUrlChange,
   onDiscoverAlbum,
 }) => {
@@ -115,8 +117,10 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
     )
   }
 
-  const isUploading = paginatedItems.some(item => item.loadingState?.status === 'loading')
-
+  const isUploading =
+    Array.from(selectedItemIds).some(
+      itemId => items.find(item => item.id === itemId)?.loadingState?.status === 'loading'
+    ) || false
   if (items.length === 0) {
     return null
   }
@@ -173,6 +177,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
                 isSelected={selectedItemIds.has(item.id)}
                 item={item}
                 onManualIdChange={onManualIdChange}
+                onManualDiscogsIdChange={onManualDiscogsIdChange}
                 onCoverUrlChange={onCoverUrlChange}
                 onItemSelect={onItemSelect}
                 onDiscoverAlbum={onDiscoverAlbum}

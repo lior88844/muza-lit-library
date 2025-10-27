@@ -1,10 +1,7 @@
 import { Fragment } from 'react/jsx-runtime'
 import { FaSpinner } from 'react-icons/fa'
 
-import {
-  isItemUploadReady,
-  UPLOAD_BLOCKING_ERROR_CODES,
-} from '~/components/adminUpload/services/adminUploadService'
+import { isItemUploadReady } from '~/components/adminUpload/services/adminUploadService'
 import MuzaIcon from '~/icons/MuzaIcon'
 
 import { AppTooltip } from '../ui/AppTooltip'
@@ -18,6 +15,7 @@ interface Props {
   isSelected: boolean
   item: UploadItem
   onManualIdChange: (itemId: string, albumId: string | undefined) => void
+  onManualDiscogsIdChange: (itemId: string, discogsId: string | undefined) => void
   onCoverUrlChange: (itemId: string, url: string | undefined) => void
   onItemSelect: (itemId: string) => void
   onDiscoverAlbum: (item: UploadItem) => void
@@ -27,6 +25,7 @@ export const AdminUploadTableRow: React.FC<Props> = ({
   isSelected,
   item,
   onManualIdChange,
+  onManualDiscogsIdChange,
   onCoverUrlChange,
   onItemSelect,
   onDiscoverAlbum,
@@ -39,27 +38,36 @@ export const AdminUploadTableRow: React.FC<Props> = ({
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
   }
 
-  const isLookingUp = item.isLookingUp
-  const isUploading = item.loadingState?.status === 'loading'
+  const isLoading = item.loadingState?.status === 'loading'
   const isUploadReady = isItemUploadReady(item)
-
+  const artistName =
+    item.discoverRes?.artistName || item.metadata?.albumartist || item.metadata?.artist || item.name
+  const albumName = item.discoverRes?.albumName || item.metadata?.album
+  let statusText = 'Ready'
+  if (isLoading && !item.discoverRes) {
+    statusText = 'Discovering...'
+  } else if (isLoading && item.discoverRes) {
+    statusText = 'Uploading...'
+  } else if (!isLoading && item.uploadRes) {
+    statusText = 'Done'
+  } else if (!isLoading && item.errorCode) {
+    statusText = 'Error'
+  } else if (!isLoading && (!item.discoverRes?.discogsId || !item.discoverRes?.mbId)) {
+    statusText = 'No ID found'
+  }
   return (
     <tr key={item.id} className='admin-upload-table__row'>
       <td className='admin-upload-table__cell admin-upload-table__cell--number'>{index + 1}</td>
       <td className='admin-upload-table__cell admin-upload-table__cell--checkbox'>
         <div
-          className={`admin-upload-table__checkbox-wrapper ${isSelected ? 'admin-upload-table__checkbox-wrapper--checked' : ''} ${item.errorCode === 1001 || !isUploadReady || item.isUploaded ? 'admin-upload-table__checkbox-wrapper--disabled' : ''}`}
+          className={`admin-upload-table__checkbox-wrapper ${isSelected ? 'admin-upload-table__checkbox-wrapper--checked' : ''} ${item.errorCode === 1001 || !isUploadReady ? 'admin-upload-table__checkbox-wrapper--disabled' : ''}`}
         >
           <input
             type='checkbox'
             checked={isSelected}
             onChange={() => onItemSelect(item.id)}
             className='admin-upload-table__checkbox'
-            disabled={
-              (item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode)) ||
-              !isUploadReady ||
-              item.isUploaded
-            }
+            disabled={!isUploadReady}
           />
           <div className='admin-upload-table__checkbox-visual'>
             <MuzaIcon iconName='CheckmarkSquare' className='admin-upload-table__checkmark' />
@@ -67,19 +75,18 @@ export const AdminUploadTableRow: React.FC<Props> = ({
         </div>
       </td>
       <td className='admin-upload-table__cell admin-upload-table__cell--folder'>
-        {isLookingUp ? (
-          <span className='admin-upload-table__scanning'>...scanning data</span>
-        ) : (
-          <div className='admin-upload-table__item-info'>
-            <span className='admin-upload-table__item-name'>{item.name}</span>
-            <div className='admin-upload-table__item-meta'>
-              <span className='admin-upload-table__file-count'>
-                {item.files.flat().length} files
-                {item.files.length > 1 && ` (${item.files.length} discs)`}
-              </span>
-            </div>
+        <div className='admin-upload-table__item-info'>
+          <span className='admin-upload-table__item-name'>
+            {' '}
+            {artistName} {artistName && albumName ? ' - ' : ''} {albumName}
+          </span>
+          <div className='admin-upload-table__item-meta'>
+            <span className='admin-upload-table__file-count'>
+              {item.files.flat().length} files
+              {item.files.length > 1 && ` (${item.files.length} discs)`}
+            </span>
           </div>
-        )}
+        </div>
       </td>
       <td className='admin-upload-table__cell admin-upload-table__cell--upload'>
         <div className='admin-upload-table__upload-item'>
@@ -88,14 +95,14 @@ export const AdminUploadTableRow: React.FC<Props> = ({
               item.loadingState?.status === 'loaded'
                 ? 'admin-upload-table__upload-status--loaded'
                 : ''
-            } ${isUploading && isSelected ? 'admin-upload-table__upload-status--uploading' : ''}`}
+            } ${isLoading && isSelected ? 'admin-upload-table__upload-status--uploading' : ''}`}
           >
-            {isUploading && isSelected ? (
+            {isLoading && isSelected ? (
               <FaSpinner className='admin-upload-table__upload-spinner' />
             ) : (
               <MuzaIcon
                 iconName={
-                  item.loadingState?.status === 'loaded' && item.isUploaded ? 'Check' : 'Clock8'
+                  item.loadingState?.status === 'loaded' && item.uploadRes ? 'Check' : 'Clock8'
                 }
                 className='admin-upload-table__status-icon'
               />
@@ -106,25 +113,8 @@ export const AdminUploadTableRow: React.FC<Props> = ({
               <div className='admin-upload-table__upload-icon'>
                 <MuzaIcon iconName='folder' className='admin-upload-table__type-icon' />
               </div>
-              {item.metadata ? (
-                <span className='admin-upload-table__album-text'>
-                  {item.discoverRes?.albumName || item.metadata.album || 'Unknown Album'} -{' '}
-                  {item.discoverRes?.artistName ||
-                    item.metadata.albumartist ||
-                    item.metadata.artist ||
-                    'Unknown Artist'}
-                </span>
-              ) : item.isLookingUp ? (
-                <>
-                  <span className='admin-upload-table__size-text'>{formatFileSize(item.size)}</span>
-                  <span className='admin-upload-table__status-text'>Processing...</span>
-                </>
-              ) : (
-                <>
-                  <span className='admin-upload-table__size-text'>{formatFileSize(item.size)}</span>
-                  <span className='admin-upload-table__status-text'>Ready</span>
-                </>
-              )}
+              <span className='admin-upload-table__size-text'>{formatFileSize(item.size)}</span>
+              <span className='admin-upload-table__status-text'>- {statusText}</span>
 
               {/* Show upload progress only during actual upload */}
               {/* {item.loadingState?.status === 'loading' && isUploading && (
@@ -159,6 +149,7 @@ export const AdminUploadTableRow: React.FC<Props> = ({
         <DataSourceCell
           item={item}
           onManualIdChange={onManualIdChange}
+          onManualDiscogsIdChange={onManualDiscogsIdChange}
           onDiscoverAlbum={onDiscoverAlbum}
         />
       </td>
@@ -166,8 +157,12 @@ export const AdminUploadTableRow: React.FC<Props> = ({
         <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
       </td>
       <td className='admin-upload-table__cell admin-upload-table__cell--errors'>
-        {item.isUploaded ? (
-          <UploadedBadge />
+        {item.uploadRes ? (
+          item.uploadRes.errors?.length ? (
+            <ErrorBadge errorCodes={item.uploadRes.errors} />
+          ) : (
+            <UploadedBadge />
+          )
         ) : item.errorCode ? (
           <ErrorBadge errorCodes={[item.errorCode]} />
         ) : (

@@ -55,7 +55,7 @@ export const artists = pgTable('artists', {
   tags: text('tags').array(), // PostgreSQL array
   image: text('image'),
   links: json('links').$type<Record<string, string>>(), // JSON object
-  isni: varchar('isni', { length: 50 }),
+  isnis: text('isnis').array(), // PostgreSQL array
   ipis: text('ipis').array(), // PostgreSQL array
   popularity: integer('popularity').default(0),
   verified: boolean('verified').default(false),

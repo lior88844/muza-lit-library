@@ -2,7 +2,9 @@ import { relations } from 'drizzle-orm'
 
 import { albums } from './album.entity'
 import { albumArtists } from './album-artist.entity'
+import { albumLabels } from './album-label.entity'
 import { artists } from './artist.entity'
+import { labels } from './label.entity'
 import { playlists } from './playlist.entity'
 import { playlistShares } from './playlist-shares.entity'
 import { playlistTracks } from './playlist-tracks.entity'
@@ -20,6 +22,7 @@ export const artistsRelations = relations(artists, ({ many }) => ({
 export const albumsRelations = relations(albums, ({ many }) => ({
   tracks: many(tracks),
   albumArtists: many(albumArtists),
+  albumLabels: many(albumLabels),
 }))
 
 export const tracksRelations = relations(tracks, ({ one, many }) => ({
@@ -46,6 +49,21 @@ export const albumArtistsRelations = relations(albumArtists, ({ one }) => ({
   artist: one(artists, {
     fields: [albumArtists.artistId],
     references: [artists.id],
+  }),
+}))
+
+export const labelsRelations = relations(labels, ({ many }) => ({
+  albumLabels: many(albumLabels),
+}))
+
+export const albumLabelsRelations = relations(albumLabels, ({ one }) => ({
+  album: one(albums, {
+    fields: [albumLabels.albumId],
+    references: [albums.id],
+  }),
+  label: one(labels, {
+    fields: [albumLabels.labelId],
+    references: [labels.id],
   }),
 }))
 

@@ -17,11 +17,11 @@ export const UPLOAD_BLOCKING_ERROR_CODES = [
 export const isItemUploadReady = (item: UploadItem): boolean => {
   const totalFiles = item.files.flat().length
   return (
-    !!(item.discoverRes?.mbId || (item.manualAlbumId && item.manualAlbumId.trim().length === 36)) &&
+    !!(item.discoverRes?.mbId || (item.manualAlbumId && item.manualAlbumId.trim().length >= 36)) &&
     !!(item.manualCoverImgUrl || item.discoverRes?.coverUrl) &&
     !(item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode)) &&
     totalFiles > 0 &&
-    !item.isUploaded
+    !item.uploadRes
   )
 }
 
@@ -129,13 +129,14 @@ export const getAlbumsToUpload = (files: File[]) => {
     flacFolderMap.get(folderPath)!.push(file)
   })
 
-  // Detect and group multi-disc albums (folders starting with "CD ")
+  // Detect and group multi-disc albums (folders starting with "CD " or "Disc ")
   const multiDiscAlbumsMap = new Map<string, string[]>()
   const discFolderPaths = new Set<string>()
 
   for (const path of flacFolderMap.keys()) {
     const folderName = path.split('/').pop() || ''
-    if (folderName.match(/^CD\s*\d+/i)) {
+    // Match "CD 1", "CD-1", "Disc 1", "Disc-1", etc.
+    if (folderName.match(/^(CD|Disc)\s*-?\s*\d+/i)) {
       discFolderPaths.add(path)
       // Get parent folder path
       const parentPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : ''
@@ -251,4 +252,17 @@ export const getAlbumsToUpload = (files: File[]) => {
     })
   })
   return newItems
+}
+export const formatMbId = (mbIdOrUrl: string): string => {
+  if (mbIdOrUrl.includes('musicbrainz.org/release/')) {
+    return mbIdOrUrl.split('/').pop()!.split('?')[0]
+  }
+  return mbIdOrUrl.trim()
+}
+
+export const formatDiscogsId = (discogsIdOrUrl: string) => {
+  if (discogsIdOrUrl.includes('discogs.com/release/')) {
+    return discogsIdOrUrl.split('discogs.com/release/').pop()!.split('-')[0]
+  }
+  return discogsIdOrUrl.trim()
 }

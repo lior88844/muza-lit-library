@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router'
 import { AdminFileDropArea, AdminUploadHeader, AdminUploadTable } from '~/components/adminUpload'
 import {
   discoverAlbum,
+  formatDiscogsId,
+  formatMbId,
   getAlbumsToUpload,
   isItemUploadReady,
   UPLOAD_BLOCKING_ERROR_CODES,
@@ -33,8 +35,8 @@ export default function AdminUpload() {
 
       const metadata = await extractAlbumDiscoverMetadata(item)
       if (metadata) {
-        if (item.manualAlbumId && item.manualAlbumId.trim().length === 36) {
-          metadata.musicbrainzAlbumId = item.manualAlbumId
+        if (item.manualAlbumId) {
+          metadata.musicbrainzAlbumId = formatMbId(item.manualAlbumId)
           setUploadedItems(prev =>
             prev.map(prevItem =>
               prevItem.id === item.id
@@ -102,8 +104,25 @@ export default function AdminUpload() {
           !(item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode))
         )
       })
-      for (const item of itemsToDiscover) {
-        await onDiscoverAlbum(item)
+
+      // Process discovery in batches to prevent server overload
+      const DISCOVER_BATCH_SIZE = 10
+
+      // Helper function to chunk array into batches
+      const chunkArray = <T,>(array: T[], size: number): T[][] => {
+        const chunks: T[][] = []
+        for (let i = 0; i < array.length; i += size) {
+          chunks.push(array.slice(i, i + size))
+        }
+        return chunks
+      }
+
+      const batches = chunkArray(itemsToDiscover, DISCOVER_BATCH_SIZE)
+
+      // Process batches sequentially
+      for (const batch of batches) {
+        // Process all items in current batch concurrently
+        await Promise.all(batch.map(item => onDiscoverAlbum(item)))
       }
     },
     [onDiscoverAlbum]
@@ -113,12 +132,7 @@ export default function AdminUpload() {
     (itemId: string) => {
       const item = uploadedItems.find(item => item.id === itemId)
       // Don't allow selection if item has critical errors, is not upload ready, or is already uploaded
-      if (
-        !item ||
-        item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID ||
-        !isItemUploadReady(item) ||
-        item.isUploaded
-      ) {
+      if (!item || !isItemUploadReady(item)) {
         return
       }
 
@@ -139,12 +153,7 @@ export default function AdminUpload() {
     (selected: boolean) => {
       if (selected) {
         // Only select items that don't have error code 1001 (All Files Invalid), are upload ready, and not uploaded
-        const selectableItemIds = uploadedItems.filter(
-          item =>
-            item.errorCode !== UploadErrorCodeEnum.ALL_FILES_INVALID &&
-            isItemUploadReady(item) &&
-            !item.isUploaded
-        )
+        const selectableItemIds = uploadedItems.filter(item => isItemUploadReady(item))
         setSelectedItemIds(new Set(selectableItemIds.map(item => item.id)))
       } else {
         setSelectedItemIds(new Set())
@@ -169,48 +178,93 @@ export default function AdminUpload() {
       return
     }
 
+    // Define batch size to prevent server overload
+    const BATCH_SIZE = 3
+
+    // Helper function to chunk array into batches
+    const chunkArray = <T,>(array: T[], size: number): T[][] => {
+      const chunks: T[][] = []
+      for (let i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size))
+      }
+      return chunks
+    }
+
+    // Split uploadable items into batches
+    const batches = chunkArray(uploadableItems, BATCH_SIZE)
+
     try {
-      // Process each album upload
-      for (const item of uploadableItems) {
-        // Get album ID (from lookup or manual entry)
-        const mbId = item.manualAlbumId?.trim() || item.discoverRes?.mbId || ''
-        const discogsId = item.discoverRes?.discogsId || ''
+      // Process batches sequentially
+      for (const batch of batches) {
+        // Process all items in current batch concurrently
+        await Promise.all(
+          batch.map(async item => {
+            try {
+              // Get album ID (from lookup or manual entry)
+              const mbId = item.manualAlbumId
+                ? formatMbId(item.manualAlbumId)
+                : item.discoverRes!.mbId!
+              const discogsId = item.manualDiscogsId
+                ? formatDiscogsId(item.manualDiscogsId)
+                : item.discoverRes!.discogsId!
 
-        // Get cover image URL (from lookup or manual entry)
-        const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
+              // Get cover image URL (from lookup or manual entry)
+              const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
 
-        setUploadedItems(prev =>
-          prev.map(prevItem =>
-            prevItem.id === item.id
-              ? {
-                  ...prevItem,
-                  loadingState: {
-                    status: 'loading',
-                  },
-                }
-              : prevItem
-          )
+              // Set loading state
+              setUploadedItems(prev =>
+                prev.map(prevItem =>
+                  prevItem.id === item.id
+                    ? {
+                        ...prevItem,
+                        loadingState: {
+                          status: 'loading',
+                        },
+                      }
+                    : prevItem
+                )
+              )
+
+              // Upload album
+              const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
+
+              // Update with success
+              setUploadedItems(prev =>
+                prev.map(prevItem =>
+                  prevItem.id === item.id
+                    ? { ...prevItem, uploadRes: res, loadingState: { status: 'loaded' } }
+                    : prevItem
+                )
+              )
+
+              // Remove from selected items
+              setSelectedItemIds(prev => {
+                const newSet = new Set(prev)
+                newSet.delete(item.id)
+                return newSet
+              })
+            } catch (error) {
+              // eslint-disable-next-line no-console
+              console.error(`Upload failed for item ${item.id}:`, error)
+              // Update with error state
+              setUploadedItems(prev =>
+                prev.map(prevItem =>
+                  prevItem.id === item.id
+                    ? {
+                        ...prevItem,
+                        loadingState: { status: 'error' },
+                        errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+                      }
+                    : prevItem
+                )
+              )
+            }
+          })
         )
-        // Create FormData for file upload
-        const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
-
-        setUploadedItems(prev =>
-          prev.map(prevItem =>
-            prevItem.id === item.id
-              ? { ...prevItem, isUploaded: res.success, uploadRes: res }
-              : prevItem
-          )
-        )
-        setSelectedItemIds(prev => {
-          const newSet = new Set(prev)
-          newSet.delete(item.id)
-          return newSet
-        })
       }
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Upload failed:', error)
-      // Handle error (show notification, etc.)
+      console.error('Batch upload failed:', error)
     }
   }, [selectedItemIds, uploadedItems])
 
@@ -221,6 +275,17 @@ export default function AdminUpload() {
       })
     )
   }, [])
+
+  const handleManualDiscogsIdChange = useCallback(
+    (itemId: string, discogsId: string | undefined) => {
+      setUploadedItems(prev =>
+        prev.map(item => {
+          return item.id === itemId ? { ...item, manualDiscogsId: discogsId } : item
+        })
+      )
+    },
+    []
+  )
 
   const handleCoverUrlChange = useCallback((itemId: string, url: string | undefined) => {
     setUploadedItems(prev =>
@@ -262,6 +327,7 @@ export default function AdminUpload() {
               onPageChange={setCurrentPage}
               onItemsPerPageChange={setItemsPerPage}
               onManualIdChange={handleManualIdChange}
+              onManualDiscogsIdChange={handleManualDiscogsIdChange}
               onCoverUrlChange={handleCoverUrlChange}
             />
           </div>

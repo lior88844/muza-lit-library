@@ -11,10 +11,6 @@ export default {
   arrowParens: 'avoid',
   endOfLine: 'auto',
   embeddedLanguageFormatting: 'auto',
-  plugins: ['prettier-plugin-tailwindcss'],
-  // tailwindcss
-  tailwindAttributes: ['theme'],
-  tailwindFunctions: ['twMerge', 'createTheme'],
   overrides: [
     {
       files: '*.{js,jsx,ts,tsx}',

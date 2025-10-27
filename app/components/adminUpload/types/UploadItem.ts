@@ -16,10 +16,9 @@ export interface UploadItem {
   uploadRes?: AlbumUploadResponse // Backend upload result
   isLookingUp?: boolean // Whether we're currently looking up the album
   manualAlbumId?: string // Manually entered album ID
+  manualDiscogsId?: string // Manually entered Discogs ID
   manualCoverImgUrl?: string // Cover image URL
   loadingState?: {
     status: 'loading' | 'loaded' | 'error'
   }
-  // Validation states for upload
-  isUploaded?: boolean // Whether album has been uploaded
 }

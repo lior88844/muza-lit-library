@@ -59,7 +59,6 @@ export const albums = pgTable('albums', {
   mbReleaseGroupId: uuid('mb_release_group_id'),
   barcode: varchar('barcode', { length: 50 }),
   catalogNumber: varchar('catalog_number', { length: 100 }),
-  label: varchar('label', { length: 255 }),
   coverArt: text('cover_art'),
   trackCount: integer('track_count').default(0),
   genres: text('genres').array(),
@@ -68,7 +67,6 @@ export const albums = pgTable('albums', {
   quality: integer('quality').default(0),
   popularity: integer('popularity').default(0),
   verified: boolean('verified').default(false),
-  lastUpdated: timestamp('last_updated').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })

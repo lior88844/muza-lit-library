@@ -10,15 +10,18 @@ import type { UploadItem } from './types/UploadItem'
 interface DataSourceCellProps {
   item: UploadItem
   onManualIdChange: (itemId: string, albumId: string) => void
+  onManualDiscogsIdChange: (itemId: string, discogsId: string) => void
   onDiscoverAlbum: (item: UploadItem) => void
 }
 
 const DataSourceCell: React.FC<DataSourceCellProps> = ({
   item,
   onManualIdChange,
+  onManualDiscogsIdChange,
   onDiscoverAlbum,
 }) => {
   const [inputValue, setInputValue] = useState(item.manualAlbumId?.toString() || '')
+  const [discogsInputValue, setDiscogsInputValue] = useState(item.manualDiscogsId?.toString() || '')
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,6 +32,17 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
       onManualIdChange(item.id, value)
     },
     [item.id, onManualIdChange]
+  )
+
+  const handleDiscogsInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setDiscogsInputValue(value)
+
+      // Update the manual Discogs ID
+      onManualDiscogsIdChange(item.id, value)
+    },
+    [item.id, onManualDiscogsIdChange]
   )
 
   // Don't show anything for items with critical error 1001 (no FLAC files)
@@ -47,34 +61,48 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
 
   // Show "ID found" badge if album was found
   if (item.discoverRes?.mbId || item.discoverRes?.discogsId) {
+    const effectiveDiscogsId = item.manualDiscogsId || item.discoverRes?.discogsId
+    const hasMbId = !!item.discoverRes?.mbId
+
     return (
       <div className='admin-upload-table__data-source-id-found'>
-        <a
-          href={`https://musicbrainz.org/release/${item.discoverRes.mbId}`}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <div className='admin-upload-table__id-found-badge'>
-            <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
-            MB ID found
-          </div>
-        </a>
-        {item.discoverRes?.discogsId && (
+        {hasMbId && (
           <a
-            href={`https://www.discogs.com/release/${item.discoverRes.discogsId}`}
+            href={`https://musicbrainz.org/release/${item.discoverRes.mbId}`}
             target='_blank'
             rel='noopener noreferrer'
           >
             <div className='admin-upload-table__id-found-badge'>
               <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
-              Discogs ID found
+              MB ID found
             </div>
           </a>
+        )}
+        {effectiveDiscogsId ? (
+          <a
+            href={`https://www.discogs.com/release/${effectiveDiscogsId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <div className='admin-upload-table__id-found-badge'>
+              <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
+              Discogs ID {item.manualDiscogsId ? 'entered' : 'found'}
+            </div>
+          </a>
+        ) : (
+          <div className='admin-upload-table__data-source-input'>
+            <input
+              placeholder='Discogs ID or URL (optional)'
+              value={discogsInputValue}
+              onChange={handleDiscogsInputChange}
+              className='admin-upload-table__id-input'
+            />
+          </div>
         )}
       </div>
     )
   }
-  const hasValidId = !!item.manualAlbumId && item.manualAlbumId.trim().length === 36
+  const hasValidId = !!item.manualAlbumId && item.manualAlbumId.trim().length >= 36
   // Show input field for manual ID entry
   return (
     <div className='admin-upload-table__data-source-input'>
@@ -82,7 +110,7 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
         className={`admin-upload-table__input-wrapper ${!hasValidId && !item.isLookingUp ? 'admin-upload-table__input-wrapper--error' : ''}`}
       >
         <input
-          placeholder='Type in MusicBrainz ID'
+          placeholder='MusicBrainz ID or URL'
           value={inputValue}
           onChange={handleInputChange}
           min='1'
