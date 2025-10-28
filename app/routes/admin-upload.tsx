@@ -33,10 +33,9 @@ export default function AdminUpload() {
       // Flatten files array for metadata extraction
       // Extract complete metadata from all FLAC files
 
-      const metadata = await extractAlbumDiscoverMetadata(item)
-      if (metadata) {
+      if (item.metadata) {
         if (item.manualAlbumId) {
-          metadata.musicbrainzAlbumId = formatMbId(item.manualAlbumId)
+          item.metadata.musicbrainzAlbumId = formatMbId(item.manualAlbumId)
           setUploadedItems(prev =>
             prev.map(prevItem =>
               prevItem.id === item.id
@@ -49,7 +48,7 @@ export default function AdminUpload() {
           )
         }
         // Discover album in backend
-        const discoverRes = await discoverAlbum(metadata)
+        const discoverRes = await discoverAlbum(item.metadata)
 
         // Update item with lookup result and remove loading state
         setUploadedItems(prev =>
@@ -94,35 +93,24 @@ export default function AdminUpload() {
   const handleFileUpload = useCallback(
     async (files: File[]) => {
       const newItems = getAlbumsToUpload(files)
-      setUploadedItems(prev => [...prev, ...newItems])
+      const itemsWithMetadata = await Promise.all(
+        newItems.map(async item => {
+          const metadata = await extractAlbumDiscoverMetadata(item)
+          return { ...item, metadata }
+        })
+      )
+      setUploadedItems(prev => [...prev, ...itemsWithMetadata])
 
       // Process metadata extraction and album discovery for each valid folder
-      const itemsToDiscover = newItems.filter(item => {
+      const itemsToDiscover = itemsWithMetadata.filter(item => {
         const totalFiles = item.files.flat().length
         return (
           totalFiles > 0 &&
           !(item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode))
         )
       })
-
-      // Process discovery in batches to prevent server overload
-      const DISCOVER_BATCH_SIZE = 10
-
-      // Helper function to chunk array into batches
-      const chunkArray = <T,>(array: T[], size: number): T[][] => {
-        const chunks: T[][] = []
-        for (let i = 0; i < array.length; i += size) {
-          chunks.push(array.slice(i, i + size))
-        }
-        return chunks
-      }
-
-      const batches = chunkArray(itemsToDiscover, DISCOVER_BATCH_SIZE)
-
-      // Process batches sequentially
-      for (const batch of batches) {
-        // Process all items in current batch concurrently
-        await Promise.all(batch.map(item => onDiscoverAlbum(item)))
+      for (const item of itemsToDiscover) {
+        await onDiscoverAlbum(item)
       }
     },
     [onDiscoverAlbum]
@@ -178,93 +166,67 @@ export default function AdminUpload() {
       return
     }
 
-    // Define batch size to prevent server overload
-    const BATCH_SIZE = 3
+    // Process batches sequentially
+    for (const item of uploadableItems) {
+      // Process all items in current batch concurrently
+      try {
+        // Get album ID (from lookup or manual entry)
+        const mbId = item.manualAlbumId ? formatMbId(item.manualAlbumId) : item.discoverRes!.mbId!
+        const discogsId = item.manualDiscogsId
+          ? formatDiscogsId(item.manualDiscogsId)
+          : item.discoverRes!.discogsId!
 
-    // Helper function to chunk array into batches
-    const chunkArray = <T,>(array: T[], size: number): T[][] => {
-      const chunks: T[][] = []
-      for (let i = 0; i < array.length; i += size) {
-        chunks.push(array.slice(i, i + size))
-      }
-      return chunks
-    }
+        // Get cover image URL (from lookup or manual entry)
+        const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
 
-    // Split uploadable items into batches
-    const batches = chunkArray(uploadableItems, BATCH_SIZE)
+        // Set loading state
+        setUploadedItems(prev =>
+          prev.map(prevItem =>
+            prevItem.id === item.id
+              ? {
+                  ...prevItem,
+                  loadingState: {
+                    status: 'loading',
+                  },
+                }
+              : prevItem
+          )
+        )
 
-    try {
-      // Process batches sequentially
-      for (const batch of batches) {
-        // Process all items in current batch concurrently
-        await Promise.all(
-          batch.map(async item => {
-            try {
-              // Get album ID (from lookup or manual entry)
-              const mbId = item.manualAlbumId
-                ? formatMbId(item.manualAlbumId)
-                : item.discoverRes!.mbId!
-              const discogsId = item.manualDiscogsId
-                ? formatDiscogsId(item.manualDiscogsId)
-                : item.discoverRes!.discogsId!
+        // Upload album
+        const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
 
-              // Get cover image URL (from lookup or manual entry)
-              const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
+        // Update with success
+        setUploadedItems(prev =>
+          prev.map(prevItem =>
+            prevItem.id === item.id
+              ? { ...prevItem, uploadRes: res, loadingState: { status: 'loaded' } }
+              : prevItem
+          )
+        )
 
-              // Set loading state
-              setUploadedItems(prev =>
-                prev.map(prevItem =>
-                  prevItem.id === item.id
-                    ? {
-                        ...prevItem,
-                        loadingState: {
-                          status: 'loading',
-                        },
-                      }
-                    : prevItem
-                )
-              )
-
-              // Upload album
-              const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
-
-              // Update with success
-              setUploadedItems(prev =>
-                prev.map(prevItem =>
-                  prevItem.id === item.id
-                    ? { ...prevItem, uploadRes: res, loadingState: { status: 'loaded' } }
-                    : prevItem
-                )
-              )
-
-              // Remove from selected items
-              setSelectedItemIds(prev => {
-                const newSet = new Set(prev)
-                newSet.delete(item.id)
-                return newSet
-              })
-            } catch (error) {
-              // eslint-disable-next-line no-console
-              console.error(`Upload failed for item ${item.id}:`, error)
-              // Update with error state
-              setUploadedItems(prev =>
-                prev.map(prevItem =>
-                  prevItem.id === item.id
-                    ? {
-                        ...prevItem,
-                        loadingState: { status: 'error' },
-                        errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
-                      }
-                    : prevItem
-                )
-              )
-            }
-          })
+        // Remove from selected items
+        setSelectedItemIds(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(item.id)
+          return newSet
+        })
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Upload failed for item ${item.id}:`, error)
+        // Update with error state
+        setUploadedItems(prev =>
+          prev.map(prevItem =>
+            prevItem.id === item.id
+              ? {
+                  ...prevItem,
+                  loadingState: { status: 'error' },
+                  errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+                }
+              : prevItem
+          )
         )
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Batch upload failed:', error)
     }
   }, [selectedItemIds, uploadedItems])
 

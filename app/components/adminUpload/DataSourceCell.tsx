@@ -63,21 +63,42 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   if (item.discoverRes?.mbId || item.discoverRes?.discogsId) {
     const effectiveDiscogsId = item.manualDiscogsId || item.discoverRes?.discogsId
     const hasMbId = !!item.discoverRes?.mbId
-
+    const hasValidId = !!item.manualAlbumId && item.manualAlbumId.trim().length >= 36
+    if (!hasMbId) {
+      return (
+        <div className='admin-upload-table__data-source-input'>
+          <div
+            className={`admin-upload-table__input-wrapper ${!hasValidId && !item.isLookingUp ? 'admin-upload-table__input-wrapper--error' : ''}`}
+          >
+            <input
+              placeholder='MusicBrainz ID or URL'
+              value={inputValue}
+              onChange={handleInputChange}
+              min='1'
+              className='admin-upload-table__id-input'
+            />
+            <MuzaButton
+              disabled={!hasValidId}
+              content='Scan'
+              onClick={() => onDiscoverAlbum(item)}
+              className='admin-upload-table__scan-btn'
+            />
+          </div>
+        </div>
+      )
+    }
     return (
       <div className='admin-upload-table__data-source-id-found'>
-        {hasMbId && (
-          <a
-            href={`https://musicbrainz.org/release/${item.discoverRes.mbId}`}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            <div className='admin-upload-table__id-found-badge'>
-              <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
-              MB ID found
-            </div>
-          </a>
-        )}
+        <a
+          href={`https://musicbrainz.org/release/${item.discoverRes.mbId}`}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          <div className='admin-upload-table__id-found-badge'>
+            <MuzaIcon iconName='Check' className='admin-upload-table__check-icon' />
+            MB ID found
+          </div>
+        </a>
         {effectiveDiscogsId ? (
           <a
             href={`https://www.discogs.com/release/${effectiveDiscogsId}`}
@@ -102,29 +123,6 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
       </div>
     )
   }
-  const hasValidId = !!item.manualAlbumId && item.manualAlbumId.trim().length >= 36
-  // Show input field for manual ID entry
-  return (
-    <div className='admin-upload-table__data-source-input'>
-      <div
-        className={`admin-upload-table__input-wrapper ${!hasValidId && !item.isLookingUp ? 'admin-upload-table__input-wrapper--error' : ''}`}
-      >
-        <input
-          placeholder='MusicBrainz ID or URL'
-          value={inputValue}
-          onChange={handleInputChange}
-          min='1'
-          className='admin-upload-table__id-input'
-        />
-        <MuzaButton
-          disabled={!hasValidId}
-          content='Scan'
-          onClick={() => onDiscoverAlbum(item)}
-          className='admin-upload-table__scan-btn'
-        />
-      </div>
-    </div>
-  )
 }
 
 export default DataSourceCell

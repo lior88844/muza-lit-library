@@ -40,14 +40,15 @@ export const AdminUploadTableRow: React.FC<Props> = ({
 
   const isLoading = item.loadingState?.status === 'loading'
   const isUploadReady = isItemUploadReady(item)
-  const artistName =
-    item.discoverRes?.artistName || item.metadata?.albumartist || item.metadata?.artist || item.name
-  const albumName = item.discoverRes?.albumName || item.metadata?.album
+  const artistName = item.metadata?.artist || item.name
+  const albumName = item.metadata?.album
   let statusText = 'Ready'
   if (isLoading && !item.discoverRes) {
     statusText = 'Discovering...'
   } else if (isLoading && item.discoverRes) {
     statusText = 'Uploading...'
+  } else if (!isLoading && item.discoverRes && item.discoverRes.matchedBy === 'ai') {
+    statusText = 'Ready - AI matched'
   } else if (!isLoading && item.uploadRes) {
     statusText = 'Done'
   } else if (!isLoading && item.errorCode) {
@@ -109,6 +110,8 @@ export const AdminUploadTableRow: React.FC<Props> = ({
             )}
           </div>
           <div className='admin-upload-table__upload-content'>
+            {item.discoverRes?.artistName || ''} {item.discoverRes?.albumName ? ' - ' : ''}{' '}
+            {item.discoverRes?.albumName}
             <div className='admin-upload-table__upload-info'>
               <div className='admin-upload-table__upload-icon'>
                 <MuzaIcon iconName='folder' className='admin-upload-table__type-icon' />

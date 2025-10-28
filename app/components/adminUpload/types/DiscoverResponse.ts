@@ -8,6 +8,7 @@ export interface DiscoverResponse {
     albumName?: string
     artistName?: string
     error?: UploadErrorCodeEnum
+    matchedBy?: string
   }>
 }
 export type AlbumLookupResult = DiscoverResponse['results'][0]

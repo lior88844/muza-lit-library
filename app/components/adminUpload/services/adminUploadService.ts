@@ -43,6 +43,7 @@ export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLo
       albumName: result.albumName,
       artistName: result.artistName,
       error: result.error,
+      matchedBy: result.matchedBy,
     }
   } catch (error) {
     console.error('Error discovering album:', error)
@@ -135,15 +136,35 @@ export const getAlbumsToUpload = (files: File[]) => {
 
   for (const path of flacFolderMap.keys()) {
     const folderName = path.split('/').pop() || ''
-    // Match "CD 1", "CD-1", "Disc 1", "Disc-1", etc.
-    if (folderName.match(/^(CD|Disc)\s*-?\s*\d+/i)) {
+    const parentPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : ''
+    const parentFolderName = parentPath.split('/').pop() || ''
+
+    // Case 1: Match child folders with disc indicators like "CD 1", "CD-1", "Disc 1", "Disc-1", etc.
+    if (folderName.match(/.*(CD|Disc)\s*-?\s*\d+/i)) {
       discFolderPaths.add(path)
-      // Get parent folder path
-      const parentPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : ''
       if (!multiDiscAlbumsMap.has(parentPath)) {
         multiDiscAlbumsMap.set(parentPath, [])
       }
       multiDiscAlbumsMap.get(parentPath)!.push(path)
+    }
+    // Case 2: Check if parent folder has multi-disc indicator like "(2CD)", "(3CD)", etc.
+    else if (parentPath && parentFolderName.match(/\((\d+)CD\)/i)) {
+      // Check if there are sibling folders (other folders with the same parent)
+      const siblingFolders = Array.from(flacFolderMap.keys()).filter(p => {
+        const pParent = p.includes('/') ? p.substring(0, p.lastIndexOf('/')) : ''
+        return pParent === parentPath && p !== path
+      })
+
+      // If there are sibling folders, treat this as a multi-disc album
+      if (siblingFolders.length > 0) {
+        discFolderPaths.add(path)
+        if (!multiDiscAlbumsMap.has(parentPath)) {
+          multiDiscAlbumsMap.set(parentPath, [])
+        }
+        if (!multiDiscAlbumsMap.get(parentPath)!.includes(path)) {
+          multiDiscAlbumsMap.get(parentPath)!.push(path)
+        }
+      }
     }
   }
 
@@ -186,6 +207,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       size: totalSize,
       files: filesByDisc,
       path: parentPath,
+      metadata: null,
       errorCode: skippedCount > 0 ? UploadErrorCodeEnum.PARTIAL_UPLOAD : undefined,
       isLookingUp: true,
       loadingState: {
@@ -212,6 +234,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       type: 'folder',
       size: totalSize,
       files: [folderFiles], // Single disc album - wrap in array
+      metadata: null,
       path,
       errorCode: skippedCount > 0 ? UploadErrorCodeEnum.PARTIAL_UPLOAD : undefined,
       isLookingUp: true, // Start lookup for all items with FLAC files
@@ -245,6 +268,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       size: 0,
       files: [],
       path,
+      metadata: null,
       errorCode: UploadErrorCodeEnum.ALL_FILES_INVALID,
       loadingState: {
         status: 'error',
