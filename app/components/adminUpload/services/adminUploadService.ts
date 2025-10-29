@@ -1,3 +1,6 @@
+import { AxiosError } from 'axios'
+import PQueue from 'p-queue'
+
 import { adminApiClient } from '~/components/adminUpload/services/adminApiClient'
 import type {
   AlbumLookupResult,
@@ -9,6 +12,9 @@ import type { DiscoverMetadata } from '~/lib/flacMetadata'
 
 import type { AlbumUploadResponse } from '../types/AlbumUploadResponse'
 
+// Create a queue with max 3 concurrent requests
+const discoveryQueue = new PQueue({ concurrency: 3 })
+const uploadQueue = new PQueue({ concurrency: 1 })
 export const UPLOAD_BLOCKING_ERROR_CODES = [
   UploadErrorCodeEnum.ALL_FILES_INVALID,
   UploadErrorCodeEnum.ALBUM_ALREADY_EXISTS,
@@ -27,12 +33,15 @@ export const isItemUploadReady = (item: UploadItem): boolean => {
 
 /**
  * Call the admin discover endpoint to look up album information
+ * Uses p-queue to limit concurrent requests to 3
  */
 export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLookupResult> {
   try {
-    const response = await adminApiClient.post<DiscoverResponse>('/api/admin/discover', {
-      metadata: [metadata],
-    })
+    const response = await discoveryQueue.add(() =>
+      adminApiClient.post<DiscoverResponse>('/api/admin/discover', {
+        metadata: [metadata],
+      })
+    )
 
     const result = response.data.results[0]
 
@@ -46,6 +55,8 @@ export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLo
       matchedBy: result.matchedBy,
     }
   } catch (error) {
+    // Log error for debugging purposes
+    // eslint-disable-next-line no-console
     console.error('Error discovering album:', error)
     return {
       mbId: null,
@@ -82,14 +93,22 @@ export async function uploadAlbum({
       formData.append(`files`, file)
     })
   })
-
-  // Upload to API
-  const res = await adminApiClient.post<AlbumUploadResponse>('/api/admin/upload-album', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
-  return res.data
+  try {
+    // Upload to API
+    const res = await uploadQueue.add(() =>
+      adminApiClient.post<AlbumUploadResponse>('/api/admin/upload-album', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    )
+    return res.data
+  } catch (error) {
+    if (error instanceof AxiosError && error.response?.data) {
+      return error.response?.data as AlbumUploadResponse
+    }
+    throw error
+  }
 }
 const isFlacFile = (file: File): boolean => {
   const fileName = file.name.toLowerCase()
@@ -201,7 +220,7 @@ export const getAlbumsToUpload = (files: File[]) => {
     }
 
     const newItem: UploadItem = {
-      id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${parentPath}-${albumName}`,
       name: albumName,
       type: 'folder',
       size: totalSize,
@@ -229,7 +248,7 @@ export const getAlbumsToUpload = (files: File[]) => {
     const skippedCount = allFilesInFolder.length - folderFiles.length
 
     const newItem: UploadItem = {
-      id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${path}-${folderName}`,
       name: folderName,
       type: 'folder',
       size: totalSize,
@@ -262,7 +281,7 @@ export const getAlbumsToUpload = (files: File[]) => {
     const folderName = path === 'root' ? 'Music Folder' : path.split('/').pop() || path
 
     newItems.push({
-      id: `error-folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${path}-${folderName}`,
       name: folderName,
       type: 'folder',
       size: 0,

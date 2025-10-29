@@ -42,20 +42,22 @@ export const AdminUploadTableRow: React.FC<Props> = ({
   const isUploadReady = isItemUploadReady(item)
   const artistName = item.metadata?.artist || item.name
   const albumName = item.metadata?.album
+  const errors = item.uploadRes?.errors || (item.errorCode ? [item.errorCode!] : [])
   let statusText = 'Ready'
   if (isLoading && !item.discoverRes) {
     statusText = 'Discovering...'
   } else if (isLoading && item.discoverRes) {
     statusText = 'Uploading...'
-  } else if (!isLoading && item.discoverRes && item.discoverRes.matchedBy === 'ai') {
-    statusText = 'Ready - AI matched'
+  } else if (!isLoading && errors.length) {
+    statusText = 'Error'
   } else if (!isLoading && item.uploadRes) {
     statusText = 'Done'
-  } else if (!isLoading && item.errorCode) {
-    statusText = 'Error'
   } else if (!isLoading && (!item.discoverRes?.discogsId || !item.discoverRes?.mbId)) {
     statusText = 'No ID found'
+  } else if (!isLoading && item.discoverRes && item.discoverRes.matchedBy === 'ai') {
+    statusText = 'Ready - AI matched'
   }
+
   return (
     <tr key={item.id} className='admin-upload-table__row'>
       <td className='admin-upload-table__cell admin-upload-table__cell--number'>{index + 1}</td>
@@ -98,7 +100,7 @@ export const AdminUploadTableRow: React.FC<Props> = ({
                 : ''
             } ${isLoading && isSelected ? 'admin-upload-table__upload-status--uploading' : ''}`}
           >
-            {isLoading && isSelected ? (
+            {isLoading ? (
               <FaSpinner className='admin-upload-table__upload-spinner' />
             ) : (
               <MuzaIcon
@@ -160,14 +162,10 @@ export const AdminUploadTableRow: React.FC<Props> = ({
         <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
       </td>
       <td className='admin-upload-table__cell admin-upload-table__cell--errors'>
-        {item.uploadRes ? (
-          item.uploadRes.errors?.length ? (
-            <ErrorBadge errorCodes={item.uploadRes.errors} />
-          ) : (
-            <UploadedBadge />
-          )
-        ) : item.errorCode ? (
-          <ErrorBadge errorCodes={[item.errorCode]} />
+        {errors.length > 0 || item.uploadRes?.success === false ? (
+          <ErrorBadge errorCodes={errors} item={item} />
+        ) : item.uploadRes ? (
+          <UploadedBadge />
         ) : (
           <SuccessBadge />
         )}
@@ -191,13 +189,26 @@ const UploadedBadge = () => (
   </div>
 )
 // Error Badge Component with Tooltip
-const ErrorBadge: React.FC<{ errorCodes: UploadErrorCodeEnum[] }> = ({ errorCodes }) => {
+const ErrorBadge: React.FC<{ errorCodes: UploadErrorCodeEnum[]; item: UploadItem }> = ({
+  errorCodes,
+  item,
+}) => {
   const errorInfos = errorCodes.map(errorCode => UPLOAD_ERROR_CODES[errorCode]).filter(Boolean)
+  if (!errorInfos.length && item.uploadRes?.success === false) {
+    errorInfos.push({
+      code: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+      title: 'Upload Service Error',
+      description: item.uploadRes?.message || 'The album was not uploaded successfully.',
+    })
+  }
   if (errorInfos.length === 0) {
     return null
   }
   return (
     <AppTooltip
+      triggerProps={{
+        className: `admin-upload-table__error-badge admin-upload-table__error-badge--${errorInfos[0].code}`,
+      }}
       content={errorInfos.map((errorInfo, idx) => (
         <Fragment key={idx}>
           <p className='tooltip__title'>{errorInfo.title}</p>
@@ -205,11 +216,7 @@ const ErrorBadge: React.FC<{ errorCodes: UploadErrorCodeEnum[] }> = ({ errorCode
         </Fragment>
       ))}
     >
-      <div
-        className={`admin-upload-table__error-badge admin-upload-table__error-badge--${errorInfos[0].code}`}
-      >
-        Error: {errorInfos[0].code} {errorInfos.length > 1 ? `+${errorInfos.length - 1}` : ''}
-      </div>
+      Error: {errorInfos[0].code} {errorInfos.length > 1 ? `+${errorInfos.length - 1}` : ''}
     </AppTooltip>
   )
 }

@@ -93,13 +93,27 @@ export default function AdminUpload() {
   const handleFileUpload = useCallback(
     async (files: File[]) => {
       const newItems = getAlbumsToUpload(files)
+      setUploadedItems(prev => {
+        // Add only new items to the list
+        return [
+          ...prev,
+          ...newItems.filter(item => !prev.some(prevItem => prevItem.id === item.id)),
+        ]
+      })
       const itemsWithMetadata = await Promise.all(
         newItems.map(async item => {
           const metadata = await extractAlbumDiscoverMetadata(item)
           return { ...item, metadata }
         })
       )
-      setUploadedItems(prev => [...prev, ...itemsWithMetadata])
+      const itemIdToMetadata = new Map(itemsWithMetadata.map(item => [item.id, item.metadata]))
+      setUploadedItems(prev =>
+        prev.map(item =>
+          itemIdToMetadata.get(item.id)
+            ? { ...item, metadata: itemIdToMetadata.get(item.id)! }
+            : item
+        )
+      )
 
       // Process metadata extraction and album discovery for each valid folder
       const itemsToDiscover = itemsWithMetadata.filter(item => {
@@ -109,9 +123,7 @@ export default function AdminUpload() {
           !(item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode))
         )
       })
-      for (const item of itemsToDiscover) {
-        await onDiscoverAlbum(item)
-      }
+      itemsToDiscover.map(onDiscoverAlbum)
     },
     [onDiscoverAlbum]
   )
@@ -167,67 +179,68 @@ export default function AdminUpload() {
     }
 
     // Process batches sequentially
-    for (const item of uploadableItems) {
-      // Process all items in current batch concurrently
-      try {
-        // Get album ID (from lookup or manual entry)
-        const mbId = item.manualAlbumId ? formatMbId(item.manualAlbumId) : item.discoverRes!.mbId!
-        const discogsId = item.manualDiscogsId
-          ? formatDiscogsId(item.manualDiscogsId)
-          : item.discoverRes!.discogsId!
+    await Promise.all(
+      uploadableItems.map(async item => {
+        // Process all items in current batch concurrently
+        try {
+          // Get album ID (from lookup or manual entry)
+          const mbId = item.manualAlbumId ? formatMbId(item.manualAlbumId) : item.discoverRes!.mbId!
+          const discogsId = item.manualDiscogsId
+            ? formatDiscogsId(item.manualDiscogsId)
+            : item.discoverRes!.discogsId!
 
-        // Get cover image URL (from lookup or manual entry)
-        const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
+          // Get cover image URL (from lookup or manual entry)
+          const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
 
-        // Set loading state
-        setUploadedItems(prev =>
-          prev.map(prevItem =>
-            prevItem.id === item.id
-              ? {
-                  ...prevItem,
-                  loadingState: {
-                    status: 'loading',
-                  },
-                }
-              : prevItem
+          // Set loading state
+          setUploadedItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? {
+                    ...prevItem,
+                    loadingState: {
+                      status: 'loading',
+                    },
+                  }
+                : prevItem
+            )
           )
-        )
+          setSelectedItemIds(prev => {
+            const newSet = new Set(prev)
+            newSet.delete(item.id)
+            return newSet
+          })
+          // Upload album
+          const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
 
-        // Upload album
-        const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
-
-        // Update with success
-        setUploadedItems(prev =>
-          prev.map(prevItem =>
-            prevItem.id === item.id
-              ? { ...prevItem, uploadRes: res, loadingState: { status: 'loaded' } }
-              : prevItem
+          // Update with success
+          setUploadedItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? { ...prevItem, uploadRes: res, loadingState: { status: 'loaded' } }
+                : prevItem
+            )
           )
-        )
 
-        // Remove from selected items
-        setSelectedItemIds(prev => {
-          const newSet = new Set(prev)
-          newSet.delete(item.id)
-          return newSet
-        })
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`Upload failed for item ${item.id}:`, error)
-        // Update with error state
-        setUploadedItems(prev =>
-          prev.map(prevItem =>
-            prevItem.id === item.id
-              ? {
-                  ...prevItem,
-                  loadingState: { status: 'error' },
-                  errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
-                }
-              : prevItem
+          // Remove from selected items
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(`Upload failed for item ${item.id}:`, error)
+          // Update with error state
+          setUploadedItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? {
+                    ...prevItem,
+                    loadingState: { status: 'error' },
+                    errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+                  }
+                : prevItem
+            )
           )
-        )
-      }
-    }
+        }
+      })
+    )
   }, [selectedItemIds, uploadedItems])
 
   const handleManualIdChange = useCallback((itemId: string, albumId: string | undefined) => {
