@@ -26,6 +26,7 @@ import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'
 import type { MusicPlaylist } from './store/models'
 import { userContext } from './store/router-context'
+
 export const authMiddleware: MiddlewareFunction = async ({ context }) => {
   // const user = await getOidcUser();
   context.set(userContext, {
@@ -66,7 +67,9 @@ export const links: Route.LinksFunction = () => [
     href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
   },
 ]
+
 const MINIMAL_LAYOUT_PAGES = ['/admin-upload', '/admin-portal', '/upload']
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
   const location = useLocation()
