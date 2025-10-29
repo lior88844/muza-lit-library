@@ -10,7 +10,7 @@ export default [
   route('albums', './routes/albums.tsx'),
   route('albums/:id', './routes/album.tsx'),
   route('artists', './routes/artists.tsx'),
-  route('artists/:id', './routes/artist.tsx'),
+  route('artists/:id', './routes/artist/artist-page.tsx'),
   route('songs', './routes/songs.tsx'),
   route('explore', './routes/explore.tsx'),
   route('upload', './routes/upload.tsx'),
