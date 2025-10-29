@@ -1,7 +1,3 @@
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
-
 import { isRouteErrorResponse, useRouteError } from 'react-router'
 import { useLoaderData } from 'react-router'
 import { fetchArtistById } from 'server/data'
@@ -25,7 +21,7 @@ export async function loader({ params }: { params: { id: string } }) {
 export default function ArtistPage() {
   const { artist } = useLoaderData<typeof loader>()
 
-  return <>{artist.name}</>
+  return <main>Artist PAGE DETAILS {artist.name}</main>
 }
 
 export function ErrorBoundary() {
