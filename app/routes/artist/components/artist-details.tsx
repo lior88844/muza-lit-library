@@ -3,12 +3,15 @@ import './artist-details.scss'
 import type { Artist } from 'server/db/artist.entity'
 
 import { Image } from '~/components/ui/image'
+import { useTranslation } from '~/lib/i18n/translations'
 
 type ArtistHeaderProps = {
   artist: Artist
 }
 
 export function ArtistDetails({ artist }: ArtistHeaderProps) {
+  const { t } = useTranslation()
+
   return (
     <section className='artist-details' aria-label='Artist header'>
       <Image
@@ -21,13 +24,22 @@ export function ArtistDetails({ artist }: ArtistHeaderProps) {
       <div className='artist-details-content'>
         <span>
           <h2 className='artist-details-content-title'>{artist.name}</h2>
-          <p className='artist-details-content-content'>{artist.bio}</p>
+
+          <p className='artist-details-content-content' title={artist.bio ?? undefined}>
+            {artist.bio}
+          </p>
         </span>
 
-        <button>Follow</button>
+        {/* TODO: Button.tsx */}
+        <button className='temp-btn'>{t('common.follow')}</button>
       </div>
 
-      <div className='artist-details-stats'></div>
+      <div className='artist-details-stats'>
+        <span>ITM</span>
+        <span>ITM</span>
+        <span>ITM</span>
+        <span>ITM</span>
+      </div>
     </section>
   )
 }

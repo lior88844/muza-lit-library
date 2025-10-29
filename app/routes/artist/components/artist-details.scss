@@ -1,7 +1,7 @@
 .artist-details {
   flex-grow: 1;
   display: flex;
-  gap: var(--muza-spacing-lg);
+  gap: var(--muza-spacing-xxl);
 
   &-image {
     width: 128px;
@@ -26,6 +26,7 @@
       line-height: 1.25;
       letter-spacing: var(--typography_base_sizes_small_letter_spacing);
 
+      max-width: 60%;
       overflow: hidden;
       display: -webkit-box;
       line-clamp: 2;
@@ -34,4 +35,22 @@
       text-overflow: ellipsis;
     }
   }
+
+  &-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: var(--muza-spacing-lg);
+    padding-inline-end: var(--muza-spacing-lg);
+  }
+}
+
+// TODO: delete after Button.tsx is present
+.temp-btn {
+  border-radius: 9999px;
+  background-color: #1d4ed8;
+  width: 144px;
+  text-align: center;
+  padding-block: 8px;
+  color: white;
 }

@@ -41,6 +41,7 @@ const english = {
   'common.close': '×',
   'common.next': 'Next',
   'common.publish': 'Publish',
+  'common.follow': 'Follow',
 
   // Playlist Modal
   'playlist.new': 'New Playlist',
