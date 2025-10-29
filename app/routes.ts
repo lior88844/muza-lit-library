@@ -1,5 +1,4 @@
 import { index, route, type RouteConfig } from '@react-router/dev/routes'
-
 const resourcesRoutes = [
   route('/health', './routes/resources/health.ts'),
   route('/api/library', './routes/resources/library.ts'),
