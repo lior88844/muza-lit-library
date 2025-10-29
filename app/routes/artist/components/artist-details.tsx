@@ -2,7 +2,7 @@ import './artist-details.scss'
 
 import type { Artist } from 'server/db/artist.entity'
 
-import { Image } from '~/components/ui/image/image'
+import { Image } from '~/components/ui/image'
 
 type ArtistHeaderProps = {
   artist: Artist

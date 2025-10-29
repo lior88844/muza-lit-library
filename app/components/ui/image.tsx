@@ -12,7 +12,10 @@ export function Image({ src, fallbackSrc, ...nativeProps }: ImageProps) {
     <img
       src={imageSrc}
       {...nativeProps}
-      onError={ev => ((ev.target as HTMLImageElement).src = FALLBACK_IMAGE_URL)}
+      onError={ev => {
+        ;(ev.target as HTMLImageElement).src = FALLBACK_IMAGE_URL
+        nativeProps.onError?.(ev)
+      }}
     />
   )
 }
