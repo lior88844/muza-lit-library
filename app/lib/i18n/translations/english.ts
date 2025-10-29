@@ -42,6 +42,12 @@ const english = {
   'common.next': 'Next',
   'common.publish': 'Publish',
   'common.follow': 'Follow',
+  'common.following': 'Following',
+  'common.followers': 'Followers',
+
+  // Artist Info
+  'artistInfo.albumsUploaded': 'Albums uploaded',
+  'artistInfo.monthlyListeners': 'Monthly Listeners',
 
   // Playlist Modal
   'playlist.new': 'New Playlist',

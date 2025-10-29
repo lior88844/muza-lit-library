@@ -2,6 +2,9 @@
   flex-grow: 1;
   display: flex;
   gap: var(--muza-spacing-xxl);
+  padding-bottom: var(--muza-spacing-xxl);
+  margin-bottom: var(--muza-spacing-xl);
+  border-bottom: 1px solid var(--muza-light-border-color);
 
   &-image {
     width: 128px;

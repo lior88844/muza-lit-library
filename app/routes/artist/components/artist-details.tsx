@@ -1,12 +1,14 @@
 import './artist-details.scss'
 
-import type { Artist } from 'server/db/artist.entity'
+import type { ArtistResponse } from 'server/api/artist/types/ArtistResponse'
 
 import { Image } from '~/components/ui/image'
 import { useTranslation } from '~/lib/i18n/translations'
 
+import { StatisticItem } from './statistic-item'
+
 type ArtistHeaderProps = {
-  artist: Artist
+  artist: ArtistResponse
 }
 
 export function ArtistDetails({ artist }: ArtistHeaderProps) {
@@ -35,10 +37,10 @@ export function ArtistDetails({ artist }: ArtistHeaderProps) {
       </div>
 
       <div className='artist-details-stats'>
-        <span>ITM</span>
-        <span>ITM</span>
-        <span>ITM</span>
-        <span>ITM</span>
+        <StatisticItem value={artist.albumArtists.length} label={t('artistInfo.albumsUploaded')} />
+        <StatisticItem value={0} label={t('artistInfo.monthlyListeners')} />
+        <StatisticItem value={0} label={t('common.following')} />
+        <StatisticItem value={0} label={t('common.followers')} />
       </div>
     </section>
   )

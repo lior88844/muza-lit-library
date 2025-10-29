@@ -3,21 +3,22 @@ import { eq } from 'drizzle-orm'
 import type { AlbumArtist } from '../../db/album-artist.entity'
 import { type Artist, artists } from '../../db/artist.entity'
 import { db } from '../../db/connection'
-import type { ArtistResponse } from './types/ArtistResponse'
+import type { ArtistMinimalResponse, ArtistResponse } from './types/ArtistResponse'
 
 // Types for transformed data
 interface ArtistWithAlbums extends Artist {
   albumArtists: AlbumArtist[]
 }
 
-export async function findArtistById(id: number) {
+export async function findArtistById(id: number): Promise<ArtistResponse> {
   const artist = await db.query.artists.findFirst({
     where: eq(artists.id, id),
     with: {
       albumArtists: true,
     },
   })
-  return artist
+
+  return artist as ArtistResponse
 }
 
 /**
@@ -39,7 +40,7 @@ export async function findManyArtists(limit = 20, offset = 0) {
 /**
  * Transform artist data for frontend consumption
  */
-function transformArtistData(artists: ArtistWithAlbums[]): ArtistResponse[] {
+function transformArtistData(artists: ArtistWithAlbums[]): ArtistMinimalResponse[] {
   return artists
     .filter(artist => artist.name)
     .map(artist => ({
