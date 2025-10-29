@@ -27,7 +27,7 @@ export function ArtistDetails({ artist }: ArtistHeaderProps) {
         <span>
           <h2 className='artist-details-content-title'>{artist.name}</h2>
 
-          <p className='artist-details-content-content' title={artist.bio ?? undefined}>
+          <p className='artist-details-content-bio' title={artist.bio ?? undefined}>
             {artist.bio}
           </p>
         </span>
