@@ -25,6 +25,7 @@ import Providers from './Providers'
 import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'
 import type { MusicPlaylist } from './store/models'
+import { usePlaylistStore } from './store/playlistStore'
 import { userContext } from './store/router-context'
 
 export const authMiddleware: MiddlewareFunction = async ({ context }) => {
@@ -99,13 +100,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = processedData.sidebar.sections
   const playlists = processedData.playlists
 
-  const { isPlaylistDrawerOpen, currentPlaylistDrawerId, openPlaylistDrawer, closePlaylistDrawer } =
+  const { isPlaylistDrawerOpen, openPlaylistDrawer, closePlaylistDrawer } =
     useCurrentPlayerStore()
 
-  // Get the current playlist from processed data
-  const currentPlaylist = currentPlaylistDrawerId
-    ? playlists.find(p => p.id === currentPlaylistDrawerId)
-    : undefined
+  // Initialize playlist store with loader data
+  useEffect(() => {
+    usePlaylistStore.getState().initialize(playlists)
+  }, [playlists])
+
+  const playlistsFromStore = usePlaylistStore(state => state.playlists)
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -163,7 +166,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   logoAlt={t('library.musicLibrary')}
                   logoSrc='/icons/muza.svg'
                   sections={sidebarSections}
-                  playlists={playlists}
+                  playlists={playlistsFromStore}
                   isCollapsed={isSidebarCollapsed}
                   _onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
                   onToggleCollapse={handleToggleSidebar}
@@ -178,7 +181,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <PlaylistDrawer
                       isOpen={isPlaylistDrawerOpen}
                       onClose={handleClosePlaylistDrawer}
-                      playlist={currentPlaylist}
                     />
                   )}
                 </main>

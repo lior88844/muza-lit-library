@@ -8,15 +8,15 @@ import { useNavigate } from 'react-router'
 import PlaylistGrid from '~/components/listsDisplays/PlaylistGrid'
 import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
 import { useTranslation } from '~/lib/i18n/translations'
-import { useMedia } from '~/store/media/mediaContext'
 import { useAddPlaylist } from '~/store/media/useAddPlaylist'
 import type { MusicPlaylist } from '~/store/models'
+import { usePlaylistStore } from '~/store/playlistStore'
 
 import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'
 
 export default function Playlists() {
   const { t } = useTranslation()
-  const { playlists, library } = useMedia()
+  const playlists = usePlaylistStore(state => state.playlists)
   const navigate = useNavigate()
   const { addPlaylist } = useAddPlaylist()
   const [isModalOpen, setIsModalOpen] = useState(false)

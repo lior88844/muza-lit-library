@@ -4,12 +4,11 @@ import { toast } from 'react-toastify'
 import type { Playlist, PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useTranslation } from '../../lib/i18n/translations'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
-import { useMedia } from './mediaContext'
+import { usePlaylistStore } from '../playlistStore'
 
 export const useAddPlaylist = () => {
   const fetcher = useFetcherAsync<{ success: boolean; error: string; playlist: Playlist }>()
-  const data = useMedia()
-  const { playlists } = data
+  const { addPlaylist: addPlaylistToStore } = usePlaylistStore()
   const { t } = useTranslation()
 
   const addPlaylist = useCallback(
@@ -27,7 +26,7 @@ export const useAddPlaylist = () => {
         })
 
         if (result?.success && result.playlist) {
-          // Update the playlists state in context
+          // Add the new playlist to the store
           const newPlaylist = {
             id: result.playlist.id,
             title: result.playlist.name,
@@ -39,7 +38,7 @@ export const useAddPlaylist = () => {
             imageSrc: result.playlist.coverImage || '',
             createdAt: result.playlist.createdAt || new Date(),
           }
-          data.playlists = [...playlists, newPlaylist]
+          addPlaylistToStore(newPlaylist)
 
           toast(t('playlist.created'), {
             position: 'bottom-center',
@@ -62,7 +61,7 @@ export const useAddPlaylist = () => {
         return false
       }
     },
-    [fetcher, t, playlists, data]
+    [fetcher, t, addPlaylistToStore]
   )
 
   return { addPlaylist, loading: fetcher.state === 'loading' }

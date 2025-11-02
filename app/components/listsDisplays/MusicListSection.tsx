@@ -53,7 +53,12 @@ const MusicListSectionComponent: React.FC<
     switch (type) {
       case 'album':
         return albums!.map(album => (
-          <AlbumPreview key={album.id} details={album} onAlbumClick={() => onAlbumClick?.(album)} />
+          <AlbumPreview
+            key={album.id}
+            details={album}
+            onAlbumClick={() => onAlbumClick?.(album)}
+            draggable={isPlaylistDrawerOpen}
+          />
         ))
       case 'artist':
         return artists!.map(artist => (

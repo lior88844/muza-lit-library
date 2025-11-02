@@ -1,6 +1,7 @@
 import './PlaylistDetail.scss'
 
 import React from 'react'
+import { useNavigate } from 'react-router'
 
 import MediaHeader from '~/components/MediaHeader/MediaHeader'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
@@ -16,6 +17,7 @@ interface PlaylistDetailProps {
 }
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
+  const navigate = useNavigate()
   const {
     selectedSong,
     setSelectedSong,
@@ -47,6 +49,10 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     openPlaylistDrawer(playlist?.id)
   }
 
+  const handleBackClick = () => {
+    navigate('/playlists')
+  }
+
   return (
     <div className='playlist-detail'>
       <div className='playlist-detail__container'>
@@ -62,6 +68,8 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
           visibility={playlist.visibility as PlaylistVisibilityEnum}
           creator={playlist.author}
           showBackButton={true}
+          playlist={playlist}
+          onBackClick={handleBackClick}
           customActions={
             <div className='playlist-actions'>
               <MuzaButton

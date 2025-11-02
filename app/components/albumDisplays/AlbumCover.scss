@@ -19,6 +19,16 @@
   text-align: left;
   padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md) 0;
   border-radius: var(--border-radius-md);
+  transition: opacity 0.2s ease;
+
+  &.draggable {
+    cursor: grab;
+  }
+
+  &.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
 }
 
 .image-container {

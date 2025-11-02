@@ -5,7 +5,7 @@ import type { Playlist, PlaylistVisibilityEnum } from '../../../server/db/playli
 import { useTranslation } from '../../lib/i18n/translations'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
 import type { SongDetails } from '../models'
-import { useMedia } from './mediaContext'
+import { usePlaylistStore } from '../playlistStore'
 
 export interface UpdatePlaylistProps {
   name?: string
@@ -15,23 +15,22 @@ export interface UpdatePlaylistProps {
 }
 export const useUpdatePlaylist = () => {
   const fetcher = useFetcherAsync<{ success: boolean; error: string; playlist: Playlist }>()
-  const data = useMedia()
-  const { playlists } = data
+  const { playlists, updatePlaylist: updatePlaylistInStore } = usePlaylistStore()
   const { t } = useTranslation()
 
   const updatePlaylist = useCallback(
     async (playlistId: number, updates: UpdatePlaylistProps) => {
-      const originalPlaylists = [...playlists]
-      const optimisticPlaylists = playlists.map(playlist =>
-        playlist.id === playlistId
-          ? {
-              ...playlist,
-              ...updates,
-            }
-          : playlist
-      )
+      // Store original state for rollback
+      const originalPlaylist = playlists.find(p => p.id === playlistId)
+      if (!originalPlaylist) return false
 
-      data.playlists = optimisticPlaylists
+      // Optimistic update - update the store immediately
+      const uiUpdates = {
+        ...updates,
+        // Map 'name' to 'title' for the UI
+        ...(updates.name && { title: updates.name }),
+      }
+      updatePlaylistInStore(playlistId, uiUpdates)
 
       try {
         const trackUpdates = updates.songs?.map(song => ({ id: song.id, position: song.index }))
@@ -49,7 +48,8 @@ export const useUpdatePlaylist = () => {
         })
 
         if (!result?.success) {
-          data.playlists = originalPlaylists
+          // Rollback on failure
+          updatePlaylistInStore(playlistId, originalPlaylist)
           toast.error(result?.error || t('playlist.updateFailed'), {
             position: 'bottom-center',
             hideProgressBar: true,
@@ -57,7 +57,8 @@ export const useUpdatePlaylist = () => {
         }
         return result
       } catch (error) {
-        data.playlists = originalPlaylists
+        // Rollback on error
+        updatePlaylistInStore(playlistId, originalPlaylist)
         toast.error(t('playlist.updateFailed'), {
           position: 'bottom-center',
           hideProgressBar: true,
@@ -65,7 +66,7 @@ export const useUpdatePlaylist = () => {
         return false
       }
     },
-    [fetcher, t, playlists, data]
+    [fetcher, t, playlists, updatePlaylistInStore]
   )
 
   return { updatePlaylist, loading: fetcher.state === 'loading' }

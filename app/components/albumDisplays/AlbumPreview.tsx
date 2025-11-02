@@ -12,21 +12,46 @@ import AlbumInfoModal from './AlbumInfoModal'
 interface AlbumPreviewProps {
   details: Album
   onAlbumClick: () => void
+  draggable?: boolean
 }
 
-const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick }) => {
+const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick, draggable = true }) => {
   const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation()
     setIsPlaying(!isPlaying)
   }
 
+  const handleDragStart = (e: React.DragEvent) => {
+    if (!draggable) return
+
+    setIsDragging(true)
+
+    const dragData = {
+      type: 'album',
+      album: details,
+    }
+
+    e.dataTransfer.setData('application/json', JSON.stringify(dragData))
+    e.dataTransfer.effectAllowed = 'copy'
+  }
+
+  const handleDragEnd = () => {
+    setIsDragging(false)
+  }
+
   return (
-    <div className='album-details-card'>
+    <div
+      className={`album-details-card ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
+      draggable={draggable}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <div className='image-container' onClick={onAlbumClick}>
-        <img src={details.imageSrc} alt={details.title} />
+        <img src={details.imageSrc || '/art/imag_1.jpg'} alt={details.title} />
         <HoverOverlay
           isPlaying={!!isPlaying}
           onPlayPause={handlePlayPause}

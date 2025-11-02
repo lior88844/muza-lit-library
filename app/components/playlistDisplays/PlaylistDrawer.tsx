@@ -8,7 +8,10 @@ import MuzaButton from '~/controls/MuzaButton'
 import MuzaInputField from '~/controls/MuzaInputField'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
-import type { MusicPlaylist, SongDetails } from '~/store/models'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { useMedia } from '~/store/media/mediaContext'
+import type { SongDetails } from '~/store/models'
+import { usePlaylistStore } from '~/store/playlistStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
@@ -16,12 +19,17 @@ import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
 interface PlaylistDrawerProps {
   isOpen: boolean
   onClose: () => void
-  playlist?: MusicPlaylist
 }
 
-const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playlist }) => {
+const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { songs: allSongs } = useMedia()
+  
+  // Get playlist directly from the store - Store is KING 👑
+  const currentPlaylistDrawerId = useCurrentPlayerStore(state => state.currentPlaylistDrawerId)
+  const playlist = usePlaylistStore(state => state.getPlaylistById(currentPlaylistDrawerId || 0))
+  const addSongsToPlaylist = usePlaylistStore(state => state.addSongsToPlaylist)
   const [playlistName, setPlaylistName] = useState(playlist?.title || '')
   const [playlistDescription, setPlaylistDescription] = useState(playlist?.description || '')
   const [isPublic, setIsPublic] = useState<boolean>(
@@ -54,34 +62,38 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
     setIsDragOver(false)
   }, [])
 
-  // Helper functions for adding items to playlist
-  const addSongToPlaylist = useCallback(
-    (song: SongDetails) => {
+  // Helper function for adding songs to playlist
+  const handleAddSongs = useCallback(
+    (songsToAdd: SongDetails[]) => {
       if (!playlist?.id) return
 
-      // Check if song already exists in playlist
-      const existingSong = playlist.songs?.find(
-        existingSong =>
-          existingSong.id === song.id ||
-          (existingSong.title === song.title && existingSong.artist === song.artist)
-      )
+      // Use store helper to add songs with proper indexing at the start
+      const updatedSongs = addSongsToPlaylist(playlist.id, songsToAdd, 'start')
 
-      if (existingSong) {
-        return
+      if (updatedSongs) {
+        updatePlaylist(playlist.id, {
+          songs: updatedSongs,
+        })
       }
-      updatePlaylist(playlist.id, {
-        songs: [...playlist.songs, song],
-      })
     },
-    [playlist, updatePlaylist]
+    [playlist?.id, addSongsToPlaylist, updatePlaylist]
   )
 
   // Helper function for removing songs from playlist
   const removeSongFromPlaylist = useCallback(
     (songToRemove: SongDetails) => {
       if (!playlist?.id) return
+      
+      // Filter out the removed song and re-index remaining songs
+      const updatedSongs = playlist.songs
+        ?.filter(song => song.id !== songToRemove.id)
+        .map((song, idx) => ({
+          ...song,
+          index: idx + 1,
+        })) || []
+      
       updatePlaylist(playlist.id, {
-        songs: playlist.songs?.filter(song => song.id !== songToRemove.id) || [],
+        songs: updatedSongs,
       })
     },
     [playlist, updatePlaylist]
@@ -104,24 +116,72 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
         try {
           const data = JSON.parse(dragData)
 
-          // Handle only songs
+          // Handle songs
           if (data.type === 'song' && data.song) {
-            addSongToPlaylist(data.song)
+            handleAddSongs([data.song])
+          }
+
+          // Handle albums
+          if (data.type === 'album' && data.album) {
+            let tracksToAdd: SongDetails[] = []
+
+            // Case 1: Album has full track details (from album detail page)
+            if (data.album.tracks && Array.isArray(data.album.tracks) && data.album.tracks.length > 0) {
+              // Check if tracks are full SongDetails or just IDs
+              if (typeof data.album.tracks[0] === 'object' && 'title' in data.album.tracks[0]) {
+                tracksToAdd = data.album.tracks as SongDetails[]
+              }
+            }
+            // Case 2: Album only has song IDs (from homepage)
+            else if (data.album.songs && Array.isArray(data.album.songs) && data.album.songs.length > 0) {
+              // Resolve song IDs to full song details
+              tracksToAdd = data.album.songs
+                .map((songId: number) => allSongs.find((song: SongDetails) => song.id === songId))
+                .filter((song: SongDetails | undefined): song is SongDetails => song !== undefined)
+            }
+
+            // Add all tracks from the album at once
+            if (tracksToAdd.length > 0) {
+              handleAddSongs(tracksToAdd)
+            }
           }
         } catch {
           // Silently handle parsing errors
         }
       }
     },
-    [addSongToPlaylist]
+    [handleAddSongs, allSongs]
   )
 
   // Note: handleSave is not used in the current UI
   // Playlist updates happen automatically through onSavePlaylist in add/remove song functions
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
+    if (!playlist?.id) {
+      onClose()
+      return
+    }
+
+    // Check if there are any changes to save
+    const nameChanged = playlistName !== playlist.title
+    const descriptionChanged = playlistDescription !== (playlist.description || '')
+
+    if (nameChanged || descriptionChanged) {
+      // Update the playlist with the new name and/or description
+      const updates: { name?: string; description?: string } = {}
+      if (nameChanged && playlistName.trim()) {
+        updates.name = playlistName.trim()
+      }
+      if (descriptionChanged) {
+        updates.description = playlistDescription
+      }
+      
+      // This will optimistically update the UI and save to backend
+      updatePlaylist(playlist.id, updates)
+    }
+
     onClose()
-  }
+  }, [playlist, playlistName, playlistDescription, updatePlaylist, onClose])
 
   const handleNavigateToPlaylist = () => {
     if (playlist) {

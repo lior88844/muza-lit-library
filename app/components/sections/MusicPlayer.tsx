@@ -247,7 +247,11 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       <video ref={playerRef} hidden />
 
       <div className='player-info'>
-        <img className='album-art' src={details.imageSrc} alt={`${details.title} album cover`} />
+        <img 
+          className='album-art' 
+          src={details.imageSrc || '/art/imag_1.jpg'} 
+          alt={`${details.title} album cover`} 
+        />
         <div className='track-info'>
           <h3 className='track-title'>{details.title}</h3>
           <p className='track-artist'>{details.artist}</p>
