@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
-import "./CreatePlaylistModal.scss";
-import MuzaInputField from "~/controls/MuzaInputField";
-import MuzaIcon from "~/icons/MuzaIcon";
-import ToggleButton from "~/controls/ToggleButton";
-import { useTranslation } from "~/lib/i18n/translations";
+import './CreatePlaylistModal.scss'
+
+import React, { useEffect, useState } from 'react'
+
+import MuzaInputField from '~/controls/MuzaInputField'
+import ToggleButton from '~/controls/ToggleButton'
+import MuzaIcon from '~/icons/MuzaIcon'
+import { useTranslation } from '~/lib/i18n/translations'
+
+import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 
 interface CreatePlaylistModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreatePlaylist: (name: string, visibility: string) => void;
+  isOpen: boolean
+  onClose: () => void
+  onCreatePlaylist: (name: string, visibility: PlaylistVisibilityEnum) => void
 }
 
 const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
@@ -16,108 +20,101 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
   onClose,
   onCreatePlaylist,
 }) => {
-  const { t } = useTranslation();
-  const [playlistName, setPlaylistName] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
+  const { t } = useTranslation()
+  const [playlistName, setPlaylistName] = useState('')
+  const [isPrivate, setIsPrivate] = useState(false)
 
   // Handle ESC key to close modal
   useEffect(() => {
     const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
+      if (e.key === 'Escape') {
+        onClose()
       }
-    };
+    }
 
     if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
+      document.addEventListener('keydown', handleEscKey)
     }
 
     return () => {
-      document.removeEventListener("keydown", handleEscKey);
-    };
-  }, [isOpen, onClose]);
+      document.removeEventListener('keydown', handleEscKey)
+    }
+  }, [isOpen, onClose])
 
   // Remove the early return to allow transitions
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (playlistName.trim()) {
-      const visibility = isPrivate
-        ? t("playlist.private")
-        : t("playlist.public");
-      onCreatePlaylist(playlistName.trim(), visibility);
-      setPlaylistName("");
-      setIsPrivate(false);
-      onClose();
+      const visibility = isPrivate ? PlaylistVisibilityEnum.Private : PlaylistVisibilityEnum.Public
+      onCreatePlaylist(playlistName.trim(), visibility)
+      setPlaylistName('')
+      setIsPrivate(false)
+      onClose()
     }
-  };
+  }
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      onClose()
     }
-  };
+  }
 
   const handleToggleChange = (checked: boolean) => {
-    setIsPrivate(checked);
-  };
+    setIsPrivate(checked)
+  }
 
   return (
-    <div
-      className={`modal-backdrop ${isOpen ? "modal-open" : ""}`}
-      onClick={handleBackdropClick}
-    >
-      <div className={`create-playlist-modal ${isOpen ? "modal-open" : ""}`}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h1 className="modal-title">{t("playlist.new")}</h1>
+    <div className={`modal-backdrop ${isOpen ? 'modal-open' : ''}`} onClick={handleBackdropClick}>
+      <div className={`create-playlist-modal ${isOpen ? 'modal-open' : ''}`}>
+        <div className='modal-content'>
+          <div className='modal-header'>
+            <h1 className='modal-title'>{t('playlist.new')}</h1>
           </div>
 
-          <div className="modal-content-inner">
-            <div className="form-group">
+          <div className='modal-content-inner'>
+            <div className='form-group'>
               <MuzaInputField
-                label={t("playlist.title")}
-                placeholder={t("playlist.titlePlaceholder")}
+                label={t('playlist.title')}
+                placeholder={t('playlist.titlePlaceholder')}
                 value={playlistName}
                 onChange={e => setPlaylistName(e.target.value)}
               />
             </div>
 
-            <div className="form-group">
-              <div className="privacy-toggle-wrapper">
+            <div className='form-group'>
+              <div className='privacy-toggle-wrapper'>
                 <ToggleButton
                   checked={isPrivate}
                   onChange={handleToggleChange}
-                  label={t("playlist.makePrivate")}
+                  label={t('playlist.makePrivate')}
                 />
-                <p className="privacy-explanation">
-                  {t("playlist.privateExplanation")}
-                </p>
+                <p className='privacy-explanation'>{t('playlist.privateExplanation')}</p>
               </div>
             </div>
           </div>
 
-          <div className="modal-buttons">
-            <button type="button" className="cancel-button" onClick={onClose}>
-              {t("playlist.cancel")}
+          <div className='modal-buttons'>
+            <button type='button' className='cancel-button' onClick={onClose}>
+              {t('playlist.cancel')}
             </button>
             <button
-              type="button"
-              className="create-button"
+              type='button'
+              className='create-button'
               onClick={handleSubmit}
               disabled={!playlistName.trim()}
             >
-              {t("playlist.create")}
+              {t('playlist.create')}
             </button>
           </div>
 
-          <button className="close-button" onClick={onClose}>
-            <MuzaIcon iconName="Close" />
+          <button className='close-button' onClick={onClose}>
+            <MuzaIcon iconName='Close' />
           </button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CreatePlaylistModal;
+export default CreatePlaylistModal

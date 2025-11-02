@@ -167,8 +167,7 @@
     gap: var(--muza-spacing-xs, 8px);
 
     .song-title {
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
       font-size: 16px;
       font-weight: var(--muza-font-weight-medium, 500);
       line-height: 20px;
@@ -184,8 +183,7 @@
     display: flex;
     align-items: center;
     gap: var(--muza-spacing-xs, 8px);
-    font-family:
-      var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
     font-size: 16px;
     font-weight: var(--muza-font-weight-normal, 400);
     line-height: 1;
@@ -286,8 +284,7 @@
 
     .duration {
       width: 36px;
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
       font-size: 14px;
       font-weight: var(--muza-font-weight-normal, 400);
       line-height: 16px;

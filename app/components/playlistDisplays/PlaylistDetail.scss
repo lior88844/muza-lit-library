@@ -1,4 +1,4 @@
-@import "../../styles/variables.scss";
+@use '../../styles/variables.scss';
 
 .playlist-detail {
   display: flex;
@@ -148,7 +148,7 @@
     border: 0.5px solid var(--muza-border-color, #a9a9a9);
     border-radius: var(--muza-border-radius-sm, 4px);
     padding: 2px var(--muza-spacing-sm, 8px);
-    font-family: "Founders Grotesk", sans-serif;
+    font-family: 'Founders Grotesk', sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: var(--muza-primary-text-color, #333333);

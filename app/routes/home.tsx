@@ -1,93 +1,97 @@
-import "../components/sections/MusicSidebar";
-import type { Album } from "~/appData/models";
-import MusicListSectionComponent from "~/components/listsDisplays/MusicListSection";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useNavigate } from "react-router";
-import { useTranslation } from "~/lib/i18n/translations";
+import '../components/sections/MusicSidebar'
+import '../styles/scrollbar.scss'
+import '../styles/variables.scss'
+import '../styles/main.scss'
+import './home.scss'
 
-import "../styles/scrollbar.scss";
-import "../styles/variables.scss";
-import "../styles/main.scss";
-import "./home.scss";
+import { useNavigate } from 'react-router'
+
+import MusicListSectionComponent from '~/components/listsDisplays/MusicListSection'
+import { useTranslation } from '~/lib/i18n/translations'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { useMedia } from '~/store/media/mediaContext'
+import type { Album } from '~/store/models'
 
 export default function Home() {
-  const { t } = useTranslation();
-  const { selectedSong, setSelectedSong } = useCurrentPlayerStore();
-  const { recentlyPlayed, newReleases, artists } = useMusicLibraryStore();
+  const { t } = useTranslation()
+  const { selectedSong, setSelectedSong } = useCurrentPlayerStore()
 
-  const navigate = useNavigate();
+  // Get library data from context (fetched once on the server)
+  const library = useMedia()
+  const { songs, albums, artists } = library
+
+  const navigate = useNavigate()
 
   const onAlbumClick = (album: Album) => {
-    navigate("/album", { state: { album } });
-  };
+    navigate(`/albums/${album.id}`)
+  }
 
   const handleShowAll = (sectionTitle: string) => {
     switch (sectionTitle) {
-      case t("section.newReleases"):
-        navigate("/albums");
-        break;
-      case t("section.recentlyPlayed"):
-        navigate("/songs");
-        break;
-      case t("section.artists"):
-        navigate("/artists");
-        break;
+      case t('section.newReleases'):
+        navigate('/albums')
+        break
+      case t('section.recentlyPlayed'):
+        navigate('/songs')
+        break
+      case t('section.artists'):
+        navigate('/artists')
+        break
       default:
-        break;
+        break
     }
-  };
+  }
 
   const sections = [
     {
-      title: t("section.newReleases"),
-      type: "album" as const,
-      albums: newReleases,
+      title: t('section.newReleases'),
+      type: 'album' as const,
+      albums: albums.newReleases,
     },
     {
-      title: t("section.recentlyPlayed"),
-      type: "song" as const,
-      songs: recentlyPlayed.slice(0, 30),
+      title: t('section.recentlyPlayed'),
+      type: 'song' as const,
+      songs: songs.slice(0, 30),
     },
     {
-      title: t("section.artists"),
-      type: "artist" as const,
+      title: t('section.artists'),
+      type: 'artist' as const,
       artists: artists.slice(0, 6),
     },
-  ];
+  ]
 
   return (
-    <div className="home-page">
-      <div className="page-header">
-        <h1>{t("page.home")}</h1>
+    <div className='home-page'>
+      <div className='page-header'>
+        <h1>{t('page.home')}</h1>
       </div>
-      <div className="sections-container">
-        <hr className="section-divider" />
+      <div className='sections-container'>
+        <hr className='section-divider' />
         {sections.map((section, index) => (
-          <div key={section.title} className="section-wrapper">
-            {section.type === "album" && (
+          <div key={section.title} className='section-wrapper'>
+            {section.type === 'album' && (
               <MusicListSectionComponent
                 title={section.title}
-                type="album"
+                type='album'
                 list={section.albums}
                 onShowAll={handleShowAll}
                 onAlbumClick={onAlbumClick}
                 albums={section.albums}
               />
             )}
-            {section.type === "artist" && (
+            {section.type === 'artist' && (
               <MusicListSectionComponent
                 title={section.title}
-                type="artist"
+                type='artist'
                 list={[]}
                 onShowAll={handleShowAll}
                 artists={section.artists}
               />
             )}
-            {section.type === "song" && (
+            {section.type === 'song' && (
               <MusicListSectionComponent
                 title={section.title}
-                type="song"
+                type='song'
                 list={[]}
                 onShowAll={handleShowAll}
                 songs={section.songs}
@@ -95,10 +99,10 @@ export default function Home() {
                 selectedSong={selectedSong || undefined}
               />
             )}
-            {index < sections.length - 1 && <hr className="section-divider" />}
+            {index < sections.length - 1 && <hr className='section-divider' />}
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }

@@ -81,7 +81,7 @@
     line-height: 16px;
     padding: 0 var(--muza-spacing-lg, 16px);
     margin: 0;
-    font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
+    font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
   }
 
   .menu-item {
@@ -119,7 +119,7 @@
     }
 
     span {
-      font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
       line-height: 20px;
       white-space: nowrap;
       overflow: hidden;
@@ -184,7 +184,7 @@
       font-size: var(--muza-primary-font-size, 14px);
       font-weight: var(--muza-font-weight-bold, 600);
       color: var(--muza-primary-text-color, #333333);
-      font-family: var(--typography_font_family_font_sans, "Founders Grotesk");
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
       padding: 0 var(--muza-spacing-lg, 16px);
     }
 

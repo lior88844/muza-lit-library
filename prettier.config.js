@@ -1,37 +1,34 @@
 /** @type {import('prettier').Config} */
 export default {
-  semi: true,
-  singleQuote: false,
-  tabWidth: 2,
-  useTabs: false,
-  printWidth: 80,
-  trailingComma: "es5",
+  printWidth: 100,
+  semi: false,
+  singleQuote: true,
+  quoteProps: 'as-needed',
+  jsxSingleQuote: true,
+  trailingComma: 'es5',
   bracketSpacing: true,
   bracketSameLine: false,
-  arrowParens: "avoid",
-  endOfLine: "auto",
-  plugins: ["prettier-plugin-tailwindcss"],
-  // tailwindcss
-  tailwindAttributes: ["theme"],
-  tailwindFunctions: ["twMerge", "createTheme"],
+  arrowParens: 'avoid',
+  endOfLine: 'auto',
+  embeddedLanguageFormatting: 'auto',
   overrides: [
     {
-      files: "*.{js,jsx,ts,tsx}",
+      files: '*.{js,jsx,ts,tsx}',
       options: {
-        parser: "typescript",
+        parser: 'typescript',
       },
     },
     {
-      files: "*.{json,jsonc}",
+      files: '*.{json,jsonc}',
       options: {
-        parser: "json",
+        parser: 'json',
       },
     },
     {
-      files: "*.{scss,css}",
+      files: '*.{scss,css}',
       options: {
-        parser: "scss",
+        parser: 'scss',
       },
     },
   ],
-};
+}

@@ -1,18 +1,19 @@
-import React from "react";
-import "./WaveAnimation.scss";
+import './WaveAnimation.scss'
+
+import React from 'react'
 
 interface WaveAnimationProps {
-  className?: string;
+  className?: string
 }
 
-const WaveAnimation: React.FC<WaveAnimationProps> = ({ className = "" }) => {
+const WaveAnimation: React.FC<WaveAnimationProps> = ({ className = '' }) => {
   return (
     <div className={`wave-container ${className}`}>
-      <div className="bar" />
-      <div className="bar" />
-      <div className="bar" />
+      <div className='bar' />
+      <div className='bar' />
+      <div className='bar' />
     </div>
-  );
-};
+  )
+}
 
-export default WaveAnimation;
+export default WaveAnimation

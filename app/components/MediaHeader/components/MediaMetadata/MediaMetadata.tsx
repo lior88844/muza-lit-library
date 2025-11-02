@@ -1,15 +1,19 @@
-import React from "react";
-import "./MediaMetadata.scss";
-import { useTranslation } from "~/lib/i18n/translations";
+import './MediaMetadata.scss'
 
-interface MediaMetadataProps {
-  type: "album" | "playlist" | "artist";
-  year?: string | number;
-  songCount?: number;
-  duration?: string;
-  isPublic?: boolean;
-  followerCount?: number;
-  separator?: string;
+import React from 'react'
+
+import { useTranslation } from '~/lib/i18n/translations'
+
+import type { MediaTypeEnum } from '../../../../../server/db/user-library.entity'
+
+export interface MediaMetadataProps {
+  type: MediaTypeEnum
+  year?: string | number
+  songCount?: number
+  duration?: string
+  isPublic?: boolean
+  followerCount?: number
+  separator?: string
 }
 
 const MediaMetadata: React.FC<MediaMetadataProps> = ({
@@ -18,54 +22,54 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
   songCount,
   duration,
   followerCount,
-  separator = "•",
+  separator = '•',
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const renderMetadataItems = () => {
-    const items: React.ReactNode[] = [];
+    const items: React.ReactNode[] = []
 
     // Add type
-    items.push(<span key="type">{t(`common.${type}`)}</span>);
+    items.push(<span key='type'>{t(`common.${type}`)}</span>)
 
     // Add year for albums
-    if (type === "album" && year) {
-      items.push(<span key="separator1">{separator}</span>);
-      items.push(<span key="year">{year}</span>);
+    if (type === 'album' && year) {
+      items.push(<span key='separator1'>{separator}</span>)
+      items.push(<span key='year'>{year}</span>)
     }
 
     // Add song count
     if (songCount) {
-      items.push(<span key="separator2">{separator}</span>);
+      items.push(<span key='separator2'>{separator}</span>)
       items.push(
-        <span key="songCount">
-          {songCount} {t("common.songs")}
+        <span key='songCount'>
+          {songCount} {t('common.songs')}
         </span>
-      );
+      )
     }
 
     // Add duration if provided
     if (duration) {
-      items.push(<span key="separator3">{separator}</span>);
-      items.push(<span key="duration">{duration}</span>);
+      items.push(<span key='separator3'>{separator}</span>)
+      items.push(<span key='duration'>{duration}</span>)
     }
 
     // Note: Public/private status is now handled as separate badge, not in metadata
 
     // Add follower count for artists
-    if (type === "artist" && followerCount) {
-      items.push(<span key="separator5">{separator}</span>);
+    if (type === 'artist' && followerCount) {
+      items.push(<span key='separator5'>{separator}</span>)
       items.push(
-        <span key="followers">
-          {followerCount.toLocaleString()} {t("common.followers")}
+        <span key='followers'>
+          {followerCount.toLocaleString()} {t('common.followers')}
         </span>
-      );
+      )
     }
 
-    return items;
-  };
+    return items
+  }
 
-  return <div className="album-metadata">{renderMetadataItems()}</div>;
-};
+  return <div className='album-metadata'>{renderMetadataItems()}</div>
+}
 
-export default MediaMetadata;
+export default MediaMetadata

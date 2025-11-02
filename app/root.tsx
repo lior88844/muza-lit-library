@@ -1,276 +1,226 @@
-import { ThemeModeScript } from "flowbite-react";
+import './app.scss'
+
+import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import {
   isRouteErrorResponse,
   Links,
   Meta,
+  type MiddlewareFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useLocation,
-} from "react-router";
-import type { Route } from "./+types/root";
+} from 'react-router'
 
-import "./app.scss";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import MusicSidebar from "./components/sections/MusicSidebar";
-import MusicTopbar from "./components/sections/MusicTopbar";
-import { useMusicLibraryStore } from "./appData/musicStore";
-import { useEffect, useState } from "react";
-import { useCurrentPlayerStore } from "./appData/currentPlayerStore";
-import MuzaMusicPlayer from "./components/componentsWithLogic/MuzaMusicPlayer";
-import { useTranslation } from "./lib/i18n/translations";
-import type { SongDetails, MusicPlaylist } from "./appData/models";
-import { apiClient } from "./lib/apiClient";
-import Providers from "./Providers";
-import PlaylistDrawer from "./components/playlistDisplays/PlaylistDrawer";
+import { fetchAllData } from '../server/data'
+import type { Route } from './+types/root'
+import MuzaMusicPlayer from './components/componentsWithLogic/MuzaMusicPlayer'
+import PlaylistDrawer from './components/playlistDisplays/PlaylistDrawer'
+import MusicSidebar from './components/sections/MusicSidebar'
+import MusicTopbar from './components/sections/MusicTopbar'
+import { useTranslation } from './lib/i18n/translations'
+import Providers from './Providers'
+import { useCurrentPlayerStore } from './store/currentPlayerStore'
+import { MediaContext } from './store/media/mediaContext'
+import type { MusicPlaylist } from './store/models'
+import { userContext } from './store/router-context'
+
+export const authMiddleware: MiddlewareFunction = async ({ context }) => {
+  // const user = await getOidcUser();
+  context.set(userContext, {
+    id: 1,
+  })
+}
+export const middleware: MiddlewareFunction[] = [authMiddleware]
+
+export async function loader({ context }: Route.LoaderArgs) {
+  const user = context.get(userContext)
+  const res = await fetchAllData(user?.id)
+  return res
+}
+
+// Prevent unnecessary revalidation - only revalidate on explicit actions
+export function shouldRevalidate({ actionStatus }: { actionStatus?: number }) {
+  // Revalidate if there was an action (mutation)
+  if (actionStatus) {
+    return true
+  }
+  // Don't revalidate on navigation
+  return false
+}
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous',
   },
   {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
   {
-    rel: "stylesheet",
-    href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css",
+    rel: 'stylesheet',
+    href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
   },
-];
+]
+
+const MINIMAL_LAYOUT_PAGES = ['/admin-upload', '/admin-portal', '/upload']
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { t } = useTranslation();
-  const location = useLocation();
-  const { setIsPlaying } = useCurrentPlayerStore();
-  const sidebarSections = useMusicLibraryStore(state => state.sidebarSections);
-  const playlists = useMusicLibraryStore(state => state.playlists);
+  const { t } = useTranslation()
+  const location = useLocation()
+  const { setIsPlaying } = useCurrentPlayerStore()
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { isPlaylistDrawerOpen, setIsPlaylistDrawerOpen } =
-    useCurrentPlayerStore();
-  const [currentPlaylistId, setCurrentPlaylistId] = useState<
-    string | undefined
-  >(undefined);
+  const data = useLoaderData<typeof loader>()
 
-  // Get the current playlist from the store to keep it reactive
-  const currentPlaylist = useMusicLibraryStore(state =>
-    currentPlaylistId
-      ? state.playlists.find(p => p.id === currentPlaylistId)
-      : undefined
-  );
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  // Process playlists once with useMemo
+  const processedData = useMemo(() => {
+    const songs = data?.songs || []
+    return {
+      albums: {
+        featured: data?.albums?.featured || [],
+        newReleases: (data?.albums?.newReleases || []).slice(0, 5),
+        recommended: data?.albums?.recommended || [],
+      },
+      artists: data?.artists || [],
+      songs,
+      library: data?.library || [],
+      playlists: data?.playlists || [],
+      sidebar: {
+        sections: data?.sidebar?.sections || [],
+      },
+    }
+  }, [data])
 
-  // Check if we're on the upload pages
-  const isUploadPage = location.pathname === "/upload";
-  const isAdminUploadPage = location.pathname === "/admin-upload";
-  const isAnyUploadPage = isUploadPage || isAdminUploadPage;
+  const sidebarSections = processedData.sidebar.sections
+  const playlists = processedData.playlists
+
+  const { isPlaylistDrawerOpen, currentPlaylistDrawerId, openPlaylistDrawer, closePlaylistDrawer } =
+    useCurrentPlayerStore()
+
+  // Get the current playlist from processed data
+  const currentPlaylist = currentPlaylistDrawerId
+    ? playlists.find(p => p.id === currentPlaylistDrawerId)
+    : undefined
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+
+  // Check if we're on pages that should hide the main music UI
+  const isMinimalLayoutPage = MINIMAL_LAYOUT_PAGES.includes(location.pathname)
 
   // Stop music when navigating to upload pages
   useEffect(() => {
-    if (isAnyUploadPage) {
-      setIsPlaying(false);
+    if (isMinimalLayoutPage) {
+      setIsPlaying(false)
     }
-  }, [isAnyUploadPage, setIsPlaying]);
+  }, [isMinimalLayoutPage, setIsPlaying])
 
   // Handle playlist drawer state changes
   const handleOpenPlaylistDrawer = (playlist?: MusicPlaylist) => {
-    setCurrentPlaylistId(playlist?.id);
-    setIsPlaylistDrawerOpen(true);
-    setIsSidebarCollapsed(true);
-  };
+    openPlaylistDrawer(playlist?.id)
+    setIsSidebarCollapsed(true)
+  }
 
   const handleClosePlaylistDrawer = () => {
-    setIsPlaylistDrawerOpen(false);
-    setCurrentPlaylistId(undefined);
-    setIsSidebarCollapsed(false);
-  };
+    closePlaylistDrawer()
+    setIsSidebarCollapsed(false)
+  }
 
   const handleToggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
+    setIsSidebarCollapsed(!isSidebarCollapsed)
+  }
 
-  const { updatePlaylist } = useMusicLibraryStore();
-
-  const handleSavePlaylist = (playlist: Partial<MusicPlaylist>) => {
-    // Handle playlist save logic here
-    console.log("Saving playlist:", playlist);
-    if (currentPlaylistId) {
-      updatePlaylist(currentPlaylistId, playlist);
-    }
-  };
-
+  // Initialize current player with first song only once
   useEffect(() => {
-    const {
-      setNewReleases,
-      setFeatured,
-      setArtists,
-      setRecommended,
-      setRecentlyPlayed,
-      setPlaylists,
-      setSidebarSections,
-    } = useMusicLibraryStore.getState();
+    const { selectedSong, setSelectedSong } = useCurrentPlayerStore.getState()
+    const songs = processedData.songs
 
-    const { selectedSong, setSelectedSong } = useCurrentPlayerStore.getState();
+    if (songs.length > 0 && !selectedSong) {
+      setSelectedSong(songs[0])
+    }
+  }, [processedData.songs])
 
-    apiClient
-      .get("/staticData/allData.json")
-      .then(response => {
-        if (!response.status) {
-          apiClient.get("./staticData/allData.json").then(response => {
-            if (!response.status) throw new Error(t("general.networkError"));
-            return response.data;
-          });
-        } else {
-          return response.data;
-        }
-      })
-      .then(data => {
-        setFeatured(data.albums.featured || []);
-        setNewReleases(data.albums.newReleases.slice(0, 5) || []);
-        setRecommended(data.albums.recommended || []);
-        setArtists(data.artists);
-        setRecentlyPlayed(data.songs);
-
-        const processedPlaylists = (data.playlists || []).map(
-          (playlist: any) => {
-            const playlistSongs = (playlist.songs || [])
-              .map((id: string) =>
-                data.songs.find(
-                  (song: SongDetails) =>
-                    parseInt(song.id || "0") === parseInt(id)
-                )
-              )
-              .filter(
-                (song: SongDetails | undefined): song is SongDetails =>
-                  song !== undefined
-              );
-
-            const playlistSuggestions = (playlist.suggestions || [])
-              .map((songId: string) =>
-                data.songs.find(
-                  (song: SongDetails) =>
-                    parseInt(song.id || "0") === parseInt(songId)
-                )
-              )
-              .filter(
-                (song: SongDetails | undefined): song is SongDetails =>
-                  song !== undefined
-              );
-
-            return {
-              ...playlist,
-              songs: playlistSongs,
-              suggestions: playlistSuggestions,
-              author: playlist.author,
-            };
-          }
-        );
-
-        setPlaylists(processedPlaylists);
-        setSidebarSections(data.sidebar.sections);
-
-        if (data.songs.length > 0 && !selectedSong) {
-          setSelectedSong(data.songs[0]);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [t]);
-
-  const content = loading ? (
-    <p>{t("general.loading")}</p>
-  ) : error ? (
-    <p>{t("general.errorWithMessage").replace("{error}", error)}</p>
-  ) : null;
+  const content = null
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet='utf-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Meta />
         <Links />
-        <ThemeModeScript />
       </head>
       <body>
         <Providers>
-          <div
-            className={`body ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}
-          >
-            {!isAnyUploadPage && (
-              <MusicSidebar
-                logoAlt={t("library.musicLibrary")}
-                logoSrc="/icons/muza.svg"
-                sections={sidebarSections}
-                playlists={playlists}
-                isCollapsed={isSidebarCollapsed}
-                onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
-                onToggleCollapse={handleToggleSidebar}
-              />
-            )}
+          <MediaContext.Provider value={processedData}>
+            <div className={`body ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+              {!isMinimalLayoutPage && (
+                <MusicSidebar
+                  logoAlt={t('library.musicLibrary')}
+                  logoSrc='/icons/muza.svg'
+                  sections={sidebarSections}
+                  playlists={playlists}
+                  isCollapsed={isSidebarCollapsed}
+                  _onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
+                  onToggleCollapse={handleToggleSidebar}
+                />
+              )}
 
-            <div className="content">
-              {!isAnyUploadPage && <MusicTopbar />}
-              <main>
-                {content || children}
-                {!isAnyUploadPage && (
-                  <PlaylistDrawer
-                    isOpen={isPlaylistDrawerOpen}
-                    onClose={handleClosePlaylistDrawer}
-                    playlist={currentPlaylist}
-                    onSavePlaylist={handleSavePlaylist}
-                  />
-                )}
-              </main>
-              {!isAnyUploadPage && <MuzaMusicPlayer />}
+              <div className='content'>
+                {!isMinimalLayoutPage && <MusicTopbar />}
+                <main className={isMinimalLayoutPage ? 'minimal-layout-main' : ''}>
+                  {content || children}
+                  {!isMinimalLayoutPage && (
+                    <PlaylistDrawer
+                      isOpen={isPlaylistDrawerOpen}
+                      onClose={handleClosePlaylistDrawer}
+                      playlist={currentPlaylist}
+                    />
+                  )}
+                </main>
+                {!isMinimalLayoutPage && <MuzaMusicPlayer />}
+              </div>
             </div>
-          </div>
-          <ToastContainer />
-          <ScrollRestoration />
+          </MediaContext.Provider>
         </Providers>
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
-  );
+  )
 }
 
 export default function App() {
-  return <Outlet />;
+  return <Outlet />
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+  let message = 'Oops!'
+  let details = 'An unexpected error occurred.'
+  let stack: string | undefined
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? '404' : 'Error'
     details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+      error.status === 404 ? 'The requested page could not be found.' : error.statusText || details
   } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
+    details = error.message
+    stack = error.stack
   }
 
   return (
-    <main className="container mx-auto p-4 pt-16">
+    <main className='container mx-auto p-4 pt-16'>
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full overflow-x-auto p-4">
+        <pre className='w-full overflow-x-auto p-4'>
           <code>{stack}</code>
         </pre>
       )}
     </main>
-  );
+  )
 }

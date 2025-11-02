@@ -1,11 +1,12 @@
-import React from "react";
-import "./UploadHeader.scss";
+import './UploadHeader.scss'
+
+import React from 'react'
 
 interface UploadHeaderProps {
-  title: string;
-  onCancel: () => void;
-  isTestMode?: boolean;
-  onTestModeToggle?: (enabled: boolean) => void;
+  title: string
+  onCancel: () => void
+  isTestMode?: boolean
+  onTestModeToggle?: (enabled: boolean) => void
 }
 
 const UploadHeader: React.FC<UploadHeaderProps> = ({
@@ -16,31 +17,27 @@ const UploadHeader: React.FC<UploadHeaderProps> = ({
 }) => {
   const handleTitleClick = () => {
     if (onTestModeToggle) {
-      onTestModeToggle(!isTestMode);
+      onTestModeToggle(!isTestMode)
     }
-  };
+  }
 
   return (
-    <div className="upload-header">
+    <div className='upload-header'>
       <h1
-        className={`header-title ${isTestMode ? "test-mode-active" : ""}`}
+        className={`header-title ${isTestMode ? 'test-mode-active' : ''}`}
         onClick={handleTitleClick}
-        title={
-          isTestMode
-            ? "Test Mode: ON (click to disable)"
-            : "Click to enable Test Mode"
-        }
+        title={isTestMode ? 'Test Mode: ON (click to disable)' : 'Click to enable Test Mode'}
       >
         {title}
-        {isTestMode && <span className="test-mode-indicator"> • TEST</span>}
+        {isTestMode && <span className='test-mode-indicator'> • TEST</span>}
       </h1>
-      <div className="header-controls">
-        <button className="cancel-button" onClick={onCancel}>
+      <div className='header-controls'>
+        <button className='cancel-button' onClick={onCancel}>
           Cancel
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UploadHeader;
+export default UploadHeader

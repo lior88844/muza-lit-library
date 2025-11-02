@@ -41,6 +41,10 @@
     padding-bottom: 160px; /* for the music player */
     overflow-y: auto;
     height: calc(100vh - var(--muza-topbar-height, 64px));
+    &.minimal-layout-main {
+      height: 100vh;
+      padding-bottom: 0;
+    }
   }
 }
 

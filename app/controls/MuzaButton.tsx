@@ -1,15 +1,17 @@
-import React from "react";
-import "./MuzaButton.scss";
-import MuzaIcon from "~/icons/MuzaIcon";
+import './MuzaButton.scss'
+
+import React from 'react'
+
+import MuzaIcon from '~/icons/MuzaIcon'
 
 interface MuzaButtonProps {
-  content?: string;
-  iconName?: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  size?: "small" | "default" | "medium";
-  className?: string;
-  "data-name"?: string;
+  content?: string
+  iconName?: string
+  onClick?: () => void
+  disabled?: boolean
+  size?: 'small' | 'default' | 'medium'
+  className?: string
+  'data-name'?: string
 }
 
 const MuzaButton: React.FC<MuzaButtonProps> = ({
@@ -17,13 +19,13 @@ const MuzaButton: React.FC<MuzaButtonProps> = ({
   iconName,
   onClick,
   disabled = false,
-  size = "default",
-  className = "",
-  "data-name": dataName,
+  size = 'default',
+  className = '',
+  'data-name': dataName,
   ...props
 }) => {
-  const sizeClass = size !== "default" ? `muza-button--${size}` : "";
-  const buttonClasses = `muza-button ${sizeClass} ${className}`.trim();
+  const sizeClass = size !== 'default' ? `muza-button--${size}` : ''
+  const buttonClasses = `muza-button ${sizeClass} ${className}`.trim()
 
   return (
     <button
@@ -36,7 +38,7 @@ const MuzaButton: React.FC<MuzaButtonProps> = ({
       {iconName && <MuzaIcon iconName={iconName} />}
       {content && <span>{content}</span>}
     </button>
-  );
-};
+  )
+}
 
-export default MuzaButton;
+export default MuzaButton

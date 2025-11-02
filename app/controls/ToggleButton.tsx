@@ -1,39 +1,35 @@
-import React from "react";
-import "./ToggleButton.scss";
+import './ToggleButton.scss'
+
+import React from 'react'
 
 interface ToggleButtonProps {
-  checked: boolean;
-  label?: string;
-  disabled?: boolean;
-  onChange: (checked: boolean) => void;
+  checked: boolean
+  label?: string
+  disabled?: boolean
+  onChange: (checked: boolean) => void
 }
 
 const ToggleButton: React.FC<ToggleButtonProps> = ({
   checked,
-  label = "",
+  label = '',
   disabled = false,
   onChange,
 }) => {
   const handleToggle = () => {
     if (!disabled) {
-      onChange(!checked);
+      onChange(!checked)
     }
-  };
+  }
 
   return (
-    <div className="toggle-wrapper" onClick={handleToggle}>
-      <label className="toggle">
-        <input
-          type="checkbox"
-          checked={checked}
-          disabled={disabled}
-          onChange={handleToggle}
-        />
-        <span className="slider"> </span>
+    <div className='toggle-wrapper' onClick={handleToggle}>
+      <label className='toggle'>
+        <input type='checkbox' checked={checked} disabled={disabled} onChange={handleToggle} />
+        <span className='slider'> </span>
       </label>
-      {label && <span className="label"> {label} </span>}
+      {label && <span className='label'> {label} </span>}
     </div>
-  );
-};
+  )
+}
 
-export default ToggleButton;
+export default ToggleButton

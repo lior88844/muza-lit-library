@@ -1,222 +1,129 @@
-import React, { useState } from "react";
-import "./MediaHeader.scss";
-import type {
-  Album,
-  SongDetails,
-  MusicPlaylist,
-  Artist,
-} from "~/appData/models";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import { toast } from "react-toastify";
-import AlbumInfoModal from "~/components/albumDisplays/AlbumInfoModal";
-import { useTranslation } from "~/lib/i18n/translations";
+import './MediaHeader.scss'
 
+import React from 'react'
+import { FaPause, FaPlay } from 'react-icons/fa'
+
+import MuzaButton from '~/controls/MuzaButton'
+import MuzaIcon from '~/icons/MuzaIcon'
+import { useTranslation } from '~/lib/i18n/translations'
+// Removed unused imports: useSubmit, useActionData
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import type { SongDetails } from '~/store/models'
+
+import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+import type { MediaTypeEnum } from '../../../server/db/user-library.entity'
+import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 // Import remaining sub-components
-import MediaCover from "./components/MediaCover/MediaCover";
-import MediaMetadata from "./components/MediaMetadata/MediaMetadata";
-import MuzaButton from "~/controls/MuzaButton";
-import MuzaIcon from "~/icons/MuzaIcon";
-import { FaPause, FaPlay } from "react-icons/fa";
+import MediaCover from './components/MediaCover/MediaCover'
+import MediaMetadata, { type MediaMetadataProps } from './components/MediaMetadata/MediaMetadata'
 
 interface MediaHeaderProps {
   // Generic media object that works for albums, playlists, etc.
-  media: Album | MusicPlaylist | Artist;
-  songs: SongDetails[];
-  mediaType: "album" | "playlist" | "artist";
+  songs: SongDetails[]
+  mediaType: MediaTypeEnum
+  title: string
+  imageSrc: string
+  creator?: string
+  visibility?: PlaylistVisibilityEnum
+  mediaMetadata: Omit<MediaMetadataProps, 'type'>
+  // Resource identification for library operations
+  resourceId: number
   // Optional customization
-  showBackButton?: boolean;
-  customActions?: React.ReactNode;
+  onInfoClick?: () => void
+  showBackButton?: boolean
+  customActions?: React.ReactNode
 }
 
 const MediaHeader: React.FC<MediaHeaderProps> = ({
-  media,
   songs,
   mediaType,
+  title,
+  imageSrc,
+  creator,
+  visibility,
+  mediaMetadata,
+  resourceId,
   showBackButton = true,
   customActions,
+  onInfoClick,
 }) => {
-  const { t } = useTranslation();
-  const {
-    selectedSong,
-    setSelectedSong,
-    setSelectedPlaListOrAlbum,
-    isPlaying,
-    setIsPlaying,
-  } = useCurrentPlayerStore();
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const addToLibrary = () => {
-    toast(t(`${mediaType}.addedToLibrary`), {
-      position: "bottom-center",
-      hideProgressBar: true,
-    });
-  };
-
+  const { t } = useTranslation()
+  const { setSelectedSong, isPlaying, setIsPlaying } = useCurrentPlayerStore()
+  const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
+  const isInLibrary = getIsInLibrary(mediaType, resourceId)
+  const onToggleAddLibrary = () => {
+    toggleAddLibrary(mediaType, resourceId)
+  }
   const handlePlayPause = () => {
     if (isPlaying) {
       // If currently playing, pause
-      setIsPlaying(false);
+      setIsPlaying(false)
     } else {
-      // If not playing, start playing the media
       if (songs.length > 0) {
-        setSelectedSong(songs[0]);
-        // Only set album context for albums, not playlists
-        if (mediaType === "album") {
-          setSelectedPlaListOrAlbum(media as Album);
-        }
-        setIsPlaying(true);
+        setSelectedSong(songs[0])
+        setIsPlaying(true)
       }
     }
-  };
+  }
 
   const goBack = () => {
-    window.history.back();
-  };
-
-  // Helper function to safely get title
-  const getMediaTitle = () => {
-    if (mediaType === "artist") {
-      return (media as Artist).name || "";
-    }
-    return (media as Album | MusicPlaylist).title || "";
-  };
-
-  const getMediaImageSrc = () => {
-    if (mediaType === "artist") {
-      return (media as Artist).imageUrl || "";
-    }
-    if (mediaType === "playlist") {
-      // For playlists, return array of first 4 song images for collage
-      const playlistImages = songs
-        .slice(0, 4)
-        .map(song => song.imageSrc || "/art/imag_1.jpg");
-      return playlistImages.length >= 4
-        ? playlistImages
-        : (media as MusicPlaylist).imageSrc || "";
-    }
-    return (media as Album | MusicPlaylist).imageSrc || "";
-  };
-
-  // Dynamic content based on media type
-  const getCreatorInfo = () => {
-    switch (mediaType) {
-      case "album":
-        return { creator: (media as Album).artist, label: "" };
-      case "playlist":
-        return {
-          creator: (media as MusicPlaylist).author || "",
-          label: t("common.by"),
-        };
-      case "artist":
-        return { creator: "", label: "" }; // Artists don't have creators
-      default:
-        return { creator: "", label: "" };
-    }
-  };
-
-  const getMetadataProps = () => {
-    switch (mediaType) {
-      case "album": {
-        const album = media as Album;
-        return {
-          type: "album" as const,
-          year: album.year,
-          songCount: songs.length,
-        };
-      }
-      case "playlist":
-        return {
-          type: "playlist" as const,
-          songCount: songs.length,
-          // Note: visibility is now handled as separate badge
-        };
-      case "artist": {
-        const artist = media as Artist;
-        return {
-          type: "artist" as const,
-          followerCount: 0, // Would need to be added to Artist interface
-        };
-      }
-      default:
-        return {
-          type: "album" as const,
-          songCount: songs.length,
-        };
-    }
-  };
+    window.history.back()
+  }
 
   const getPlayButtonText = () => {
-    const action = isPlaying ? "pause" : "play";
     switch (mediaType) {
-      case "album":
-        return isPlaying ? t("common.pause") : t("common.playAlbum");
-      case "playlist":
-        return isPlaying ? t("common.pause") : t("common.playPlaylist");
-      case "artist":
-        return isPlaying ? t("common.pause") : t("common.playArtist");
+      case 'album':
+        return isPlaying ? t('common.pause') : t('common.playAlbum')
+      case 'playlist':
+        return isPlaying ? t('common.pause') : t('common.playPlaylist')
+      case 'artist':
+        return isPlaying ? t('common.pause') : t('common.playArtist')
       default:
-        return isPlaying ? t("common.pause") : t("common.play");
+        return isPlaying ? t('common.pause') : t('common.play')
     }
-  };
-
-  const { creator, label } = getCreatorInfo();
-  const metadataProps = getMetadataProps();
+  }
 
   return (
     <>
-      <div
-        className={`media-header-layout ${showBackButton ? "has-back-button" : ""}`}
-      >
+      <div className={`media-header-layout ${showBackButton ? 'has-back-button' : ''}`}>
         {showBackButton && (
-          <div className="back-close-section" data-name="back & close">
+          <div className='back-close-section' data-name='back & close'>
             <MuzaButton
-              iconName="ChevronDown"
+              iconName='ChevronDown'
               onClick={goBack}
-              size="small"
-              className="back-button"
-              data-name="back"
+              size='small'
+              className='back-button'
+              data-name='back'
             />
           </div>
         )}
 
-        <div className="media-header" data-name="Media-Header">
-          <div className="media-content-section media-content-section--horizontal">
-            <MediaCover
-              imageSrc={getMediaImageSrc()}
-              title={getMediaTitle()}
-              mediaType={mediaType}
-            />
+        <div className='media-header' data-name='Media-Header'>
+          <div className='media-content-section media-content-section--horizontal'>
+            <MediaCover imageSrc={imageSrc} title={title} mediaType={mediaType} />
 
-            <div className="info-section">
-              <div className="titles-section" data-name="Titles">
-                <div className="title-metadata-group">
+            <div className='info-section'>
+              <div className='titles-section' data-name='Titles'>
+                <div className='title-metadata-group'>
                   {/* Playlist Badge and Metadata */}
-                  {mediaType === "playlist" && (
-                    <div className="playlist-badge-section">
-                      <div className="playlist-badge" data-name="Badge">
-                        <div className="badge-icon">
-                          <MuzaIcon iconName="ListMusic" />
+                  {mediaType === 'playlist' && (
+                    <div className='playlist-badge-section'>
+                      <div className='playlist-badge' data-name='Badge'>
+                        <div className='badge-icon'>
+                          <MuzaIcon iconName='ListMusic' />
                         </div>
-                        <span className="badge-text">Playlist</span>
+                        <span className='badge-text'>Playlist</span>
                       </div>
-                      <span className="metadata-separator">•</span>
-                      <span className="metadata-text">
-                        {songs.length} Songs
-                      </span>
-                      <span className="metadata-separator">•</span>
-                      <span className="metadata-text">
+                      <span className='metadata-separator'>•</span>
+                      <span className='metadata-text'>{songs.length} Songs</span>
+                      <span className='metadata-separator'>•</span>
+                      <span className='metadata-text'>
                         {Math.floor(
-                          songs.reduce(
-                            (total, song) => total + (song.time || 0),
-                            0
-                          ) / 60
+                          songs.reduce((total, song) => total + (song.time || 0), 0) / 60
                         )}
-                        h{" "}
+                        h{' '}
                         {Math.floor(
-                          songs.reduce(
-                            (total, song) => total + (song.time || 0),
-                            0
-                          ) % 60
+                          songs.reduce((total, song) => total + (song.time || 0), 0) % 60
                         )}
                         min
                       </span>
@@ -224,87 +131,74 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   )}
 
                   {/* Title */}
-                  <div className="title-info title-info--left">
-                    <div className="album-title">{getMediaTitle()}</div>
-                    {mediaType === "playlist" && (
-                      <div className="playlist-description">
-                        {(media as MusicPlaylist).description ||
-                          "Description goes here"}
-                      </div>
-                    )}
-                    {mediaType !== "playlist" && creator && (
-                      <div className="creator-name">
-                        {label && `${label} `}
-                        {creator}
-                      </div>
-                    )}
+                  <div className='title-info title-info--left'>
+                    <div className='album-title'>{title}</div>
+                    {creator && <div className='playlist-description'>{creator}</div>}
                   </div>
 
                   {/* User Info Section for Playlists */}
-                  {mediaType === "playlist" && (
-                    <div className="user-info-section">
-                      <div className="user-info">
-                        <div className="user-avatar">
-                          <img src="/art/imag_1.jpg" alt="User Avatar" />
+                  {mediaType === 'playlist' && (
+                    <div className='user-info-section'>
+                      <div className='user-info'>
+                        <div className='user-avatar'>
+                          <img src='/art/imag_1.jpg' alt='User Avatar' />
                         </div>
-                        <span className="user-name">User&apos;s Name</span>
+                        <span className='user-name'>User&apos;s Name</span>
                       </div>
-                      <div className="visibility-badge" data-name="Badge">
-                        <div className="badge-icon">
-                          <MuzaIcon iconName="globe" />
+                      <div className='visibility-badge' data-name='Badge'>
+                        <div className='badge-icon'>
+                          <MuzaIcon iconName='globe' />
                         </div>
-                        <span className="badge-text">
-                          {(media as MusicPlaylist).visibility === "private"
-                            ? t("common.private")
-                            : t("common.public")}
+                        <span className='badge-text'>
+                          {visibility === PlaylistVisibilityEnum.Private
+                            ? t('common.private')
+                            : t('common.public')}
                         </span>
                       </div>
                     </div>
                   )}
 
                   {/* Non-playlist metadata */}
-                  {mediaType !== "playlist" && (
-                    <MediaMetadata {...metadataProps} />
+                  {mediaType !== 'playlist' && (
+                    <MediaMetadata type={mediaType} {...mediaMetadata} />
                   )}
                 </div>
 
-                <div className="actions-section">
+                <div className='actions-section'>
                   {/* PlayButton content inlined */}
-                  <div className="ctas-section" data-name="CTAs">
+                  <div className='ctas-section' data-name='CTAs'>
                     <button
-                      className="play-album-button"
+                      className='play-album-button'
                       onClick={handlePlayPause}
                       disabled={songs.length === 0}
-                      data-name="Button"
+                      data-name='Button'
                     >
-                      <div className="play-icon">
-                        {isPlaying ? <FaPause /> : <FaPlay />}
-                      </div>
-                      <span className="play-text">{getPlayButtonText()}</span>
+                      <div className='play-icon'>{isPlaying ? <FaPause /> : <FaPlay />}</div>
+                      <span className='play-text'>{getPlayButtonText()}</span>
                     </button>
                   </div>
 
                   {/* ActionButtonGroup content inlined */}
-                  <div className="action-buttons action-buttons--end action-buttons--gap-medium">
+                  <div className='action-buttons action-buttons--end action-buttons--gap-medium'>
                     {customActions || (
                       <>
                         <MuzaButton
-                          iconName="plus"
-                          onClick={addToLibrary}
-                          size="medium"
-                          data-name="Add-Download Button"
+                          iconName={isInLibrary ? 'heart' : 'plus'}
+                          onClick={onToggleAddLibrary}
+                          size='medium'
+                          data-name='Add-Download Button'
                         />
                         <MuzaButton
-                          iconName="info"
-                          onClick={() => setModalOpen(true)}
-                          size="medium"
-                          data-name="Info Button"
+                          iconName='info'
+                          onClick={onInfoClick}
+                          size='medium'
+                          data-name='Info Button'
                         />
                         <MuzaButton
-                          iconName="ellipsis"
+                          iconName='ellipsis'
                           onClick={() => {}}
-                          size="medium"
-                          data-name="Menu Button"
+                          size='medium'
+                          data-name='Menu Button'
                         />
                       </>
                     )}
@@ -315,13 +209,8 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           </div>
         </div>
       </div>
-
-      <AlbumInfoModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-      />
     </>
-  );
-};
+  )
+}
 
-export default MediaHeader;
+export default MediaHeader

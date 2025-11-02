@@ -1,57 +1,47 @@
-import { useNavigate } from "react-router";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import PlaylistGrid from "~/components/listsDisplays/PlaylistGrid";
-import CreatePlaylistModal from "~/components/ui/CreatePlaylistModal";
-import { useState } from "react";
-import { useTranslation } from "~/lib/i18n/translations";
+import '../styles/scrollbar.scss'
+import '../styles/variables.scss'
+import '../styles/main.scss'
 
-import "../styles/scrollbar.scss";
-import "../styles/variables.scss";
-import "../styles/main.scss";
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+
+import PlaylistGrid from '~/components/listsDisplays/PlaylistGrid'
+import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
+import { useTranslation } from '~/lib/i18n/translations'
+import { useMedia } from '~/store/media/mediaContext'
+import { useAddPlaylist } from '~/store/media/useAddPlaylist'
+import type { MusicPlaylist } from '~/store/models'
+
+import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'
 
 export default function Playlists() {
-  const { t } = useTranslation();
-  const { playlists, createPlaylist } = useMusicLibraryStore();
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation()
+  const { playlists, library } = useMedia()
+  const navigate = useNavigate()
+  const { addPlaylist } = useAddPlaylist()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handlePlaylistClick = (playlist: any) => {
+  const handlePlaylistClick = (playlist: MusicPlaylist) => {
     // Navigate to individual playlist detail page using state like albums
-    navigate("/playlist", { state: { playlist } });
-  };
+    navigate(`/playlists/${playlist.id}`)
+  }
 
   const handleCreatePlaylist = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
-  const handleCreatePlaylistSubmit = (name: string, visibility: string) => {
-    // Create the new playlist
-    const newPlaylist = {
-      id: Date.now().toString(), // Simple ID generation
-      title: name,
-      name,
-      visibility,
-      songs: [],
-      suggestions: [],
-      imageSrc: "", // Will be set when songs are added
-      createdAt: new Date().toISOString(),
-    };
-
-    // Add to store if the function exists
-    if (createPlaylist) {
-      createPlaylist(newPlaylist);
-    }
-
-    setIsModalOpen(false);
-  };
+  const handleCreatePlaylistSubmit = async (name: string, visibility: PlaylistVisibilityEnum) => {
+    await addPlaylist(name, visibility)
+    setIsModalOpen(false)
+  }
 
   return (
     <main>
-      <h1>{t("page.playlists")}</h1>
+      <h1>{t('page.playlists')}</h1>
       <hr />
 
       <PlaylistGrid
@@ -66,5 +56,5 @@ export default function Playlists() {
         onCreatePlaylist={handleCreatePlaylistSubmit}
       />
     </main>
-  );
+  )
 }

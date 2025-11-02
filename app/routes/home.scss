@@ -7,15 +7,13 @@
   align-self: center;
   .page-header {
     height: 54px;
-    padding: var(--muza-section-scrollbar-height, 3px)
-      var(--muza-spacing-xxl, 32px);
+    padding: var(--muza-section-scrollbar-height, 3px) var(--muza-spacing-xxl, 32px);
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     h1 {
-      font-family:
-        var(--typography_font_family_font_sans, "Founders Grotesk"), sans-serif;
+      font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
       font-size: var(--muza-title-font-size, 27px);
       font-weight: var(--muza-font-weight-bold-extra, 700);
       line-height: 1.2;

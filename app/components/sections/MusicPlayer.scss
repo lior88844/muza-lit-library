@@ -16,7 +16,7 @@
   font-family:
     system-ui,
     -apple-system,
-    "Segoe UI",
+    'Segoe UI',
     Roboto,
     sans-serif;
 }
@@ -48,7 +48,7 @@
     .track-title {
       font-size: var(--muza-songline-title-font-size, 16px);
       font-weight: var(--muza-font-weight-bold, 600);
-      font-family: var(--typography-font-family-font-sans, "Founders Grotesk");
+      font-family: var(--typography-font-family-font-sans, 'Founders Grotesk');
       color: var(--muza-track-title-color, #111827);
       white-space: nowrap;
       overflow: hidden;
@@ -57,7 +57,7 @@
 
     .track-artist {
       color: var(--muza-track-artist-color, #6b7280);
-      font-family: var(--typography-font-family-font-sans, "Founders Grotesk");
+      font-family: var(--typography-font-family-font-sans, 'Founders Grotesk');
       font-size: var(--typography-base-sizes-extra-small-font-size, 14px);
       font-style: normal;
       font-weight: var(--font-weight-Regular, 400);

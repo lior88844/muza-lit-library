@@ -1,24 +1,24 @@
-import React from "react";
-import "./SuggestionsListItem.scss";
-import type { SongDetails } from "../../appData/models";
-import MuzaButton from "../../controls/MuzaButton";
-import SongDetailsView from "../songLineDisplays/SongDetails";
+import './SuggestionsListItem.scss'
+
+import React from 'react'
+
+import MuzaButton from '../../controls/MuzaButton'
+import type { SongDetails } from '../../store/models'
+import SongDetailsView from '../songLineDisplays/SongDetails'
 
 export type SuggestionsListItemProps = {
-  details: SongDetails;
-};
+  details: SongDetails
+}
 
-const SuggestionsListItem: React.FC<SuggestionsListItemProps> = ({
-  details,
-}) => {
+const SuggestionsListItem: React.FC<SuggestionsListItemProps> = ({ details }) => {
   return (
-    <div className="suggestions-list-item">
-      <span className="left">
+    <div className='suggestions-list-item'>
+      <span className='left'>
         <SongDetailsView details={details} onClick={() => {}} />
       </span>
-      <MuzaButton content="+" />
+      <MuzaButton content='+' />
     </div>
-  );
-};
+  )
+}
 
-export default SuggestionsListItem;
+export default SuggestionsListItem
