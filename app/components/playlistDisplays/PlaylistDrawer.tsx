@@ -25,7 +25,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { songs: allSongs } = useMedia()
-  
+
   // Get playlist directly from the store - Store is KING 👑
   const currentPlaylistDrawerId = useCurrentPlayerStore(state => state.currentPlaylistDrawerId)
   const playlist = usePlaylistStore(state => state.getPlaylistById(currentPlaylistDrawerId || 0))
@@ -59,7 +59,15 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    setIsDragOver(false)
+    // Only set isDragOver to false if we're actually leaving the content area
+    // not just moving between child elements
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX
+    const y = e.clientY
+
+    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      setIsDragOver(false)
+    }
   }, [])
 
   // Helper function for adding songs to playlist
@@ -83,15 +91,16 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const removeSongFromPlaylist = useCallback(
     (songToRemove: SongDetails) => {
       if (!playlist?.id) return
-      
+
       // Filter out the removed song and re-index remaining songs
-      const updatedSongs = playlist.songs
-        ?.filter(song => song.id !== songToRemove.id)
-        .map((song, idx) => ({
-          ...song,
-          index: idx + 1,
-        })) || []
-      
+      const updatedSongs =
+        playlist.songs
+          ?.filter(song => song.id !== songToRemove.id)
+          .map((song, idx) => ({
+            ...song,
+            index: idx + 1,
+          })) || []
+
       updatePlaylist(playlist.id, {
         songs: updatedSongs,
       })
@@ -126,14 +135,22 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
             let tracksToAdd: SongDetails[] = []
 
             // Case 1: Album has full track details (from album detail page)
-            if (data.album.tracks && Array.isArray(data.album.tracks) && data.album.tracks.length > 0) {
+            if (
+              data.album.tracks &&
+              Array.isArray(data.album.tracks) &&
+              data.album.tracks.length > 0
+            ) {
               // Check if tracks are full SongDetails or just IDs
               if (typeof data.album.tracks[0] === 'object' && 'title' in data.album.tracks[0]) {
                 tracksToAdd = data.album.tracks as SongDetails[]
               }
             }
             // Case 2: Album only has song IDs (from homepage)
-            else if (data.album.songs && Array.isArray(data.album.songs) && data.album.songs.length > 0) {
+            else if (
+              data.album.songs &&
+              Array.isArray(data.album.songs) &&
+              data.album.songs.length > 0
+            ) {
               // Resolve song IDs to full song details
               tracksToAdd = data.album.songs
                 .map((songId: number) => allSongs.find((song: SongDetails) => song.id === songId))
@@ -175,7 +192,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
       if (descriptionChanged) {
         updates.description = playlistDescription
       }
-      
+
       // This will optimistically update the UI and save to backend
       updatePlaylist(playlist.id, updates)
     }
@@ -212,7 +229,12 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
 
-      <div className='playlist-drawer__content'>
+      <div
+        className='playlist-drawer__content'
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         <div className='playlist-drawer__info'>
           <div className='playlist-drawer__title-section'>
             <MuzaInputField
@@ -261,9 +283,6 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
           {/* Main drop zone - always visible at the top */}
           <div
             className={`playlist-drawer__drop-zone ${isDragOver ? 'playlist-drawer__drop-zone--active' : ''}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
           >
             <span>{t('playlist.dropSongsHere')}</span>
           </div>
