@@ -31,7 +31,7 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   playlist,
   onSelect,
 }) => {
-  const { setSelectedSong, setSelectedPlaListOrAlbum, setIsPlaying } = useCurrentPlayerStore()
+  const { setSelectedSong, setIsPlaying } = useCurrentPlayerStore()
 
   const handleClick = () => {
     onSelect?.({ title, songsCount, albumImages, userName })
