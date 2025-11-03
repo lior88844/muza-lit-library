@@ -10,7 +10,7 @@ import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist } from '~/store/models'
 
 interface PlaylistCoverProps {
-  albumImages: string[]
+  albumImages: string[] | null
   title: string
   songsCount: string
   userName: string
@@ -18,7 +18,7 @@ interface PlaylistCoverProps {
   onSelect?: (data: {
     title: string
     songsCount: string
-    albumImages: string[]
+    albumImages: string[] | null
     userName: string
   }) => void
 }
@@ -67,34 +67,37 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     },
   ]
 
-  // Ensure we have 4 images, pad with first image if needed
-  const safeAlbumImages = Array.isArray(albumImages) ? albumImages : []
-  const paddedImages = [...safeAlbumImages]
-  while (paddedImages.length < 4) {
-    paddedImages.push(paddedImages[0] || '')
-  }
+  // Use albumImages from generatePlaylistCoverImages as single source of truth
+  // null = empty playlist, should show empty state
+  const isEmpty = albumImages === null
 
   return (
     <div className='playlist-cover' onClick={handleClick}>
       <div className='playlist-cover__image-container'>
-        <div className='playlist-cover__collage'>
-          <div
-            className='playlist-cover__image playlist-cover__image--top-left'
-            style={{ backgroundImage: `url('${paddedImages[0]}')` }}
-          />
-          <div
-            className='playlist-cover__image playlist-cover__image--top-right'
-            style={{ backgroundImage: `url('${paddedImages[1]}')` }}
-          />
-          <div
-            className='playlist-cover__image playlist-cover__image--bottom-left'
-            style={{ backgroundImage: `url('${paddedImages[2]}')` }}
-          />
-          <div
-            className='playlist-cover__image playlist-cover__image--bottom-right'
-            style={{ backgroundImage: `url('${paddedImages[3]}')` }}
-          />
-        </div>
+        {isEmpty ? (
+          <div className='playlist-cover__empty'>
+            <MuzaIcon iconName='playlist' />
+          </div>
+        ) : (
+          <div className='playlist-cover__collage'>
+            <div
+              className='playlist-cover__image playlist-cover__image--top-left'
+              style={{ backgroundImage: `url('${albumImages[0]}')` }}
+            />
+            <div
+              className='playlist-cover__image playlist-cover__image--top-right'
+              style={{ backgroundImage: `url('${albumImages[1]}')` }}
+            />
+            <div
+              className='playlist-cover__image playlist-cover__image--bottom-left'
+              style={{ backgroundImage: `url('${albumImages[2]}')` }}
+            />
+            <div
+              className='playlist-cover__image playlist-cover__image--bottom-right'
+              style={{ backgroundImage: `url('${albumImages[3]}')` }}
+            />
+          </div>
+        )}
         <HoverOverlay
           showPlayButton={true}
           onPlayPause={e => {

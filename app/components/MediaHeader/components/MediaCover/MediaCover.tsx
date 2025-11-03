@@ -2,6 +2,7 @@ import './MediaCover.scss'
 
 import React from 'react'
 
+import MuzaIcon from '~/icons/MuzaIcon'
 import { generatePlaylistCoverImages } from '~/lib/utils'
 import type { MusicPlaylist } from '~/store/models'
 
@@ -24,9 +25,19 @@ const MediaCover: React.FC<MediaCoverProps> = ({
 }) => {
   // Generate playlist collage
   const renderCoverContent = () => {
-    // For playlists, generate cover from songs
+    // For playlists, generate cover from songs using single source of truth
     if (mediaType === 'playlist' && playlist) {
       const images = generatePlaylistCoverImages(playlist)
+      
+      // null = empty playlist, show empty state
+      if (images === null) {
+        return (
+          <div className='playlist-empty' data-name='Empty Playlist'>
+            <MuzaIcon iconName='playlist' />
+          </div>
+        )
+      }
+
       return (
         <div className='playlist-collage' data-name='Playlist Collage'>
           <div

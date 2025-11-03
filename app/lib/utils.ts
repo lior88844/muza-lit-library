@@ -4,11 +4,12 @@ import type { MusicPlaylist } from '~/store/models'
  * Generates playlist cover images from the playlist's songs
  * Takes up to 4 unique album covers from the songs
  * @param playlist - The playlist to generate images for
- * @returns Array of up to 4 image URLs
+ * @returns Array of up to 4 image URLs, or null if playlist is empty (should show empty state)
  */
-export function generatePlaylistCoverImages(playlist: MusicPlaylist | undefined): string[] {
+export function generatePlaylistCoverImages(playlist: MusicPlaylist | undefined): string[] | null {
+  // Return null for empty playlists - signals that empty state should be shown
   if (!playlist?.songs || playlist.songs.length === 0) {
-    return ['/art/muza.png']
+    return null
   }
 
   const uniqueImages: string[] = []

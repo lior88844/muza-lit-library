@@ -23,6 +23,21 @@ icon-playlist {
       0px 1px 2px 0px rgba(0, 0, 0, 0.06);
   }
 
+  &__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--muza-image-background-color-bg);
+
+    muza-icon {
+      width: 48px;
+      height: 48px;
+      fill: #999999;
+    }
+  }
+
   &__collage {
     position: absolute;
     inset: 0;

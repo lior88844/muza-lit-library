@@ -73,15 +73,19 @@ const MusicListSectionComponent: React.FC<
           />
         ))
       case 'playlist':
-        return list.map((item, idx) => (
-          <PlaylistCover
-            key={idx}
-            albumImages={[item.imageSrc || '']}
-            title={item.title}
-            songsCount={item.songsCount?.toString() || ''}
-            userName={item.author || t('common.unknown')}
-          />
-        ))
+        return list.map((item, idx) => {
+          // Follow same pattern as generatePlaylistCoverImages - null for empty playlists
+          const albumImages = item.songsCount === 0 ? null : [item.imageSrc || '']
+          return (
+            <PlaylistCover
+              key={idx}
+              albumImages={albumImages}
+              title={item.title}
+              songsCount={item.songsCount?.toString() || ''}
+              userName={item.author || t('common.unknown')}
+            />
+          )
+        })
       case 'song':
         return songs!.map(song => (
           <SongLineWithCover
