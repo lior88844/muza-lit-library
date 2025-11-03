@@ -20,24 +20,17 @@ const MediaCover: React.FC<MediaCoverProps> = ({
   // Generate playlist collage if imageSrc is an array
   const renderCoverContent = () => {
     if (Array.isArray(imageSrc) && imageSrc.length >= 4) {
+      const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
+
       return (
         <div className='playlist-collage' data-name='Playlist Collage'>
-          <div
-            className='collage-item collage-item--top-left'
-            style={{ backgroundImage: `url('${imageSrc[0]}')` }}
-          />
-          <div
-            className='collage-item collage-item--top-right'
-            style={{ backgroundImage: `url('${imageSrc[1]}')` }}
-          />
-          <div
-            className='collage-item collage-item--bottom-left'
-            style={{ backgroundImage: `url('${imageSrc[2]}')` }}
-          />
-          <div
-            className='collage-item collage-item--bottom-right'
-            style={{ backgroundImage: `url('${imageSrc[3]}')` }}
-          />
+          {imageSrc.slice(0, 4).map((image, index) => (
+            <div
+              key={index}
+              className={`collage-item collage-item--${positions[index]}`}
+              style={{ backgroundImage: `url('${image}')` }}
+            />
+          ))}
         </div>
       )
     }
