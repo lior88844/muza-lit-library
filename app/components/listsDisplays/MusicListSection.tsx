@@ -16,8 +16,6 @@ const MusicListSectionComponent: React.FC<
     onAlbumClick?: (album: Album) => void
     albums?: Album[]
     songs?: SongDetails[]
-    onSongClick?: (song: SongDetails) => void
-    selectedSong?: SongDetails
     artists?: Artist[]
   }
 > = ({
@@ -29,8 +27,6 @@ const MusicListSectionComponent: React.FC<
   onAlbumClick,
   albums,
   songs,
-  onSongClick,
-  selectedSong,
   artists,
 }) => {
   const { t } = useTranslation()
