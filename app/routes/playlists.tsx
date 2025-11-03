@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router'
 import PlaylistGrid from '~/components/listsDisplays/PlaylistGrid'
 import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
 import { useTranslation } from '~/lib/i18n/translations'
-import { useAddPlaylist } from '~/store/media/useAddPlaylist'
 import type { MusicPlaylist } from '~/store/models'
 import { usePlaylistStore } from '~/store/playlistStore'
 
@@ -18,7 +17,7 @@ export default function Playlists() {
   const { t } = useTranslation()
   const playlists = usePlaylistStore(state => state.playlists)
   const navigate = useNavigate()
-  const { addPlaylist } = useAddPlaylist()
+  const addPlaylist = usePlaylistStore(state => state.addPlaylist)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handlePlaylistClick = (playlist: MusicPlaylist) => {
