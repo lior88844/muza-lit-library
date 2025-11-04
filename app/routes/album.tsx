@@ -36,8 +36,14 @@ export async function loader({ params }: { params: { id: string } }) {
 }
 
 export default function AlbumPage() {
-  const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } =
-    useCurrentPlayerStore()
+  const {
+    selectedSong,
+    setSelectedSong,
+    setIsPlaying,
+    isPlaying,
+    togglePlayPause,
+    isPlaylistDrawerOpen,
+  } = useCurrentPlayerStore()
   const library = useMedia()
   const songs = library.songs
   const [isModalOpen, setModalOpen] = useState(false)
@@ -82,6 +88,7 @@ export default function AlbumPage() {
                 }
               }}
               isPlaying={track.id === selectedSong?.id && !!isPlaying}
+              draggable={isPlaylistDrawerOpen}
             />
           )
         })}

@@ -3,6 +3,7 @@ import './SongLine.scss'
 import React, { type MouseEventHandler, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+import { useDraggable } from '~/lib/hooks/useDraggable'
 
 import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
@@ -14,6 +15,7 @@ interface SongLineProps {
   onClick: MouseEventHandler<HTMLDivElement>
   isPlaying: boolean
   showPreview?: boolean
+  draggable?: boolean
 }
 
 const formatDuration = (seconds: number): string => {
@@ -37,10 +39,16 @@ const SongLine: React.FC<SongLineProps> = ({
   onClick,
   isPlaying,
   showPreview = false,
+  draggable = false,
 }) => {
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const [isHovered, setIsHovered] = useState(false)
   const isInLibrary = getIsInLibrary(MediaTypeEnum.Track, details.id)
+  const { isDragging, dragHandlers } = useDraggable({
+    type: 'song',
+    data: details,
+    enabled: draggable,
+  })
 
   const addToLibrary = async () => {
     await toggleAddLibrary(MediaTypeEnum.Track, details.id)
@@ -77,10 +85,11 @@ const SongLine: React.FC<SongLineProps> = ({
 
   return (
     <div
-      className={`song-line-simple ${isPlaying ? 'playing' : ''} ${isHovered ? 'hovered' : ''}`}
+      className={`song-line-simple ${isPlaying ? 'playing' : ''} ${isHovered ? 'hovered' : ''} ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      {...dragHandlers}
     >
       <div className='song-container'>
         <div className='track-info'>

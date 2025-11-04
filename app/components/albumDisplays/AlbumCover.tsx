@@ -1,8 +1,9 @@
 import './AlbumCover.scss'
 
-import React, { useState } from 'react'
+import React from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
+import { useDraggable } from '~/lib/hooks/useDraggable'
 import type { Album } from '~/store/models'
 
 interface AlbumCoverProps {
@@ -22,7 +23,11 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({
   albumDetails,
   draggable = true,
 }) => {
-  const [isDragging, setIsDragging] = useState(false)
+  const { isDragging, dragHandlers } = useDraggable({
+    type: 'album',
+    data: albumDetails,
+    enabled: draggable && !!albumDetails,
+  })
 
   const handleClick = () => {
     if (onAlbumSelect) {
@@ -30,31 +35,11 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({
     }
   }
 
-  const handleDragStart = (e: React.DragEvent) => {
-    if (!draggable || !albumDetails) return
-
-    setIsDragging(true)
-
-    const dragData = {
-      type: 'album',
-      album: albumDetails,
-    }
-
-    e.dataTransfer.setData('application/json', JSON.stringify(dragData))
-    e.dataTransfer.effectAllowed = 'copy'
-  }
-
-  const handleDragEnd = () => {
-    setIsDragging(false)
-  }
-
   return (
     <div
       className={`album-cover ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
       onClick={handleClick}
-      draggable={draggable && !!albumDetails}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      {...dragHandlers}
     >
       <div className='image-container'>
         <img src={imageSrc || '/art/imag_1.jpg'} alt={title} />

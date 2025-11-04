@@ -16,6 +16,28 @@
   cursor: default;
   border-radius: var(--muza-border-radius-md);
   cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &.draggable {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    // Make sure the element can be dragged
+    -webkit-user-drag: element;
+    -khtml-user-drag: element;
+    -moz-user-drag: element;
+    -o-user-drag: element;
+    user-drag: element;
+  }
+
   &:hover,
   &.hovered {
     background: var(--hover-background);

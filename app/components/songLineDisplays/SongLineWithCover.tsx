@@ -3,6 +3,7 @@ import './SongLineWithCover.scss'
 import React, { type MouseEventHandler, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+import { useDraggable } from '~/lib/hooks/useDraggable'
 
 import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
@@ -43,38 +44,16 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   onRemoveSong,
 }) => {
   const [isHovered, setIsHovered] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const isInLibrary = getIsInLibrary(MediaTypeEnum.Track, details.id)
+  const { isDragging, dragHandlers, preventClickWhileDragging } = useDraggable({
+    type: 'song',
+    data: details,
+    enabled: draggable,
+  })
+
   const addToLibrary = async () => {
     await toggleAddLibrary(MediaTypeEnum.Track, details.id)
-  }
-
-  const handleDragStart = (e: React.DragEvent) => {
-    if (!draggable) return
-
-    setIsDragging(true)
-
-    const dragData = {
-      type: 'song',
-      song: details,
-    }
-
-    e.dataTransfer.setData('application/json', JSON.stringify(dragData))
-    e.dataTransfer.effectAllowed = 'copy'
-  }
-
-  const handleDragEnd = () => {
-    setIsDragging(false)
-  }
-
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isDragging) {
-      e.preventDefault()
-      e.stopPropagation()
-      return
-    }
-    onClick(e)
   }
 
   const renderIcon = () => {
@@ -106,16 +85,17 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
 
   return (
     <div
-      className={`song-line-with-cover ${isPlaying ? 'playing' : ''} ${draggable ? 'draggable' : ''}`}
+      className={`song-line-with-cover ${isPlaying ? 'playing' : ''} ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      draggable={draggable}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      {...dragHandlers}
     >
       <div className='song-line-with-cover__content'>
         {/* Album Cover */}
-        <div className='song-line-with-cover__cover' onClick={handleClick}>
+        <div
+          className='song-line-with-cover__cover'
+          onClick={e => preventClickWhileDragging(e, onClick)}
+        >
           <img
             src={details.imageSrc || '/art/imag_1.jpg'}
             alt={`${details.title} cover`}

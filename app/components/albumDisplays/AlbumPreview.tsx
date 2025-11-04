@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { useDraggable } from '~/lib/hooks/useDraggable'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { Album } from '~/store/models'
 
@@ -18,37 +19,21 @@ interface AlbumPreviewProps {
 const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick, draggable = true }) => {
   const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
+  const { isDragging, dragHandlers } = useDraggable({
+    type: 'album',
+    data: details,
+    enabled: draggable,
+  })
 
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation()
     setIsPlaying(!isPlaying)
   }
 
-  const handleDragStart = (e: React.DragEvent) => {
-    if (!draggable) return
-
-    setIsDragging(true)
-
-    const dragData = {
-      type: 'album',
-      album: details,
-    }
-
-    e.dataTransfer.setData('application/json', JSON.stringify(dragData))
-    e.dataTransfer.effectAllowed = 'copy'
-  }
-
-  const handleDragEnd = () => {
-    setIsDragging(false)
-  }
-
   return (
     <div
       className={`album-details-card ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
-      draggable={draggable}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      {...dragHandlers}
     >
       <div className='image-container' onClick={onAlbumClick}>
         <img src={details.imageSrc || '/art/imag_1.jpg'} alt={details.title} />

@@ -25,6 +25,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     setIsPlaying,
     togglePlayPause,
     openPlaylistDrawer,
+    isPlaylistDrawerOpen,
   } = useCurrentPlayerStore()
 
   // Use the actual playlist songs
@@ -105,6 +106,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
                   isPlaying={isCurrentSongPlaying(song)}
                   showPreview={showPreview}
                   showHoverActions={true}
+                  draggable={isPlaylistDrawerOpen}
                 />
               </div>
             )
