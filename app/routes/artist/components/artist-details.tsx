@@ -2,6 +2,7 @@ import './artist-details.scss'
 
 import type { ArtistResponse } from 'server/api/artist/types/ArtistResponse'
 
+import { AppButton } from '~/components/ui/app-button'
 import { Image } from '~/components/ui/image'
 import { useTranslation } from '~/lib/i18n/translations'
 
@@ -32,8 +33,7 @@ export function ArtistDetails({ artist }: ArtistHeaderProps) {
           </p>
         </span>
 
-        {/* TODO: Button.tsx */}
-        <button className='temp-btn'>{t('common.follow')}</button>
+        <AppButton>{t('common.follow')}</AppButton>
       </div>
 
       <div className='artist-details-stats'>

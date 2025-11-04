@@ -14,6 +14,7 @@
   &-content {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     justify-content: space-between;
     gap: var(--muza-spacing-lg);
 
@@ -46,14 +47,4 @@
     gap: var(--muza-spacing-lg);
     padding-inline-end: var(--muza-spacing-lg);
   }
-}
-
-// TODO: delete after Button.tsx is present
-.temp-btn {
-  border-radius: 9999px;
-  background-color: #1d4ed8;
-  width: 144px;
-  text-align: center;
-  padding-block: 8px;
-  color: white;
 }
