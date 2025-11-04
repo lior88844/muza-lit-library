@@ -26,8 +26,8 @@ export const useUpdatePlaylist = () => {
         playlist.id === playlistId
           ? {
               ...playlist,
-        ...updates,
-      }
+              ...updates,
+            }
           : playlist
       )
 
@@ -70,3 +70,4 @@ export const useUpdatePlaylist = () => {
 
   return { updatePlaylist, loading: fetcher.state === 'loading' }
 }
+
