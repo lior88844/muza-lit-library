@@ -61,7 +61,8 @@ export const links: Route.LinksFunction = () => [
   },
 ]
 
-const MINIMAL_LAYOUT_PAGES = ['/admin-upload', '/admin-portal', '/upload']
+const MINIMAL_LAYOUT_PAGES = ['/upload']
+const MINIMAL_LAYOUT_PARENTS = ['/admin']
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
@@ -104,6 +105,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   // Check if we're on pages that should hide the main music UI
   const isMinimalLayoutPage = MINIMAL_LAYOUT_PAGES.includes(location.pathname)
+  const isMinimalLayoutParent = MINIMAL_LAYOUT_PARENTS.some(parent =>
+    location.pathname.startsWith(parent)
+  )
 
   // Stop music when navigating to upload pages
   useEffect(() => {
@@ -138,7 +142,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }, [processedData.songs])
 
   const content = null
-
+  const isMinimalLayout = isMinimalLayoutPage || isMinimalLayoutParent
   return (
     <html lang='en' suppressHydrationWarning>
       <head>
@@ -151,7 +155,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Providers>
           <MediaContext.Provider value={processedData}>
             <div className='flex h-screen overflow-hidden'>
-              {!isMinimalLayoutPage && (
+              {!isMinimalLayout && (
                 <MusicSidebar
                   logoAlt={t('library.musicLibrary')}
                   logoSrc='/icons/muza.svg'
@@ -164,16 +168,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
               )}
 
               <div className='grow relative'>
-                {!isMinimalLayoutPage && <MusicTopbar />}
+                {!isMinimalLayout && <MusicTopbar />}
                 <main
                   className={cn(
-                    isMinimalLayoutPage
+                    isMinimalLayout
                       ? 'h-screen pb-0'
                       : 'relative p-6 pb-40 overflow-y-auto h-[calc(100vh-var(--muza-topbar-height))]'
                   )}
                 >
                   {content || children}
-                  {!isMinimalLayoutPage && (
+                  {!isMinimalLayout && (
                     <PlaylistDrawer
                       isOpen={isPlaylistDrawerOpen}
                       onClose={handleClosePlaylistDrawer}
@@ -181,7 +185,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     />
                   )}
                 </main>
-                {!isMinimalLayoutPage && <MuzaMusicPlayer />}
+                {!isMinimalLayout && <MuzaMusicPlayer />}
               </div>
             </div>
           </MediaContext.Provider>

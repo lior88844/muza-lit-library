@@ -33,6 +33,8 @@
     "@uppy/dashboard": "^4.3.2",
     "@uppy/drag-drop": "^4.1.2",
     "@uppy/file-input": "^4.2.2",
+    "ag-grid-community": "^34.3.1",
+    "ag-grid-react": "^34.3.1",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

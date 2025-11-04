@@ -269,7 +269,7 @@ export default function AdminUpload() {
     setUploadedItems([])
     setSelectedItemIds(new Set())
     setCurrentPage(1)
-    navigate('/')
+    navigate('/admin')
   }, [navigate])
 
   return (

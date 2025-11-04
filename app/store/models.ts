@@ -108,25 +108,6 @@ export interface Artist {
   albumsCount: number
 }
 
-interface MusicListItem {
-  imageSrc?: string
-  albumImages?: string[]
-  title: string
-  subTitle?: string
-  artistName?: string
-  songsCount?: number
-  albumsCount?: number
-  author?: string
-}
-
-export type MusicListSection = {
-  title: string
-  subTitle?: string
-  type: 'album' | 'artist' | 'playlist' | 'song'
-  list: MusicListItem[]
-  onShowAll?: (sectionTitle: string) => void
-}
-
 export type MusicPlaylist = {
   id: number
   title: string

@@ -8,6 +8,8 @@ import { labels } from './label.entity'
 import { playlists } from './playlist.entity'
 import { playlistShares } from './playlist-shares.entity'
 import { playlistTracks } from './playlist-tracks.entity'
+import { stacks } from './stack.entity'
+import { stackItems } from './stack-item.entity'
 import { tracks } from './track.entity'
 import { trackArtists } from './track-artist.entity'
 import { userLibrary } from './user-library.entity'
@@ -91,3 +93,14 @@ export const playlistSharesRelations = relations(playlistShares, ({ one }) => ({
 }))
 
 export const userLibraryRelations = relations(userLibrary, () => ({}))
+
+export const stacksRelations = relations(stacks, ({ many }) => ({
+  items: many(stackItems),
+}))
+
+export const stackItemsRelations = relations(stackItems, ({ one }) => ({
+  stack: one(stacks, {
+    fields: [stackItems.stackId],
+    references: [stacks.id],
+  }),
+}))
