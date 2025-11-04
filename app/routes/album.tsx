@@ -1,6 +1,4 @@
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
+import '../styles/variables.css'
 
 import { useMemo, useState } from 'react'
 import { useLoaderData } from 'react-router'
@@ -52,7 +50,7 @@ export default function AlbumPage() {
   )
 
   return (
-    <main>
+    <>
       <MediaHeader
         title={album.title}
         imageSrc={album.coverArt || ''}
@@ -67,7 +65,7 @@ export default function AlbumPage() {
         resourceId={album.id}
         showBackButton={true}
       />
-      <div className='album-song-list'>
+      <div>
         {album.tracks.map(track => {
           return (
             <SongLine
@@ -87,6 +85,6 @@ export default function AlbumPage() {
         })}
       </div>
       <AlbumInfoModal album={album} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-    </main>
+    </>
   )
 }

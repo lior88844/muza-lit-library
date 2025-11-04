@@ -1,0 +1,43 @@
+.artistDetails {
+  flex-grow: 1;
+  display: flex;
+  gap: var(--muza-spacing-xxl);
+  padding-bottom: var(--muza-spacing-xxl);
+  margin-bottom: var(--muza-spacing-xl);
+  border-bottom: 1px solid var(--muza-light-border-color);
+}
+
+.artistDetailsImage {
+  width: 128px;
+  border-radius: 50%;
+}
+
+.artistDetailsContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--muza-spacing-lg);
+}
+
+.artistDetailsContentBio {
+  color: var(--colors_sidebar_foreground_light);
+  font-size: var(--muza-subtitle-font-size);
+  line-height: 1.25;
+  letter-spacing: 0.2px;
+  max-width: 60%;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+.artistDetailsStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--muza-spacing-lg);
+  padding-inline-end: var(--muza-spacing-lg);
+}

@@ -1,8 +1,8 @@
-import './MuzaButton.scss'
-
 import React from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+
+import styles from './MuzaButton.module.css'
 
 interface MuzaButtonProps {
   content?: string
@@ -14,6 +14,9 @@ interface MuzaButtonProps {
   'data-name'?: string
 }
 
+/**
+ * @deprecated use ui/Button.tsx instead
+ */
 const MuzaButton: React.FC<MuzaButtonProps> = ({
   content,
   iconName,
@@ -24,8 +27,8 @@ const MuzaButton: React.FC<MuzaButtonProps> = ({
   'data-name': dataName,
   ...props
 }) => {
-  const sizeClass = size !== 'default' ? `muza-button--${size}` : ''
-  const buttonClasses = `muza-button ${sizeClass} ${className}`.trim()
+  const sizeClass = size !== 'default' ? styles[`muza-button--${size}`] : ''
+  const buttonClasses = `${styles['muza-button']} ${sizeClass} ${className}`.trim()
 
   return (
     <button

@@ -1,15 +1,15 @@
-import './PlaylistDetail.scss'
-
 import React from 'react'
+import { FaEllipsisV, FaPencilAlt } from 'react-icons/fa'
 
 import MediaHeader from '~/components/MediaHeader/MediaHeader'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
-import MuzaButton from '~/controls/MuzaButton'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 
 import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { MediaTypeEnum } from '../../../server/db/user-library.entity'
+import { Button, IconButton } from '../ui/button'
+import styles from './PlaylistDetail.module.css'
 
 interface PlaylistDetailProps {
   playlist: MusicPlaylist
@@ -48,8 +48,8 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
   }
 
   return (
-    <div className='playlist-detail'>
-      <div className='playlist-detail__container'>
+    <div className={styles['playlist-detail']}>
+      <div className={styles['playlist-detail__container']}>
         <MediaHeader
           songs={playlistSongs}
           mediaType={MediaTypeEnum.Playlist}
@@ -63,25 +63,22 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
           creator={playlist.author}
           showBackButton={true}
           customActions={
-            <div className='playlist-actions'>
-              <MuzaButton
-                iconName='ellipsis'
-                onClick={() => {}}
-                size='medium'
-                data-name='Menu Button'
-              />
-              <MuzaButton
-                iconName='pencil'
-                onClick={handleEditClick}
-                size='medium'
+            <div className={styles['playlist-actions']}>
+              <IconButton variant='secondary' icon={<FaEllipsisV />} data-name='Menu Button' />
+
+              <Button
+                variant='secondary'
+                iconStart={<FaPencilAlt />}
                 data-name='Edit Button'
-                content='Edit'
-              />
+                onClick={handleEditClick}
+              >
+                Edit
+              </Button>
             </div>
           }
         />
 
-        <div className='playlist-detail__song-list' data-name='Song List'>
+        <div className={styles['playlist-detail__song-list']} data-name='Song List'>
           {playlistSongs.map((song, index) => {
             // Show preview badge for first, fourth, sixth, seventh and eighth songs per Figma
             const showPreview = [3].includes(index)
@@ -89,7 +86,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
             return (
               <div
                 key={song.id}
-                className={`playlist-detail__song-item ${isCurrentSongPlaying(song) ? 'playing' : ''}`}
+                className={`${styles['playlist-detail__song-item']} ${isCurrentSongPlaying(song) ? styles.playing : ''}`}
               >
                 <SongLineWithCover
                   details={{ ...song, index: index + 1 }}

@@ -1,10 +1,9 @@
-import './AdminUploadTable.scss'
-
 import React, { useMemo } from 'react'
 
 import { isItemUploadReady } from '~/components/adminUpload/services/adminUploadService'
 import MuzaButton from '~/controls/MuzaButton'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 
 import { AdminUploadTableRow } from './AdminUploadTableRow'
 import type { UploadItem } from './types/UploadItem'
@@ -78,7 +77,10 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         <button
           key={i}
           onClick={() => onPageChange(i)}
-          className={`admin-upload-table__page-button ${i === currentPage ? 'admin-upload-table__page-button--active' : ''}`}
+          className={cn(
+            'w-9 h-9 flex items-center justify-center text-base font-normal rounded-md cursor-pointer transition-all duration-200 ease-in-out border-none bg-transparent text-muted-foreground hover:bg-secondary',
+            i === currentPage && 'bg-primary text-background font-medium'
+          )}
         >
           {i}
         </button>
@@ -86,29 +88,32 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
     }
 
     return (
-      <div className='admin-upload-table__pagination'>
+      <div className='flex items-center gap-4'>
         <button
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className='admin-upload-table__nav-button'
+          className='flex items-center gap-2 bg-none border-none cursor-pointer text-base font-normal text-muted-foreground transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed hover:text-background-dark'
         >
           <MuzaIcon iconName='ChevronLeft' />
           Previous
         </button>
 
-        <div className='admin-upload-table__page-numbers'>
+        <div className='flex items-center gap-1'>
           {pages}
           <div
-            className={`admin-upload-table__ellipsis ${endPage < totalPages ? '' : 'admin-upload-table__ellipsis--hidden'}`}
+            className={cn(
+              'w-9 h-9 flex items-center justify-center text-muted-foreground',
+              endPage >= totalPages && 'opacity-0 pointer-events-none'
+            )}
           >
-            <MuzaIcon iconName='ellipsis' />
+            <MuzaIcon iconName='ellipsis' className='w-4 h-4' />
           </div>
         </div>
 
         <button
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className='admin-upload-table__nav-button'
+          className='flex items-center gap-2 bg-none border-none cursor-pointer text-base font-normal text-muted-foreground transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed hover:text-background-dark'
         >
           Next
           <MuzaIcon iconName='ChevronRight' />
@@ -126,50 +131,54 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   }
 
   return (
-    <div className='admin-upload-table'>
-      <div className='admin-upload-table__container'>
-        <table className='admin-upload-table__table'>
-          <thead className='admin-upload-table__head'>
-            <tr className='admin-upload-table__header-row'>
-              <th className='admin-upload-table__header admin-upload-table__header--number'>
+    <div className='w-full mt-0 flex flex-col flex-1 min-h-0'>
+      <div className='w-full overflow-x-auto border border-border-light rounded-md bg-background flex-1 flex flex-col min-h-0'>
+        <table className='w-full border-collapse font-sans min-w-[800px]'>
+          <thead className='bg-background'>
+            <tr className='border-b border-border-light'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[50px]'>
                 {/* Empty header for row numbers */}
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--checkbox'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[50px] text-center align-middle'>
                 <div
-                  className={`admin-upload-table__checkbox-wrapper ${isAllSelected ? 'admin-upload-table__checkbox-wrapper--checked' : ''}`}
+                  className={cn(
+                    'flex justify-center items-center relative h-5',
+                    isAllSelected &&
+                      '[&_.checkmark]:opacity-100 [&_.checkmark]:scale-100 [&_.checkbox-visual]:bg-transparent [&_.checkbox-visual]:border-transparent'
+                  )}
                 >
                   <input
                     type='checkbox'
                     checked={isAllSelected}
                     onChange={handleSelectAllChange}
-                    className='admin-upload-table__checkbox'
+                    className='w-4 h-4 opacity-0 absolute cursor-pointer z-1'
                   />
-                  <div className='admin-upload-table__checkbox-visual'>
+                  <div className='w-4 h-4 border-[1.33px] border-primary rounded-sm bg-background flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative checkbox-visual'>
                     <MuzaIcon
                       iconName='CheckmarkSquare'
-                      className='admin-upload-table__checkmark'
+                      className='w-4 h-4 opacity-0 scale-[0.8] transition-all duration-200 ease-in-out checkmark'
                     />
                   </div>
                 </div>
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--folder'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[180px] max-w-[180px]'>
                 Folder
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--upload'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light auto min-w-[300px]'>
                 Upload
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--data-source'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[250px] max-w-[250px]'>
                 Data Source
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--cover'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light text-center w-[150px] max-w-[150px]'>
                 Cover
               </th>
-              <th className='admin-upload-table__header admin-upload-table__header--errors'>
+              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light min-w-max text-left'>
                 Errors
               </th>
             </tr>
           </thead>
-          <tbody className='admin-upload-table__body'>
+          <tbody className='bg-background'>
             {paginatedItems.map((item, idx) => (
               <AdminUploadTableRow
                 key={item.id}
@@ -187,14 +196,14 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         </table>
       </div>
 
-      <div className='admin-upload-table__footer'>
-        <div className='admin-upload-table__info'>
+      <div className='flex items-center justify-between gap-4 py-4 px-6 border-t border-border-light bg-background'>
+        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
           <span>Show</span>
           <select
             id='items-per-page'
             value={itemsPerPage}
             onChange={e => onItemsPerPageChange(Number(e.target.value))}
-            className='admin-upload-table__items-per-page'
+            className='h-9 px-3 py-0 text-sm font-normal border border-border-light rounded-md bg-background text-muted-foreground outline-none transition-colors duration-200 cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20'
           >
             <option value={10}>10</option>
             <option value={25}>25</option>
@@ -206,20 +215,20 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
 
         {totalPages > 1 && renderPagination()}
 
-        <div className='admin-upload-table__actions'>
+        <div className='flex items-center gap-4'>
           <MuzaButton
             content='Cancel Selection'
             iconName='trash'
             onClick={onCancelSelection}
             disabled={selectedItemIds.size === 0}
-            className='admin-upload-table__cancel-button'
+            className='w-fit h-fit bg-secondary text-text-dark border-none rounded-full py-2 px-4 font-medium text-base cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:bg-(--muza-button-hover-background) disabled:opacity-50 disabled:cursor-not-allowed [&_span]:text-base [&_span]:font-medium [&_span]:text-text-dark [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_svg]:text-text-dark [&_svg]:w-4 [&_svg]:h-4'
           />
           <MuzaButton
             content={isUploading ? 'Uploading...' : 'Process & Upload'}
             iconName={isUploading ? 'Clock8' : 'upload'}
             onClick={onProcessUpload}
             disabled={selectedItemIds.size === 0 || isUploading}
-            className='admin-upload-table__process-button'
+            className='w-fit h-fit bg-primary text-muted border-none rounded-full py-2 px-4 font-medium text-base cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] hover:bg-(--colors_primary_dark) disabled:opacity-50 disabled:cursor-not-allowed [&_span]:text-base [&_span]:font-medium [&_span]:text-muted [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_svg]:text-muted [&_svg]:w-4 [&_svg]:h-4'
           />
         </div>
       </div>

@@ -1,5 +1,3 @@
-import './SongLine.scss'
-
 import React, { type MouseEventHandler, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
@@ -8,6 +6,7 @@ import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import type { SongDetails } from '../../store/models'
 import { formatSongNumber } from '../../store/utils'
+import styles from './SongLine.module.css'
 
 interface SongLineProps {
   details: SongDetails
@@ -49,7 +48,7 @@ const SongLine: React.FC<SongLineProps> = ({
   const renderIcon = () => {
     if (isPlaying && isHovered) {
       return (
-        <span className='pause-icon'>
+        <span className={styles['pause-icon']}>
           <MuzaIcon iconName='pause' />
         </span>
       )
@@ -57,18 +56,18 @@ const SongLine: React.FC<SongLineProps> = ({
 
     if (isPlaying) {
       return (
-        <div className='wave-container'>
-          <div className='bar' />
-          <div className='bar' />
-          <div className='bar' />
+        <div className={styles['wave-container']}>
+          <div className={styles.bar} />
+          <div className={styles.bar} />
+          <div className={styles.bar} />
         </div>
       )
     }
 
     return (
       <>
-        <span className='track-number'>{formatSongNumber(details.index || 1)}</span>
-        <span className='play-icon'>
+        <span className={styles['track-number']}>{formatSongNumber(details.index || 1)}</span>
+        <span className={styles['play-icon']}>
           <MuzaIcon iconName='play' />
         </span>
       </>
@@ -77,40 +76,42 @@ const SongLine: React.FC<SongLineProps> = ({
 
   return (
     <div
-      className={`song-line-simple ${isPlaying ? 'playing' : ''} ${isHovered ? 'hovered' : ''}`}
+      className={`${styles['song-line-simple']} ${isPlaying ? styles.playing : ''} ${isHovered ? styles.hovered : ''}`}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className='song-container'>
-        <div className='track-info'>
-          <div className='track-icon'>{renderIcon()}</div>
-          <div className='track-details'>
-            <div className='track-title-row'>
-              <span className='track-title'>{details.title}</span>
-              {showPreview && <span className='preview-badge'>Preview</span>}
+      <div className={styles['song-container']}>
+        <div className={styles['track-info']}>
+          <div className={styles['track-icon']}>{renderIcon()}</div>
+          <div className={styles['track-details']}>
+            <div className={styles['track-title-row']}>
+              <span className={styles['track-title']}>{details.title}</span>
+              {showPreview && <span className={styles['preview-badge']}>Preview</span>}
             </div>
-            <div className='track-meta-row'>
-              <span className='track-artist'>{details.artist}</span>
+            <div className={styles['track-meta-row']}>
+              <span className={styles['track-artist']}>{details.artist}</span>
               {details.album && (
                 <>
-                  <span className='separator'>•</span>
-                  <span className='track-album'>{details.album}</span>
+                  <span className={styles.separator}>•</span>
+                  <span className={styles['track-album']}>{details.album}</span>
                 </>
               )}
               {details.plays && (
                 <>
-                  <span className='separator'>•</span>
-                  <span className='track-plays'>{formatPlayCount(details.plays)} Plays</span>
+                  <span className={styles.separator}>•</span>
+                  <span className={styles['track-plays']}>
+                    {formatPlayCount(details.plays)} Plays
+                  </span>
                 </>
               )}
             </div>
           </div>
         </div>
-        <div className='track-actions'>
+        <div className={styles['track-actions']}>
           {isHovered && (
             <button
-              className='ellipsis-btn'
+              className={styles['ellipsis-btn']}
               title='More options'
               onClick={e => {
                 e.stopPropagation()
@@ -121,7 +122,7 @@ const SongLine: React.FC<SongLineProps> = ({
             </button>
           )}
           <button
-            className='add-btn'
+            className={styles['add-btn']}
             title='Add to library'
             onClick={e => {
               e.stopPropagation()
@@ -130,7 +131,9 @@ const SongLine: React.FC<SongLineProps> = ({
           >
             <MuzaIcon iconName={isInLibrary ? 'heart' : 'plus'} />
           </button>
-          <span className='track-duration'>{details.time ? formatDuration(details.time) : ''}</span>
+          <span className={styles['track-duration']}>
+            {details.time ? formatDuration(details.time) : ''}
+          </span>
         </div>
       </div>
     </div>

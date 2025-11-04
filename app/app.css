@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+@import './styles/variables.css';
+@import './styles/fonts.css';
+
+@theme inline {
+  /* Color Palette */
+  --color-primary: var(--colors_primary_light);
+  --color-primary-foreground: var(--colors_background_light);
+
+  --color-secondary: var(--colors_accent_light);
+  --color-secondary-foreground: var(--muza-track-title-color);
+
+  --color-destructive: var(--colors_destructive_light);
+  --color-destructive-foreground: var(--colors_destructive_foreground_light);
+
+  --color-muted: var(--colors_muted_light);
+  --color-muted-foreground: var(--colors_muted_foreground_light);
+
+  --color-accent: var(--muza-toggle-active-color);
+  --color-accent-foreground: var(--colors_background_light);
+
+  --color-background: var(--colors_background_light);
+  --color-background-dark: var(--colors_background_dark);
+  --color-foreground: var(--muza-primary-text-color);
+
+  --color-border: var(--muza-border-color);
+  --color-border-light: var(--muza-light-border-color);
+
+  --color-input: var(--muza-light-border-color);
+  --color-ring: var(--muza-toggle-active-color);
+
+  /* Semantic Text Colors */
+  --color-text-dark: var(--muza-track-title-color);
+  --color-text-primary: var(--muza-primary-text-color);
+  --color-text-secondary: var(--muza-secondary-text-color);
+  --color-text-tertiary: var(--muza-tertiary-text-color);
+  --color-text-muted: var(--colors_muted_foreground_light);
+  --color-text-inverse: var(--colors_background_light);
+}
+
+@layer base {
+  body {
+    font-family:
+      'Founders Grotesk',
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+
+    @apply text-base/tight text-foreground antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    height: 3px;
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+    background: var(--muza-hover-background);
+    border-radius: 100px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--muza-section-scrollbar-track-bg);
+    border-radius: 100px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muza-secondary-text-color);
+    border-radius: 100px;
+  }
+}

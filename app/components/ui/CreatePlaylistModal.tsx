@@ -1,5 +1,3 @@
-import './CreatePlaylistModal.scss'
-
 import React, { useEffect, useState } from 'react'
 
 import MuzaInputField from '~/controls/MuzaInputField'
@@ -8,6 +6,9 @@ import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+import { Button, IconButton } from './button'
+import styles from './CreatePlaylistModal.module.css'
+import { Typography } from './typography'
 
 interface CreatePlaylistModalProps {
   isOpen: boolean
@@ -65,15 +66,18 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
   }
 
   return (
-    <div className={`modal-backdrop ${isOpen ? 'modal-open' : ''}`} onClick={handleBackdropClick}>
-      <div className={`create-playlist-modal ${isOpen ? 'modal-open' : ''}`}>
-        <div className='modal-content'>
-          <div className='modal-header'>
-            <h1 className='modal-title'>{t('playlist.new')}</h1>
+    <div
+      className={`${styles.modalBackdrop} ${isOpen ? styles.modalOpen : ''}`}
+      onClick={handleBackdropClick}
+    >
+      <div className={`${styles.createPlaylistModal} ${isOpen ? styles.modalOpen : ''}`}>
+        <div className={styles.modalContent}>
+          <div className={styles.modalHeader}>
+            <Typography variant='h3'>{t('playlist.new')}</Typography>
           </div>
 
-          <div className='modal-content-inner'>
-            <div className='form-group'>
+          <div className={styles.modalContentInner}>
+            <div className={styles.formGroup}>
               <MuzaInputField
                 label={t('playlist.title')}
                 placeholder={t('playlist.titlePlaceholder')}
@@ -82,35 +86,33 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
               />
             </div>
 
-            <div className='form-group'>
-              <div className='privacy-toggle-wrapper'>
+            <div className={styles.formGroup}>
+              <div className={styles.privacyToggleWrapper}>
                 <ToggleButton
                   checked={isPrivate}
                   onChange={handleToggleChange}
                   label={t('playlist.makePrivate')}
                 />
-                <p className='privacy-explanation'>{t('playlist.privateExplanation')}</p>
+                <p className={styles.privacyExplanation}>{t('playlist.privateExplanation')}</p>
               </div>
             </div>
           </div>
 
-          <div className='modal-buttons'>
-            <button type='button' className='cancel-button' onClick={onClose}>
+          <div className={styles.modalButtons}>
+            <Button variant='secondary' type='button' onClick={onClose}>
               {t('playlist.cancel')}
-            </button>
-            <button
-              type='button'
-              className='create-button'
-              onClick={handleSubmit}
-              disabled={!playlistName.trim()}
-            >
+            </Button>
+            <Button type='button' onClick={handleSubmit} disabled={!playlistName.trim()}>
               {t('playlist.create')}
-            </button>
+            </Button>
           </div>
 
-          <button className='close-button' onClick={onClose}>
-            <MuzaIcon iconName='Close' />
-          </button>
+          <IconButton
+            icon={<MuzaIcon iconName='Close' />}
+            variant='ghost'
+            className={styles.closeButton}
+            onClick={onClose}
+          />
         </div>
       </div>
     </div>

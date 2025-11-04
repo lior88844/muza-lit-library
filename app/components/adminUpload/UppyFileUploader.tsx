@@ -1,12 +1,12 @@
 // Import Uppy styles
 import '@uppy/core/dist/style.min.css'
 import '@uppy/dashboard/dist/style.min.css'
-// Import custom styles
-import './UppyFileUploader.scss'
 
 import Uppy from '@uppy/core'
 import Dashboard from '@uppy/dashboard'
 import React, { useEffect, useRef } from 'react'
+
+// Import custom styles
 
 interface UppyFileUploaderProps {
   onFileUpload: (files: File[]) => void

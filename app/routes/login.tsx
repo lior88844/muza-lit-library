@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
+import { Typography } from '~/components/ui/typography'
+
 import { useAuth } from '../store/userContext'
 
 export default function Login() {
@@ -44,7 +46,9 @@ export default function Login() {
           <div className='mb-4 text-red-600'>
             <i className='fas fa-exclamation-triangle text-4xl'></i>
           </div>
-          <h2 className='mb-2 text-xl font-semibold text-gray-800'>Authentication Error</h2>
+          <Typography variant='h2' className='mb-2'>
+            Authentication Error
+          </Typography>
           <p className='mb-4 text-gray-600'>{auth.error.message}</p>
           <button
             onClick={() => auth.signinRedirect()}

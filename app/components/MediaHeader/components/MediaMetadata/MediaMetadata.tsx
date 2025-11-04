@@ -1,10 +1,9 @@
-import './MediaMetadata.scss'
-
 import React from 'react'
 
 import { useTranslation } from '~/lib/i18n/translations'
 
 import type { MediaTypeEnum } from '../../../../../server/db/user-library.entity'
+import styles from './MediaMetadata.module.css'
 
 export interface MediaMetadataProps {
   type: MediaTypeEnum
@@ -69,7 +68,7 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
     return items
   }
 
-  return <div className='album-metadata'>{renderMetadataItems()}</div>
+  return <div className={styles['album-metadata']}>{renderMetadataItems()}</div>
 }
 
 export default MediaMetadata

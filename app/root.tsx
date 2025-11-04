@@ -1,4 +1,4 @@
-import './app.scss'
+import './app.css'
 
 import { useEffect, useState } from 'react'
 import { useMemo } from 'react'
@@ -14,12 +14,15 @@ import {
   useLocation,
 } from 'react-router'
 
+import { cn } from '~/lib/utils'
+
 import { fetchAllData } from '../server/data'
 import type { Route } from './+types/root'
 import MuzaMusicPlayer from './components/componentsWithLogic/MuzaMusicPlayer'
 import PlaylistDrawer from './components/playlistDisplays/PlaylistDrawer'
 import MusicSidebar from './components/sections/MusicSidebar'
 import MusicTopbar from './components/sections/MusicTopbar'
+import { Typography } from './components/ui/typography'
 import { useTranslation } from './lib/i18n/translations'
 import Providers from './Providers'
 import { useCurrentPlayerStore } from './store/currentPlayerStore'
@@ -52,16 +55,6 @@ export function shouldRevalidate({ actionStatus }: { actionStatus?: number }) {
 }
 
 export const links: Route.LinksFunction = () => [
-  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-  {
-    rel: 'preconnect',
-    href: 'https://fonts.gstatic.com',
-    crossOrigin: 'anonymous',
-  },
-  {
-    rel: 'stylesheet',
-    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
-  },
   {
     rel: 'stylesheet',
     href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
@@ -157,7 +150,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <Providers>
           <MediaContext.Provider value={processedData}>
-            <div className={`body ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+            <div className='flex h-screen overflow-hidden'>
               {!isMinimalLayoutPage && (
                 <MusicSidebar
                   logoAlt={t('library.musicLibrary')}
@@ -170,9 +163,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 />
               )}
 
-              <div className='content'>
+              <div className='grow relative'>
                 {!isMinimalLayoutPage && <MusicTopbar />}
-                <main className={isMinimalLayoutPage ? 'minimal-layout-main' : ''}>
+                <main
+                  className={cn(
+                    isMinimalLayoutPage
+                      ? 'h-screen pb-0'
+                      : 'relative p-6 pb-40 overflow-y-auto h-[calc(100vh-var(--muza-topbar-height))]'
+                  )}
+                >
                   {content || children}
                   {!isMinimalLayoutPage && (
                     <PlaylistDrawer
@@ -214,8 +213,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className='container mx-auto p-4 pt-16'>
-      <h1>{message}</h1>
-      <p>{details}</p>
+      <Typography variant='h1' className='mb-4'>
+        {message}
+      </Typography>
+      <Typography>{details}</Typography>
       {stack && (
         <pre className='w-full overflow-x-auto p-4'>
           <code>{stack}</code>

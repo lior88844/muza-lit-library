@@ -1,5 +1,3 @@
-import './MusicPlayer.scss'
-
 import Hls from 'hls.js'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FaSpinner } from 'react-icons/fa'
@@ -9,6 +7,7 @@ import { useTranslation } from '~/lib/i18n/translations'
 import type { PlayerDetails } from '~/store/models'
 
 import VolumeControl from '../../controls/VolumeControl'
+import styles from './MusicPlayer.module.css'
 
 type MusicPlayerProps = {
   details: PlayerDetails
@@ -243,37 +242,41 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   ])
 
   return (
-    <div className='music-player'>
+    <div className={styles['music-player']}>
       <video ref={playerRef} hidden />
 
-      <div className='player-info'>
-        <img className='album-art' src={details.imageSrc} alt={`${details.title} album cover`} />
-        <div className='track-info'>
-          <h3 className='track-title'>{details.title}</h3>
-          <p className='track-artist'>{details.artist}</p>
-          <div className='track-details'>
+      <div className={styles['player-info']}>
+        <img
+          className={styles['album-art']}
+          src={details.imageSrc}
+          alt={`${details.title} album cover`}
+        />
+        <div className={styles['track-info']}>
+          <h3 className={styles['track-title']}>{details.title}</h3>
+          <p className={styles['track-artist']}>{details.artist}</p>
+          <div className={styles['track-details']}>
             <span>{details.album}</span>
-            <span className='separator'>•</span>
+            <span className={styles.separator}>•</span>
             <span>{details.year}</span>
           </div>
         </div>
       </div>
 
-      <div className='player-controls'>
-        <div className='progress-section'>
-          <div className='progress-bar' onClick={handleSeek}>
-            <div className='progress-fill' style={{ width: `${progressPercentage}%` }} />
+      <div className={styles['player-controls']}>
+        <div className={styles['progress-section']}>
+          <div className={styles['progress-bar']} onClick={handleSeek}>
+            <div className={styles['progress-fill']} style={{ width: `${progressPercentage}%` }} />
           </div>
-          <div className='time-display'>
+          <div className={styles['time-display']}>
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration - currentTime)}</span>
           </div>
         </div>
 
-        <div className='controls-row'>
-          <div className='playback-controls'>
+        <div className={styles['controls-row']}>
+          <div className={styles['playback-controls']}>
             <button
-              className={`control-btn shuffle ${shuffle ? 'active' : ''}`}
+              className={`${styles['control-btn']} ${styles.shuffle} ${shuffle ? styles.active : ''}`}
               onClick={() => setShuffle(!shuffle)}
               aria-label={t('player.shuffle')}
             >
@@ -281,7 +284,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
 
             <button
-              className='control-btn previous'
+              className={`${styles['control-btn']} ${styles.previous}`}
               onClick={onPrevious}
               aria-label={t('player.previous')}
             >
@@ -289,12 +292,12 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
 
             <button
-              className='control-btn play'
+              className={`${styles['control-btn']} ${styles.play}`}
               onClick={togglePlayPause}
               aria-label={t('player.playPause')}
             >
               {isLoading ? (
-                <FaSpinner className='spinner' />
+                <FaSpinner className={styles.spinner} />
               ) : details.isPlaying ? (
                 <MuzaIcon iconName='pause' />
               ) : (
@@ -302,12 +305,16 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               )}
             </button>
 
-            <button className='control-btn next' onClick={onNext} aria-label={t('player.next')}>
+            <button
+              className={`${styles['control-btn']} ${styles.next}`}
+              onClick={onNext}
+              aria-label={t('player.next')}
+            >
               <MuzaIcon iconName='skip-forward' />
             </button>
 
             <button
-              className={`control-btn repeat ${repeat ? 'active' : ''}`}
+              className={`${styles['control-btn']} ${styles.repeat} ${repeat ? styles.active : ''}`}
               onClick={() => setRepeat(!repeat)}
               aria-label={t('player.repeat')}
             >
@@ -315,7 +322,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
           </div>
 
-          <div className='volume-section'>
+          <div className={styles['volume-section']}>
             <VolumeControl noSymbol={true} value={volume} onVolumeChange={handleVolumeChange} />
           </div>
         </div>

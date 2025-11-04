@@ -1,6 +1,6 @@
-import './VolumeControl.scss'
-
 import React, { useEffect, useRef, useState } from 'react'
+
+import styles from './VolumeControl.module.css'
 
 interface VolumeControlProps {
   value?: number
@@ -95,19 +95,22 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
   }
 
   return (
-    <div className={`volume-control ${disabled ? 'disabled' : ''}`}>
+    <div className={`${styles['volume-control']} ${disabled ? styles.disabled : ''}`}>
       {!noSymbol && (
         <>
-          <i className='fa-solid fa-speaker volume-icon' onClick={toggleMute}></i>
-          <i className={`fa-solid fa-${getVolumeIcon()} volume-icon`} onClick={toggleMute}></i>
+          <i className={`fa-solid fa-speaker ${styles['volume-icon']}`} onClick={toggleMute}></i>
+          <i
+            className={`fa-solid fa-${getVolumeIcon()} ${styles['volume-icon']}`}
+            onClick={toggleMute}
+          ></i>
         </>
       )}
-      <div className='volume-slider' ref={sliderRef} onClick={handleSliderClick}>
+      <div className={styles['volume-slider']} ref={sliderRef} onClick={handleSliderClick}>
         <svg viewBox='0 0 100 24'>
-          <line className='track' x1='2' y1='12' x2='98' y2='12' />
-          <line className='fill' x1='2' y1='12' x2={mapValueToPosition(value)} y2='12' />
+          <line className={styles.track} x1='2' y1='12' x2='98' y2='12' />
+          <line className={styles.fill} x1='2' y1='12' x2={mapValueToPosition(value)} y2='12' />
           <circle
-            className='handle'
+            className={styles.handle}
             cx={mapValueToPosition(value)}
             cy='12'
             r='8'

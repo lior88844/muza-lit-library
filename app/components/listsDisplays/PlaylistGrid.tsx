@@ -1,5 +1,3 @@
-import './PlaylistGrid.scss'
-
 import React from 'react'
 
 import { useTranslation } from '~/lib/i18n/translations'
@@ -7,6 +5,7 @@ import { generatePlaylistCoverImages } from '~/lib/utils'
 
 import PlaylistCover from '../albumDisplays/PlaylistCover'
 import CreatePlaylistCard from './CreatePlaylistCard'
+import styles from './PlaylistGrid.module.css'
 
 interface PlaylistGridProps {
   playlists: any[]
@@ -21,11 +20,8 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  // Filter out playlists with no songs
-  // const playlistsWithSongs = playlists.filter(playlist => playlist.songs && playlist.songs.length > 0)
-
   return (
-    <div className='playlist-grid'>
+    <div className={styles.playlistGrid}>
       <CreatePlaylistCard onClick={onCreatePlaylist} />
 
       {playlists.map((playlist, index) => (
