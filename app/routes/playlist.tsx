@@ -7,14 +7,14 @@ import { useNavigate, useParams } from 'react-router'
 
 import PlaylistDetail from '~/components/playlistDisplays/PlaylistDetail'
 import { useTranslation } from '~/lib/i18n/translations'
-import { usePlaylistStore } from '~/store/playlistStore'
+import { useMedia } from '~/store/media/mediaContext'
 
 export default function PlaylistPage() {
   const { t } = useTranslation()
   const { id } = useParams()
-  const getPlaylistById = usePlaylistStore(state => state.getPlaylistById)
+  const { playlists } = useMedia()
   const navigate = useNavigate()
-  const playlist = getPlaylistById(parseInt(id!, 10))
+  const playlist = playlists.find(p => p.id === parseInt(id!, 10))
 
   if (!playlist) {
     return (

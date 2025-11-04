@@ -11,7 +11,6 @@ import { useTranslation } from '~/lib/i18n/translations'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { useMedia } from '~/store/media/mediaContext'
 import type { SongDetails } from '~/store/models'
-import { usePlaylistStore } from '~/store/playlistStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
@@ -24,12 +23,11 @@ interface PlaylistDrawerProps {
 const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { songs: allSongs } = useMedia()
+  const { songs: allSongs, playlists } = useMedia()
 
-  // Get playlist directly from the store - Store is KING 👑
+  // Get playlist from context
   const currentPlaylistDrawerId = useCurrentPlayerStore(state => state.currentPlaylistDrawerId)
-  const playlist = usePlaylistStore(state => state.getPlaylistById(currentPlaylistDrawerId || 0))
-  const addSongsToPlaylist = usePlaylistStore(state => state.addSongsToPlaylist)
+  const playlist = playlists.find(p => p.id === currentPlaylistDrawerId)
   const [playlistName, setPlaylistName] = useState(playlist?.title || '')
   const [playlistDescription, setPlaylistDescription] = useState(playlist?.description || '')
   const [isPublic, setIsPublic] = useState<boolean>(
@@ -75,16 +73,29 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
     (songsToAdd: SongDetails[]) => {
       if (!playlist?.id) return
 
-      // Use store helper to add songs with proper indexing at the start
-      const updatedSongs = addSongsToPlaylist(playlist.id, songsToAdd, 'start')
+      // Filter out songs that already exist in the playlist
+      const newSongs = songsToAdd.filter(
+        song =>
+          !playlist.songs?.some(
+            existingSong =>
+              existingSong.id === song.id ||
+              (existingSong.title === song.title && existingSong.artist === song.artist)
+          )
+      )
 
-      if (updatedSongs) {
-        updatePlaylist(playlist.id, {
-          songs: updatedSongs,
-        })
-      }
+      if (newSongs.length === 0) return
+
+      // Add songs at the start and re-index
+      const updatedSongs = [...newSongs, ...(playlist.songs || [])].map((song, idx) => ({
+        ...song,
+        index: idx + 1,
+      }))
+
+      updatePlaylist(playlist.id, {
+        songs: updatedSongs,
+      })
     },
-    [playlist?.id, addSongsToPlaylist, updatePlaylist]
+    [playlist, updatePlaylist]
   )
 
   // Helper function for removing songs from playlist

@@ -25,7 +25,6 @@ import Providers from './Providers'
 import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'
 import type { MusicPlaylist } from './store/models'
-import { usePlaylistStore } from './store/playlistStore'
 import { userContext } from './store/router-context'
 
 export const authMiddleware: MiddlewareFunction = async ({ context }) => {
@@ -103,13 +102,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { isPlaylistDrawerOpen, openPlaylistDrawer, closePlaylistDrawer } =
     useCurrentPlayerStore()
 
-  // Initialize playlist store with loader data
-  useEffect(() => {
-    usePlaylistStore.getState().initialize(playlists)
-  }, [playlists])
-
-  const playlistsFromStore = usePlaylistStore(state => state.playlists)
-
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   // Check if we're on pages that should hide the main music UI
@@ -166,7 +158,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   logoAlt={t('library.musicLibrary')}
                   logoSrc='/icons/muza.svg'
                   sections={sidebarSections}
-                  playlists={playlistsFromStore}
+                  playlists={playlists}
                   isCollapsed={isSidebarCollapsed}
                   _onOpenPlaylistDrawer={handleOpenPlaylistDrawer}
                   onToggleCollapse={handleToggleSidebar}
