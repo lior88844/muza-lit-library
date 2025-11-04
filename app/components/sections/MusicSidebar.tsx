@@ -1,5 +1,3 @@
-import './MusicSidebar.scss'
-
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -10,6 +8,7 @@ import type { MenuItem, MusicPlaylist, Section } from '~/store/models'
 
 import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useAddPlaylist } from '../../store/media/useAddPlaylist'
+import styles from './MusicSidebar.module.css'
 
 interface MusicSidebarProps {
   logoSrc: string
@@ -76,7 +75,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 
   const renderMenuItem = (item: MenuItem, index: number) => {
     return (
-      <a key={index} className='menu-item' onClick={() => handleItemClick(item)}>
+      <a key={index} className={styles['menu-item']} onClick={() => handleItemClick(item)}>
         <MuzaIcon iconName={item.svg} />
         {!collapsedState && <span>{t(item.text)}</span>}
       </a>
@@ -84,8 +83,10 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   }
 
   const renderSection = (section: Section, index: number) => (
-    <div key={index} className='section'>
-      {section.title && !collapsedState && <div className='section-title'>{t(section.title)}</div>}
+    <div key={index} className={styles.section}>
+      {section.title && !collapsedState && (
+        <div className={styles['section-title']}>{t(section.title)}</div>
+      )}
       {section.items.map(renderMenuItem)}
     </div>
   )
@@ -93,7 +94,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   const renderPlaylist = (playlist: MusicPlaylist, index: number) => (
     <div
       key={playlist.id || index}
-      className='playlist-item'
+      className={styles['playlist-item']}
       onClick={() => handlePlaylistClick(playlist)}
     >
       <MuzaIcon iconName='playlist' />
@@ -107,30 +108,30 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   )
 
   return (
-    <div className={`music-sidebar ${collapsedState ? 'collapsed' : ''}`}>
-      <div className='logo'>
+    <div className={`${styles['music-sidebar']} ${collapsedState ? styles.collapsed : ''}`}>
+      <div className={styles.logo}>
         <img src={logoSrc} alt={logoAlt} />
       </div>
 
-      <div className='sidebar-content'>
-        <div className='nav-sections'>{sections.map(renderSection)}</div>
+      <div className={styles['sidebar-content']}>
+        <div className={styles['nav-sections']}>{sections.map(renderSection)}</div>
 
         {playlistsWithSongs.length > 0 && !collapsedState && (
-          <div className='playlists-section'>
-            <div className='playlists-header'>
-              <div className='playlists-title'>{t('nav.playlists')}</div>
-              <button className='add-button' onClick={handleCreatePlaylist}>
+          <div className={styles['playlists-section']}>
+            <div className={styles['playlists-header']}>
+              <div className={styles['playlists-title']}>{t('nav.playlists')}</div>
+              <button className={styles['add-button']} onClick={handleCreatePlaylist}>
                 <MuzaIcon iconName='plus' />
               </button>
             </div>
-            <div className='playlists-list'>{playlistsWithSongs.map(renderPlaylist)}</div>
+            <div className={styles['playlists-list']}>{playlistsWithSongs.map(renderPlaylist)}</div>
           </div>
         )}
       </div>
 
-      <div className='sidebar-footer'>
+      <div className={styles['sidebar-footer']}>
         <button
-          className='sidebar-header-button'
+          className={styles['sidebar-header-button']}
           onClick={handleSidebarToggle}
           aria-label={collapsedState ? 'Expand sidebar' : 'Collapse sidebar'}
         >

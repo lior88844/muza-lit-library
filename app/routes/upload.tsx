@@ -1,7 +1,4 @@
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
-import '../components/upload/steps/UploadStepOne.scss'
+import '../styles/variables.css'
 
 import React from 'react'
 import { useNavigate } from 'react-router'
@@ -159,7 +156,7 @@ export default function Upload() {
   const isNextDisabled = !validateCurrentStep()
 
   return (
-    <div className='upload-page'>
+    <div className='h-screen bg-background font-sans flex flex-col relative'>
       <UploadHeader
         title='Album Upload'
         onCancel={handleCancel}
@@ -167,7 +164,11 @@ export default function Upload() {
         onTestModeToggle={handleTestModeToggle}
       />
 
-      {renderStepContent()}
+      <div className='flex-1 flex flex-col lg:flex-row min-h-0 h-full box-border  pb-[84px]'>
+        <div className='h-(calc(100vh-(--upload-header-height)-(--upload-footer-height))) flex-1'>
+          {renderStepContent()}
+        </div>
+      </div>
 
       <UploadFooter
         currentStep={currentStep}

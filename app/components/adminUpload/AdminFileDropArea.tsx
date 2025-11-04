@@ -1,8 +1,7 @@
-import './AdminFileDropArea.scss'
-
 import React, { useCallback, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 
 interface AdminFileDropAreaProps {
   onFileUpload: (files: File[]) => void
@@ -143,26 +142,29 @@ const AdminFileDropArea: React.FC<AdminFileDropAreaProps> = ({ onFileUpload }) =
   }, [onFileUpload])
 
   return (
-    <div className='admin-file-drop-area'>
+    <div className='flex items-center justify-center w-full py-3'>
       <div
-        className={`admin-file-drop-area__zone ${isDragOver ? 'admin-file-drop-area__zone--drag-over' : ''}`}
+        className={cn(
+          'w-full border-2 border-dashed border-border-light rounded-md py-4 px-6 bg-background transition-all duration-200 ease-in-out cursor-pointer',
+          isDragOver && 'border-primary bg-muted'
+        )}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className='admin-file-drop-area__content'>
-          <div className='admin-file-drop-area__icon'>
+        <div className='flex flex-col items-center gap-3 text-center'>
+          <div className='w-6 h-6 text-muted-foreground [&_i]:w-full [&_i]:h-full [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_i_svg]:w-full [&_i_svg]:h-full'>
             <MuzaIcon iconName='upload' />
           </div>
 
-          <div className='admin-file-drop-area__text'>
-            <span className='admin-file-drop-area__main-text'>
+          <div className='flex items-center gap-1 flex-wrap justify-center'>
+            <span className='font-sans text-base font-normal text-background-dark leading-none'>
               Drag FLAC files or folders here{' '}
             </span>
             <button
               type='button'
-              className='admin-file-drop-area__browse-button'
+              className='bg-none border-none p-0 font-sans text-base font-normal text-primary underline cursor-pointer leading-none hover:text-(--colors_primary_dark)'
               onClick={handleBrowseClick}
             >
               or browse folders

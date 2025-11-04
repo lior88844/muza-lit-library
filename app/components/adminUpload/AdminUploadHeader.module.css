@@ -1,0 +1,44 @@
+/* Local variables for AdminUploadHeader component */
+.adminUploadHeader {
+  background-color: var(--colors_background_light);
+  border-bottom: 1px solid var(--muza-light-border-color);
+  padding: var(--muza-spacing-md) var(--muza-spacing-xxl);
+}
+
+.adminUploadHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
+.adminUploadHeaderCancelButton {
+  background-color: var(--colors_accent_light);
+  color: var(--muza-track-title-color);
+  border-radius: 9999px;
+  padding: var(--muza-spacing-sm) var(--muza-spacing-lg);
+  border: none;
+  font-weight: var(--muza-font-weight-medium);
+  font-size: 16px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: fit-content;
+  height: fit-content;
+}
+
+.adminUploadHeaderCancelButton:hover {
+  background-color: var(--muza-button-hover-background);
+}
+
+.adminUploadHeaderCancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.adminUploadHeaderCancelButton span {
+  font-size: 16px;
+  font-weight: var(--muza-font-weight-medium);
+  color: var(--colors_background_dark);
+  line-height: 20px;
+}

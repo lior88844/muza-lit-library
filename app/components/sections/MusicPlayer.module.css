@@ -1,0 +1,430 @@
+.music-player {
+  position: absolute;
+  bottom: var(--muza-spacing-xl, 24px);
+  left: var(--muza-spacing-xl, 24px);
+  right: var(--muza-spacing-xl, 24px);
+  z-index: 1000;
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--muza-border-radius-md, 8px);
+  border: 1px solid var(--muza-light-border-color, #e5e7eb);
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.musicPlayer {
+  position: absolute;
+  bottom: var(--muza-spacing-xl, 24px);
+  left: var(--muza-spacing-xl, 24px);
+  right: var(--muza-spacing-xl, 24px);
+  z-index: 1000;
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--muza-border-radius-md, 8px);
+  border: 1px solid var(--muza-light-border-color, #e5e7eb);
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.player-info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--muza-spacing-md, 12px);
+  padding: var(--muza-spacing-sm, 8px);
+  min-width: 280px;
+  background-color: var(--colors_muted_light);
+  border-right: 1px solid var(--muza-light-border-color, #e5e7eb);
+}
+
+.album-art {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--muza-border-radius-sm, 6px);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.track-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.track-title {
+  font-size: var(--muza-subtitle-font-size);
+  font-weight: var(--muza-font-weight-bold, 600);
+  font-family: var(--typography-font-family-font-sans, 'Founders Grotesk');
+  color: var(--muza-track-title-color, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist {
+  color: var(--colors_muted_foreground_light);
+  font-family: var(--typography-font-family-font-sans, 'Founders Grotesk');
+  font-size: var(--typography-base-sizes-extra-small-font-size, 14px);
+  font-style: normal;
+  font-weight: var(--font-weight-Regular, 400);
+  line-height: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-details {
+  display: flex;
+  gap: var(--muza-spacing-xs, 4px);
+  font-size: var(--muza-secondary-font-size, 12px);
+  color: var(--colors_muted_foreground_light);
+}
+
+.separator {
+  color: #d1d5db;
+}
+
+.playerInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--muza-spacing-md, 12px);
+  padding: var(--muza-spacing-sm, 8px);
+  min-width: 280px;
+  background-color: var(--colors_muted_light);
+  border-right: 1px solid var(--muza-light-border-color, #e5e7eb);
+}
+
+.playerInfo .albumArt {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--muza-border-radius-sm, 6px);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.playerInfo .trackInfo {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.playerInfo .trackInfo .trackTitle {
+  font-size: var(--muza-subtitle-font-size);
+  font-weight: var(--muza-font-weight-bold, 600);
+  font-family: var(--typography-font-family-font-sans, 'Founders Grotesk');
+  color: var(--muza-track-title-color, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playerInfo .trackInfo .trackArtist {
+  color: var(--colors_muted_foreground_light);
+  font-family: var(--typography-font-family-font-sans, 'Founders Grotesk');
+  font-size: var(--typography-base-sizes-extra-small-font-size, 14px);
+  font-style: normal;
+  font-weight: var(--font-weight-Regular, 400);
+  line-height: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playerInfo .trackInfo .trackDetails {
+  display: flex;
+  gap: var(--muza-spacing-xs, 4px);
+  font-size: var(--muza-secondary-font-size, 12px);
+  color: var(--colors_muted_foreground_light);
+}
+
+.playerInfo .trackInfo .trackDetails .separator {
+  color: #d1d5db;
+}
+
+.player-controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.progress-section {
+  padding: 0;
+  position: relative;
+}
+
+.progress-bar {
+  height: var(--muza-spacing-sm, 8px);
+  background: #f3f4f6;
+  cursor: pointer;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #3b82f6;
+  transition: width 0.1s ease;
+}
+
+.time-display {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px) 0;
+  font-size: var(--muza-secondary-font-size, 12px);
+  color: var(--colors_muted_foreground_light);
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: var(--muza-spacing-xs, 4px) 64px;
+}
+
+.playback-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--muza-spacing-xl, 24px);
+  flex: 1;
+}
+
+.volume-section {
+  display: flex;
+  align-items: center;
+  padding-right: 32px;
+}
+
+.playerControls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.playerControls .progressSection {
+  padding: 0;
+  position: relative;
+}
+
+.playerControls .progressSection .progressBar {
+  height: var(--muza-spacing-sm, 8px);
+  background: #f3f4f6;
+  cursor: pointer;
+  position: relative;
+}
+
+.playerControls .progressSection .progressBar .progressFill {
+  height: 100%;
+  background: #3b82f6;
+  transition: width 0.1s ease;
+}
+
+.playerControls .progressSection .timeDisplay {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px) 0;
+  font-size: var(--muza-secondary-font-size, 12px);
+  color: var(--colors_muted_foreground_light);
+}
+
+.playerControls .controlsRow {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: var(--muza-spacing-xs, 4px) 64px;
+}
+
+.playerControls .controlsRow .playbackControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--muza-spacing-xl, 24px);
+  flex: 1;
+}
+
+.playerControls .controlsRow .volumeSection {
+  display: flex;
+  align-items: center;
+  padding-right: 32px;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: var(--colors_muted_foreground_light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  color: #374151;
+  transform: scale(1.05);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.active {
+  color: #3b82f6;
+}
+
+.shuffle {
+  font-size: var(--muza-subtitle-font-size);
+  padding: var(--muza-spacing-sm, 8px);
+}
+
+.repeat {
+  font-size: var(--muza-subtitle-font-size);
+  padding: var(--muza-spacing-sm, 8px);
+}
+
+.previous {
+  font-size: 20px;
+  padding: var(--muza-spacing-md, 12px);
+}
+
+.next {
+  font-size: 20px;
+  padding: var(--muza-spacing-md, 12px);
+}
+
+.play {
+  font-size: var(--muza-spacing-xl, 24px);
+  width: 48px;
+  height: 48px;
+  color: var(--muza-play-button-color, #1f2937);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.controlBtn {
+  background: none;
+  border: none;
+  color: var(--colors_muted_foreground_light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.controlBtn:hover {
+  color: #374151;
+  transform: scale(1.05);
+}
+
+.controlBtn:active {
+  transform: scale(0.95);
+}
+
+.controlBtn.active {
+  color: #3b82f6;
+}
+
+.controlBtn.shuffle,
+.controlBtn.repeat {
+  font-size: var(--muza-subtitle-font-size);
+  padding: var(--muza-spacing-sm, 8px);
+}
+
+.controlBtn.previous,
+.controlBtn.next {
+  font-size: 20px;
+  padding: var(--muza-spacing-md, 12px);
+}
+
+.controlBtn.play {
+  font-size: var(--muza-spacing-xl, 24px);
+  width: 48px;
+  height: 48px;
+  color: var(--muza-play-button-color, #1f2937);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1200px) {
+  .volumeSection {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .musicPlayer {
+    flex-direction: column;
+    left: var(--muza-spacing-xl, 24px);
+  }
+
+  .playerInfo {
+    border-right: none;
+    border-top: 1px solid var(--muza-light-border-color, #e5e7eb);
+    min-width: auto;
+  }
+
+  .playerControls {
+    min-width: auto;
+  }
+
+  .playbackControls {
+    gap: var(--muza-spacing-lg, 16px);
+  }
+}
+
+@media (max-width: 600px) {
+  .trackDetails {
+    display: none;
+  }
+
+  .controlsRow {
+    padding: var(--muza-spacing-md, 12px);
+  }
+
+  .playbackControls {
+    gap: var(--muza-spacing-md, 12px);
+  }
+
+  .controlBtn.shuffle,
+  .controlBtn.repeat {
+    display: none;
+  }
+}

@@ -1,8 +1,8 @@
-import './AlbumCover.scss'
-
 import React from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
+
+import styles from './AlbumCover.module.css'
 
 interface AlbumCoverProps {
   imageSrc: string
@@ -19,8 +19,8 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({ imageSrc, title, subTitle, onAl
   }
 
   return (
-    <div className='album-cover' onClick={handleClick}>
-      <div className='image-container'>
+    <div className={styles['album-cover']} onClick={handleClick}>
+      <div className={styles['image-container']}>
         <img src={imageSrc} alt={title} />
         <HoverOverlay
           showPlayButton={true}

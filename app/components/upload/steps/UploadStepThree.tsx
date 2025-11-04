@@ -1,6 +1,4 @@
-import './UploadStepThree.scss'
-
-import React from 'react'
+import type { FC } from 'react'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
@@ -18,7 +16,7 @@ interface UploadStepThreeProps {
   onPublish?: () => void
 }
 
-const UploadStepThree: React.FC<UploadStepThreeProps> = ({
+const UploadStepThree: FC<UploadStepThreeProps> = ({
   formData,
   trackMetadata,
   coverImage,
@@ -80,8 +78,8 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
   const songDetails = transformToSongDetails()
 
   return (
-    <div className='upload-step-three'>
-      <div className='album-preview'>
+    <div className='w-full'>
+      <div className='mx-auto py-6 px-[60px]'>
         <MediaHeader
           songs={songDetails}
           mediaType={MediaTypeEnum.Album}
@@ -96,9 +94,10 @@ const UploadStepThree: React.FC<UploadStepThreeProps> = ({
           showBackButton={false}
           customActions={<div></div>}
         />
-        <hr />
 
-        <div className='album-song-list'>
+        <hr className='my-4 border-none border-t border-border-light' />
+
+        <div className='flex-1 flex flex-col gap-0 gap-x-2 mt-4 mb-4'>
           {songDetails.map((song: SongDetails) => (
             <SongLine
               key={song.id}

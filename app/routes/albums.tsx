@@ -1,17 +1,16 @@
-import '../components/sections/MusicSidebar'
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
+import '../styles/variables.css'
 
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
+import { Typography } from '~/components/ui/typography'
 import { useTranslation } from '~/lib/i18n/translations'
 import { useMedia } from '~/store/media/mediaContext'
 import type { Album } from '~/store/models'
 
 import { MediaTypeEnum } from '../../server/db/user-library.entity'
+import styles from './albums.module.css'
 
 export default function Albums() {
   const { t } = useTranslation()
@@ -31,13 +30,15 @@ export default function Albums() {
   }
 
   return (
-    <main>
-      <h1>{t('page.albums')}</h1>
-      <div className='album-list'>
+    <>
+      <Typography variant={'h1'} as='h2' className={'px-3 pb-4'}>
+        {t('page.albums')}
+      </Typography>
+      <div className={styles.albumList}>
         {libraryAlbums.map(a => (
           <AlbumPreview key={a.id} details={a} onAlbumClick={() => onAlbumClick(a)} />
         ))}
       </div>
-    </main>
+    </>
   )
 }

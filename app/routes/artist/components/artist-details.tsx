@@ -1,9 +1,8 @@
-import './artist-details.scss'
-
 import type { ArtistResponse } from 'server/api/artist/types/ArtistResponse'
 
-import { AppButton } from '~/components/ui/app-button'
+import { Button } from '~/components/ui/button'
 import { Image } from '~/components/ui/image'
+import { Typography } from '~/components/ui/typography'
 import { useTranslation } from '~/lib/i18n/translations'
 
 import { StatisticItem } from './statistic-item'
@@ -26,14 +25,16 @@ export function ArtistDetails({ artist }: ArtistHeaderProps) {
 
       <div className='artist-details-content'>
         <span>
-          <h2 className='artist-details-content-title'>{artist.name}</h2>
+          <Typography variant='h2' className='mb-3'>
+            {artist.name}
+          </Typography>
 
           <p className='artist-details-content-bio' title={artist.bio ?? undefined}>
             {artist.bio}
           </p>
         </span>
 
-        <AppButton>{t('common.follow')}</AppButton>
+        <Button>{t('common.follow')}</Button>
       </div>
 
       <div className='artist-details-stats'>

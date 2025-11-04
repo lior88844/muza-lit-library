@@ -1,8 +1,8 @@
-import './MuzaInputField.scss'
-
 import React, { useEffect, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+
+import styles from './MuzaInputField.module.css'
 
 export type ValidationRule =
   | { type: 'required'; message: string }
@@ -87,16 +87,16 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
   }
 
   return (
-    <div className='input-wrapper'>
+    <div className={styles.inputWrapper}>
       {label && (
         <label htmlFor={`input-${name}`}>
           {label}
-          {required && <span className='required'>*</span>}
+          {required && <span className={styles.required}>*</span>}
         </label>
       )}
-      <div className='input-container'>
+      <div className={styles.inputContainer}>
         {leadingIcon && (
-          <span className='leading-icon'>
+          <span className={styles.leadingIcon}>
             <MuzaIcon iconName={leadingIcon} />
           </span>
         )}
@@ -109,17 +109,19 @@ const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
           required={required}
           value={value}
           onChange={handleInputChange}
-          className={`${inputState} ${inputSize} ${leadingIcon ? 'has-leading-icon' : ''} ${trailingIcon ? 'has-trailing-icon' : ''}`}
+          className={`${styles[inputState]} ${styles[inputSize]} ${leadingIcon ? styles['has-leading-icon'] : ''} ${trailingIcon ? styles['has-trailing-icon'] : ''}`}
           {...rest}
         />
         {trailingIcon && (
-          <span className='trailing-icon'>
+          <span className={styles.trailingIcon}>
             <MuzaIcon iconName={trailingIcon} />
           </span>
         )}
       </div>
       {(validationMessage || helperText) && (
-        <div className={`helper-text ${inputState}`}>{validationMessage || helperText}</div>
+        <div className={`${styles.helperText} ${styles[inputState]}`}>
+          {validationMessage || helperText}
+        </div>
       )}
     </div>
   )

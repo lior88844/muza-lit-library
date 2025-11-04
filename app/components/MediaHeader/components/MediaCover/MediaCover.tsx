@@ -1,8 +1,7 @@
-import './MediaCover.scss'
-
 import React from 'react'
 
 import type { MediaTypeEnum } from '../../../../../server/db/user-library.entity'
+import styles from './MediaCover.module.css'
 
 interface MediaCoverProps {
   imageSrc: string | string[] // Can be string for single image or array for playlist collage
@@ -21,21 +20,21 @@ const MediaCover: React.FC<MediaCoverProps> = ({
   const renderCoverContent = () => {
     if (Array.isArray(imageSrc) && imageSrc.length >= 4) {
       return (
-        <div className='playlist-collage' data-name='Playlist Collage'>
+        <div className={styles['playlist-collage']} data-name='Playlist Collage'>
           <div
-            className='collage-item collage-item--top-left'
+            className={`${styles['collage-item']} ${styles['collage-item--top-left']}`}
             style={{ backgroundImage: `url('${imageSrc[0]}')` }}
           />
           <div
-            className='collage-item collage-item--top-right'
+            className={`${styles['collage-item']} ${styles['collage-item--top-right']}`}
             style={{ backgroundImage: `url('${imageSrc[1]}')` }}
           />
           <div
-            className='collage-item collage-item--bottom-left'
+            className={`${styles['collage-item']} ${styles['collage-item--bottom-left']}`}
             style={{ backgroundImage: `url('${imageSrc[2]}')` }}
           />
           <div
-            className='collage-item collage-item--bottom-right'
+            className={`${styles['collage-item']} ${styles['collage-item--bottom-right']}`}
             style={{ backgroundImage: `url('${imageSrc[3]}')` }}
           />
         </div>
@@ -49,12 +48,12 @@ const MediaCover: React.FC<MediaCoverProps> = ({
 
   return (
     <div
-      className={`cover-section cover-section--${size} cover-section--${mediaType}`}
+      className={`${styles['cover-section']} ${styles[`cover-section--${size}`]} ${styles[`cover-section--${mediaType}`]}`}
       data-name='cover'
     >
-      <div className='cover-frame' data-name='cover frame'>
+      <div className={styles['cover-frame']} data-name='cover frame'>
         {renderCoverContent()}
-        <div className='overlay' data-name='Overlay' />
+        <div className={styles.overlay} data-name='Overlay' />
       </div>
     </div>
   )

@@ -1,13 +1,12 @@
-import './AlbumPreview.scss'
-
 import React, { useState } from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
-import MuzaIcon from '~/icons/MuzaIcon'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { Album } from '~/store/models'
 
+import { Image } from '../ui/image'
 import AlbumInfoModal from './AlbumInfoModal'
+import styles from './AlbumPreview.module.css'
 
 interface AlbumPreviewProps {
   details: Album
@@ -24,9 +23,9 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick }) =>
   }
 
   return (
-    <div className='album-details-card'>
-      <div className='image-container' onClick={onAlbumClick}>
-        <img src={details.imageSrc} alt={details.title} />
+    <div className={styles['album-details-card']}>
+      <div className={styles['image-container']} onClick={onAlbumClick}>
+        <Image src={details.imageSrc} alt={details.title} />
         <HoverOverlay
           isPlaying={!!isPlaying}
           onPlayPause={handlePlayPause}
@@ -39,24 +38,10 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick }) =>
           ]}
         />
       </div>
-      <div className='info'>
-        <div className='title'>{details.title}</div>
-        <div className='artist'>{details.artist}</div>
-        <div className='subtitle'>{details.genre && `${details.genre} • `}</div>
-        <div className='buttons'>
-          <button className='icon-button'>
-            <MuzaIcon iconName='dots' />
-          </button>
-          <button className='icon-button'>
-            <MuzaIcon iconName='info' />
-          </button>
-          <button className='icon-button'>
-            <MuzaIcon iconName='plus' />
-          </button>
-          <button className='icon-button'>
-            <MuzaIcon iconName='shuffle' />
-          </button>
-        </div>
+      <div className={styles.info}>
+        <div className={styles.title}>{details.title}</div>
+        <div className={styles.artist}>{details.artist}</div>
+        <div className={styles.subtitle}>{details.genre && `${details.genre} • `}</div>
       </div>
       <AlbumInfoModal
         // @ts-expect-error TODO: We need to get all album data always, somehow.

@@ -1,11 +1,11 @@
-import './MusicTopbar.scss'
-
 import React from 'react'
 import { useNavigate } from 'react-router'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
 import { getUserInfo, useAuth } from '~/store/userContext'
+
+import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
   onSearchChange?: (searchText: string) => void
@@ -43,58 +43,62 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
   }
 
   return (
-    <div className='music-topbar'>
-      <div className='topbar'>
-        <div className='search-container'>
-          <div className='search-input-wrapper'>
-            <div className='search-input'>
-              <div className='search-input-content'>
-                <div className='search-icon'>
+    <div className={styles['music-topbar']}>
+      <div className={styles.topbar}>
+        <div className={styles['search-container']}>
+          <div className={styles['search-input-wrapper']}>
+            <div className={styles['search-input']}>
+              <div className={styles['search-input-content']}>
+                <div className={styles['search-icon']}>
                   <MuzaIcon iconName='search' />
                 </div>
                 <input
                   type='text'
                   placeholder={t('form.searchPlaceholder')}
                   onChange={handleSearchInput}
-                  className='search-field'
+                  className={styles['search-field']}
                 />
               </div>
-              <div className='search-border' aria-hidden='true' />
+              <div className={styles['search-border']} aria-hidden='true' />
             </div>
           </div>
         </div>
-        <div className='controls'>
-          <button className='upload-music-button' onClick={handleUploadClick}>
+        <div className={styles.controls}>
+          <button className={styles['upload-music-button']} onClick={handleUploadClick}>
             {t('upload.uploadMusic')}
             <MuzaIcon iconName='upload' />
           </button>
           {/* <button
-            className="admin-upload-button"
+            className={styles["admin-upload-button"]}
             onClick={handleAdminUploadClick}
           >
             {t("upload.uploadAdmin")}
             <MuzaIcon iconName="adminUpload" />
           </button> */}
-          <div className='user-menu'>
+          <div className={styles['user-menu']}>
             {auth.isAuthenticated ? (
-              <div className='user-dropdown'>
-                <div className='user-icon' onClick={onUserIconClick}>
+              <div className={styles['user-dropdown']}>
+                <div className={styles['user-icon']} onClick={onUserIconClick}>
                   <img
                     src={getUserInfo(auth)?.picture || '/art/logo.jpg'}
                     alt={getUserInfo(auth)?.name || t('topbar.user')}
                   />
                 </div>
-                <div className='user-info'>
-                  <span className='user-name'>
+                <div className={styles['user-info']}>
+                  <span className={styles['user-name']}>
                     {getUserInfo(auth)?.name || getUserInfo(auth)?.email}
                   </span>
-                  <button className='logout-button' onClick={handleLogoutClick} title='Logout'>
+                  <button
+                    className={styles['logout-button']}
+                    onClick={handleLogoutClick}
+                    title='Logout'
+                  >
                     <MuzaIcon iconName='logout' />
                   </button>
                 </div>
               </div>
             ) : (
-              <button className='login-button' onClick={handleLoginClick}>
+              <button className={styles['login-button']} onClick={handleLoginClick}>
                 <MuzaIcon iconName='user' />
                 Login
               </button>

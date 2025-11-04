@@ -1,5 +1,3 @@
-import './PlaylistDrawer.scss'
-
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -12,6 +10,7 @@ import type { MusicPlaylist, SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
+import styles from './PlaylistDrawer.module.css'
 
 interface PlaylistDrawerProps {
   isOpen: boolean
@@ -131,58 +130,60 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
   }
 
   return (
-    <div className={`playlist-drawer ${isOpen ? 'playlist-drawer--open' : ''}`}>
-      <div className='playlist-drawer__header'>
-        <div className='playlist-drawer__header-left'>
-          <div className='playlist-badge'>
+    <div
+      className={`${styles['playlist-drawer']} ${isOpen ? styles['playlist-drawer--open'] : ''}`}
+    >
+      <div className={styles['playlist-drawer__header']}>
+        <div className={styles['playlist-drawer__header-left']}>
+          <div className={styles['playlist-badge']}>
             <MuzaIcon iconName='playlist' />
             <span>{t('playlist.playlist')}</span>
           </div>
         </div>
-        <div className='playlist-drawer__header-right'>
-          <button className='playlist-drawer__button' onClick={handleClose}>
+        <div className={styles['playlist-drawer__header-right']}>
+          <button className={styles['playlist-drawer__button']} onClick={handleClose}>
             <MuzaIcon iconName='ellipsis' />
           </button>
-          <button className='playlist-drawer__button' onClick={handleNavigateToPlaylist}>
+          <button className={styles['playlist-drawer__button']} onClick={handleNavigateToPlaylist}>
             <MuzaIcon iconName='MoveDiagonal' />
           </button>
-          <button className='playlist-drawer__button' onClick={handleClose}>
+          <button className={styles['playlist-drawer__button']} onClick={handleClose}>
             <MuzaIcon iconName='Close' />
           </button>
         </div>
       </div>
 
-      <div className='playlist-drawer__content'>
-        <div className='playlist-drawer__info'>
-          <div className='playlist-drawer__title-section'>
+      <div className={styles['playlist-drawer__content']}>
+        <div className={styles['playlist-drawer__info']}>
+          <div className={styles['playlist-drawer__title-section']}>
             <MuzaInputField
               value={playlistName}
               onChange={e => setPlaylistName(e.target.value)}
               placeholder={t('playlist.enterName')}
-              className='playlist-drawer__title-input'
+              className={styles['playlist-drawer__title-input']}
               name='playlist-name'
             />
             <MuzaInputField
               value={playlistDescription}
               onChange={e => setPlaylistDescription(e.target.value)}
               placeholder={t('playlist.enterDescription')}
-              className='playlist-drawer__description-input'
+              className={styles['playlist-drawer__description-input']}
               name='playlist-description'
             />
           </div>
 
-          <div className='playlist-drawer__visibility-section'>
-            <div className='playlist-drawer__visibility-badge'>
+          <div className={styles['playlist-drawer__visibility-section']}>
+            <div className={styles['playlist-drawer__visibility-badge']}>
               <MuzaIcon iconName='globe' />
               <span>{isPublic ? t('playlist.public') : t('playlist.private')}</span>
             </div>
           </div>
         </div>
 
-        <div className='playlist-drawer__controls'>
+        <div className={styles['playlist-drawer__controls']}>
           <MuzaButton
             onClick={() => {}}
-            className='playlist-drawer__sort-button'
+            className={styles['playlist-drawer__sort-button']}
             content={t('playlist.sort')}
             iconName='ArrowUpDown'
           />
@@ -191,16 +192,16 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder={t('playlist.filterPlaceholder')}
-            className='playlist-drawer__search-input'
+            className={styles['playlist-drawer__search-input']}
             leadingIcon='search'
             name='playlist-drawer-search-input'
           />
         </div>
 
-        <div className='playlist-drawer__song-list'>
+        <div className={styles['playlist-drawer__song-list']}>
           {/* Main drop zone - always visible at the top */}
           <div
-            className={`playlist-drawer__drop-zone ${isDragOver ? 'playlist-drawer__drop-zone--active' : ''}`}
+            className={`${styles['playlist-drawer__drop-zone']} ${isDragOver ? styles['playlist-drawer__drop-zone--active'] : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -210,9 +211,9 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose, playli
 
           {/* Display current playlist songs below the drop zone */}
           {playlist?.songs && playlist.songs.length > 0 && (
-            <div className='playlist-drawer__songs'>
+            <div className={styles['playlist-drawer__songs']}>
               {playlist.songs.map((song, index) => (
-                <div key={song.id || index} className='playlist-drawer__song-item'>
+                <div key={song.id || index} className={styles['playlist-drawer__song-item']}>
                   <SongLineWithCover
                     details={{ ...song, index: index + 1 }}
                     onClick={() => {}}

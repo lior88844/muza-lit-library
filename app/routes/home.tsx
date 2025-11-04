@@ -1,12 +1,12 @@
 import '../components/sections/MusicSidebar'
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
-import './home.scss'
+import '../styles/variables.css'
+import './home.css'
 
 import { useNavigate } from 'react-router'
 
 import MusicListSectionComponent from '~/components/listsDisplays/MusicListSection'
+import { Divider } from '~/components/ui/divider'
+import { Typography } from '~/components/ui/typography'
 import { useTranslation } from '~/lib/i18n/translations'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { useMedia } from '~/store/media/mediaContext'
@@ -63,10 +63,12 @@ export default function Home() {
   return (
     <div className='home-page'>
       <div className='page-header'>
-        <h1>{t('page.home')}</h1>
+        <Typography variant='h1' as='h2' className='pb-4'>
+          {t('page.home')}
+        </Typography>
       </div>
       <div className='sections-container'>
-        <hr className='section-divider' />
+        <Divider />
         {sections.map((section, index) => (
           <div key={section.title} className='section-wrapper'>
             {section.type === 'album' && (
@@ -99,7 +101,7 @@ export default function Home() {
                 selectedSong={selectedSong || undefined}
               />
             )}
-            {index < sections.length - 1 && <hr className='section-divider' />}
+            {index < sections.length - 1 && <Divider />}
           </div>
         ))}
       </div>
