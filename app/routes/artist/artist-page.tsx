@@ -1,11 +1,11 @@
-import '../../styles/scrollbar.scss'
-import '../../styles/variables.scss'
-import '../../styles/main.scss'
-import './artist-page.scss'
+import '../../styles/variables.css'
+import './artist-page.css'
 
 import { isRouteErrorResponse, useRouteError } from 'react-router'
 import { useLoaderData } from 'react-router'
 import { fetchArtistById } from 'server/data'
+
+import { Typography } from '~/components/ui/typography'
 
 import { ArtistDetails } from './components/artist-details'
 
@@ -45,16 +45,20 @@ export function ErrorBoundary() {
         : (error.data?.message ?? error.statusText ?? 'Error')
     return (
       <div>
-        <h2>{error.status}</h2>
-        <p>{message}</p>
+        <Typography variant='h2' className='mb-3'>
+          {error.status}
+        </Typography>
+        <Typography>{message}</Typography>
       </div>
     )
   }
 
   return (
     <div>
-      <h2>Something went wrong</h2>
-      <p>Try again later.</p>
+      <Typography variant='h2' className='mb-3'>
+        Something went wrong
+      </Typography>
+      <Typography>Try again later.</Typography>
     </div>
   )
 }

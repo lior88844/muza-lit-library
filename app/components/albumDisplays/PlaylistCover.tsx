@@ -1,5 +1,3 @@
-import './PlaylistCover.scss'
-
 import React from 'react'
 
 import type { DropdownMenuItem } from '~/components/ui/DropdownMenu'
@@ -8,6 +6,9 @@ import HoverOverlay from '~/components/ui/HoverOverlay'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist } from '~/store/models'
+
+import hoverOverlayStyles from '../ui/HoverOverlay.module.css'
+import styles from './PlaylistCover.module.css'
 
 interface PlaylistCoverProps {
   albumImages: string[] | null
@@ -72,28 +73,28 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   const isEmpty = albumImages === null
 
   return (
-    <div className='playlist-cover' onClick={handleClick}>
-      <div className='playlist-cover__image-container'>
+    <div className={styles.playlistCover} onClick={handleClick}>
+      <div className={styles.playlistCoverImageContainer}>
         {isEmpty ? (
-          <div className='playlist-cover__empty'>
+          <div className={styles.playlistCoverEmpty}>
             <MuzaIcon iconName='playlist' />
           </div>
         ) : (
-          <div className='playlist-cover__collage'>
+          <div className={styles.playlistCoverCollage}>
             <div
-              className='playlist-cover__image playlist-cover__image--top-left'
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopLeft}`}
               style={{ backgroundImage: `url('${albumImages[0]}')` }}
             />
             <div
-              className='playlist-cover__image playlist-cover__image--top-right'
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopRight}`}
               style={{ backgroundImage: `url('${albumImages[1]}')` }}
             />
             <div
-              className='playlist-cover__image playlist-cover__image--bottom-left'
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomLeft}`}
               style={{ backgroundImage: `url('${albumImages[2]}')` }}
             />
             <div
-              className='playlist-cover__image playlist-cover__image--bottom-right'
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomRight}`}
               style={{ backgroundImage: `url('${albumImages[3]}')` }}
             />
           </div>
@@ -113,7 +114,7 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
                 <DropdownMenu
                   trigger={
                     <button
-                      className='hover-overlay-btn'
+                      className={hoverOverlayStyles.hoverOverlayBtn}
                       onClick={e => e.stopPropagation()}
                       title='More options'
                     >
@@ -127,12 +128,12 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
           ]}
         />
       </div>
-      <div className='playlist-cover__info'>
-        <div className='playlist-cover__title'>{title}</div>
-        <div className='playlist-cover__details'>
-          <span className='playlist-cover__songs-count'>{songsCount} Songs</span>
-          <span className='playlist-cover__separator'>•</span>
-          <span className='playlist-cover__user-name'>{userName}</span>
+      <div className={styles.playlistCoverInfo}>
+        <div className={styles.playlistCoverTitle}>{title}</div>
+        <div className={styles.playlistCoverDetails}>
+          <span className={styles.playlistCoverSongsCount}>{songsCount} Songs</span>
+          <span className={styles.playlistCoverSeparator}>•</span>
+          <span className={styles.playlistCoverUserName}>{userName}</span>
         </div>
       </div>
     </div>

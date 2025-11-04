@@ -1,0 +1,183 @@
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease,
+    backdrop-filter 0.3s ease,
+    visibility 0.3s ease;
+
+  &.modalOpen {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+/* Main modal container */
+.createPlaylistModal {
+  position: relative;
+  background: var(--colors_background_light, #ffffff);
+  border-radius: var(--muza-border-radius-md, 8px);
+  box-shadow:
+    0px 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0px 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--muza-light-border-color);
+  width: 100%;
+  max-width: 450px;
+  margin: var(--muza-spacing-xl, 24px);
+  font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
+  overflow: visible;
+  opacity: 0;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+
+  &.modalOpen {
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: var(--muza-spacing-lg, 16px);
+  right: var(--muza-spacing-lg, 16px);
+}
+
+/* Modal content */
+.createPlaylistModal .modalContent {
+  position: relative;
+  padding: var(--muza-spacing-xl, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-lg, 16px);
+}
+
+.createPlaylistModal .modalHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
+  width: 100%;
+}
+
+.createPlaylistModal .modalContentInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-lg, 16px);
+  width: 100%;
+}
+
+.createPlaylistModal .formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
+  width: 100%;
+}
+
+.createPlaylistModal .formGroup label {
+  font-size: 14px;
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--colors_background_dark);
+  margin: 0;
+}
+
+/* Modal-specific toggle styling to match Figma design */
+.createPlaylistModal .privacyToggleWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--muza-spacing-sm, 8px);
+  position: relative;
+  z-index: 2;
+}
+
+.createPlaylistModal .privacyToggleWrapper .privacyExplanation {
+  font-size: 16px;
+  font-weight: var(--muza-font-weight-regular, 400);
+  color: var(--colors_muted_foreground_light, #6b7280);
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  margin: 0;
+  margin-left: 44px; /* Align with the text after the toggle */
+  margin-right: 60px;
+}
+
+/* Modal-specific input styling to match Figma design */
+.createPlaylistModal .inputWrapper {
+  margin: 0;
+}
+
+.createPlaylistModal .inputWrapper label {
+  margin-bottom: var(--muza-spacing-sm, 8px);
+  font-size: 14px;
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--colors_muted_foreground_light, #6b7280);
+}
+
+.createPlaylistModal .inputWrapper input {
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #030712;
+  background-color: var(--colors_background_light, #ffffff);
+  border: 1px solid var(--muza-light-border-color);
+  border-radius: 9999px;
+  height: 36px;
+  font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
+  letter-spacing: 0.25px;
+}
+
+.createPlaylistModal .inputWrapper input::placeholder {
+  color: var(--colors_muted_foreground_light, #6b7280);
+}
+
+.createPlaylistModal .inputWrapper input:focus {
+  outline: none;
+  border-color: var(--muza-secondary-text-color, #6b7280);
+  box-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
+}
+
+.createPlaylistModal .inputWrapper input.success {
+  border-color: var(--muza-light-border-color);
+}
+
+.createPlaylistModal .inputWrapper input.success:focus {
+  border-color: var(--muza-secondary-text-color, #6b7280);
+  box-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
+}
+
+.createPlaylistModal .inputWrapper .helperText {
+  margin-top: var(--muza-spacing-sm, 8px);
+  font-size: 14px;
+  color: var(--colors_muted_foreground_light, #6b7280);
+  line-height: 16px;
+}
+
+.createPlaylistModal .modalButtons {
+  display: flex;
+  gap: var(--muza-spacing-lg, 16px);
+  align-self: flex-end;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .createPlaylistModal {
+    margin: var(--muza-spacing-md, 12px);
+    max-width: calc(100vw - 24px);
+  }
+
+  .createPlaylistModal .modalButtons {
+    flex-direction: column;
+    gap: var(--muza-spacing-sm, 8px);
+  }
+}

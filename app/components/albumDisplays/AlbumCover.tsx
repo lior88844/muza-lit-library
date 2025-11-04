@@ -1,10 +1,10 @@
-import './AlbumCover.scss'
-
 import React from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 import type { Album } from '~/store/models'
+
+import styles from './AlbumCover.module.css'
 
 interface AlbumCoverProps {
   imageSrc: string
@@ -37,11 +37,11 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({
 
   return (
     <div
-      className={`album-cover ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={`${styles['album-cover']} ${draggable ? styles['draggable'] : ''} ${isDragging ? styles['dragging'] : ''}`}
       onClick={handleClick}
       {...dragHandlers}
     >
-      <div className='image-container'>
+      <div className={styles['image-container']}>
         <img src={imageSrc || '/art/imag_1.jpg'} alt={title} />
         <HoverOverlay
           showPlayButton={true}

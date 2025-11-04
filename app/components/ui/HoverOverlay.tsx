@@ -1,8 +1,8 @@
-import './HoverOverlay.scss'
-
 import React from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+
+import styles from './HoverOverlay.module.css'
 
 interface HoverAction {
   icon: string
@@ -30,26 +30,27 @@ const HoverOverlay: React.FC<HoverOverlayProps> = ({
   }
 
   return (
-    <>
-      {/* Hover overlay background */}
-      <div className='hover-overlay' />
-
+    <div className={styles.hoverOverlay}>
       {/* Play/Pause button in center */}
       {showPlayButton && onPlayPause && (
-        <button className='hover-play-pause-btn' onClick={handlePlayPause}>
+        <button className={styles.hoverPlayPauseBtn} onClick={handlePlayPause}>
           <MuzaIcon iconName={isPlaying ? 'pause' : 'play-hover'} />
         </button>
       )}
 
       {/* Action buttons in bottom-left */}
       {actions.length > 0 && (
-        <div className='hover-overlay-actions'>
+        <div className={styles.hoverOverlayActions}>
           {actions.map((action, index) => (
             <div key={index}>
               {action.customComponent ? (
                 action.customComponent
               ) : (
-                <button className='hover-overlay-btn' onClick={action.onClick} title={action.title}>
+                <button
+                  className={styles.hoverOverlayBtn}
+                  onClick={action.onClick}
+                  title={action.title}
+                >
                   <MuzaIcon iconName={action.icon} />
                 </button>
               )}
@@ -57,7 +58,7 @@ const HoverOverlay: React.FC<HoverOverlayProps> = ({
           ))}
         </div>
       )}
-    </>
+    </div>
   )
 }
 

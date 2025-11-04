@@ -1,5 +1,3 @@
-import './SongLineWithCover.scss'
-
 import React, { type MouseEventHandler, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
@@ -8,7 +6,7 @@ import { useDraggable } from '~/lib/hooks/useDraggable'
 import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import type { SongDetails } from '../../store/models'
-import { formatSongNumber } from '../../store/utils'
+import styles from './SongLineWithCover.module.css'
 
 interface SongLineProps {
   details: SongDetails
@@ -56,55 +54,28 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
     await toggleAddLibrary(MediaTypeEnum.Track, details.id)
   }
 
-  const renderIcon = () => {
-    if (isPlaying && isHovered) {
-      return (
-        <span className='pause-icon'>
-          <MuzaIcon iconName='pause' />
-        </span>
-      )
-    }
-    if (isPlaying) {
-      return (
-        <div className='wave-container'>
-          <div className='bar' />
-          <div className='bar' />
-          <div className='bar' />
-        </div>
-      )
-    }
-    return (
-      <>
-        <span className='track-number'>{formatSongNumber(details.index || 1)}</span>
-        <span className='play-icon'>
-          <MuzaIcon iconName='play' />
-        </span>
-      </>
-    )
-  }
-
   return (
     <div
-      className={`song-line-with-cover ${isPlaying ? 'playing' : ''} ${draggable ? 'draggable' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={`${styles.songLineWithCover} ${isPlaying ? styles.playing : ''} ${draggable ? styles.draggable : ''} ${isDragging ? styles.dragging : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       {...dragHandlers}
     >
-      <div className='song-line-with-cover__content'>
+      <div className={styles.songLineWithCoverContent}>
         {/* Album Cover */}
         <div
-          className='song-line-with-cover__cover'
+          className={styles.songLineWithCoverCover}
           onClick={e => preventClickWhileDragging(e, onClick)}
         >
           <img
             src={details.imageSrc || '/art/imag_1.jpg'}
             alt={`${details.title} cover`}
-            className='cover-image'
+            className={styles.coverImage}
           />
           {isHovered && !playlistMode && (
-            <div className='play-overlay'>
+            <div className={styles.playOverlay}>
               <button
-                className='play-button'
+                className={styles.playButton}
                 onClick={e => {
                   e.stopPropagation()
                   onClick(e as unknown as React.MouseEvent<HTMLDivElement>)
@@ -117,19 +88,19 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
         </div>
 
         {/* Song Info */}
-        <div className='song-line-with-cover__info'>
-          <div className='song-line-with-cover__title-row'>
-            <h3 className='song-title'>{details.title}</h3>
+        <div className={styles.songLineWithCoverInfo}>
+          <div className={styles.songLineWithCoverTitleRow}>
+            <h3 className={styles.songTitle}>{details.title}</h3>
           </div>
 
-          <div className='song-line-with-cover__details-row'>
-            {showPreview && <div className='preview-badge'>Preview</div>}
-            <div className='song-details'>
-              <span className='artist-name'>{details.artist}</span>
-              <span className='separator'>•</span>
-              <span className='album-name'>{details.album || 'Unknown Album'}</span>
-              <span className='separator'>•</span>
-              <span className='play-count'>
+          <div className={styles.songLineWithCoverDetailsRow}>
+            {showPreview && <div className={styles.previewBadge}>Preview</div>}
+            <div className={styles.songDetails}>
+              <span className={styles.artistName}>{details.artist}</span>
+              <span className={styles.separator}>•</span>
+              <span className={styles.albumName}>{details.album || 'Unknown Album'}</span>
+              <span className={styles.separator}>•</span>
+              <span className={styles.playCount}>
                 {details.plays ? formatPlayCount(details.plays) : '0'} Plays
               </span>
             </div>
@@ -137,14 +108,14 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
         </div>
 
         {/* Right Section with Gradient */}
-        <div className='song-line-with-cover__actions'>
+        <div className={styles.songLineWithCoverActions}>
           {playlistMode ? (
             // Playlist mode: show only duration, with trash and checkbox on hover
             <>
               {isHovered && (
                 <>
                   <button
-                    className='trash-btn'
+                    className={styles.trashBtn}
                     title='Remove from playlist'
                     onClick={e => {
                       e.stopPropagation()
@@ -154,7 +125,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                     <MuzaIcon iconName='trash' />
                   </button>
                   <button
-                    className='checkbox-btn'
+                    className={styles.checkboxBtn}
                     title='Select song'
                     onClick={e => {
                       e.stopPropagation()
@@ -165,7 +136,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                   </button>
                 </>
               )}
-              <span className='duration'>
+              <span className={styles.duration}>
                 {details.time ? formatDuration(details.time) : '00:00'}
               </span>
             </>
@@ -173,7 +144,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
             <>
               {showHoverActions && isHovered && (
                 <button
-                  className='ellipsis-btn'
+                  className={styles.ellipsisBtn}
                   title='More options'
                   onClick={e => {
                     e.stopPropagation()
@@ -185,7 +156,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
               )}
 
               <button
-                className='add-btn'
+                className={styles.addBtn}
                 title='Add to library'
                 onClick={e => {
                   e.stopPropagation()
@@ -195,7 +166,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                 <MuzaIcon iconName={isInLibrary ? 'heart' : 'plus'} />
               </button>
 
-              <span className='duration'>
+              <span className={styles.duration}>
                 {details.time ? formatDuration(details.time) : '00:00'}
               </span>
             </>

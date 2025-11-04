@@ -1,6 +1,6 @@
-import './WaveAnimation.scss'
-
 import React from 'react'
+
+import styles from './WaveAnimation.module.css'
 
 interface WaveAnimationProps {
   className?: string
@@ -8,10 +8,10 @@ interface WaveAnimationProps {
 
 const WaveAnimation: React.FC<WaveAnimationProps> = ({ className = '' }) => {
   return (
-    <div className={`wave-container ${className}`}>
-      <div className='bar' />
-      <div className='bar' />
-      <div className='bar' />
+    <div className={`${styles['wave-container']} ${className}`}>
+      <div className={styles.bar} />
+      <div className={styles.bar} />
+      <div className={styles.bar} />
     </div>
   )
 }

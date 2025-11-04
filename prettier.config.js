@@ -25,9 +25,9 @@ export default {
       },
     },
     {
-      files: '*.{scss,css}',
+      files: '*.{css}',
       options: {
-        parser: 'scss',
+        parser: 'css',
       },
     },
   ],

@@ -1,9 +1,9 @@
-import './DropdownMenu.scss'
-
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import React from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+
+import styles from './DropdownMenu.module.css'
 
 export interface DropdownMenuItem {
   id: string
@@ -27,14 +27,16 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, items, title }) =>
     return (
       <React.Fragment key={item.id}>
         {shouldAddSeparator && (
-          <DropdownMenuPrimitive.Separator className='dropdown-menu__separator' />
+          <DropdownMenuPrimitive.Separator className={styles['dropdown-menu__separator']} />
         )}
         <DropdownMenuPrimitive.Item
-          className={`dropdown-menu__item ${item.destructive ? 'dropdown-menu__item--destructive' : ''}`}
+          className={`${styles['dropdown-menu__item']} ${item.destructive ? styles['dropdown-menu__item--destructive'] : ''}`}
           onClick={item.onClick}
         >
-          {item.icon && <MuzaIcon iconName={item.icon} className='dropdown-menu__item-icon' />}
-          <span className='dropdown-menu__item-text'>{item.title}</span>
+          {item.icon && (
+            <MuzaIcon iconName={item.icon} className={styles['dropdown-menu__item-icon']} />
+          )}
+          <span className={styles['dropdown-menu__item-text']}>{item.title}</span>
         </DropdownMenuPrimitive.Item>
       </React.Fragment>
     )
@@ -45,13 +47,17 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, items, title }) =>
       <DropdownMenuPrimitive.Trigger asChild>{trigger}</DropdownMenuPrimitive.Trigger>
 
       <DropdownMenuPrimitive.Portal>
-        <DropdownMenuPrimitive.Content className='dropdown-menu' sideOffset={4} align='end'>
+        <DropdownMenuPrimitive.Content
+          className={styles['dropdown-menu']}
+          sideOffset={4}
+          align='end'
+        >
           {title && (
             <>
-              <DropdownMenuPrimitive.Label className='dropdown-menu__title'>
+              <DropdownMenuPrimitive.Label className={styles['dropdown-menu__title']}>
                 {title}
               </DropdownMenuPrimitive.Label>
-              <DropdownMenuPrimitive.Separator className='dropdown-menu__separator' />
+              <DropdownMenuPrimitive.Separator className={styles['dropdown-menu__separator']} />
             </>
           )}
           {items.map((item, index) => renderItem(item, index))}

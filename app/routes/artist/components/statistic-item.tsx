@@ -1,5 +1,3 @@
-import './statistic-item.scss'
-
 interface Props {
   value: number
   label: string

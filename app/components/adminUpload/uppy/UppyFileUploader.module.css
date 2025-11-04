@@ -1,0 +1,81 @@
+.uppyFileUploader {
+  width: 100%;
+}
+
+/* Override Uppy's default styling to match your design */
+.uppyFileUploader .uppyDashboard {
+  border-radius: var(--muza-border-radius-lg, 12px);
+  border: 2px dashed var(--muza-color-gray-300, #d1d5db);
+  background-color: var(--muza-color-gray-50, #f9fafb);
+  font-family: 'Founders Grotesk', sans-serif;
+}
+
+.uppyFileUploader .uppyDashboard:hover {
+  border-color: var(--muza-color-primary, #2563eb);
+  background-color: var(--muza-color-primary-light, #eff6ff);
+}
+
+.uppyFileUploader .uppyDashboardInner {
+  border: none;
+  background: transparent;
+}
+
+.uppyFileUploader .uppyDashboardDropFilesHereHint {
+  font-family: 'Founders Grotesk', sans-serif;
+  font-size: 18px;
+  color: var(--muza-color-gray-600, #6b7280);
+}
+
+.uppyFileUploader .uppyDashboardBrowse {
+  color: var(--muza-color-primary, #2563eb);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.uppyFileUploader .uppyDashboardBrowse:hover {
+  text-decoration: underline;
+}
+
+.uppyFileUploader .uppyDashboardNote {
+  font-family: 'Founders Grotesk', sans-serif;
+  font-size: 14px;
+  color: var(--muza-color-gray-500, #6b7280);
+  margin-top: var(--muza-spacing-sm, 8px);
+}
+
+/* File items styling */
+.uppyFileUploader .uppyDashboardItem {
+  border-radius: var(--muza-border-radius-md, 8px);
+  border: 1px solid var(--muza-color-gray-200, #e5e7eb);
+  background-color: var(--muza-color-white, #ffffff);
+}
+
+.uppyFileUploader .uppyDashboardItemName {
+  font-family: 'Founders Grotesk', sans-serif;
+  font-weight: 500;
+}
+
+.uppyFileUploader .uppyDashboardItemStatus {
+  font-family: 'Founders Grotesk', sans-serif;
+  font-size: 12px;
+}
+
+/* Progress bar styling */
+.uppyFileUploader .uppyDashboardItemProgress {
+  background-color: var(--muza-color-primary, #2563eb);
+}
+
+/* Buttons */
+.uppyFileUploader .uppyUReset.uppyCBtn {
+  font-family: 'Founders Grotesk', sans-serif;
+  border-radius: var(--muza-border-radius-md, 8px);
+  font-weight: 500;
+}
+
+.uppyFileUploader .uppyUReset.uppyCBtn.uppyCBtnPrimary {
+  background-color: var(--muza-color-primary, #2563eb);
+}
+
+.uppyFileUploader .uppyUReset.uppyCBtn.uppyCBtnPrimary:hover {
+  background-color: var(--muza-color-primary-dark, #1d4ed8);
+}

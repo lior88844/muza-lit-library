@@ -1,5 +1,3 @@
-import './UploadStepOne.scss'
-
 import React from 'react'
 
 import type { Musician, UploadFormData } from '~/store/uploadStore'
@@ -47,9 +45,9 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
   }
 
   return (
-    <div className='upload-step-one'>
-      <div className='upload-container'>
-        <div className='upload-left'>
+    <div className='h-full'>
+      <div className='flex h-full'>
+        <div className='flex-1 border-r border-border-light overflow-y-auto h-full'>
           <UploadForm
             formData={formData}
             musicians={musicians}
@@ -61,7 +59,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
           />
         </div>
 
-        <div className='upload-right'>
+        <div className='flex-1 py-8 px-10 overflow-y-hidden'>
           <UploadFileArea
             onCoverUpload={onCoverUpload}
             onFileUpload={onFileUpload}

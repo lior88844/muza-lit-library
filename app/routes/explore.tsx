@@ -1,10 +1,8 @@
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
-
 import { useNavigate } from 'react-router'
 
 import MusicListSectionComponent from '~/components/listsDisplays/MusicListSection'
+import { Divider } from '~/components/ui/divider'
+import { Typography } from '~/components/ui/typography'
 import { useTranslation } from '~/lib/i18n/translations'
 import { useMedia } from '~/store/media/mediaContext'
 import type { Album } from '~/store/models'
@@ -48,9 +46,11 @@ export default function Explore() {
   ]
 
   return (
-    <main>
-      <h1>{t('page.explore')}</h1>
-      <hr />
+    <>
+      <Typography variant='h1' as='h2' className='px-3 pb-4'>
+        {t('page.explore')}
+      </Typography>
+      <Divider />
 
       {sections.map(section => (
         <div key={section.title}>
@@ -62,9 +62,9 @@ export default function Explore() {
             onAlbumClick={onAlbumClick}
             albums={section.albums}
           />
-          <hr />
+          <Divider />
         </div>
       ))}
-    </main>
+    </>
   )
 }

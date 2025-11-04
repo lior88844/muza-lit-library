@@ -1,5 +1,3 @@
-import './MediaCover.scss'
-
 import React from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
@@ -7,6 +5,7 @@ import { generatePlaylistCoverImages } from '~/lib/utils'
 import type { MusicPlaylist } from '~/store/models'
 
 import type { MediaTypeEnum } from '../../../../../server/db/user-library.entity'
+import styles from './MediaCover.module.css'
 
 interface MediaCoverProps {
   imageSrc: string | string[] // Can be string for single image or array for playlist collage
@@ -65,11 +64,11 @@ const MediaCover: React.FC<MediaCoverProps> = ({
       const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
 
       return (
-        <div className='playlist-collage' data-name='Playlist Collage'>
+        <div className={styles['playlist-collage']} data-name='Playlist Collage'>
           {imageSrc.slice(0, 4).map((image, index) => (
             <div
               key={index}
-              className={`collage-item collage-item--${positions[index]}`}
+              className={`${styles['collage-item']} ${styles[`collage-item--${positions[index]}`]}`}
               style={{ backgroundImage: `url('${image}')` }}
             />
           ))}
@@ -86,12 +85,12 @@ const MediaCover: React.FC<MediaCoverProps> = ({
 
   return (
     <div
-      className={`cover-section cover-section--${size} cover-section--${mediaType}`}
+      className={`${styles['cover-section']} ${styles[`cover-section--${size}`]} ${styles[`cover-section--${mediaType}`]}`}
       data-name='cover'
     >
-      <div className='cover-frame' data-name='cover frame'>
+      <div className={styles['cover-frame']} data-name='cover frame'>
         {renderCoverContent()}
-        <div className='overlay' data-name='Overlay' />
+        <div className={styles.overlay} data-name='Overlay' />
       </div>
     </div>
   )

@@ -1,0 +1,32 @@
+.uploadStepThree {
+  /* Local variables with fallbacks */
+  --preview-padding: var(--muza-spacing-xl, 24px)
+    calc(var(--muza-spacing-xxl, 32px) + var(--muza-spacing-xl, 24px) + var(--muza-spacing-xs, 4px));
+  --section-spacing: var(--muza-spacing-lg, 16px);
+  --border-color: var(--muza-light-border-color, #e5e7eb);
+
+  width: 100%;
+}
+
+.uploadStepThree .albumPreview {
+  margin: 0 auto;
+  padding: var(--preview-padding);
+}
+
+.uploadStepThree .albumPreview .albumSongList {
+  margin-top: var(--section-spacing);
+  margin-bottom: var(--section-spacing);
+}
+
+.uploadStepThree .albumPreview hr {
+  margin: var(--section-spacing) 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
+.albumSongList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0 8px;
+}

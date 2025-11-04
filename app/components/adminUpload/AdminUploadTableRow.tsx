@@ -3,6 +3,7 @@ import { FaSpinner } from 'react-icons/fa'
 
 import { isItemUploadReady } from '~/components/adminUpload/services/adminUploadService'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 
 import { AppTooltip } from '../ui/AppTooltip'
 import CoverCell from './CoverCell'
@@ -59,98 +60,90 @@ export const AdminUploadTableRow: React.FC<Props> = ({
   }
 
   return (
-    <tr key={item.id} className='admin-upload-table__row'>
-      <td className='admin-upload-table__cell admin-upload-table__cell--number'>{index + 1}</td>
-      <td className='admin-upload-table__cell admin-upload-table__cell--checkbox'>
+    <tr
+      key={item.id}
+      className='border-b border-border-light hover:bg-muted transition-all duration-200 ease-in-out'
+    >
+      <td className='py-2 px-2 align-middle border-b border-border-light text-center text-sm text-muted-foreground leading-4'>
+        {index + 1}
+      </td>
+      <td className='py-2 px-2 align-middle border-b border-border-light text-center'>
         <div
-          className={`admin-upload-table__checkbox-wrapper ${isSelected ? 'admin-upload-table__checkbox-wrapper--checked' : ''} ${item.errorCode === 1001 || !isUploadReady ? 'admin-upload-table__checkbox-wrapper--disabled' : ''}`}
+          className={cn(
+            'flex justify-center items-center relative h-5',
+            isSelected &&
+              '[&_.checkmark]:opacity-100 [&_.checkmark]:scale-100 [&_.checkbox-visual]:bg-transparent [&_.checkbox-visual]:border-transparent',
+            (item.errorCode === 1001 || !isUploadReady) &&
+              'opacity-50 cursor-not-allowed [&_input]:cursor-not-allowed'
+          )}
         >
           <input
             type='checkbox'
             checked={isSelected}
             onChange={() => onItemSelect(item.id)}
-            className='admin-upload-table__checkbox'
+            className='w-4 h-4 opacity-0 absolute cursor-pointer z-1'
             disabled={!isUploadReady}
           />
-          <div className='admin-upload-table__checkbox-visual'>
-            <MuzaIcon iconName='CheckmarkSquare' className='admin-upload-table__checkmark' />
+          <div className='w-4 h-4 border-[1.33px] border-primary rounded-sm bg-background flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative checkbox-visual'>
+            <MuzaIcon
+              iconName='CheckmarkSquare'
+              className='w-4 h-4 opacity-0 scale-[0.8] transition-all duration-200 ease-in-out checkmark'
+            />
           </div>
         </div>
       </td>
-      <td className='admin-upload-table__cell admin-upload-table__cell--folder'>
-        <div className='admin-upload-table__item-info'>
-          <span className='admin-upload-table__item-name'>
-            {' '}
+      <td className='py-2 px-2 align-middle border-b border-border-light text-base text-muted-foreground leading-5'>
+        <div className='flex flex-col gap-1'>
+          <span className='font-medium text-base text-text-primary'>
             {artistName} {artistName && albumName ? ' - ' : ''} {albumName}
           </span>
-          <div className='admin-upload-table__item-meta'>
-            <span className='admin-upload-table__file-count'>
+          <div className='flex gap-3 text-sm text-text-secondary'>
+            <span className='text-xs text-text-tertiary'>
               {item.files.flat().length} files
               {item.files.length > 1 && ` (${item.files.length} discs)`}
             </span>
           </div>
         </div>
       </td>
-      <td className='admin-upload-table__cell admin-upload-table__cell--upload'>
-        <div className='admin-upload-table__upload-item'>
+      <td className='py-2 px-2 pl-2 pr-4 align-middle border-b border-border-light'>
+        <div className='flex items-center gap-3'>
           <div
-            className={`admin-upload-table__upload-status ${
-              item.loadingState?.status === 'loaded'
-                ? 'admin-upload-table__upload-status--loaded'
-                : ''
-            } ${isLoading && isSelected ? 'admin-upload-table__upload-status--uploading' : ''}`}
+            className={cn(
+              'flex items-center justify-center w-[18px] h-[18px] bg-secondary rounded-full shrink-0 transition-colors duration-300 ease-in-out',
+              item.loadingState?.status === 'loaded' && 'bg-[#15803d]',
+              isLoading && isSelected && 'bg-border-light'
+            )}
           >
             {isLoading ? (
-              <FaSpinner className='admin-upload-table__upload-spinner' />
+              <FaSpinner className='w-4 h-4 text-text-secondary animate-spin' />
             ) : (
               <MuzaIcon
                 iconName={
                   item.loadingState?.status === 'loaded' && item.uploadRes ? 'Check' : 'Clock8'
                 }
-                className='admin-upload-table__status-icon'
+                className={cn(
+                  'w-4 h-4 text-text-dark transition-colors duration-300 ease-in-out',
+                  item.loadingState?.status === 'loaded' && 'text-[#f9fafb]'
+                )}
               />
             )}
           </div>
-          <div className='admin-upload-table__upload-content'>
-            {item.discoverRes?.artistName || ''} {item.discoverRes?.albumName ? ' - ' : ''}{' '}
-            {item.discoverRes?.albumName}
-            <div className='admin-upload-table__upload-info'>
-              <div className='admin-upload-table__upload-icon'>
-                <MuzaIcon iconName='folder' className='admin-upload-table__type-icon' />
+          <div className='flex-1 flex flex-col gap-1 min-w-0'>
+            <span className='text-base font-bold text-background-dark leading-5'>
+              {item.discoverRes?.artistName || ''} {item.discoverRes?.albumName ? ' - ' : ''}{' '}
+              {item.discoverRes?.albumName}
+            </span>
+            <div className='flex items-center justify-start gap-2 flex-wrap'>
+              <div className='w-5 h-5 text-text-secondary'>
+                <MuzaIcon iconName='folder' className='w-full h-full' />
               </div>
-              <span className='admin-upload-table__size-text'>{formatFileSize(item.size)}</span>
-              <span className='admin-upload-table__status-text'>- {statusText}</span>
-
-              {/* Show upload progress only during actual upload */}
-              {/* {item.loadingState?.status === 'loading' && isUploading && (
-                <>
-                  <span className='admin-upload-table__status-text'>Uploading...</span>
-                  <span className='admin-upload-table__percentage'>
-                    {item.loadingState?.progress ?? 0}%
-                  </span>
-                  <div className='admin-upload-table__file-progress'>
-                    <span className='admin-upload-table__progress-count'>
-                      {item.loadingState?.loadedFiles ?? 0} / {item.files.flat().length}
-                    </span>
-                  </div>
-                </>
-              )} */}
+              <span className='text-sm text-text-secondary'>{formatFileSize(item.size)}</span>
+              <span className='text-sm text-text-secondary'>- {statusText}</span>
             </div>
-            {/* Show progress bar only during actual upload */}
-            {/* {item.loadingState?.status === 'loading' && isUploading && (
-              <div className='admin-upload-table__progress-bar'>
-                <div
-                  className='admin-upload-table__progress-fill'
-                  style={{
-                    width: `${item.loadingState?.progress ?? 0}%`,
-                  }}
-                />
-              </div>
-            )} */}
           </div>
         </div>
       </td>
-      <td className='admin-upload-table__cell admin-upload-table__cell--data-source'>
+      <td className='py-2 px-2 align-middle border-b border-border-light'>
         <DataSourceCell
           item={item}
           onManualIdChange={onManualIdChange}
@@ -158,10 +151,10 @@ export const AdminUploadTableRow: React.FC<Props> = ({
           onDiscoverAlbum={onDiscoverAlbum}
         />
       </td>
-      <td className='admin-upload-table__cell admin-upload-table__cell--cover'>
+      <td className='py-2 px-2 align-middle border-b border-border-light'>
         <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
       </td>
-      <td className='admin-upload-table__cell admin-upload-table__cell--errors'>
+      <td className='py-2 px-2 align-middle border-b border-border-light text-right min-w-max'>
         {errors.length > 0 || item.uploadRes?.success === false ? (
           <ErrorBadge errorCodes={errors} item={item} />
         ) : item.uploadRes ? (
@@ -175,16 +168,16 @@ export const AdminUploadTableRow: React.FC<Props> = ({
 }
 // Success Badge Component
 const SuccessBadge = () => (
-  <div className='admin-upload-table__success-badge'>
-    <MuzaIcon iconName='Check' className='admin-upload-table__success-icon' />
+  <div className='flex items-center justify-center gap-1 py-[2px] px-2 pb-1 rounded-sm bg-[#15803d] font-sans text-sm font-normal leading-none text-[#f9fafb] whitespace-nowrap'>
+    <MuzaIcon iconName='Check' className='w-3 h-3 text-[#f9fafb]' />
     No Errors
   </div>
 )
 
 // Uploaded Badge Component
 const UploadedBadge = () => (
-  <div className='admin-upload-table__uploaded-badge'>
-    <MuzaIcon iconName='Check' className='admin-upload-table__uploaded-icon' />
+  <div className='flex items-center justify-center gap-1 py-[2px] px-2 pb-1 rounded-sm bg-[#7c3aed] font-sans text-sm font-normal leading-none text-[#f9fafb] whitespace-nowrap'>
+    <MuzaIcon iconName='Check' className='w-3 h-3 text-[#f9fafb]' />
     Uploaded
   </div>
 )
@@ -204,15 +197,24 @@ const ErrorBadge: React.FC<{ errorCodes: UploadErrorCodeEnum[]; item: UploadItem
   if (errorInfos.length === 0) {
     return null
   }
+
+  const errorCode = errorInfos[0].code
+  const isOrangeError = errorCode === 1002 || errorCode === 1003 || errorCode === 1004
+
   return (
     <AppTooltip
       triggerProps={{
-        className: `admin-upload-table__error-badge admin-upload-table__error-badge--${errorInfos[0].code}`,
+        className: cn(
+          'flex items-center justify-center py-[2px] px-2 pb-1 rounded-sm font-sans text-sm font-normal leading-none text-[#f9fafb] cursor-pointer transition-opacity duration-200 ease-in-out whitespace-nowrap hover:opacity-90',
+          isOrangeError ? 'bg-[#ea580c]' : 'bg-[#dc2626]'
+        ),
       }}
       content={errorInfos.map((errorInfo, idx) => (
         <Fragment key={idx}>
-          <p className='tooltip__title'>{errorInfo.title}</p>
-          <p className='tooltip__description'>{errorInfo.description}</p>
+          <p className='text-sm font-medium text-[#f9fafb] mb-1'>{errorInfo.title}</p>
+          <p className='text-[13px] font-normal leading-[1.4] text-[#d1d5db]'>
+            {errorInfo.description}
+          </p>
         </Fragment>
       ))}
     >

@@ -1,5 +1,3 @@
-import './UploadStepTwo.scss'
-
 import {
   closestCenter,
   DndContext,
@@ -20,6 +18,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import WaveAnimation from '~/components/ui/WaveAnimation'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 import type { TrackMetadata } from '~/store/uploadStore'
 
 interface UploadStepTwoProps {
@@ -83,49 +82,69 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={`table-row ${isDragging ? 'dragging' : ''}`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        'grid grid-cols-[auto_1fr_minmax(200px,1fr)_minmax(150px,1.5fr)_auto_auto] items-center min-h-[54px] border-b border-border-light transition-all duration-200 ease-in-out hover:bg-[var(--colors_muted_light_50_,#f9fafb7f)] lg:grid-cols-[auto_1fr_minmax(150px,1.5fr)_minmax(120px,1fr)_auto_auto]',
+        isDragging && 'opacity-70 bg-secondary shadow-[0_4px_8px_rgba(0,0,0,0.15)] z-1000'
+      )}
+    >
       {/* Track Number & Drag Handle */}
-      <div className='cell-number'>
-        <button className='drag-handle' {...attributes} {...listeners}>
+      <div className='flex items-center justify-end py-4 px-4 pr-[56px] gap-2 lg:pl-5 lg:pr-5'>
+        <button
+          className='bg-none border-none w-6 h-6 rounded-full flex items-center justify-center cursor-grab touch-action-none p-1 bg-transparent text-muted-foreground hover:text-background-dark active:cursor-grabbing transition-all duration-200 ease-in-out'
+          {...attributes}
+          {...listeners}
+        >
           <MuzaIcon iconName='grip-vertical' />
         </button>
-        <span className='track-number'>{index + 1}</span>
+        <span className='text-base font-medium text-muted-foreground w-6 text-center'>
+          {index + 1}
+        </span>
       </div>
 
       {/* File Name with Play Button */}
-      <div className='cell-filename'>
+      <div className='flex items-center py-4 px-4 gap-2.5'>
         <button
-          className='play-button'
+          className='bg-none border-none w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out bg-secondary hover:bg-border-light [&::after]:hidden [&_svg]:w-4 [&_svg]:h-4'
           onClick={() => onPlayPause(track.id)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           {renderPlayButton()}
         </button>
-        <span className='filename' title={track.fileName}>
+        <span
+          className='flex-1 text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis font-normal'
+          title={track.fileName}
+        >
           {track.fileName}
         </span>
       </div>
 
       {/* Editable Song Name */}
-      <div className='cell-songname'>
-        <span>{track.songName}</span>
+      <div className='py-4 px-4'>
+        <span className='w-full border-none bg-none text-sm text-background-dark font-normal p-0 outline-none placeholder:text-muted-foreground focus:text-background-dark'>
+          {track.songName}
+        </span>
       </div>
 
       {/* Editable Composer */}
-      <div className='cell-composer'>
-        <span>{track.composer}</span>
+      <div className='py-4 px-4'>
+        <span className='w-full border-none bg-none text-sm text-background-dark font-normal p-0 outline-none placeholder:text-muted-foreground focus:text-background-dark'>
+          {track.composer}
+        </span>
       </div>
 
       {/* Duration (Read-only) */}
-      <div className='cell-time'>
-        <span className='duration'>{track.duration}</span>
+      <div className='py-4 px-4 text-right'>
+        <span className='text-sm text-muted-foreground font-normal'>{track.duration}</span>
       </div>
 
       {/* Delete Button */}
-      <div className='cell-actions'>
+      <div className='py-4 px-4 flex justify-center'>
         <button
-          className='delete-button'
+          className='bg-none border-none w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out bg-secondary text-muted-foreground hover:bg-destructive hover:text-destructive-foreground'
           onClick={() => onDeleteTrack(track.id)}
           title='Delete track'
         >
@@ -214,16 +233,16 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
   }, [])
 
   return (
-    <div className='upload-step-two'>
-      <div className='metadata-table'>
+    <div className='h-full flex-1 pb-[108px] overflow-y-auto'>
+      <div className='max-w-full border-collapse border-spacing-0'>
         {/* Table Header */}
-        <div className='table-header'>
-          <div className='column-number'></div>
-          <div className='column-filename'>File Name (Not displayed)</div>
-          <div className='column-songname'>Song Name</div>
-          <div className='column-composer'>Composer</div>
-          <div className='column-time'>Time</div>
-          <div className='column-actions'></div>
+        <div className='grid grid-cols-[auto_1fr_minmax(200px,1fr)_minmax(150px,1.5fr)_auto_auto] items-center border-b border-border-light text-sm text-muted-foreground font-medium lg:grid-cols-[auto_1fr_minmax(150px,1.5fr)_minmax(120px,1fr)_auto_auto] lg:text-xs'>
+          <div className='w-16 text-right py-4 px-4 pr-[56px] lg:pl-5 lg:pr-5'></div>
+          <div className='py-4 px-4'>File Name (Not displayed)</div>
+          <div className='py-4 px-4'>Song Name</div>
+          <div className='py-4 px-4'>Composer</div>
+          <div className='py-4 px-4 text-right'>Time</div>
+          <div className='w-6 text-center'></div>
         </div>
 
         {/* Table Body with Drag and Drop */}
@@ -232,7 +251,7 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
             items={trackMetadata.map(track => track.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className='table-body'>
+            <div className='flex flex-col gap-2'>
               {trackMetadata.map((track, index) => (
                 <SortableTrackRow
                   key={track.id}
@@ -250,8 +269,10 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
 
         {/* Empty State */}
         {trackMetadata.length === 0 && (
-          <div className='empty-state'>
-            <p>No tracks uploaded yet. Please go back to upload audio files.</p>
+          <div className='py-12 px-4 text-center text-muted-foreground'>
+            <p className='text-base m-0'>
+              No tracks uploaded yet. Please go back to upload audio files.
+            </p>
           </div>
         )}
       </div>

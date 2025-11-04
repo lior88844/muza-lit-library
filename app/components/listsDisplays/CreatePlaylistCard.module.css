@@ -1,0 +1,67 @@
+.createPlaylistCard {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--colors_muted_light, #f9fafb);
+  border: 1px solid var(--muza-light-border-color);
+  border-radius: var(--muza-border-radius-sm, 4px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.createPlaylistCard:hover {
+  background: var(--muza-hover-background, #eeeeee);
+  border-color: var(--muza-border-color, #a9a9a9);
+}
+
+.createPlaylistCard:active {
+  transform: scale(0.98);
+}
+
+.createPlaylistCard .createPlaylistContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--muza-spacing-lg, 16px);
+}
+
+.createPlaylistCard .plusIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.createPlaylistCard .plusIconCircle {
+  width: 56px;
+  height: 56px;
+  background: var(--colors_background_dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.createPlaylistCard .plusIconCircle .plusIcon {
+  color: var(--colors_background_light, #ffffff);
+  width: var(--muza-spacing-xxl, 36px);
+  height: var(--muza-spacing-xxl, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.createPlaylistCard .createPlaylistText {
+  font-family: var(--typography_font_family_font_sans, 'Founders Grotesk');
+  font-size: var(--muza-primary-font-size, 14px);
+  font-weight: var(--muza-font-weight-normal, 400);
+  color: var(--colors_background_dark);
+  margin: 0;
+  line-height: 1.2;
+  max-width: 162px;
+}

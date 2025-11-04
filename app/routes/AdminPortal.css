@@ -1,0 +1,243 @@
+.adminPortal {
+  background: var(--colors_background_light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.adminPortalHeader {
+  border-bottom: 1px solid var(--muza-light-border-color, #e5e7eb);
+  padding: var(--muza-spacing-md, 12px) var(--muza-spacing-xxl, 32px);
+}
+
+.adminPortalHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.adminPortalCancelBtn {
+  background: var(--colors_accent_light);
+  border: none;
+  border-radius: 9999px;
+  padding: calc(var(--muza-spacing-sm, 8px) + 2px) var(--muza-spacing-lg, 16px);
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: var(--muza-primary-font-size, 14px);
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--muza-track-title-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.adminPortalCancelBtn:hover {
+  background: var(--muza-hover-background, #eeeeee);
+}
+
+/* Controls */
+.adminPortalControls {
+  padding: var(--muza-spacing-lg, 16px) var(--muza-spacing-xxl, 32px);
+}
+
+.adminPortalControlsContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.adminPortalUploadBtn {
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-xxl, 32px);
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: 16px;
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--muza-primary-text-color, #333333);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+  transition: background-color 0.2s ease;
+}
+
+.adminPortalUploadBtn:hover {
+  background: var(--muza-hover-background, #eeeeee);
+}
+
+/* Table Container */
+.adminPortalTableContainer {
+  flex: 1;
+  padding: 0 var(--muza-spacing-xxl, 32px) var(--muza-spacing-lg, 16px);
+  display: flex;
+  flex-direction: column;
+}
+
+.adminPortalTable {
+  border: 1px solid var(--muza-light-border-color, #e5e7eb);
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Table Header */
+.adminPortalTableHeader {
+  display: grid;
+  grid-template-columns: 0.5fr 5fr 1.5fr 1.5fr 0.5fr;
+  background: var(--colors_background_light);
+  border-bottom: 1px solid var(--muza-light-border-color, #e5e7eb);
+}
+
+.adminPortalTableHeaderCell {
+  padding: var(--muza-spacing-sm, 8px);
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-right: 1px solid var(--muza-light-border-color, #e5e7eb);
+}
+
+.adminPortalTableHeaderCell:last-child {
+  border-right: none;
+}
+
+.adminPortalTableHeaderCell span {
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: var(--muza-primary-font-size, 14px);
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--colors_muted_foreground_light);
+  line-height: 1.25;
+}
+
+/* Table Body */
+.adminPortalTableBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminPortalTableRow {
+  display: grid;
+  grid-template-columns: 0.5fr 5fr 1.5fr 1.5fr 0.5fr;
+  border-bottom: 1px solid var(--muza-light-border-color, #e5e7eb);
+}
+
+.adminPortalTableRow:last-child {
+  border-bottom: none;
+}
+
+.adminPortalTableCell {
+  padding: var(--muza-spacing-sm, 8px);
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  border-right: 1px solid var(--muza-light-border-color, #e5e7eb);
+}
+
+.adminPortalTableCell:last-child {
+  border-right: none;
+}
+
+/* Input */
+.adminPortalInput {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--muza-light-border-color, #e5e7eb);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: 16px;
+  font-weight: 400;
+  color: #030712;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease;
+  letter-spacing: 0.25px;
+  line-height: 20px;
+}
+
+.adminPortalInput:focus {
+  border-color: var(--muza-border-color, #a9a9a9);
+}
+
+.adminPortalDropdownBtn {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--muza-light-border-color, #e5e7eb);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: 16px;
+  font-weight: 500;
+  color: #030712;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  transition: background-color 0.2s ease;
+  line-height: 20px;
+}
+
+.adminPortalDropdownBtn:hover {
+  background: var(--muza-hover-background, #eeeeee);
+}
+
+/* Edit Button */
+.adminPortalEditBtn {
+  background: var(--colors_accent_light);
+  border: none;
+  border-radius: 9999px;
+  padding: calc(var(--muza-spacing-sm, 8px) + 2px) var(--muza-spacing-lg, 16px);
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: var(--muza-primary-font-size, 14px);
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--muza-track-title-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.adminPortalEditBtn:hover {
+  background: var(--muza-hover-background, #eeeeee);
+}
+
+/* Track Number */
+.adminPortalTrackNumber {
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: var(--muza-primary-font-size, 14px);
+  font-weight: var(--muza-font-weight-normal, 400);
+  color: var(--muza-primary-text-color, #333333);
+  text-align: right;
+  width: 100%;
+  letter-spacing: 0.25px;
+}
+
+/* Table Footer */
+.adminPortalTableFooter {
+  padding: var(--muza-spacing-lg, 16px) 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.adminPortalTableFooterContent {
+  display: flex;
+  gap: var(--muza-spacing-lg, 16px);
+}
+
+.adminPortalSaveBtn {
+  background: var(--colors_primary_light, #1d4ed8);
+  border: none;
+  border-radius: 9999px;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+  font-family: var(--typography_font_family_font_sans, Founders Grotesk);
+  font-size: var(--muza-primary-font-size, 14px);
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--colors_muted_light);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.adminPortalSaveBtn:hover {
+  background: var(--colors_primary_dark, #2563eb);
+}

@@ -1,7 +1,4 @@
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
-import './admin-upload.scss'
+import '../styles/variables.css'
 
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -276,18 +273,18 @@ export default function AdminUpload() {
   }, [navigate])
 
   return (
-    <div className='admin-upload-page'>
+    <div className='flex flex-col h-full bg-background font-sans'>
       <AdminUploadHeader onCancel={handleCancel} />
 
-      <div className='admin-upload-content'>
+      <div className='flex-1 flex flex-col py-4 px-8 gap-0'>
         {/* Always show drag area - positioned above the table */}
-        <div className='admin-upload-drop-section'>
+        <div className='flex items-center justify-center py-3'>
           <AdminFileDropArea onFileUpload={handleFileUpload} />
         </div>
 
         {/* Show table only when items are uploaded */}
         {uploadedItems.length > 0 && (
-          <div className='admin-upload-table-section'>
+          <div className='flex-1 flex flex-col pt-0 min-h-0'>
             <AdminUploadTable
               items={uploadedItems}
               selectedItemIds={selectedItemIds}

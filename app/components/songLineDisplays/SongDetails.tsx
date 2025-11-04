@@ -1,10 +1,9 @@
-import './SongDetails.scss'
-
 import React, { type MouseEventHandler, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 
 import type { SongDetails as SongDetailsType } from '../../store/models'
+import styles from './SongDetails.module.css'
 
 interface SongDetailsProps {
   details: SongDetailsType
@@ -44,41 +43,43 @@ const SongDetails: React.FC<SongDetailsProps> = ({
 
   return (
     <div
-      className={`song-details ${isHovered ? 'hover' : ''} ${isActive ? 'active' : ''}`}
+      className={`${styles['song-details']} ${isHovered ? styles.hover : ''} ${isActive ? styles.active : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className='song-info' onClick={onClick}>
-        <div className='cover-container'>
+      <div className={styles['song-info']} onClick={onClick}>
+        <div className={styles['cover-container']}>
           <div
-            className='cover-image'
+            className={styles['cover-image']}
             style={{
               backgroundImage: `url(${details.imageSrc || '/art/imag_1.jpg'})`,
             }}
           >
             {(isHovered || isActive) && (
-              <div className='play-overlay'>
-                <div className='play-button'>{renderPlayButton()}</div>
+              <div className={styles['play-overlay']}>
+                <div className={styles['play-button']}>{renderPlayButton()}</div>
               </div>
             )}
           </div>
         </div>
 
-        <div className='track-details'>
-          <div className={`track-title ${isActive ? 'active' : ''}`}>{details.title}</div>
-          <div className='track-metadata'>
-            <span className='track-artist'>{details.artist}</span>
-            <span className='separator'>•</span>
-            <span className='play-count'>{formatPlays(details.plays || 0)}</span>
+        <div className={styles['track-details']}>
+          <div className={`${styles['track-title']} ${isActive ? styles.active : ''}`}>
+            {details.title}
+          </div>
+          <div className={styles['track-metadata']}>
+            <span className={styles['track-artist']}>{details.artist}</span>
+            <span className={styles.separator}>•</span>
+            <span className={styles['play-count']}>{formatPlays(details.plays || 0)}</span>
           </div>
         </div>
       </div>
 
-      <div className='song-actions'>
+      <div className={styles['song-actions']}>
         {isHovered && (
-          <div className='action-buttons'>
+          <div className={styles['action-buttons']}>
             <button
-              className='action-btn heart-btn'
+              className={`${styles['action-btn']} ${styles['heart-btn']}`}
               onClick={() => {
                 // Add heart action logic here
               }}
@@ -86,17 +87,17 @@ const SongDetails: React.FC<SongDetailsProps> = ({
               <MuzaIcon iconName='heart' />
             </button>
             <button
-              className='action-btn menu-btn'
+              className={`${styles['action-btn']} ${styles['menu-btn']}`}
               onClick={() => {
                 // Add menu action logic here
               }}
             >
               <MuzaIcon iconName='ellipsis' />
             </button>
-            <div className='checkbox-container'>
+            <div className={styles['checkbox-container']}>
               <input
                 type='checkbox'
-                className='song-checkbox'
+                className={styles['song-checkbox']}
                 checked={isSelected}
                 onChange={e => setIsSelected(e.target.checked)}
               />
@@ -105,7 +106,9 @@ const SongDetails: React.FC<SongDetailsProps> = ({
         )}
 
         {!isHovered && (
-          <div className='duration'>{details.time ? formatDuration(details.time) : '00:00'}</div>
+          <div className={styles.duration}>
+            {details.time ? formatDuration(details.time) : '00:00'}
+          </div>
         )}
       </div>
     </div>

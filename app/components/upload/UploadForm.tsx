@@ -1,10 +1,10 @@
-import './UploadForm.scss'
-
 import React from 'react'
 
 import MuzaInputField from '~/controls/MuzaInputField'
 import MuzaIcon from '~/icons/MuzaIcon'
 import type { Musician, UploadFormData } from '~/store/uploadStore'
+
+import { Divider } from '../ui/divider'
 
 interface UploadFormProps {
   formData: UploadFormData
@@ -31,15 +31,17 @@ const UploadForm: React.FC<UploadFormProps> = ({
   onFindAlbumDetails,
 }) => {
   return (
-    <div className='upload-form'>
-      <div className='upload-form-container'>
+    <div className='bg-muted py-6 px-10 pb-2.5 pr-10 border-r border-border-light overflow-y-auto box-border h-full [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
+      <div className='flex flex-col gap-6 w-full'>
         {/* General Info Section */}
-        <div className='form-card'>
-          <div className='form-card-header'>
-            <span className='form-card-title'>General Info</span>
+        <div className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <div className='flex items-center gap-4'>
+            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+              General Info
+            </span>
           </div>
 
-          <div className='form-fields'>
+          <div className='flex flex-col gap-4'>
             <MuzaInputField
               name='albumTitle'
               label='Album Title'
@@ -57,25 +59,30 @@ const UploadForm: React.FC<UploadFormProps> = ({
             />
           </div>
 
-          <div className='section-description-row'>
-            <span className='section-description'>
+          <div className='flex items-center justify-between w-full'>
+            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground flex-1'>
               We add details if we find a match; otherwise fill in manually.
             </span>
-            <button className='find-album-button' onClick={onFindAlbumDetails}>
-              <MuzaIcon iconName='sparkles' className='sparkles-icon' />
-              <span>Find Album Details</span>
+            <button
+              className='border-none rounded-full flex items-center justify-center gap-2 font-sans text-sm font-medium leading-4 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap bg-primary text-muted py-2 px-3 opacity-50 hover:bg-[var(--colors_primary_dark)] hover:opacity-100'
+              onClick={onFindAlbumDetails}
+            >
+              <MuzaIcon iconName='sparkles' className='w-4 h-4 flex-shrink-0' />
+              <span className='flex-shrink-0'>Find Album Details</span>
             </button>
           </div>
         </div>
 
         {/* Recording Details Section */}
-        <div className='form-card'>
-          <div className='section-header-row'>
-            <span className='section-title'>Recording Details</span>
-            <div className='section-divider'></div>
+        <div className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <div className='flex items-center gap-4 w-full'>
+            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+              Recording Details
+            </span>
+            <Divider />
           </div>
 
-          <div className='form-fields'>
+          <div className='flex flex-col gap-4'>
             <MuzaInputField
               name='bandName'
               label='Band Name (Optional)'
@@ -84,7 +91,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
               onChange={onFormDataChange('bandName')}
             />
 
-            <div className='date-field'>
+            <div>
               <MuzaInputField
                 name='recordingDate'
                 label='Recording Date'
@@ -100,14 +107,19 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
         {/* Additional Musicians - Individual Cards */}
         {musicians.map((musician, index) => (
-          <div key={index} className='form-card musician-card'>
-            <div className='section-header-row'>
-              <span className='section-title'>Additional Musicians</span>
-              <div className='section-divider'></div>
+          <div
+            key={index}
+            className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+          >
+            <div className='flex items-center gap-4 w-full'>
+              <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+                Additional Musicians
+              </span>
+              <Divider />
             </div>
 
-            <div className='musician-fields'>
-              <div className='musician-inputs'>
+            <div className='flex flex-col gap-4'>
+              <div className='flex flex-col gap-4'>
                 <MuzaInputField
                   name={`musicianName-${index}`}
                   label="Musician's Name"
@@ -127,14 +139,14 @@ const UploadForm: React.FC<UploadFormProps> = ({
               </div>
 
               {musicians.length > 1 && index > 0 && (
-                <div className='musician-actions'>
+                <div className='flex justify-end mt-2'>
                   <button
-                    className='delete-musician-button'
+                    className='border-none rounded-full flex items-center justify-center gap-2 font-sans text-sm font-medium leading-4 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap bg-transparent text-text-dark py-2 px-3 hover:bg-secondary'
                     onClick={() => onRemoveMusician(index)}
                     type='button'
                   >
-                    <MuzaIcon iconName='trash' className='trash-icon' />
-                    <span>Delete</span>
+                    <MuzaIcon iconName='trash' className='w-4 h-4 flex-shrink-0' />
+                    <span className='flex-shrink-0'>Delete</span>
                   </button>
                 </div>
               )}
@@ -143,40 +155,57 @@ const UploadForm: React.FC<UploadFormProps> = ({
         ))}
 
         {/* Add Musician Button - Outside cards */}
-        <div className='add-musician-container'>
-          <button className='add-musician-button' onClick={onAddMusician}>
-            <MuzaIcon iconName='plus' className='plus-icon' />
-            <span>Add Musician</span>
+        <div className='flex justify-start w-full'>
+          <button
+            className='border-none rounded-full flex items-center justify-center gap-2 font-sans text-sm font-medium leading-4 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap bg-transparent text-text-dark py-2 px-3 hover:bg-secondary'
+            onClick={onAddMusician}
+          >
+            <MuzaIcon iconName='plus' className='w-4 h-4 flex-shrink-0' />
+            <span className='flex-shrink-0'>Add Musician</span>
           </button>
         </div>
 
         {/* Notes & Credits Section */}
-        <div className='form-card'>
-          <div className='section-header-row'>
-            <span className='section-title'>Notes & Credits</span>
-            <div className='section-divider'></div>
+        <div className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <div className='flex items-center gap-4 w-full'>
+            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+              Notes & Credits
+            </span>
+            <Divider />
           </div>
 
-          <div className='form-fields'>
-            <div className='textarea-field'>
-              <label htmlFor='linerNotes'>Liner Notes</label>
+          <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-2'>
+              <label
+                htmlFor='linerNotes'
+                className='font-sans text-sm leading-4 font-medium text-text-dark leading-none'
+              >
+                Liner Notes
+              </label>
               <textarea
                 id='linerNotes'
                 placeholder=''
                 value={formData.linerNotes}
                 onChange={onFormDataChange('linerNotes')}
                 rows={4}
+                className='py-2 px-3 border border-border-light rounded-md font-sans text-base text-text-dark bg-background resize-y min-h-[60px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--colors_primary_light)] placeholder:text-muted-foreground'
               />
             </div>
 
-            <div className='textarea-field'>
-              <label htmlFor='otherCredits'>Other Credits</label>
+            <div className='flex flex-col gap-2'>
+              <label
+                htmlFor='otherCredits'
+                className='font-sans text-sm leading-4 font-medium text-text-dark leading-none'
+              >
+                Other Credits
+              </label>
               <textarea
                 id='otherCredits'
                 placeholder=''
                 value={formData.otherCredits}
                 onChange={onFormDataChange('otherCredits')}
                 rows={4}
+                className='py-2 px-3 border border-border-light rounded-md font-sans text-base text-text-dark bg-background resize-y min-h-[60px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--colors_primary_light)] placeholder:text-muted-foreground'
               />
             </div>
           </div>

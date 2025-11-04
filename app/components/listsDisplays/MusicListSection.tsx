@@ -1,5 +1,3 @@
-import './MusicListSection.scss'
-
 import React from 'react'
 
 import { useTranslation } from '~/lib/i18n/translations'
@@ -10,6 +8,8 @@ import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
 import ArtistPreview from '../artistDisplays/ArtistPreview'
 import SongLineWithCover from '../songLineDisplays/SongLineWithCover'
+import { Typography } from '../ui/typography'
+import styles from './MusicListSection.module.css'
 
 const MusicListSectionComponent: React.FC<
   MusicListSection & {
@@ -108,23 +108,25 @@ const MusicListSectionComponent: React.FC<
   const getContentClass = () => {
     switch (type) {
       case 'album':
-        return 'album-list'
+        return styles['album-list']
       case 'artist':
-        return 'artist-list'
+        return styles['artist-list']
       case 'playlist':
-        return 'album-list' // Use album-list styling for playlists
+        return styles['album-list'] // Use album-list styling for playlists
       case 'song':
-        return 'song-list'
+        return styles['song-list']
       default:
-        return 'album-list'
+        return styles['album-list']
     }
   }
 
   return (
-    <div className='music-list-section'>
-      <div className='music-list-section-header'>
-        <h2>{title}</h2>
-        <button className='show-all-btn' onClick={handleShowAll}>
+    <div className={styles['music-list-section']}>
+      <div className={styles['music-list-section-header']}>
+        <Typography variant='h2' className='mb-3'>
+          {title}
+        </Typography>
+        <button className={styles['show-all-btn']} onClick={handleShowAll}>
           {t('action.showAll')}
         </button>
       </div>

@@ -1,5 +1,3 @@
-import './MediaHeader.scss'
-
 import React from 'react'
 import { FaPause, FaPlay } from 'react-icons/fa'
 
@@ -13,9 +11,11 @@ import type { MusicPlaylist, SongDetails } from '~/store/models'
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import type { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
+import { Button } from '../ui/button'
 // Import remaining sub-components
 import MediaCover from './components/MediaCover/MediaCover'
 import MediaMetadata, { type MediaMetadataProps } from './components/MediaMetadata/MediaMetadata'
+import styles from './MediaHeader.module.css'
 
 interface MediaHeaderProps {
   // Generic media object that works for albums, playlists, etc.
@@ -95,39 +95,43 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
 
   return (
     <>
-      <div className={`media-header-layout ${showBackButton ? 'has-back-button' : ''}`}>
+      <div
+        className={`${styles['media-header-layout']} ${showBackButton ? styles['has-back-button'] : ''}`}
+      >
         {showBackButton && (
-          <div className='back-close-section' data-name='back & close'>
+          <div className={styles['back-close-section']} data-name='back & close'>
             <MuzaButton
               iconName='ChevronDown'
               onClick={goBack}
               size='small'
-              className='back-button'
+              className={styles['back-button']}
               data-name='back'
             />
           </div>
         )}
 
-        <div className='media-header' data-name='Media-Header'>
-          <div className='media-content-section media-content-section--horizontal'>
+        <div className={styles['media-header']} data-name='Media-Header'>
+          <div
+            className={`${styles['media-content-section']} ${styles['media-content-section--horizontal']}`}
+          >
             <MediaCover imageSrc={imageSrc} title={title} mediaType={mediaType} playlist={playlist} />
 
-            <div className='info-section'>
-              <div className='titles-section' data-name='Titles'>
-                <div className='title-metadata-group'>
+            <div className={styles['info-section']}>
+              <div className={styles['titles-section']} data-name='Titles'>
+                <div className={styles['title-metadata-group']}>
                   {/* Playlist Badge and Metadata */}
                   {mediaType === 'playlist' && (
-                    <div className='playlist-badge-section'>
-                      <div className='playlist-badge' data-name='Badge'>
-                        <div className='badge-icon'>
+                    <div className={styles['playlist-badge-section']}>
+                      <div className={styles['playlist-badge']} data-name='Badge'>
+                        <div className={styles['badge-icon']}>
                           <MuzaIcon iconName='ListMusic' />
                         </div>
-                        <span className='badge-text'>Playlist</span>
+                        <span className={styles['badge-text']}>Playlist</span>
                       </div>
-                      <span className='metadata-separator'>•</span>
-                      <span className='metadata-text'>{songs.length} Songs</span>
-                      <span className='metadata-separator'>•</span>
-                      <span className='metadata-text'>
+                      <span className={styles['metadata-separator']}>•</span>
+                      <span className={styles['metadata-text']}>{songs.length} Songs</span>
+                      <span className={styles['metadata-separator']}>•</span>
+                      <span className={styles['metadata-text']}>
                         {Math.floor(
                           songs.reduce((total, song) => total + (song.time || 0), 0) / 60
                         )}
@@ -141,25 +145,25 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   )}
 
                   {/* Title */}
-                  <div className='title-info title-info--left'>
-                    <div className='album-title'>{title}</div>
-                    {creator && <div className='playlist-description'>{creator}</div>}
+                  <div className={`${styles['title-info']} ${styles['title-info--left']}`}>
+                    <div className={styles['album-title']}>{title}</div>
+                    {creator && <div className={styles['playlist-description']}>{creator}</div>}
                   </div>
 
                   {/* User Info Section for Playlists */}
                   {mediaType === 'playlist' && (
-                    <div className='user-info-section'>
-                      <div className='user-info'>
-                        <div className='user-avatar'>
+                    <div className={styles['user-info-section']}>
+                      <div className={styles['user-info']}>
+                        <div className={styles['user-avatar']}>
                           <img src='/art/imag_1.jpg' alt='User Avatar' />
                         </div>
-                        <span className='user-name'>User&apos;s Name</span>
+                        <span className={styles['user-name']}>User&apos;s Name</span>
                       </div>
-                      <div className='visibility-badge' data-name='Badge'>
-                        <div className='badge-icon'>
+                      <div className={styles['visibility-badge']} data-name='Badge'>
+                        <div className={styles['badge-icon']}>
                           <MuzaIcon iconName='globe' />
                         </div>
-                        <span className='badge-text'>
+                        <span className={styles['badge-text']}>
                           {visibility === PlaylistVisibilityEnum.Private
                             ? t('common.private')
                             : t('common.public')}
@@ -174,22 +178,27 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   )}
                 </div>
 
-                <div className='actions-section'>
+                <div className={styles['actions-section']}>
                   {/* PlayButton content inlined */}
-                  <div className='ctas-section' data-name='CTAs'>
-                    <button
-                      className='play-album-button'
+                  <div className={styles['ctas-section']} data-name='CTAs'>
+                    <Button
+                      variant='outline'
+                      size='lg'
                       onClick={handlePlayPause}
                       disabled={songs.length === 0}
                       data-name='Button'
                     >
-                      <div className='play-icon'>{isPlaying ? <FaPause /> : <FaPlay />}</div>
-                      <span className='play-text'>{getPlayButtonText()}</span>
-                    </button>
+                      <div className={styles['play-icon']}>
+                        {isPlaying ? <FaPause /> : <FaPlay />}
+                      </div>
+                      <span className={styles['play-text']}>{getPlayButtonText()}</span>
+                    </Button>
                   </div>
 
                   {/* ActionButtonGroup content inlined */}
-                  <div className='action-buttons action-buttons--end action-buttons--gap-medium'>
+                  <div
+                    className={`${styles['action-buttons']} ${styles['action-buttons--end']} ${styles['action-buttons--gap-medium']}`}
+                  >
                     {customActions || (
                       <>
                         <MuzaButton

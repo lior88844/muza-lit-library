@@ -1,6 +1,6 @@
-import './ToggleButton.scss'
-
 import React from 'react'
+
+import styles from './ToggleButton.module.css'
 
 interface ToggleButtonProps {
   checked: boolean
@@ -9,6 +9,9 @@ interface ToggleButtonProps {
   onChange: (checked: boolean) => void
 }
 
+/**
+ * @deprecated will make new Toggle component a la Shadcn UI
+ */
 const ToggleButton: React.FC<ToggleButtonProps> = ({
   checked,
   label = '',
@@ -22,12 +25,12 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({
   }
 
   return (
-    <div className='toggle-wrapper' onClick={handleToggle}>
-      <label className='toggle'>
+    <div className={styles.toggleWrapper} onClick={handleToggle}>
+      <label className={styles.toggle}>
         <input type='checkbox' checked={checked} disabled={disabled} onChange={handleToggle} />
-        <span className='slider'> </span>
+        <span className={styles.slider}> </span>
       </label>
-      {label && <span className='label'> {label} </span>}
+      {label && <span className={styles.label}> {label} </span>}
     </div>
   )
 }

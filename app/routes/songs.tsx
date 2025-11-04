@@ -1,11 +1,9 @@
-import '../styles/scrollbar.scss'
-import '../styles/variables.scss'
-import '../styles/main.scss'
-import './songs.scss'
+import '../styles/variables.css'
 
 import { useEffect, useMemo, useState } from 'react'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
+import { Typography } from '~/components/ui/typography'
 import { useTranslation } from '~/lib/i18n/translations'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { useMedia } from '~/store/media/mediaContext'
@@ -46,13 +44,13 @@ export default function Songs() {
   if (error) return <p>{t('general.errorWithMessage').replace('{error}', error)}</p>
 
   return (
-    <main className='songs-page'>
-      <div className='page-header'>
-        <h1>{t('page.songs')}</h1>
-      </div>
+    <div className={'flex flex-col gap-3'}>
+      <Typography variant='h1' as='h2' className='py-4 px-8'>
+        {t('page.songs')}
+      </Typography>
 
-      <div className='songs-list-container'>
-        <div className='songs-list'>
+      <div className={'px-8 pb-17.5'}>
+        <div className={'flex flex-col gap-2'}>
           {librarySongs.map(song => (
             <SongLineWithCover
               key={song.id}
@@ -64,6 +62,6 @@ export default function Songs() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   )
 }
