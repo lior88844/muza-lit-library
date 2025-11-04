@@ -26,8 +26,8 @@ export const useUpdatePlaylist = () => {
         playlist.id === playlistId
           ? {
               ...playlist,
-              ...updates,
-            }
+        ...updates,
+      }
           : playlist
       )
 
