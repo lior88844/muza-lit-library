@@ -195,17 +195,11 @@ export async function syncPlaylistTracks(
   const currentTrackIds = new Set(currentTracks.map(t => t.trackId))
   const newTrackIds = new Set(trackUpdates.map(t => t.id))
 
-  // Create a map of trackId -> newPosition for efficient lookup
-  const trackPositionMap = new Map(trackUpdates.map(t => [t.id, t.position]))
-
   // Find tracks to delete (in current but not in new)
   const tracksToDelete = currentTracks.filter(t => !newTrackIds.has(t.trackId))
 
   // Find tracks to add (in new but not in current)
   const tracksToAdd = trackUpdates.filter(t => !currentTrackIds.has(t.id))
-
-  // Find tracks to update (in both current and new)
-  const tracksToUpdate = currentTracks.filter(t => newTrackIds.has(t.trackId))
 
   // Delete removed tracks
   if (tracksToDelete.length > 0) {
@@ -220,32 +214,25 @@ export async function syncPlaylistTracks(
     )
   }
 
-  // Update positions for existing tracks BEFORE inserting new ones
-  // Shift existing tracks down by the number of new tracks being added
-  if (tracksToUpdate.length > 0 && tracksToAdd.length > 0) {
-    // Shift all existing tracks down by the number of new tracks
-    // This makes room for the new tracks at the beginning
-    // Update in DESCENDING order to avoid position conflicts
-    const sortedTracks = [...tracksToUpdate].sort((a, b) => b.position - a.position)
-    
-    for (const track of sortedTracks) {
-      await db
-        .update(playlistTracks)
-        .set({ position: track.position + tracksToAdd.length })
-        .where(
-          and(
-            eq(playlistTracks.playlistId, playlistId),
-            eq(playlistTracks.trackId, track.trackId)
-          )
-        )
-    }
-  } else if (tracksToUpdate.length > 0) {
-    // No new tracks being added, just update positions (reordering)
+  // Add new tracks
+  if (tracksToAdd.length > 0) {
+    const newPlaylistTracks = tracksToAdd.map(track => ({
+      playlistId,
+      trackId: track.id,
+      position: track.position,
+      addedByUserId: userId,
+    }))
+
+    await db.insert(playlistTracks).values(newPlaylistTracks)
+  }
+
+  // Update positions for all existing tracks that weren't deleted
+  const tracksToUpdate = currentTracks.filter(t => newTrackIds.has(t.trackId))
+
+  if (tracksToUpdate.length > 0) {
     await Promise.all(
       tracksToUpdate.map(track => {
-        const newPosition = trackPositionMap.get(track.trackId)
-        if (newPosition === undefined) return Promise.resolve()
-        
+        const newPosition = track.position
         return db
           .update(playlistTracks)
           .set({ position: newPosition })
@@ -257,18 +244,6 @@ export async function syncPlaylistTracks(
           )
       })
     )
-  }
-
-  // Add new tracks AFTER updating existing positions
-  if (tracksToAdd.length > 0) {
-    const newPlaylistTracks = tracksToAdd.map(track => ({
-      playlistId,
-      trackId: track.id,
-      position: track.position,
-      addedByUserId: userId,
-    }))
-
-    await db.insert(playlistTracks).values(newPlaylistTracks)
   }
 
   // Update playlist metadata
