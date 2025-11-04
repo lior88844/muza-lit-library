@@ -7,9 +7,9 @@ import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
 import type { MenuItem, MusicPlaylist, Section } from '~/store/models'
-import { usePlaylistStore } from '~/store/playlistStore'
 
 import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+import { useAddPlaylist } from '../../store/media/useAddPlaylist'
 
 interface MusicSidebarProps {
   logoSrc: string
@@ -32,8 +32,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const addPlaylist = usePlaylistStore(state => state.addPlaylist)
-  const loading = usePlaylistStore(state => state.loading)
+  const { addPlaylist, loading } = useAddPlaylist()
   const [internalCollapsed, setInternalCollapsed] = useState(false) // Start open by default
   const [isModalOpen, setIsModalOpen] = useState(false)
 

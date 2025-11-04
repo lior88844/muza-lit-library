@@ -14,6 +14,7 @@ import type { SongDetails } from '~/store/models'
 import { usePlaylistStore } from '~/store/playlistStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
+import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
 
 interface PlaylistDrawerProps {
   isOpen: boolean
@@ -36,7 +37,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   )
   const [searchQuery, setSearchQuery] = useState('')
   const [isDragOver, setIsDragOver] = useState(false)
-  const updatePlaylist = usePlaylistStore(state => state.updatePlaylist)
+  const { updatePlaylist } = useUpdatePlaylist()
   // Update playlist name, description and visibility when playlist prop changes
   useEffect(() => {
     if (playlist?.title) {
