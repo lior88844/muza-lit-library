@@ -1,7 +1,7 @@
 import type { CellValueChangedEvent, ColDef } from 'ag-grid-community'
 import type { CustomCellRendererProps } from 'ag-grid-react'
 import { useMemo, useState } from 'react'
-import { useLoaderData, useNavigate, useNavigation } from 'react-router'
+import { useLoaderData, useNavigate, useNavigation, useSearchParams } from 'react-router'
 import {
   createStack,
   deleteStack,
@@ -34,7 +34,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     const stacksWithItems = await getStacksByPage(pageId)
-
     return {
       success: true,
       stacks: stacksWithItems,
@@ -124,9 +123,11 @@ export default function AdminStack() {
   const removeFetcher = useFetcherAsync<{ success: boolean; error: string }>()
   const updateFetcher = useFetcherAsync<{ success: boolean; error: string }>()
   const navigation = useNavigation()
-  const [selectedPage, setSelectedPage] = useState(loaderData.pageId || StackPageIdEnum.Home)
+  const [searchParams] = useSearchParams()
+  const [selectedPage, setSelectedPage] = useState(
+    (searchParams.get('page') as StackPageIdEnum) || StackPageIdEnum.Home
+  )
   const { openStackDrawer } = useCurrentPlayerStore()
-
   const stacks = loaderData.stacks || []
   const isLoading = navigation.state === 'loading'
 
@@ -220,7 +221,7 @@ export default function AdminStack() {
       description: '',
       entityType: EntityTypeEnum.Album,
       selectionType: StackSelectionTypeEnum.Manual,
-      displayOrder: 0,
+      displayOrder: stacks.length,
       filterConfig: null,
       isActive: true,
       pageId: selectedPage,
