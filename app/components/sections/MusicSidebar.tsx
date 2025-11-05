@@ -47,7 +47,9 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   }
 
   const handlePlaylistClick = (playlist: MusicPlaylist) => {
-    navigate(`/playlists/${playlist.id}`)
+    if (_onOpenPlaylistDrawer) {
+      _onOpenPlaylistDrawer(playlist)
+    }
   }
 
   const handleSidebarToggle = () => {
@@ -102,11 +104,6 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
     </div>
   )
 
-  // Filter out playlists with no songs
-  const playlistsWithSongs = playlists.filter(
-    playlist => playlist.songs && playlist.songs.length > 0
-  )
-
   return (
     <div className={`${styles['music-sidebar']} ${collapsedState ? styles.collapsed : ''}`}>
       <div className={styles.logo}>
@@ -116,7 +113,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
       <div className={styles['sidebar-content']}>
         <div className={styles['nav-sections']}>{sections.map(renderSection)}</div>
 
-        {playlistsWithSongs.length > 0 && !collapsedState && (
+        {playlists.length > 0 && !collapsedState && (
           <div className={styles['playlists-section']}>
             <div className={styles['playlists-header']}>
               <div className={styles['playlists-title']}>{t('nav.playlists')}</div>
@@ -124,7 +121,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
                 <MuzaIcon iconName='plus' />
               </button>
             </div>
-            <div className={styles['playlists-list']}>{playlistsWithSongs.map(renderPlaylist)}</div>
+            <div className={styles['playlists-list']}>{playlists.map(renderPlaylist)}</div>
           </div>
         )}
       </div>

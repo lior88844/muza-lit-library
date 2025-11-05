@@ -93,13 +93,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = processedData.sidebar.sections
   const playlists = processedData.playlists
 
-  const { isPlaylistDrawerOpen, currentPlaylistDrawerId, openPlaylistDrawer, closePlaylistDrawer } =
+  const { isPlaylistDrawerOpen, openPlaylistDrawer, closePlaylistDrawer } =
     useCurrentPlayerStore()
-
-  // Get the current playlist from processed data
-  const currentPlaylist = currentPlaylistDrawerId
-    ? playlists.find(p => p.id === currentPlaylistDrawerId)
-    : undefined
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -181,7 +176,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <PlaylistDrawer
                       isOpen={isPlaylistDrawerOpen}
                       onClose={handleClosePlaylistDrawer}
-                      playlist={currentPlaylist}
                     />
                   )}
                 </main>

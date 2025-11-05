@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router'
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import { Typography } from '~/components/ui/typography'
 import { useTranslation } from '~/lib/i18n/translations'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { useMedia } from '~/store/media/mediaContext'
 import type { Album } from '~/store/models'
 
@@ -14,6 +15,7 @@ import styles from './albums.module.css'
 
 export default function Albums() {
   const { t } = useTranslation()
+  const { isPlaylistDrawerOpen } = useCurrentPlayerStore()
   const { library, albums } = useMedia()
   const libraryAlbums = useMemo(() => {
     const albumIds = library
@@ -36,7 +38,12 @@ export default function Albums() {
       </Typography>
       <div className={styles.albumList}>
         {libraryAlbums.map(a => (
-          <AlbumPreview key={a.id} details={a} onAlbumClick={() => onAlbumClick(a)} />
+          <AlbumPreview
+            key={a.id}
+            details={a}
+            onAlbumClick={() => onAlbumClick(a)}
+            draggable={isPlaylistDrawerOpen}
+          />
         ))}
       </div>
     </>

@@ -248,7 +248,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       <div className={styles['player-info']}>
         <img
           className={styles['album-art']}
-          src={details.imageSrc}
+          src={details.imageSrc || '/art/imag_1.jpg'}
           alt={`${details.title} album cover`}
         />
         <div className={styles['track-info']}>

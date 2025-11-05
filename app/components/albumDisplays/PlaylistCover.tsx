@@ -11,7 +11,7 @@ import hoverOverlayStyles from '../ui/HoverOverlay.module.css'
 import styles from './PlaylistCover.module.css'
 
 interface PlaylistCoverProps {
-  albumImages: string[]
+  albumImages: string[] | null
   title: string
   songsCount: string
   userName: string
@@ -19,7 +19,7 @@ interface PlaylistCoverProps {
   onSelect?: (data: {
     title: string
     songsCount: string
-    albumImages: string[]
+    albumImages: string[] | null
     userName: string
   }) => void
 }
@@ -68,34 +68,37 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     },
   ]
 
-  // Ensure we have 4 images, pad with first image if needed
-  const safeAlbumImages = Array.isArray(albumImages) ? albumImages : []
-  const paddedImages = [...safeAlbumImages]
-  while (paddedImages.length < 4) {
-    paddedImages.push(paddedImages[0] || '')
-  }
+  // Use albumImages from generatePlaylistCoverImages as single source of truth
+  // null = empty playlist, should show empty state
+  const isEmpty = albumImages === null
 
   return (
     <div className={styles.playlistCover} onClick={handleClick}>
       <div className={styles.playlistCoverImageContainer}>
-        <div className={styles.playlistCoverCollage}>
-          <div
-            className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopLeft}`}
-            style={{ backgroundImage: `url('${paddedImages[0]}')` }}
-          />
-          <div
-            className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopRight}`}
-            style={{ backgroundImage: `url('${paddedImages[1]}')` }}
-          />
-          <div
-            className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomLeft}`}
-            style={{ backgroundImage: `url('${paddedImages[2]}')` }}
-          />
-          <div
-            className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomRight}`}
-            style={{ backgroundImage: `url('${paddedImages[3]}')` }}
-          />
-        </div>
+        {isEmpty ? (
+          <div className={styles.playlistCoverEmpty}>
+            <MuzaIcon iconName='playlist' />
+          </div>
+        ) : (
+          <div className={styles.playlistCoverCollage}>
+            <div
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopLeft}`}
+              style={{ backgroundImage: `url('${albumImages[0]}')` }}
+            />
+            <div
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopRight}`}
+              style={{ backgroundImage: `url('${albumImages[1]}')` }}
+            />
+            <div
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomLeft}`}
+              style={{ backgroundImage: `url('${albumImages[2]}')` }}
+            />
+            <div
+              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomRight}`}
+              style={{ backgroundImage: `url('${albumImages[3]}')` }}
+            />
+          </div>
+        )}
         <HoverOverlay
           showPlayButton={true}
           onPlayPause={e => {

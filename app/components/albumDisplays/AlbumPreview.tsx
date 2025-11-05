@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
+import MuzaIcon from '~/icons/MuzaIcon'
+import { useDraggable } from '~/lib/hooks/useDraggable'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { Album } from '~/store/models'
 
@@ -11,11 +13,17 @@ import styles from './AlbumPreview.module.css'
 interface AlbumPreviewProps {
   details: Album
   onAlbumClick: () => void
+  draggable?: boolean
 }
 
-const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick }) => {
+const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick, draggable = true }) => {
   const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
+  const { isDragging, dragHandlers } = useDraggable({
+    type: 'album',
+    data: details,
+    enabled: draggable,
+  })
 
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -23,9 +31,12 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, onAlbumClick }) =>
   }
 
   return (
-    <div className={styles['album-details-card']}>
+    <div
+      className={`${styles['album-details-card']} ${draggable ? styles['draggable'] : ''} ${isDragging ? styles['dragging'] : ''}`}
+      {...dragHandlers}
+    >
       <div className={styles['image-container']} onClick={onAlbumClick}>
-        <Image src={details.imageSrc} alt={details.title} />
+        <Image src={details.imageSrc || '/art/imag_1.jpg'} alt={details.title} />
         <HoverOverlay
           isPlaying={!!isPlaying}
           onPlayPause={handlePlayPause}

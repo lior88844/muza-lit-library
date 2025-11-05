@@ -70,3 +70,4 @@ export const useUpdatePlaylist = () => {
 
   return { updatePlaylist, loading: fetcher.state === 'loading' }
 }
+

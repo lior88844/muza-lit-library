@@ -16,7 +16,7 @@ import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'
 
 export default function Playlists() {
   const { t } = useTranslation()
-  const { playlists, library } = useMedia()
+  const { playlists } = useMedia()
   const navigate = useNavigate()
   const { addPlaylist } = useAddPlaylist()
   const [isModalOpen, setIsModalOpen] = useState(false)

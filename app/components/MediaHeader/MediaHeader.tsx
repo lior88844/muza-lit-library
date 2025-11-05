@@ -6,7 +6,7 @@ import MuzaIcon from '~/icons/MuzaIcon'
 import { useTranslation } from '~/lib/i18n/translations'
 // Removed unused imports: useSubmit, useActionData
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
-import type { SongDetails } from '~/store/models'
+import type { MusicPlaylist, SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import type { MediaTypeEnum } from '../../../server/db/user-library.entity'
@@ -32,6 +32,10 @@ interface MediaHeaderProps {
   onInfoClick?: () => void
   showBackButton?: boolean
   customActions?: React.ReactNode
+  // For playlist cover generation
+  playlist?: MusicPlaylist
+  // Custom back button handler
+  onBackClick?: () => void
 }
 
 const MediaHeader: React.FC<MediaHeaderProps> = ({
@@ -46,6 +50,8 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   showBackButton = true,
   customActions,
   onInfoClick,
+  playlist,
+  onBackClick,
 }) => {
   const { t } = useTranslation()
   const { setSelectedSong, isPlaying, setIsPlaying } = useCurrentPlayerStore()
@@ -67,7 +73,11 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   }
 
   const goBack = () => {
-    window.history.back()
+    if (onBackClick) {
+      onBackClick()
+    } else {
+      window.history.back()
+    }
   }
 
   const getPlayButtonText = () => {
@@ -104,7 +114,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           <div
             className={`${styles['media-content-section']} ${styles['media-content-section--horizontal']}`}
           >
-            <MediaCover imageSrc={imageSrc} title={title} mediaType={mediaType} />
+            <MediaCover imageSrc={imageSrc} title={title} mediaType={mediaType} playlist={playlist} />
 
             <div className={styles['info-section']}>
               <div className={styles['titles-section']} data-name='Titles'>

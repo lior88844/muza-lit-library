@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router'
 import { FaEllipsisV, FaPencilAlt } from 'react-icons/fa'
 
 import MediaHeader from '~/components/MediaHeader/MediaHeader'
@@ -16,6 +17,7 @@ interface PlaylistDetailProps {
 }
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
+  const navigate = useNavigate()
   const {
     selectedSong,
     setSelectedSong,
@@ -23,6 +25,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     setIsPlaying,
     togglePlayPause,
     openPlaylistDrawer,
+    isPlaylistDrawerOpen,
   } = useCurrentPlayerStore()
 
   // Use the actual playlist songs
@@ -47,6 +50,10 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     openPlaylistDrawer(playlist?.id)
   }
 
+  const handleBackClick = () => {
+    navigate('/playlists')
+  }
+
   return (
     <div className={styles['playlist-detail']}>
       <div className={styles['playlist-detail__container']}>
@@ -62,6 +69,8 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
           visibility={playlist.visibility as PlaylistVisibilityEnum}
           creator={playlist.author}
           showBackButton={true}
+          playlist={playlist}
+          onBackClick={handleBackClick}
           customActions={
             <div className={styles['playlist-actions']}>
               <IconButton variant='secondary' icon={<FaEllipsisV />} data-name='Menu Button' />
@@ -94,6 +103,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
                   isPlaying={isCurrentSongPlaying(song)}
                   showPreview={showPreview}
                   showHoverActions={true}
+                  draggable={isPlaylistDrawerOpen}
                 />
               </div>
             )

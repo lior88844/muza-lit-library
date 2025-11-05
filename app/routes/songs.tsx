@@ -13,7 +13,8 @@ import { MediaTypeEnum } from '../../server/db/user-library.entity'
 
 export default function Songs() {
   const { t } = useTranslation()
-  const { setSelectedSong, selectedSong, setIsPlaying } = useCurrentPlayerStore()
+  const { setSelectedSong, selectedSong, setIsPlaying, isPlaylistDrawerOpen } =
+    useCurrentPlayerStore()
   const { library, songs } = useMedia()
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
@@ -56,6 +57,7 @@ export default function Songs() {
               details={song}
               onClick={() => handleSongClick(song)}
               isPlaying={selectedSong?.id === song.id}
+              draggable={isPlaylistDrawerOpen}
             />
           ))}
         </div>
