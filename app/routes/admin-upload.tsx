@@ -1,9 +1,8 @@
 import '../styles/variables.css'
 
 import { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router'
 
-import { AdminFileDropArea, AdminUploadHeader, AdminUploadTable } from '~/components/adminUpload'
+import { AdminFileDropArea, AdminUploadTable } from '~/components/adminUpload'
 import {
   discoverAlbum,
   formatDiscogsId,
@@ -19,7 +18,6 @@ import { UploadErrorCodeEnum } from '../components/adminUpload/types/ErrorCode'
 import type { UploadItem } from '../components/adminUpload/types/UploadItem'
 
 export default function AdminUpload() {
-  const navigate = useNavigate()
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([])
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
@@ -265,17 +263,15 @@ export default function AdminUpload() {
     )
   }, [])
 
-  const handleCancel = useCallback(() => {
-    setUploadedItems([])
-    setSelectedItemIds(new Set())
-    setCurrentPage(1)
-    navigate('/admin')
-  }, [navigate])
+  // const handleCancel = useCallback(() => {
+  //   setUploadedItems([])
+  //   setSelectedItemIds(new Set())
+  //   setCurrentPage(1)
+  //   navigate('/admin')
+  // }, [navigate])
 
   return (
     <div className='flex flex-col h-full bg-background font-sans'>
-      <AdminUploadHeader onCancel={handleCancel} />
-
       <div className='flex-1 flex flex-col py-4 px-8 gap-0'>
         {/* Always show drag area - positioned above the table */}
         <div className='flex items-center justify-center py-3'>

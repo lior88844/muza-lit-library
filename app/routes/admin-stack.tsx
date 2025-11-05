@@ -1,13 +1,12 @@
+import type { ColDef } from 'ag-grid-community'
 import { asc, eq } from 'drizzle-orm'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useActionData, useLoaderData, useNavigate, useNavigation } from 'react-router'
 import { db } from 'server/db/connection'
 import { stackItems, stacks } from 'server/db/schema'
 import type { Stack, StackEntityTypeEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
 
-import AdminPortalTableBody from '~/components/adminPortal/AdminPortalTableBody'
-import { Typography } from '~/components/ui/typography'
-import MuzaIcon from '~/icons/MuzaIcon'
+import DataGrid from '~/components/ui/data-grid/DataGrid'
 
 import type { Route } from './+types/admin-stack'
 
@@ -158,138 +157,47 @@ export default function AdminStack() {
     navigate(`/admin/stack?page=${page}`)
   }
 
-  const handleStackTitleChange = (id: number, newTitle: string) => {
-    // Optimistic update - actual save happens on form submit
-  }
-
-  const handleStackTypeChange = (id: number, newType: StackEntityTypeEnum) => {
-    // Optimistic update - actual save happens on form submit
-  }
-
-  const handleEditContent = (stackId: number) => {
-    // Navigate to stack items editor
-    navigate(`/admin/stack/${stackId}/items`)
-  }
-
-  const handleCancelAll = () => {
-    navigate('/admin')
-  }
+  const columnDefs = useMemo<ColDef[]>(() => {
+    return [
+      { field: 'displayOrder', headerName: 'Order' },
+      { field: 'title', headerName: 'Title', editable: true },
+      { field: 'entityType', headerName: 'Entity Type' },
+      { field: 'selectionType', headerName: 'Selection Type' },
+      { field: 'isActive', headerName: 'Active' },
+    ]
+  }, [])
 
   return (
     <div className='bg-background min-h-screen flex flex-col'>
-      <div>
-        {/* Header */}
-        <div className='border-b border-border-light py-3 px-8'>
-          <div className='flex justify-between items-center'>
-            <Typography variant='h3' as='h2'>
-              Muza Admin Portal – Page Editor
-            </Typography>
+      {/* Controls */}
+      <div className='py-4 px-8'>
+        <div className='flex items-center gap-2'>
+          {PAGE_OPTIONS.map(page => (
             <button
-              className='bg-secondary border-none rounded-full py-2.5 px-4 font-sans text-sm font-medium text-text-dark cursor-pointer transition-colors duration-200 ease-in-out hover:bg-[var(--muza-hover-background,#eeeeee)]'
-              onClick={handleCancelAll}
+              key={page.value}
+              onClick={() => handlePageChange(page.value)}
+              className={`border rounded-full py-2 px-4 font-sans text-base font-medium cursor-pointer flex items-center justify-between gap-2 transition-colors duration-200 ease-in-out leading-5 ${
+                selectedPage === page.value
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white/50 border-border-light text-[#030712] backdrop-blur-[10px] hover:bg-(--muza-hover-background,#eeeeee)'
+              }`}
             >
-              Back to admin
+              <span>{page.label}</span>
             </button>
-          </div>
+          ))}
         </div>
+      </div>
 
-        {/* Controls */}
-        <div className='py-4 px-8'>
-          <div className='flex justify-between items-center'>
-            <div className='flex items-center gap-2'>
-              {PAGE_OPTIONS.map(page => (
-                <button
-                  key={page.value}
-                  onClick={() => handlePageChange(page.value)}
-                  className={`border rounded-full py-2 px-4 font-sans text-base font-medium cursor-pointer flex items-center justify-between gap-2 transition-colors duration-200 ease-in-out leading-5 ${
-                    selectedPage === page.value
-                      ? 'bg-primary text-white border-primary'
-                      : 'bg-white/50 border-border-light text-[#030712] backdrop-blur-[10px] hover:bg-[var(--muza-hover-background,#eeeeee)]'
-                  }`}
-                >
-                  <span>{page.label}</span>
-                </button>
-              ))}
-            </div>
-            <button
-              className='bg-transparent border-none rounded-full py-2 px-8 font-sans text-base font-medium text-foreground cursor-pointer flex items-center gap-2 transition-colors duration-200 ease-in-out hover:bg-[var(--muza-hover-background,#eeeeee)]'
-              onClick={() => navigate('/admin/upload')}
-            >
-              <span>Upload Music</span>
-              <MuzaIcon iconName='upload' />
-            </button>
-          </div>
-        </div>
-
-        {/* Data Table */}
-        <div className='flex-1 px-8 pb-4 flex flex-col'>
-          <div className='border border-border-light rounded-md overflow-hidden flex-1 flex flex-col'>
-            {/* Table Header */}
-            <div className='grid grid-cols-[0.5fr_5fr_1.5fr_1.5fr_1.5fr_0.5fr] bg-background border-b border-border-light'>
-              <div>
-                <div className='py-2 px-2 flex items-center h-10 border-r border-border-light last:border-r-0'>
-                  <span className='font-sans text-sm font-medium text-muted-foreground leading-[1.25]'></span>
-                </div>
-              </div>
-              <div>
-                <div className='py-2 px-2 flex items-center h-10 border-r border-border-light last:border-r-0'>
-                  <span className='font-sans text-sm font-medium text-muted-foreground leading-[1.25]'>
-                    Stack Title
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className='py-2 px-2 flex items-center h-10 border-r border-border-light last:border-r-0'>
-                  <span className='font-sans text-sm font-medium text-muted-foreground leading-[1.25]'>
-                    Entity Type
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className='py-2 px-2 flex items-center h-10 border-r border-border-light last:border-r-0'>
-                  <span className='font-sans text-sm font-medium text-muted-foreground leading-[1.25]'>
-                    Selection Type
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className='py-2 px-2 flex items-center h-10 border-r border-border-light last:border-r-0'>
-                  <span className='font-sans text-sm font-medium text-muted-foreground leading-[1.25]'>
-                    Content
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className='py-2 px-2 flex items-end h-10 border-r border-border-light last:border-r-0'>
-                  <span className='font-sans text-sm font-medium text-muted-foreground leading-[1.25]'>
-                    Items
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Table Body */}
-            <AdminPortalTableBody
-              stacks={stacks}
-              handleStackTitleChange={handleStackTitleChange}
-              handleStackTypeChange={handleStackTypeChange}
-              handleEditContent={handleEditContent}
-            />
-          </div>
-
-          {/* Table Footer */}
-          <div className='py-4 flex justify-between items-center'>
-            <div className='text-sm text-muted-foreground'>
-              {stacks.length} stack{stacks.length !== 1 ? 's' : ''} for {selectedPage}
-            </div>
-            <div className='flex gap-4'>
-              {actionData?.error && (
-                <span className='text-sm text-destructive'>{actionData.error}</span>
-              )}
-              {isLoading && <span className='text-sm text-muted-foreground'>Saving...</span>}
-            </div>
-          </div>
-        </div>
+      {/* Data Table */}
+      <div className='flex-1 px-8 pb-4 flex flex-col'>
+        <DataGrid
+          hideHeader
+          rowData={stacks}
+          columnDefs={columnDefs}
+          entityName='stacks'
+          className='h-[calc(100vh-var(--admin-header-height)-100px)]'
+          hideExport
+        />
       </div>
     </div>
   )

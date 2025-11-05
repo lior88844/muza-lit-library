@@ -15,6 +15,7 @@ import { AgGridReact, type AgGridReactProps } from 'ag-grid-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 
 import { Button } from '../button'
 import ColumnOrganizer from './ColumnOrganizer'
@@ -260,7 +261,7 @@ export const DataGrid = ({
   )
 
   return (
-    <div className={`flex flex-col h-full w-full ${className}`}>
+    <div className={cn('flex flex-col h-full w-full', className)}>
       {/* Toolbar with search, export, and column organizer */}
       {!hideHeader && (
         <div className='flex items-center gap-3 p-3 border-b border-border-light bg-muted'>
@@ -290,14 +291,12 @@ export const DataGrid = ({
       )}
 
       {/* Grid */}
-      <div
-        className={`ag-theme-alpine ${className}`}
-        style={{ height: 'calc(100% - 60px)', overflowY: 'auto' }}
-      >
+      <div style={{ height: 'calc(100% - 63px)', overflowY: 'auto' }}>
         <AgGridReact
           ref={gridRef}
           theme={myTheme}
           {...gridOptions}
+          domLayout='autoHeight'
           // loadingOverlayComponent={() => <Spinner animation='border' role='status' size='sm' />}
           onSelectionChanged={handleSelectionChanged}
           onCellClicked={handleCellClicked}

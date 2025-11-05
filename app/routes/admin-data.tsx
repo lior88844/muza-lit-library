@@ -1,4 +1,4 @@
-import type { ColDef, GridOptions } from 'ag-grid-community'
+import type { ColDef } from 'ag-grid-community'
 import { useMemo, useState } from 'react'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router'
 import { db } from 'server/db/connection'
@@ -15,7 +15,6 @@ import {
 
 import { Button } from '~/components/ui/button'
 import { DataGrid } from '~/components/ui/data-grid/DataGrid'
-import { Typography } from '~/components/ui/typography'
 
 import type { Route } from './+types/admin-data'
 
@@ -132,33 +131,9 @@ export default function AdminData() {
     }))
   }, [data])
 
-  const gridOptions: GridOptions = {
-    defaultColDef: {
-      sortable: true,
-      filter: true,
-      resizable: true,
-    },
-    pagination: true,
-    paginationPageSize: 50,
-    paginationPageSizeSelector: [25, 50, 100, 200],
-    rowSelection: 'multiple',
-    suppressRowClickSelection: true,
-    animateRows: true,
-  }
-
   return (
-    <div className='bg-background min-h-screen flex flex-col p-8'>
+    <div className='bg-background min-h-screen flex flex-col p-6'>
       <div className='max-w-[1920px] w-full mx-auto flex flex-col gap-6'>
-        {/* Header */}
-        <div className='flex items-center justify-between'>
-          <Typography variant='h1' as='h1' className='text-foreground'>
-            Admin Data
-          </Typography>
-          <Button variant='outline' onClick={() => navigate('/admin')}>
-            Back to Admin
-          </Button>
-        </div>
-
         {/* Entity Type Selector */}
         <div className='flex flex-wrap gap-2'>
           {ENTITY_TYPES.map(entity => (
@@ -174,19 +149,13 @@ export default function AdminData() {
         </div>
 
         {/* AG Grid */}
-        <div
-          className='ag-theme-quartz flex-1'
-          style={{ height: 'calc(100vh - 250px)', width: '100%' }}
-        >
-          <DataGrid
-            rowData={data}
-            columnDefs={columnDefs}
-            entityName={entityType}
-            gridOptions={gridOptions}
-            className='w-full h-full'
-            hideExport
-          />
-        </div>
+        <DataGrid
+          rowData={data}
+          columnDefs={columnDefs}
+          entityName={entityType}
+          className='h-[calc(100vh-var(--admin-header-height)-100px)]'
+          hideExport
+        />
       </div>
     </div>
   )
