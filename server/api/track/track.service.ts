@@ -25,6 +25,7 @@ export function formatTrack(dbTrack: TrackWithArtists): TrackResponse {
     artist: mainArtist?.artist.name,
     album: dbTrack.album?.title,
     imageSrc: dbTrack.album?.coverArt || 'https://via.placeholder.com/150',
+    albumId: dbTrack.albumId!,
   }
 }
 

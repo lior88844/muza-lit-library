@@ -1,4 +1,5 @@
 import React, { type MouseEventHandler, useState } from 'react'
+import { Link } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
@@ -97,9 +98,13 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
           <div className={styles.songLineWithCoverDetailsRow}>
             {showPreview && <div className={styles.previewBadge}>Preview</div>}
             <div className={styles.songDetails}>
-              <span>{details.artist}</span>
+              <Link className='hover:underline' to={`/artists/${details.artistId}`}>
+                {details.artist}
+              </Link>
               <span className={styles.separator}>•</span>
-              <span>{details.album || 'Unknown Album'}</span>
+              <Link className='hover:underline' to={`/albums/${details.albumId}`}>
+                {details.album}
+              </Link>
               <span className={styles.separator}>•</span>
               <span>{details.plays ? formatPlayCount(details.plays) : '0'} Plays</span>
             </div>

@@ -1,4 +1,5 @@
 import React, { type MouseEventHandler, useState } from 'react'
+import { Link } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
@@ -6,16 +7,7 @@ import { useDraggable } from '~/lib/hooks/useDraggable'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import type { SongDetails } from '../../store/models'
-import { formatSongNumber } from '../../store/utils'
 import styles from './SongLine.module.css'
-
-interface SongLineProps {
-  details: SongDetails
-  onClick: MouseEventHandler<HTMLDivElement>
-  isPlaying: boolean
-  showPreview?: boolean
-  draggable?: boolean
-}
 
 const formatDuration = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60)
@@ -31,6 +23,14 @@ const formatPlayCount = (plays: number): string => {
   }
   const millions = (plays / 1000000).toFixed(3)
   return `${millions.replace(/\.?0+$/, '')}M` // Remove trailing zeros
+}
+
+interface SongLineProps {
+  details: SongDetails
+  onClick: MouseEventHandler<HTMLDivElement>
+  isPlaying: boolean
+  showPreview?: boolean
+  draggable?: boolean
 }
 
 const SongLine: React.FC<SongLineProps> = ({
@@ -74,7 +74,7 @@ const SongLine: React.FC<SongLineProps> = ({
 
     return (
       <>
-        <span className={styles['track-number']}>{formatSongNumber(details.index || 1)}</span>
+        <span className={styles['track-number']}>{details.index || 1}</span>
         <span className={styles['play-icon']}>
           <MuzaIcon iconName='play' />
         </span>
@@ -99,11 +99,15 @@ const SongLine: React.FC<SongLineProps> = ({
               {showPreview && <span className={styles['preview-badge']}>Preview</span>}
             </div>
             <div className={styles['track-meta-row']}>
-              <span className={styles['track-artist']}>{details.artist}</span>
+              <Link className='hover:underline' to={`/artists/${details.artistId}`}>
+                {details.artist}
+              </Link>
               {details.album && (
                 <>
                   <span className={styles.separator}>•</span>
-                  <span className={styles['track-album']}>{details.album}</span>
+                  <Link className='hover:underline' to={`/albums/${details.albumId}`}>
+                    {details.album}
+                  </Link>
                 </>
               )}
               {details.plays && (

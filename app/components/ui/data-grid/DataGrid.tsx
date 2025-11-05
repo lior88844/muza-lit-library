@@ -10,6 +10,7 @@ import {
   ModuleRegistry,
   QuickFilterModule,
   type RowClickedEvent,
+  type RowDragEndEvent,
   type SelectionChangedEvent,
   themeAlpine,
 } from 'ag-grid-community'
@@ -31,7 +32,8 @@ ModuleRegistry.registerModules([
 
 // Use custom Muza theme via CSS class instead of themeAlpine
 const myTheme = themeAlpine.withParams({})
-interface DataGridProps extends AgGridReactProps {
+interface DataGridProps<T> extends Omit<AgGridReactProps, 'rowData'> {
+  rowData: T[]
   enableSorting?: boolean
   enableFiltering?: boolean
   enablePagination?: boolean
@@ -42,12 +44,14 @@ interface DataGridProps extends AgGridReactProps {
   showRowNumbers?: boolean
   hideHeader?: boolean
   hideColumnOrganizer?: boolean
-  columnDefs?: ColDef[]
+  columnDefs?: ColDef<T>[]
   actions?: React.ReactNode
+  onRowOrderChange?: (order: T[]) => void
 }
-export const DataGrid = ({
+export const DataGrid = <T,>({
   rowData = [],
   columnDefs = [],
+  onRowOrderChange,
   onSelectionChanged,
   onCellClicked,
   onRowClicked,
@@ -70,7 +74,7 @@ export const DataGrid = ({
   hideColumnOrganizer = false,
   actions,
   ...props
-}: DataGridProps) => {
+}: DataGridProps<T>) => {
   const gridRef = useRef<AgGridReact>(null)
   const [searchText, setSearchText] = useState('')
   const [columnOrder, setColumnOrder] = useState<string[]>([])
@@ -82,7 +86,7 @@ export const DataGrid = ({
       try {
         const parsed = JSON.parse(stored) as string[]
         if (parsed && Array.isArray(parsed)) {
-          const validFields = new Set(columnDefs.map(c => c.field))
+          const validFields = new Set(columnDefs.map(c => c.field as string))
           const filteredColumns = parsed.filter(col => validFields.has(col))
           setColumnOrder(filteredColumns)
         }
@@ -159,7 +163,7 @@ export const DataGrid = ({
         hide: true,
       }))
 
-    const colMap = new Map(columnDefs.map(col => [col.field, col]))
+    const colMap = new Map(columnDefs.map(col => [col.field as string, col]))
     const actionsCol = columnDefs.find(col => col.colId === 'actions')
     const res: ColDef[] = columnOrder
       .filter(field => colMap.has(field))
@@ -195,6 +199,29 @@ export const DataGrid = ({
     return [...res, ...hiddenColumns]
   }, [columnDefs, columnOrder, showRowNumbers])
 
+  const onRowDragEnd = useCallback(
+    ({ api, overIndex, node }: RowDragEndEvent) => {
+      if (!onRowOrderChange) return
+      // Get the current order
+      const currentOrder: T[] = []
+      api.forEachNode(node => {
+        if (node.data) currentOrder.push(node.data as T)
+      })
+      // Find the dragged node
+      const movingNode = node.data as T
+      // Remove the moving node from its old position
+      const oldIndex = currentOrder.findIndex(item => item === movingNode)
+      if (oldIndex === -1) {
+        onRowOrderChange(currentOrder)
+        return
+      }
+      const newOrder = [...currentOrder]
+      newOrder.splice(oldIndex, 1)
+      newOrder.splice(overIndex, 0, movingNode)
+      onRowOrderChange(newOrder)
+    },
+    [onRowOrderChange]
+  )
   // Handle row selection change
   const handleSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
@@ -306,6 +333,8 @@ export const DataGrid = ({
           onCellClicked={handleCellClicked}
           onRowClicked={handleRowClicked}
           onGridReady={handleGridReady}
+          onRowDragEnd={onRowDragEnd}
+          suppressRowDrag={!onRowOrderChange}
         />
       </div>
     </div>

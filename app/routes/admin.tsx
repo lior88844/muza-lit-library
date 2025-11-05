@@ -13,9 +13,11 @@ export default function Admin() {
       {/* Header with navigation links */}
       <div className='border-border-light border-b px-8 py-3'>
         <div className='flex items-center justify-between'>
-          <Typography variant='h3' as='h2'>
-            Muza Admin Portal
-          </Typography>
+          <Link to='/'>
+            <Typography variant='h3' as='h2'>
+              Muza Admin Portal
+            </Typography>
+          </Link>
           <nav className='flex items-center gap-4'>
             <Link
               to='/admin/stack'

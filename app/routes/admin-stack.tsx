@@ -8,6 +8,7 @@ import {
   getStacksByPage,
   type StackWithEntities,
   type StackWithItems,
+  updateStack,
   updateStackWithItems,
 } from 'server/api/stack/stack.service'
 import { StackPageIdEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
@@ -50,17 +51,17 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 interface StackActionData {
-  intent: 'createStack' | 'updateStack' | 'deleteStack'
+  intent: 'createStack' | 'updateStack' | 'deleteStack' | 'updateStackOrder'
   data: StackWithItems
 }
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('intent') as string
-  const { items, ...stackData } = JSON.parse(
-    formData.get('data') as string
-  ) as StackActionData['data']
   try {
     if (intent === 'createStack') {
+      const { items, ...stackData } = JSON.parse(
+        formData.get('data') as string
+      ) as StackActionData['data']
       const newStack = await createStack(stackData, items)
 
       return {
@@ -70,7 +71,9 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     if (intent === 'updateStack') {
-      const { id, ...rest } = stackData
+      const { id, items, ...rest } = JSON.parse(
+        formData.get('data') as string
+      ) as StackActionData['data']
       await updateStackWithItems(id!, rest, items)
 
       return {
@@ -79,13 +82,24 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     if (intent === 'deleteStack') {
-      if (!stackData.id) {
+      const { id } = JSON.parse(formData.get('data') as string) as StackActionData['data']
+      if (!id) {
         return {
           success: false,
           error: 'Stack ID is required',
         }
       }
-      await deleteStack(stackData.id)
+      await deleteStack(id)
+      return {
+        success: true,
+      }
+    }
+
+    if (intent === 'updateStackOrder') {
+      const stacks = JSON.parse(formData.get('data') as string) as StackActionData['data'][]
+      for (const stack of stacks) {
+        await updateStack(stack.id, { displayOrder: stack.displayOrder })
+      }
       return {
         success: true,
       }
@@ -143,6 +157,7 @@ export default function AdminStack() {
         headerName: 'Order',
         valueGetter: params => params.data!.displayOrder + 1,
         maxWidth: 100,
+        rowDrag: true,
       },
       {
         field: 'title',
@@ -215,7 +230,20 @@ export default function AdminStack() {
     openStackDrawer(newStack)
     navigate('/')
   }
+  const handleRowOrderChange = (order: StackWithEntities[]) => {
+    const payload = order.map((stack, index) => ({
+      id: stack.id,
+      displayOrder: index,
+    }))
 
+    updateFetcher.submit(
+      {
+        intent: 'updateStackOrder',
+        data: JSON.stringify(payload),
+      },
+      { method: 'POST', action: '/admin/stack' }
+    )
+  }
   return (
     <div className='bg-background relative flex min-h-screen flex-col'>
       {/* Controls */}
@@ -240,6 +268,7 @@ export default function AdminStack() {
           hideHeader
           rowData={stacks}
           onCellValueChanged={handleCellValueChanged}
+          onRowOrderChange={handleRowOrderChange}
           columnDefs={columnDefs}
           loading={isLoading}
           entityName='stacks'

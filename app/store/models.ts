@@ -9,8 +9,10 @@ export interface SongDetails {
   time: number | null
   imageSrc?: string
   artist?: string
+  artistId?: number
   audioUrl?: string
   album?: string
+  albumId?: number
   year?: number
   id: number
   plays?: number

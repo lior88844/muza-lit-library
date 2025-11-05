@@ -6,6 +6,7 @@ export interface TrackResponse {
   audioUrl: string
   year: number
   artistId: number
+  albumId: number
   artist: string
   album: string | undefined
   imageSrc: string
