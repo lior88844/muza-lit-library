@@ -18,17 +18,7 @@ const MusicListSectionComponent: React.FC<
     songs?: SongDetails[]
     artists?: Artist[]
   }
-> = ({
-  title,
-  subTitle,
-  type,
-  list,
-  onShowAll,
-  onAlbumClick,
-  albums,
-  songs,
-  artists,
-}) => {
+> = ({ title, subTitle, type, list, onShowAll, onAlbumClick, albums, songs, artists }) => {
   const { t } = useTranslation()
   const {
     selectedSong: globalSelectedSong,

@@ -114,7 +114,12 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
           <div
             className={`${styles['media-content-section']} ${styles['media-content-section--horizontal']}`}
           >
-            <MediaCover imageSrc={imageSrc} title={title} mediaType={mediaType} playlist={playlist} />
+            <MediaCover
+              imageSrc={imageSrc}
+              title={title}
+              mediaType={mediaType}
+              playlist={playlist}
+            />
 
             <div className={styles['info-section']}>
               <div className={styles['titles-section']} data-name='Titles'>

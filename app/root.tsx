@@ -93,8 +93,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = processedData.sidebar.sections
   const playlists = processedData.playlists
 
-  const { isPlaylistDrawerOpen, openPlaylistDrawer, closePlaylistDrawer } =
-    useCurrentPlayerStore()
+  const { isPlaylistDrawerOpen, openPlaylistDrawer, closePlaylistDrawer } = useCurrentPlayerStore()
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 

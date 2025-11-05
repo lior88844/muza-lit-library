@@ -27,7 +27,7 @@ const MediaCover: React.FC<MediaCoverProps> = ({
     // For playlists, generate cover from songs using single source of truth
     if (mediaType === 'playlist' && playlist) {
       const images = generatePlaylistCoverImages(playlist)
-      
+
       // null = empty playlist, show empty state
       if (images === null) {
         return (
@@ -77,8 +77,8 @@ const MediaCover: React.FC<MediaCoverProps> = ({
     }
 
     // For single images (albums, artists, or playlists without enough songs)
-    const singleImageSrc = Array.isArray(imageSrc) 
-      ? imageSrc[0] || '/art/imag_1.jpg' 
+    const singleImageSrc = Array.isArray(imageSrc)
+      ? imageSrc[0] || '/art/imag_1.jpg'
       : imageSrc || '/art/imag_1.jpg'
     return <img src={singleImageSrc} alt={title} />
   }
