@@ -76,7 +76,7 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     <div className={styles.playlistCover} onClick={handleClick}>
       <div className={styles.playlistCoverImageContainer}>
         {isEmpty ? (
-          <div>
+          <div className={styles.playlistCoverEmpty}>
             <MuzaIcon iconName='playlist' />
           </div>
         ) : (

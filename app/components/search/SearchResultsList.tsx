@@ -79,7 +79,7 @@ export function SearchResultsList({
                   name: artist.name,
                   albumsCount: artist.albumsCount || 0,
                 }}
-                draggable={isDraggable}
+                draggable={isStackDrawerOpen}
               />
             ))}
           </div>
