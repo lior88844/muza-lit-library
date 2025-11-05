@@ -65,8 +65,6 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
       if (Object.keys(updateData).length > 0) {
         await updatePlaylist(playlistId, user.id, updateData)
       }
-      console.log({ trackUpdates })
-
       if (trackUpdates) {
         await syncPlaylistTracks(playlistId, trackUpdates, user.id)
       }

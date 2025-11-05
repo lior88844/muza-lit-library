@@ -21,7 +21,6 @@ export const playlistTracks = pgTable(
   },
   table => [
     uniqueIndex('unique_playlist_track').on(table.playlistId, table.trackId),
-    uniqueIndex('unique_playlist_position').on(table.playlistId, table.position),
     index('playlist_tracks_track_idx').on(table.trackId),
   ]
 )

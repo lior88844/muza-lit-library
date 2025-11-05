@@ -293,11 +293,13 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
 
         <div className={styles['playlist-drawer__song-list']}>
           {/* Main drop zone - always visible at the top */}
-          <div
-            className={`${styles['playlist-drawer__drop-zone']} ${isDragOver ? styles['playlist-drawer__drop-zone--active'] : ''}`}
-          >
-            <span>{t('playlist.dropSongsHere')}</span>
-          </div>
+          {!playlist?.songs.length && (
+            <div
+              className={`${styles['playlist-drawer__drop-zone']} ${isDragOver ? styles['playlist-drawer__drop-zone--active'] : ''}`}
+            >
+              <span>{t('playlist.dropSongsHere')}</span>
+            </div>
+          )}
 
           {/* Display current playlist songs below the drop zone */}
           {playlist?.songs && playlist.songs.length > 0 && (

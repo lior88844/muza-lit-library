@@ -227,16 +227,13 @@ export async function syncPlaylistTracks(
     // This makes room for the new tracks at the beginning
     // Update in DESCENDING order to avoid position conflicts
     const sortedTracks = [...tracksToUpdate].sort((a, b) => b.position - a.position)
-    
+
     for (const track of sortedTracks) {
       await db
         .update(playlistTracks)
         .set({ position: track.position + tracksToAdd.length })
         .where(
-          and(
-            eq(playlistTracks.playlistId, playlistId),
-            eq(playlistTracks.trackId, track.trackId)
-          )
+          and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, track.trackId))
         )
     }
   } else if (tracksToUpdate.length > 0) {
@@ -245,7 +242,7 @@ export async function syncPlaylistTracks(
       tracksToUpdate.map(track => {
         const newPosition = trackPositionMap.get(track.trackId)
         if (newPosition === undefined) return Promise.resolve()
-        
+
         return db
           .update(playlistTracks)
           .set({ position: newPosition })

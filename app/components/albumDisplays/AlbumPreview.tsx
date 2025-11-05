@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
-import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { Album } from '~/store/models'
