@@ -1,23 +1,29 @@
+import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import { create } from 'zustand'
 
-import type { Album, SongDetails } from './models'
+import type { SongDetails, StackToEdit } from './models'
 
 type currentPlayerStore = {
   selectedSong: SongDetails | null
-  selectedPlaListOrAlbum: Album | null
+  selectedPlaListOrAlbum: MiniAlbum | null
   isPlaying: boolean
   playCountIncremented: boolean
   isPlaylistDrawerOpen: boolean
   currentPlaylistDrawerId: number | undefined
+  isStackDrawerOpen: boolean
+  tempStack: StackToEdit | null
   setIsPlaying: (isPlaying: boolean) => void
   setSelectedSong: (song: SongDetails) => void
-  setSelectedPlaListOrAlbum: (album: Album) => void
+  setSelectedPlaListOrAlbum: (album: MiniAlbum) => void
   togglePlayPause: () => void
   setPlayCountIncremented: (incremented: boolean) => void
   setIsPlaylistDrawerOpen: (isOpen: boolean) => void
   setCurrentPlaylistDrawerId: (id: number | undefined) => void
   openPlaylistDrawer: (playlistId?: number) => void
   closePlaylistDrawer: () => void
+  openStackDrawer: (stack: StackToEdit) => void
+  closeStackDrawer: () => void
+  updateTempStack: (stack: StackToEdit) => void
 }
 
 export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
@@ -27,11 +33,13 @@ export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
   playCountIncremented: false,
   isPlaylistDrawerOpen: false,
   currentPlaylistDrawerId: undefined,
+  isStackDrawerOpen: false,
+  tempStack: null,
 
   setSelectedSong: (song: SongDetails) => set({ selectedSong: song, playCountIncremented: false }),
   setIsPlaying: (play: boolean) => set({ isPlaying: play }),
 
-  setSelectedPlaListOrAlbum: (album: Album) => set({ selectedPlaListOrAlbum: album }),
+  setSelectedPlaListOrAlbum: (album: MiniAlbum) => set({ selectedPlaListOrAlbum: album }),
 
   togglePlayPause: () => set({ isPlaying: !get().isPlaying }),
 
@@ -46,4 +54,10 @@ export const useCurrentPlayerStore = create<currentPlayerStore>((set, get) => ({
 
   closePlaylistDrawer: () =>
     set({ isPlaylistDrawerOpen: false, currentPlaylistDrawerId: undefined }),
+
+  openStackDrawer: (stack: StackToEdit) => set({ isStackDrawerOpen: true, tempStack: stack }),
+
+  closeStackDrawer: () => set({ isStackDrawerOpen: false, tempStack: null }),
+
+  updateTempStack: (stack: StackToEdit) => set({ tempStack: stack }),
 }))

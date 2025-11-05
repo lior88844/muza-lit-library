@@ -1,21 +1,30 @@
 import { and, eq } from 'drizzle-orm'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { db } from '../../db/connection'
-import { userLibrary } from '../../db/user-library.entity'
-import {
-  type CreateUserLibrary,
-  MediaTypeEnum,
-  type UserLibrary,
-} from '../../db/user-library.entity'
+import { type CreateUserLibrary, type UserLibrary, userLibrary } from '../../db/user-library.entity'
+import type { MiniAlbum } from '../album/types/MiniAlbumResponse'
+import type { ArtistMiniResponse } from '../artist/types/ArtistResponse'
+import type { MiniPlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
+import { getEntitiesMap } from '../stack/stack.service'
+import type { TrackResponse } from '../track/types/TrackResponse'
 
+// Type mapping from EntityTypeEnum to specific entity types
+type EntityTypeMap = {
+  [EntityTypeEnum.Album]: MiniAlbum
+  [EntityTypeEnum.Artist]: ArtistMiniResponse
+  [EntityTypeEnum.Track]: TrackResponse
+  [EntityTypeEnum.Playlist]: MiniPlaylistResponse
+}
+
+export interface UserLibraryWithEntity<T extends EntityTypeEnum = EntityTypeEnum>
+  extends UserLibrary {
+  entity: EntityTypeMap[T]
+}
 /**
  * Add an item to user's library
  */
-export async function addToLibrary(
-  userId: number,
-  resourceType: MediaTypeEnum,
-  resourceId: number
-) {
+export async function addToLibrary(userId: number, entityType: EntityTypeEnum, entityId: number) {
   // Check if item already exists in user's library
   const existingItem = await db
     .select()
@@ -23,8 +32,8 @@ export async function addToLibrary(
     .where(
       and(
         eq(userLibrary.userId, userId),
-        eq(userLibrary.resourceType, resourceType),
-        eq(userLibrary.resourceId, resourceId)
+        eq(userLibrary.entityType, entityType),
+        eq(userLibrary.entityId, entityId)
       )
     )
     .limit(1)
@@ -36,8 +45,8 @@ export async function addToLibrary(
   // Create new library item
   const newLibraryItem: CreateUserLibrary = {
     userId,
-    resourceType,
-    resourceId,
+    entityType,
+    entityId,
   }
 
   const result = await db.insert(userLibrary).values(newLibraryItem).returning()
@@ -50,16 +59,16 @@ export async function addToLibrary(
  */
 export async function removeFromLibrary(
   userId: number,
-  resourceType: MediaTypeEnum,
-  resourceId: number
+  entityType: EntityTypeEnum,
+  entityId: number
 ): Promise<boolean> {
   const result = await db
     .delete(userLibrary)
     .where(
       and(
         eq(userLibrary.userId, userId),
-        eq(userLibrary.resourceType, resourceType),
-        eq(userLibrary.resourceId, resourceId)
+        eq(userLibrary.entityType, entityType),
+        eq(userLibrary.entityId, entityId)
       )
     )
     .returning()
@@ -70,27 +79,40 @@ export async function removeFromLibrary(
 /**
  * Get user's library items
  */
-export async function getUserLibrary(
+export async function getUserLibrary<T extends EntityTypeEnum>(
   userId: number,
-  resourceType?: MediaTypeEnum
-): Promise<UserLibrary[]> {
-  if (resourceType) {
-    return await db
-      .select()
-      .from(userLibrary)
-      .where(and(eq(userLibrary.userId, userId), eq(userLibrary.resourceType, resourceType)))
+  entityType: T
+): Promise<UserLibraryWithEntity<T>[]> {
+  const items = await db.query.userLibrary.findMany({
+    where: entityType
+      ? and(eq(userLibrary.userId, userId), eq(userLibrary.entityType, entityType))
+      : eq(userLibrary.userId, userId),
+  })
+  const entityIdsByType = {
+    [entityType]: new Set(),
   }
-
-  return await db.select().from(userLibrary).where(eq(userLibrary.userId, userId))
+  items.forEach(item => {
+    entityIdsByType[item.entityType].add(item.entityId)
+  })
+  const entitiesMap = await getEntitiesMap(entityIdsByType)
+  return items.map(item => ({
+    ...item,
+    entity: entitiesMap[item.entityType].get(item.entityId)!,
+  })) as UserLibraryWithEntity<T>[]
 }
-
+export async function getAllUserLibrary(userId: number) {
+  const items = await db.query.userLibrary.findMany({
+    where: eq(userLibrary.userId, userId),
+  })
+  return items
+}
 /**
  * Check if item exists in user's library
  */
 export async function isInLibrary(
   userId: number,
-  resourceType: MediaTypeEnum,
-  resourceId: number
+  entityType: EntityTypeEnum,
+  entityId: number
 ): Promise<boolean> {
   const result = await db
     .select()
@@ -98,8 +120,8 @@ export async function isInLibrary(
     .where(
       and(
         eq(userLibrary.userId, userId),
-        eq(userLibrary.resourceType, resourceType),
-        eq(userLibrary.resourceId, resourceId)
+        eq(userLibrary.entityType, entityType),
+        eq(userLibrary.entityId, entityId)
       )
     )
     .limit(1)

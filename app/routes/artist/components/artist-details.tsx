@@ -1,9 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import type { ArtistResponse } from 'server/api/artist/types/ArtistResponse'
 
 import { Button } from '~/components/ui/button'
 import { Image } from '~/components/ui/image'
 import { Typography } from '~/components/ui/typography'
-import { useTranslation } from '~/lib/i18n/translations'
 
 import { StatisticItem } from './statistic-item'
 

@@ -12,7 +12,6 @@ import { stacks } from './stack.entity'
 import { stackItems } from './stack-item.entity'
 import { tracks } from './track.entity'
 import { trackArtists } from './track-artist.entity'
-import { userLibrary } from './user-library.entity'
 
 // Relations
 export const artistsRelations = relations(artists, ({ many }) => ({
@@ -91,8 +90,6 @@ export const playlistSharesRelations = relations(playlistShares, ({ one }) => ({
     references: [playlists.id],
   }),
 }))
-
-export const userLibraryRelations = relations(userLibrary, () => ({}))
 
 export const stacksRelations = relations(stacks, ({ many }) => ({
   items: many(stackItems),

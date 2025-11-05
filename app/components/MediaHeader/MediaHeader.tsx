@@ -1,15 +1,15 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaPause, FaPlay } from 'react-icons/fa'
+import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaButton from '~/controls/MuzaButton'
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useTranslation } from '~/lib/i18n/translations'
 // Removed unused imports: useSubmit, useActionData
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
-import type { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import { Button } from '../ui/button'
 // Import remaining sub-components
@@ -20,14 +20,14 @@ import styles from './MediaHeader.module.css'
 interface MediaHeaderProps {
   // Generic media object that works for albums, playlists, etc.
   songs: SongDetails[]
-  mediaType: MediaTypeEnum
+  mediaType: EntityTypeEnum
   title: string
   imageSrc: string
   creator?: string
   visibility?: PlaylistVisibilityEnum
   mediaMetadata: Omit<MediaMetadataProps, 'type'>
   // Resource identification for library operations
-  resourceId: number
+  entityId: number
   // Optional customization
   onInfoClick?: () => void
   showBackButton?: boolean
@@ -46,7 +46,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   creator,
   visibility,
   mediaMetadata,
-  resourceId,
+  entityId,
   showBackButton = true,
   customActions,
   onInfoClick,
@@ -56,9 +56,9 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   const { t } = useTranslation()
   const { setSelectedSong, isPlaying, setIsPlaying } = useCurrentPlayerStore()
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
-  const isInLibrary = getIsInLibrary(mediaType, resourceId)
+  const isInLibrary = getIsInLibrary(mediaType, entityId)
   const onToggleAddLibrary = () => {
-    toggleAddLibrary(mediaType, resourceId)
+    toggleAddLibrary(mediaType, entityId)
   }
   const handlePlayPause = () => {
     if (isPlaying) {

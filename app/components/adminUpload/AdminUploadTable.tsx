@@ -78,7 +78,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
           key={i}
           onClick={() => onPageChange(i)}
           className={cn(
-            'w-9 h-9 flex items-center justify-center text-base font-normal rounded-md cursor-pointer transition-all duration-200 ease-in-out border-none bg-transparent text-muted-foreground hover:bg-secondary',
+            'text-muted-foreground hover:bg-secondary flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-base font-normal transition-all duration-200 ease-in-out',
             i === currentPage && 'bg-primary text-background font-medium'
           )}
         >
@@ -92,7 +92,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         <button
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className='flex items-center gap-2 bg-none border-none cursor-pointer text-base font-normal text-muted-foreground transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed hover:text-background-dark'
+          className='text-muted-foreground hover:text-background-dark flex cursor-pointer items-center gap-2 border-none bg-none text-base font-normal transition-all duration-200 ease-in-out disabled:cursor-not-allowed disabled:opacity-50'
         >
           <MuzaIcon iconName='ChevronLeft' />
           Previous
@@ -102,18 +102,18 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
           {pages}
           <div
             className={cn(
-              'w-9 h-9 flex items-center justify-center text-muted-foreground',
-              endPage >= totalPages && 'opacity-0 pointer-events-none'
+              'text-muted-foreground flex h-9 w-9 items-center justify-center',
+              endPage >= totalPages && 'pointer-events-none opacity-0'
             )}
           >
-            <MuzaIcon iconName='ellipsis' className='w-4 h-4' />
+            <MuzaIcon iconName='ellipsis' className='h-4 w-4' />
           </div>
         </div>
 
         <button
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className='flex items-center gap-2 bg-none border-none cursor-pointer text-base font-normal text-muted-foreground transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed hover:text-background-dark'
+          className='text-muted-foreground hover:text-background-dark flex cursor-pointer items-center gap-2 border-none bg-none text-base font-normal transition-all duration-200 ease-in-out disabled:cursor-not-allowed disabled:opacity-50'
         >
           Next
           <MuzaIcon iconName='ChevronRight' />
@@ -131,49 +131,49 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   }
 
   return (
-    <div className='w-full mt-0 flex flex-col flex-1 min-h-0'>
-      <div className='w-full overflow-x-auto border border-border-light rounded-md bg-background flex-1 flex flex-col min-h-0'>
-        <table className='w-full border-collapse font-sans min-w-[800px]'>
+    <div className='mt-0 flex min-h-0 w-full flex-1 flex-col'>
+      <div className='border-border-light bg-background flex min-h-0 w-full flex-1 flex-col overflow-x-auto rounded-md border'>
+        <table className='w-full min-w-[800px] border-collapse font-sans'>
           <thead className='bg-background'>
-            <tr className='border-b border-border-light'>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[50px]'>
+            <tr className='border-border-light border-b'>
+              <th className='text-muted-foreground border-border-light w-[50px] border-b px-2 py-2 text-base leading-5 font-medium'>
                 {/* Empty header for row numbers */}
               </th>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[50px] text-center align-middle'>
+              <th className='text-muted-foreground border-border-light w-[50px] border-b px-2 py-2 text-center align-middle text-base leading-5 font-medium'>
                 <div
                   className={cn(
-                    'flex justify-center items-center relative h-5',
+                    'relative flex h-5 items-center justify-center',
                     isAllSelected &&
-                      '[&_.checkmark]:opacity-100 [&_.checkmark]:scale-100 [&_.checkbox-visual]:bg-transparent [&_.checkbox-visual]:border-transparent'
+                      '[&_.checkbox-visual]:border-transparent [&_.checkbox-visual]:bg-transparent [&_.checkmark]:scale-100 [&_.checkmark]:opacity-100'
                   )}
                 >
                   <input
                     type='checkbox'
                     checked={isAllSelected}
                     onChange={handleSelectAllChange}
-                    className='w-4 h-4 opacity-0 absolute cursor-pointer z-1'
+                    className='absolute z-1 h-4 w-4 cursor-pointer opacity-0'
                   />
-                  <div className='w-4 h-4 border-[1.33px] border-primary rounded-sm bg-background flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative checkbox-visual'>
+                  <div className='border-primary bg-background checkbox-visual relative flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm border-[1.33px] transition-all duration-200 ease-in-out'>
                     <MuzaIcon
                       iconName='CheckmarkSquare'
-                      className='w-4 h-4 opacity-0 scale-[0.8] transition-all duration-200 ease-in-out checkmark'
+                      className='checkmark h-4 w-4 scale-[0.8] opacity-0 transition-all duration-200 ease-in-out'
                     />
                   </div>
                 </div>
               </th>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[180px] max-w-[180px]'>
+              <th className='text-muted-foreground border-border-light w-[180px] max-w-[180px] border-b px-2 py-2 text-base leading-5 font-medium'>
                 Folder
               </th>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light auto min-w-[300px]'>
+              <th className='text-muted-foreground border-border-light auto min-w-[300px] border-b px-2 py-2 text-base leading-5 font-medium'>
                 Upload
               </th>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light w-[250px] max-w-[250px]'>
+              <th className='text-muted-foreground border-border-light w-[250px] max-w-[250px] border-b px-2 py-2 text-base leading-5 font-medium'>
                 Data Source
               </th>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light text-center w-[150px] max-w-[150px]'>
+              <th className='text-muted-foreground border-border-light w-[150px] max-w-[150px] border-b px-2 py-2 text-center text-base leading-5 font-medium'>
                 Cover
               </th>
-              <th className='py-2 px-2 font-medium text-base text-muted-foreground leading-5 border-b border-border-light min-w-max text-left'>
+              <th className='text-muted-foreground border-border-light min-w-max border-b px-2 py-2 text-left text-base leading-5 font-medium'>
                 Errors
               </th>
             </tr>
@@ -196,14 +196,14 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         </table>
       </div>
 
-      <div className='flex items-center justify-between gap-4 py-4 px-6 border-t border-border-light bg-background'>
-        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+      <div className='border-border-light bg-background flex items-center justify-between gap-4 border-t px-6 py-4'>
+        <div className='text-muted-foreground flex items-center gap-2 text-sm'>
           <span>Show</span>
           <select
             id='items-per-page'
             value={itemsPerPage}
             onChange={e => onItemsPerPageChange(Number(e.target.value))}
-            className='h-9 px-3 py-0 text-sm font-normal border border-border-light rounded-md bg-background text-muted-foreground outline-none transition-colors duration-200 cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20'
+            className='border-border-light bg-background text-muted-foreground hover:border-primary focus:border-primary focus:ring-primary/20 h-9 cursor-pointer rounded-md border px-3 py-0 text-sm font-normal transition-colors duration-200 outline-none focus:ring-2'
           >
             <option value={10}>10</option>
             <option value={25}>25</option>
@@ -221,14 +221,14 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
             iconName='trash'
             onClick={onCancelSelection}
             disabled={selectedItemIds.size === 0}
-            className='w-fit h-fit bg-secondary text-text-dark border-none rounded-full py-2 px-4 font-medium text-base cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 hover:bg-(--muza-button-hover-background) disabled:opacity-50 disabled:cursor-not-allowed [&_span]:text-base [&_span]:font-medium [&_span]:text-text-dark [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_svg]:text-text-dark [&_svg]:w-4 [&_svg]:h-4'
+            className='bg-secondary text-text-dark [&_span]:text-text-dark [&_svg]:text-text-dark flex h-fit w-fit cursor-pointer items-center gap-2 rounded-full border-none px-4 py-2 text-base font-medium transition-all duration-200 ease-in-out hover:bg-(--muza-button-hover-background) disabled:cursor-not-allowed disabled:opacity-50 [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_span]:text-base [&_span]:font-medium [&_svg]:h-4 [&_svg]:w-4'
           />
           <MuzaButton
             content={isUploading ? 'Uploading...' : 'Process & Upload'}
             iconName={isUploading ? 'Clock8' : 'upload'}
             onClick={onProcessUpload}
             disabled={selectedItemIds.size === 0 || isUploading}
-            className='w-fit h-fit bg-primary text-muted border-none rounded-full py-2 px-4 font-medium text-base cursor-pointer transition-all duration-200 ease-in-out flex items-center gap-2 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] hover:bg-(--colors_primary_dark) disabled:opacity-50 disabled:cursor-not-allowed [&_span]:text-base [&_span]:font-medium [&_span]:text-muted [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_svg]:text-muted [&_svg]:w-4 [&_svg]:h-4'
+            className='bg-primary text-muted [&_span]:text-muted [&_svg]:text-muted flex h-fit w-fit cursor-pointer items-center gap-2 rounded-full border-none px-4 py-2 text-base font-medium shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-all duration-200 ease-in-out hover:bg-(--colors_primary_dark) disabled:cursor-not-allowed disabled:opacity-50 [&_i]:flex [&_i]:items-center [&_i]:justify-center [&_span]:text-base [&_span]:font-medium [&_svg]:h-4 [&_svg]:w-4'
           />
         </div>
       </div>

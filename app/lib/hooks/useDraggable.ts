@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 
 interface UseDraggableOptions<T> {
-  type: 'song' | 'album' | 'playlist'
+  type: 'song' | 'album' | 'playlist' | 'artist'
   data: T
   enabled: boolean
   onDragStart?: () => void

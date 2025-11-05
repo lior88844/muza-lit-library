@@ -1,7 +1,9 @@
 import './app.css'
+import './lib/i18n/i18n.config' // Initialize i18next
 
 import { useEffect, useState } from 'react'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   isRouteErrorResponse,
   Links,
@@ -16,14 +18,14 @@ import {
 
 import { cn } from '~/lib/utils'
 
-import { fetchAllData } from '../server/data'
+import { fetchAllData } from '../server/root.service'
 import type { Route } from './+types/root'
 import MuzaMusicPlayer from './components/componentsWithLogic/MuzaMusicPlayer'
 import PlaylistDrawer from './components/playlistDisplays/PlaylistDrawer'
 import MusicSidebar from './components/sections/MusicSidebar'
 import MusicTopbar from './components/sections/MusicTopbar'
+import StackDrawer from './components/stack/StackDrawer'
 import { Typography } from './components/ui/typography'
-import { useTranslation } from './lib/i18n/translations'
 import Providers from './Providers'
 import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'
@@ -73,16 +75,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   // Process playlists once with useMemo
   const processedData = useMemo(() => {
-    const songs = data?.songs || []
     return {
-      albums: {
-        featured: data?.albums?.featured || [],
-        newReleases: (data?.albums?.newReleases || []).slice(0, 5),
-        recommended: data?.albums?.recommended || [],
-      },
-      artists: data?.artists || [],
-      songs,
       library: data?.library || [],
+      songs: [],
       playlists: data?.playlists || [],
       sidebar: {
         sections: data?.sidebar?.sections || [],
@@ -93,7 +88,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const sidebarSections = processedData.sidebar.sections
   const playlists = processedData.playlists
 
-  const { isPlaylistDrawerOpen, openPlaylistDrawer, closePlaylistDrawer } = useCurrentPlayerStore()
+  const {
+    isPlaylistDrawerOpen,
+    openPlaylistDrawer,
+    closePlaylistDrawer,
+    isStackDrawerOpen,
+    tempStack,
+    closeStackDrawer,
+    updateTempStack,
+  } = useCurrentPlayerStore()
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -118,22 +121,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const handleClosePlaylistDrawer = () => {
     closePlaylistDrawer()
-    setIsSidebarCollapsed(false)
+    if (!isStackDrawerOpen) {
+      setIsSidebarCollapsed(false)
+    }
   }
+
+  const handleCloseStackDrawer = () => {
+    closeStackDrawer()
+    if (!isPlaylistDrawerOpen) {
+      setIsSidebarCollapsed(false)
+    }
+  }
+
+  // Collapse sidebar when stack drawer opens
+  useEffect(() => {
+    if (isStackDrawerOpen) {
+      setIsSidebarCollapsed(true)
+    }
+  }, [isStackDrawerOpen])
 
   const handleToggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed)
   }
-
-  // Initialize current player with first song only once
-  useEffect(() => {
-    const { selectedSong, setSelectedSong } = useCurrentPlayerStore.getState()
-    const songs = processedData.songs
-
-    if (songs.length > 0 && !selectedSong) {
-      setSelectedSong(songs[0])
-    }
-  }, [processedData.songs])
 
   const content = null
   const isMinimalLayout = isMinimalLayoutPage || isMinimalLayoutParent
@@ -161,21 +170,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 />
               )}
 
-              <div className='grow relative'>
+              <div className='relative grow'>
                 {!isMinimalLayout && <MusicTopbar />}
                 <main
                   className={cn(
                     isMinimalLayout
                       ? 'h-screen pb-0'
-                      : 'relative p-6 pb-40 overflow-y-auto h-[calc(100vh-var(--muza-topbar-height))]'
+                      : 'relative h-[calc(100vh-var(--muza-topbar-height))] overflow-y-auto p-6 pb-40'
                   )}
                 >
                   {content || children}
                   {!isMinimalLayout && (
-                    <PlaylistDrawer
-                      isOpen={isPlaylistDrawerOpen}
-                      onClose={handleClosePlaylistDrawer}
-                    />
+                    <>
+                      <PlaylistDrawer
+                        isOpen={isPlaylistDrawerOpen}
+                        onClose={handleClosePlaylistDrawer}
+                      />
+                      {tempStack && (
+                        <StackDrawer
+                          isOpen={isStackDrawerOpen}
+                          onClose={handleCloseStackDrawer}
+                          tempStack={tempStack}
+                          onTempStackUpdate={updateTempStack}
+                        />
+                      )}
+                    </>
                   )}
                 </main>
                 {!isMinimalLayout && <MuzaMusicPlayer />}

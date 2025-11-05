@@ -1,9 +1,9 @@
 import React, { type MouseEventHandler, useState } from 'react'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 
-import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import type { SongDetails } from '../../store/models'
 import { formatSongNumber } from '../../store/utils'
@@ -42,15 +42,15 @@ const SongLine: React.FC<SongLineProps> = ({
 }) => {
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const [isHovered, setIsHovered] = useState(false)
-  const isInLibrary = getIsInLibrary(MediaTypeEnum.Track, details.id)
-  const { isDragging, dragHandlers } = useDraggable({
+  const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
+  const { dragHandlers } = useDraggable({
     type: 'song',
     data: details,
     enabled: draggable,
   })
 
   const addToLibrary = async () => {
-    await toggleAddLibrary(MediaTypeEnum.Track, details.id)
+    await toggleAddLibrary(EntityTypeEnum.Track, details.id)
   }
 
   const renderIcon = () => {
@@ -84,7 +84,7 @@ const SongLine: React.FC<SongLineProps> = ({
 
   return (
     <div
-      className={`${styles['song-line-simple']} ${isPlaying ? styles.playing : ''} ${isHovered ? styles.hovered : ''} ${draggable ? styles.draggable : ''} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles['song-line-simple']} ${isPlaying ? styles.playing : ''} ${isHovered ? styles.hovered : ''}`}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

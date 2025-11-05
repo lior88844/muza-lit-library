@@ -3,10 +3,10 @@ import { eq } from 'drizzle-orm'
 import type { AlbumArtist } from '../../db/album-artist.entity'
 import { type Artist, artists } from '../../db/artist.entity'
 import { db } from '../../db/connection'
-import type { ArtistMinimalResponse, ArtistResponse } from './types/ArtistResponse'
+import type { ArtistMiniResponse, ArtistResponse } from './types/ArtistResponse'
 
 // Types for transformed data
-interface ArtistWithAlbums extends Artist {
+export interface ArtistWithAlbums extends Artist {
   albumArtists: AlbumArtist[]
 }
 
@@ -40,7 +40,7 @@ export async function findManyArtists(limit = 20, offset = 0) {
 /**
  * Transform artist data for frontend consumption
  */
-function transformArtistData(artists: ArtistWithAlbums[]): ArtistMinimalResponse[] {
+export function transformArtistData(artists: ArtistWithAlbums[]): ArtistMiniResponse[] {
   return artists
     .filter(artist => artist.name)
     .map(artist => ({

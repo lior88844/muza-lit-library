@@ -1,16 +1,16 @@
 import React, { type MouseEventHandler, useState } from 'react'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 
-import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import type { SongDetails } from '../../store/models'
 import styles from './SongLineWithCover.module.css'
 
 interface SongLineProps {
   details: SongDetails
-  onClick: MouseEventHandler<HTMLDivElement>
+  onClick: MouseEventHandler<Element>
   isPlaying: boolean
   showPreview?: boolean // Add preview badge option
   showHoverActions?: boolean // Control hover action visibility
@@ -43,20 +43,21 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false)
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
-  const isInLibrary = getIsInLibrary(MediaTypeEnum.Track, details.id)
-  const { isDragging, dragHandlers, preventClickWhileDragging } = useDraggable({
+  const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
+
+  const { dragHandlers, preventClickWhileDragging } = useDraggable({
     type: 'song',
     data: details,
     enabled: draggable,
   })
 
   const addToLibrary = async () => {
-    await toggleAddLibrary(MediaTypeEnum.Track, details.id)
+    await toggleAddLibrary(EntityTypeEnum.Track, details.id)
   }
 
   return (
     <div
-      className={`${styles.songLineWithCover} ${isPlaying ? styles.playing : ''} ${draggable ? styles.draggable : ''} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.songLineWithCover} ${isPlaying ? styles.playing : ''} ${draggable ? styles.draggable : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       {...dragHandlers}
@@ -96,13 +97,11 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
           <div className={styles.songLineWithCoverDetailsRow}>
             {showPreview && <div className={styles.previewBadge}>Preview</div>}
             <div className={styles.songDetails}>
-              <span className={styles.artistName}>{details.artist}</span>
+              <span>{details.artist}</span>
               <span className={styles.separator}>•</span>
-              <span className={styles.albumName}>{details.album || 'Unknown Album'}</span>
+              <span>{details.album || 'Unknown Album'}</span>
               <span className={styles.separator}>•</span>
-              <span className={styles.playCount}>
-                {details.plays ? formatPlayCount(details.plays) : '0'} Plays
-              </span>
+              <span>{details.plays ? formatPlayCount(details.plays) : '0'} Plays</span>
             </div>
           </div>
         </div>

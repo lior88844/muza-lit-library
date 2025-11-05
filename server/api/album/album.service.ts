@@ -9,14 +9,14 @@ import { db } from '../../db/connection'
 import { formatTrack } from '../track/track.service'
 import type { TrackWithArtists } from '../track/types/TrackWithArtists'
 import type { AlbumResponse, LabelResponse } from './types/AlbumResponse'
-import type { MiniAlbumResponse } from './types/MiniAlbumResponse'
+import type { MiniAlbum } from './types/MiniAlbumResponse'
 
 interface AlbumLabelWithLabel extends AlbumLabel {
   label: Label
 }
 
 // Types for transformed data
-interface AlbumWithArtistsAndTracks extends Album {
+export interface AlbumWithArtistsAndTracks extends Album {
   albumArtists: (AlbumArtist & { artist: Artist })[]
   tracks: Omit<TrackWithArtists, 'album'>[]
   albumLabels?: AlbumLabelWithLabel[]
@@ -74,7 +74,7 @@ export async function findAlbumById(id: number) {
 /**
  * Transform album data for frontend consumption
  */
-function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbumResponse[] {
+export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[] {
   return albums.map(album => {
     const mainArtist = album.albumArtists[0]
     return {
@@ -83,6 +83,7 @@ function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbumResponse
       title: album.title,
       releaseDate: album.releaseDate,
       artist: mainArtist?.artist.name,
+      artistId: mainArtist?.artist.id,
       songs: album.tracks.map(track => track.id),
     }
   })

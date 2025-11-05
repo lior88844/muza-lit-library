@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import MuzaButton from '~/controls/MuzaButton'
 import MuzaInputField from '~/controls/MuzaInputField'
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useTranslation } from '~/lib/i18n/translations'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { useMedia } from '~/store/media/mediaContext'
 import type { SongDetails } from '~/store/models'

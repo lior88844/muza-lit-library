@@ -1,18 +1,12 @@
 import { createContext, useContext } from 'react'
 
 import type { UserLibrary } from '../../../server/db/user-library.entity'
-import type { Album, Artist, MusicPlaylist, Section, SongDetails } from '../models'
-// Client-side context for library data - populated from root loader
+import type { MusicPlaylist, Section, SongDetails } from '../models'
+
 export type MediaData = {
-  albums: {
-    featured: Album[]
-    newReleases: Album[]
-    recommended: Album[]
-  }
   library: UserLibrary[]
-  artists: Artist[]
-  songs: SongDetails[]
   playlists: MusicPlaylist[]
+  songs: SongDetails[]
   sidebar: {
     sections: Section[]
   }

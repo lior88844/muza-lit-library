@@ -94,7 +94,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
       <div
         {...getCoverRootProps()}
         className={cn(
-          'w-48 h-48 bg-[var(--colors_muted_light_50_)] border border-border-light rounded-sm flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative',
+          'border-border-light relative flex h-48 w-48 cursor-pointer flex-col items-center justify-center rounded-sm border bg-[var(--colors_muted_light_50_)] transition-all duration-200 ease-in-out',
           isCoverDragActive && 'border-primary bg-secondary scale-[1.02]',
           coverPreview && 'p-0'
         )}
@@ -102,11 +102,11 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
         <input {...getCoverInputProps()} />
 
         {coverPreview ? (
-          <div className='w-full h-full relative rounded-sm overflow-hidden'>
+          <div className='relative h-full w-full overflow-hidden rounded-sm'>
             <img
               src={coverPreview}
               alt='Cover preview'
-              className='w-full h-full object-cover rounded-sm'
+              className='h-full w-full rounded-sm object-cover'
             />
             <button
               type='button'
@@ -114,17 +114,17 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
                 e.stopPropagation()
                 removeCover()
               }}
-              className='absolute top-2 right-2 w-6 h-6 rounded-full bg-black/70 text-white border-none cursor-pointer flex items-center justify-center text-base leading-none transition-colors duration-200 hover:bg-black/90'
+              className='absolute top-2 right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-black/70 text-base leading-none text-white transition-colors duration-200 hover:bg-black/90'
             >
               ×
             </button>
           </div>
         ) : (
           <>
-            <div className='bg-background-dark w-14 h-14 rounded-full flex items-center justify-center mb-4'>
+            <div className='bg-background-dark mb-4 flex h-14 w-14 items-center justify-center rounded-full'>
               <MuzaIcon className='h-6 w-6 text-white' iconName='plus' />
             </div>
-            <span className='text-sm text-background-dark text-center'>
+            <span className='text-background-dark text-center text-sm'>
               {isCoverDragActive ? 'Drop cover image here' : 'Add cover image'}
             </span>
           </>
@@ -135,36 +135,36 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
       <div
         {...getFilesRootProps()}
         className={cn(
-          'flex flex-col items-center gap-4 cursor-pointer p-8 transition-all duration-200 ease-in-out min-w-[300px] lg:min-w-[250px] lg:p-6',
+          'flex min-w-[300px] cursor-pointer flex-col items-center gap-4 p-8 transition-all duration-200 ease-in-out lg:min-w-[250px] lg:p-6',
           isFilesDragActive && 'border-primary bg-secondary scale-[1.02]'
         )}
       >
         <input {...getFilesInputProps()} />
 
-        <div className='w-6 h-6 text-background-dark'>
-          <MuzaIcon className='w-6 h-6 text-background-dark' iconName='upload' />
+        <div className='text-background-dark h-6 w-6'>
+          <MuzaIcon className='text-background-dark h-6 w-6' iconName='upload' />
         </div>
         <div className='text-center'>
-          <p className='text-base text-background-dark m-0 mb-1'>
+          <p className='text-background-dark m-0 mb-1 text-base'>
             {isFilesDragActive ? 'Drop audio files here' : 'Drag files here to upload'}
           </p>
-          <p className='text-sm text-primary m-0 underline'>or browse for files</p>
+          <p className='text-primary m-0 text-sm underline'>or browse for files</p>
         </div>
 
         {uploadedFiles.length > 0 && (
-          <div className='w-full mt-4 pt-4 border-t border-border-light'>
-            <h4 className='text-sm text-background-dark m-0 mb-3 font-semibold'>
+          <div className='border-border-light mt-4 w-full border-t pt-4'>
+            <h4 className='text-background-dark m-0 mb-3 text-sm font-semibold'>
               Uploaded Files ({uploadedFiles.length})
             </h4>
             {uploadedFiles.map((file, index) => (
               <div
                 key={index}
-                className='flex items-center justify-between py-2 px-3 bg-[var(--colors_muted_light_50_)] rounded-sm mb-2 gap-3'
+                className='mb-2 flex items-center justify-between gap-3 rounded-sm bg-[var(--colors_muted_light_50_)] px-3 py-2'
               >
-                <span className='flex-1 text-sm text-background-dark whitespace-nowrap overflow-hidden text-ellipsis'>
+                <span className='text-background-dark flex-1 overflow-hidden text-sm text-ellipsis whitespace-nowrap'>
                   {file.name}
                 </span>
-                <span className='text-xs text-primary whitespace-nowrap'>
+                <span className='text-primary text-xs whitespace-nowrap'>
                   {(file.size / (1024 * 1024)).toFixed(2)} MB
                 </span>
                 <button
@@ -173,7 +173,7 @@ const UploadFileArea: React.FC<UploadFileAreaProps> = ({
                     e.stopPropagation()
                     removeFile(index)
                   }}
-                  className='w-5 h-5 rounded-full bg-border-light text-background-dark border-none cursor-pointer flex items-center justify-center text-sm leading-none transition-colors duration-200 hover:bg-[#ff4444] hover:text-white'
+                  className='bg-border-light text-background-dark flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border-none text-sm leading-none transition-colors duration-200 hover:bg-[#ff4444] hover:text-white'
                 >
                   ×
                 </button>

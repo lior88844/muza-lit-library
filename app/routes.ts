@@ -3,6 +3,7 @@ const resourcesRoutes = [
   route('/health', './routes/resources/health.ts'),
   route('/api/library', './routes/resources/library.ts'),
   route('/api/playlist', './routes/resources/playlist.ts'),
+  route('/api/search', './routes/resources/search.ts'),
 ]
 
 export default [
@@ -21,6 +22,7 @@ export default [
   ]),
   route('playlists', './routes/playlists.tsx'),
   route('playlists/:id', './routes/playlist.tsx'),
+  route('search', './routes/search.tsx'),
   route('login', './routes/login.tsx'),
   route('auth/callback', './routes/callback.tsx'),
   ...resourcesRoutes,

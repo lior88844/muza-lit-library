@@ -1,8 +1,8 @@
 import React from 'react'
+import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
-import type { Album } from '~/store/models'
 
 import styles from './AlbumCover.module.css'
 
@@ -11,7 +11,7 @@ interface AlbumCoverProps {
   title: string
   subTitle: string
   onAlbumSelect?: (data: { title: string; subTitle: string; imageSrc: string }) => void
-  albumDetails?: Album
+  albumDetails?: MiniAlbum
   draggable?: boolean
 }
 

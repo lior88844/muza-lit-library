@@ -116,3 +116,15 @@
   color: var(--muza-tertiary-text-color);
   margin-top: var(--muza-spacing-xs);
 }
+
+.artist-details-card.draggable {
+  cursor: grab;
+}
+
+.artist-details-card.draggable:active {
+  cursor: grabbing;
+}
+
+.artist-details-card.dragging {
+  opacity: 0.5;
+}

@@ -9,10 +9,10 @@ export default function Admin() {
   const isIndexRoute = location.pathname === '/admin'
 
   return (
-    <div className='bg-background min-h-screen flex flex-col'>
+    <div className='bg-background flex min-h-screen flex-col'>
       {/* Header with navigation links */}
-      <div className='border-b border-border-light py-3 px-8'>
-        <div className='flex justify-between items-center'>
+      <div className='border-border-light border-b px-8 py-3'>
+        <div className='flex items-center justify-between'>
           <Typography variant='h3' as='h2'>
             Muza Admin Portal
           </Typography>
@@ -20,10 +20,10 @@ export default function Admin() {
             <Link
               to='/admin/stack'
               className={cn(
-                'px-4 py-2 rounded-full font-sans text-sm font-medium transition-colors duration-200 ease-in-out',
+                'rounded-full px-4 py-2 font-sans text-sm font-medium transition-colors duration-200 ease-in-out',
                 location.pathname === '/admin/stack'
                   ? 'bg-primary text-white'
-                  : 'bg-white/50 border border-border-light text-foreground hover:bg-[var(--muza-hover-background,#eeeeee)]'
+                  : 'border-border-light text-foreground border bg-white/50 hover:bg-[var(--muza-hover-background,#eeeeee)]'
               )}
             >
               Page Editor
@@ -31,10 +31,10 @@ export default function Admin() {
             <Link
               to='/admin/upload'
               className={cn(
-                'px-4 py-2 rounded-full font-sans text-sm font-medium transition-colors duration-200 ease-in-out',
+                'rounded-full px-4 py-2 font-sans text-sm font-medium transition-colors duration-200 ease-in-out',
                 location.pathname === '/admin/upload'
                   ? 'bg-primary text-white'
-                  : 'bg-white/50 border border-border-light text-foreground hover:bg-[var(--muza-hover-background,#eeeeee)]'
+                  : 'border-border-light text-foreground border bg-white/50 hover:bg-[var(--muza-hover-background,#eeeeee)]'
               )}
             >
               Upload Album
@@ -42,10 +42,10 @@ export default function Admin() {
             <Link
               to='/admin/data'
               className={cn(
-                'px-4 py-2 rounded-full font-sans text-sm font-medium transition-colors duration-200 ease-in-out',
+                'rounded-full px-4 py-2 font-sans text-sm font-medium transition-colors duration-200 ease-in-out',
                 location.pathname === '/admin/data'
                   ? 'bg-primary text-white'
-                  : 'bg-white/50 border border-border-light text-foreground hover:bg-[var(--muza-hover-background,#eeeeee)]'
+                  : 'border-border-light text-foreground border bg-white/50 hover:bg-[var(--muza-hover-background,#eeeeee)]'
               )}
             >
               Data Management
@@ -57,10 +57,10 @@ export default function Admin() {
       {/* Render child routes or index content */}
       {isIndexRoute ? (
         <div className='flex-1 p-8'>
-          <div className='max-w-7xl w-full mx-auto'>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full'>
+          <div className='mx-auto w-full max-w-7xl'>
+            <div className='grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
               <Link to='/admin/stack'>
-                <Button className='flex flex-col gap-2 w-full' variant='outline'>
+                <Button className='flex w-full flex-col gap-2' variant='outline'>
                   <Typography variant='h2' as='h2' className='text-foreground m-0'>
                     Page Editor
                   </Typography>
@@ -71,7 +71,7 @@ export default function Admin() {
               </Link>
 
               <Link to='/admin/upload'>
-                <Button className='flex flex-col gap-2 w-full' variant='outline'>
+                <Button className='flex w-full flex-col gap-2' variant='outline'>
                   <Typography variant='h2' as='h2' className='text-foreground m-0'>
                     Upload Album
                   </Typography>
@@ -82,7 +82,7 @@ export default function Admin() {
               </Link>
 
               <Link to='/admin/data'>
-                <Button className='flex flex-col gap-2 w-full' variant='outline'>
+                <Button className='flex w-full flex-col gap-2' variant='outline'>
                   <Typography variant='h2' as='h2' className='text-foreground m-0'>
                     Data Management
                   </Typography>

@@ -16,6 +16,7 @@ You are an expert in TypeScript, Node.js, React-Router framework, React, Shadcn 
   - If a shadcn component doesn't exist, install it using the shadcn CLI pattern before creating a custom version
 - **Use the `cn()` utility** from `~/lib/utils` for merging Tailwind classes with conditional logic
 - **Avoid CSS modules** - When refactoring existing components, migrate from `.module.css` to Tailwind classes
+  Use cannonical class names for tailwind classes. For example, instead of using border-[var(--muza-light-border-color)] use border-(--muza-light-border-color)
 
 ### Component Reusability
 

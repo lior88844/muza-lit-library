@@ -7,6 +7,7 @@ import tsparser from '@typescript-eslint/parser'
 import { defineConfig } from 'eslint/config'
 import unusedImports from 'eslint-plugin-unused-imports'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import tailwind from 'eslint-plugin-tailwindcss'
 
 export default defineConfig([
   {
@@ -34,6 +35,7 @@ export default defineConfig([
       '@typescript-eslint': tseslint,
       'unused-imports': unusedImports,
       'simple-import-sort': simpleImportSort,
+      tailwind: tailwind,
     },
     rules: {
       ...js.configs.recommended.rules,

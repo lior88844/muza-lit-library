@@ -1,51 +1,43 @@
-import type { ColDef } from 'ag-grid-community'
-import { asc, eq } from 'drizzle-orm'
+import type { CellValueChangedEvent, ColDef } from 'ag-grid-community'
+import type { CustomCellRendererProps } from 'ag-grid-react'
 import { useMemo, useState } from 'react'
-import { useActionData, useLoaderData, useNavigate, useNavigation } from 'react-router'
-import { db } from 'server/db/connection'
-import { stackItems, stacks } from 'server/db/schema'
-import type { Stack, StackEntityTypeEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
+import { useLoaderData, useNavigate, useNavigation } from 'react-router'
+import {
+  createStack,
+  deleteStack,
+  getStacksByPage,
+  type StackWithEntities,
+  type StackWithItems,
+  updateStackWithItems,
+} from 'server/api/stack/stack.service'
+import { StackPageIdEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { AppSelect } from '~/components/ui/app-select'
+import { Button } from '~/components/ui/button'
 import DataGrid from '~/components/ui/data-grid/DataGrid'
+import useFetcherAsync from '~/lib/useFetcherAsync'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import type { StackToEdit } from '~/store/models'
 
 import type { Route } from './+types/admin-stack'
 
 const PAGE_OPTIONS = [
   { value: 'home', label: 'Home' },
   { value: 'explore', label: 'Explore' },
-] as const
+]
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url)
-  const pageIdentifier = url.searchParams.get('page') || 'home'
+  const pageId = url.searchParams.get('page') as StackPageIdEnum
 
   try {
-    const stacksData = await db
-      .select()
-      .from(stacks)
-      .where(eq(stacks.pageIdentifier, pageIdentifier))
-      .orderBy(asc(stacks.displayOrder))
-
-    // Fetch stack items for each stack
-    const stacksWithItems = await Promise.all(
-      stacksData.map(async stack => {
-        const items = await db
-          .select()
-          .from(stackItems)
-          .where(eq(stackItems.stackId, stack.id))
-          .orderBy(asc(stackItems.displayOrder))
-
-        return {
-          ...stack,
-          items,
-        }
-      })
-    )
+    const stacksWithItems = await getStacksByPage(pageId)
 
     return {
       success: true,
       stacks: stacksWithItems,
-      pageIdentifier,
+      pageId,
     }
   } catch (error) {
     console.error('Error fetching stacks:', error)
@@ -53,44 +45,23 @@ export async function loader({ request }: Route.LoaderArgs) {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
       stacks: [],
-      pageIdentifier,
+      pageId,
     }
   }
 }
-
+interface StackActionData {
+  intent: 'createStack' | 'updateStack' | 'deleteStack'
+  data: StackWithItems
+}
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('intent') as string
-
+  const { items, ...stackData } = JSON.parse(
+    formData.get('data') as string
+  ) as StackActionData['data']
   try {
     if (intent === 'createStack') {
-      const pageIdentifier = formData.get('pageIdentifier') as string
-      const title = formData.get('title') as string
-      const entityType = formData.get('entityType') as StackEntityTypeEnum
-      const selectionType = formData.get('selectionType') as StackSelectionTypeEnum
-      const displayOrder = parseInt(formData.get('displayOrder') as string, 10)
-
-      if (!pageIdentifier || !title || !entityType || !selectionType) {
-        return {
-          success: false,
-          error: 'Missing required fields',
-        }
-      }
-
-      const [newStack] = await db
-        .insert(stacks)
-        .values({
-          pageIdentifier,
-          title,
-          entityType,
-          selectionType,
-          displayOrder: displayOrder || 0,
-          filterConfig: formData.get('filterConfig')
-            ? JSON.parse(formData.get('filterConfig') as string)
-            : null,
-          isActive: true,
-        })
-        .returning()
+      const newStack = await createStack(stackData, items)
 
       return {
         success: true,
@@ -99,21 +70,8 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     if (intent === 'updateStack') {
-      const id = parseInt(formData.get('id') as string, 10)
-      const updates: Partial<Stack> = {}
-
-      if (formData.get('title')) updates.title = formData.get('title') as string
-      if (formData.get('entityType'))
-        updates.entityType = formData.get('entityType') as StackEntityTypeEnum
-      if (formData.get('selectionType'))
-        updates.selectionType = formData.get('selectionType') as StackSelectionTypeEnum
-      if (formData.get('displayOrder'))
-        updates.displayOrder = parseInt(formData.get('displayOrder') as string, 10)
-      if (formData.get('filterConfig'))
-        updates.filterConfig = JSON.parse(formData.get('filterConfig') as string)
-      if (formData.get('isActive') !== null) updates.isActive = formData.get('isActive') === 'true'
-
-      await db.update(stacks).set(updates).where(eq(stacks.id, id))
+      const { id, ...rest } = stackData
+      await updateStackWithItems(id!, rest, items)
 
       return {
         success: true,
@@ -121,8 +79,13 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     if (intent === 'deleteStack') {
-      const id = parseInt(formData.get('id') as string, 10)
-      await db.delete(stacks).where(eq(stacks.id, id))
+      if (!stackData.id) {
+        return {
+          success: false,
+          error: 'Stack ID is required',
+        }
+      }
+      await deleteStack(stackData.id)
       return {
         success: true,
       }
@@ -144,56 +107,141 @@ export async function action({ request }: Route.ActionArgs) {
 export default function AdminStack() {
   const navigate = useNavigate()
   const loaderData = useLoaderData<typeof loader>()
-  const actionData = useActionData<typeof action>()
+  const removeFetcher = useFetcherAsync<{ success: boolean; error: string }>()
+  const updateFetcher = useFetcherAsync<{ success: boolean; error: string }>()
   const navigation = useNavigation()
-
-  const [selectedPage, setSelectedPage] = useState(loaderData.pageIdentifier || 'home')
+  const [selectedPage, setSelectedPage] = useState(loaderData.pageId || StackPageIdEnum.Home)
+  const { openStackDrawer } = useCurrentPlayerStore()
 
   const stacks = loaderData.stacks || []
   const isLoading = navigation.state === 'loading'
 
-  const handlePageChange = (page: string) => {
+  const handlePageChange = (page: StackPageIdEnum) => {
     setSelectedPage(page)
     navigate(`/admin/stack?page=${page}`)
   }
+  const handleEditStack = (stack: StackWithEntities) => {
+    openStackDrawer(stack)
+    navigate('/')
+  }
+  const handleDeleteStack = (stack: StackWithEntities) => {
+    removeFetcher.submit(
+      {
+        intent: 'deleteStack',
+        data: JSON.stringify({ id: stack.id }),
+      },
+      {
+        method: 'POST',
+        action: '/admin/stack',
+      }
+    )
+  }
+  const columnDefs = useMemo<ColDef<StackWithEntities>[]>(
+    () => [
+      {
+        field: 'displayOrder',
+        headerName: 'Order',
+        valueGetter: params => params.data!.displayOrder + 1,
+        maxWidth: 100,
+      },
+      {
+        field: 'title',
+        headerName: 'Title',
+        editable: true,
+      },
+      {
+        field: 'entityType',
+        headerName: 'Type',
+        valueGetter: params =>
+          params.data!.entityType.charAt(0).toUpperCase() + params.data!.entityType.slice(1),
+      },
+      { field: 'isActive', headerName: 'Active', editable: true, maxWidth: 100 },
+      {
+        field: 'id',
+        headerName: 'Actions',
+        cellRenderer: (params: CustomCellRendererProps<StackWithEntities>) => (
+          <div className='flex items-center gap-4'>
+            <Button
+              variant='ghost'
+              className='bg-secondary'
+              size='icon'
+              onClick={() => handleEditStack(params.data!)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant='ghost'
+              className='bg-secondary'
+              size='icon'
+              onClick={() => handleDeleteStack(params.data!)}
+            >
+              Delete
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    []
+  )
 
-  const columnDefs = useMemo<ColDef[]>(() => {
-    return [
-      { field: 'displayOrder', headerName: 'Order' },
-      { field: 'title', headerName: 'Title', editable: true },
-      { field: 'entityType', headerName: 'Entity Type' },
-      { field: 'selectionType', headerName: 'Selection Type' },
-      { field: 'isActive', headerName: 'Active' },
-    ]
-  }, [])
+  const handleCellValueChanged = ({
+    colDef,
+    data,
+    newValue,
+  }: CellValueChangedEvent<StackWithEntities>) => {
+    const field = colDef?.field as keyof StackWithEntities
+    const value = newValue as unknown as StackWithEntities[typeof field]
+    updateFetcher.submit(
+      {
+        intent: 'updateStack',
+        data: JSON.stringify({ [field]: value, id: data.id }),
+      },
+      { method: 'POST', action: '/admin/stack' }
+    )
+  }
+  const handleCreateStack = () => {
+    const newStack: StackToEdit = {
+      title: 'New Stack',
+      description: '',
+      entityType: EntityTypeEnum.Album,
+      selectionType: StackSelectionTypeEnum.Manual,
+      displayOrder: 0,
+      filterConfig: null,
+      isActive: true,
+      pageId: selectedPage,
+      items: [],
+    }
+    // Store in global state and navigate to home
+    openStackDrawer(newStack)
+    navigate('/')
+  }
 
   return (
-    <div className='bg-background min-h-screen flex flex-col'>
+    <div className='bg-background relative flex min-h-screen flex-col'>
       {/* Controls */}
-      <div className='py-4 px-8'>
-        <div className='flex items-center gap-2'>
-          {PAGE_OPTIONS.map(page => (
-            <button
-              key={page.value}
-              onClick={() => handlePageChange(page.value)}
-              className={`border rounded-full py-2 px-4 font-sans text-base font-medium cursor-pointer flex items-center justify-between gap-2 transition-colors duration-200 ease-in-out leading-5 ${
-                selectedPage === page.value
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white/50 border-border-light text-[#030712] backdrop-blur-[10px] hover:bg-(--muza-hover-background,#eeeeee)'
-              }`}
-            >
-              <span>{page.label}</span>
-            </button>
-          ))}
+      <div className='px-8 py-4'>
+        <div className='flex items-center justify-between gap-4'>
+          <AppSelect
+            value={selectedPage}
+            options={PAGE_OPTIONS}
+            onChange={value => handlePageChange(value as StackPageIdEnum)}
+            placeholder='Select page'
+            triggerClassName='w-[180px]'
+          />
+          <Button onClick={handleCreateStack} variant='default'>
+            Create stack
+          </Button>
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className='flex-1 px-8 pb-4 flex flex-col'>
+      {/* Content */}
+      <div className='flex flex-1 flex-col px-8 pb-4'>
         <DataGrid
           hideHeader
           rowData={stacks}
+          onCellValueChanged={handleCellValueChanged}
           columnDefs={columnDefs}
+          loading={isLoading}
           entityName='stacks'
           className='h-[calc(100vh-var(--admin-header-height)-100px)]'
           hideExport

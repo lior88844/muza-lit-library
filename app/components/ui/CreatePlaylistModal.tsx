@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import MuzaInputField from '~/controls/MuzaInputField'
 import ToggleButton from '~/controls/ToggleButton'
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useTranslation } from '~/lib/i18n/translations'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { Button, IconButton } from './button'

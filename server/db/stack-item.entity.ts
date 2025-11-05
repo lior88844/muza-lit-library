@@ -3,7 +3,7 @@ import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'driz
 import z from 'zod'
 
 import { stacks } from './stack.entity'
-import { StackEntityTypeEnum, stackEntityTypeEnum } from './stack.entity'
+import { EntityTypeEnum, mediaTypeEnum } from './stack.entity'
 
 export const stackItems = pgTable(
   'stack_items',
@@ -12,7 +12,7 @@ export const stackItems = pgTable(
     stackId: integer('stack_id')
       .notNull()
       .references(() => stacks.id, { onDelete: 'cascade' }),
-    entityType: stackEntityTypeEnum('entity_type').notNull(),
+    entityType: mediaTypeEnum('entity_type').notNull(),
     entityId: integer('entity_id').notNull(),
     displayOrder: integer('display_order').notNull(),
     createdAt: timestamp('created_at').defaultNow(),
@@ -33,4 +33,4 @@ export type StackItem = z.infer<typeof StackItemSchema>
 export type CreateStackItem = z.infer<typeof CreateStackItemSchema>
 export type UpdateStackItem = z.infer<typeof UpdateStackItemSchema>
 
-export { StackEntityTypeEnum }
+export { EntityTypeEnum as StackEntityTypeEnum }

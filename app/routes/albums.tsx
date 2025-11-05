@@ -1,35 +1,35 @@
 import '../styles/variables.css'
 
-import { useMemo } from 'react'
-import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { useLoaderData } from 'react-router'
+import { getUserLibrary } from 'server/api/user-library/user-library.service'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import { Typography } from '~/components/ui/typography'
-import { useTranslation } from '~/lib/i18n/translations'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
-import { useMedia } from '~/store/media/mediaContext'
-import type { Album } from '~/store/models'
+import { userContext } from '~/store/router-context'
 
-import { MediaTypeEnum } from '../../server/db/user-library.entity'
+import type { Route } from './+types/albums'
 import styles from './albums.module.css'
 
+export async function loader({ context }: Route.LoaderArgs) {
+  const user = context.get(userContext)
+  if (!user) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+    }
+  }
+  const libraryAlbums = await getUserLibrary<EntityTypeEnum.Album>(user.id, EntityTypeEnum.Album)
+  return {
+    libraryAlbums,
+  }
+}
 export default function Albums() {
   const { t } = useTranslation()
   const { isPlaylistDrawerOpen } = useCurrentPlayerStore()
-  const { library, albums } = useMedia()
-  const libraryAlbums = useMemo(() => {
-    const albumIds = library
-      .filter(item => item.resourceType === MediaTypeEnum.Album)
-      .map(i => i.resourceId)
-
-    return albums.newReleases.filter(album => albumIds.includes(album.id))
-  }, [albums, library])
-
-  const navigate = useNavigate()
-
-  const onAlbumClick = (album: Album) => {
-    navigate(`/albums/${album.id}`)
-  }
+  const { libraryAlbums } = useLoaderData<typeof loader>()
 
   return (
     <>
@@ -37,13 +37,8 @@ export default function Albums() {
         {t('page.albums')}
       </Typography>
       <div className={styles.albumList}>
-        {libraryAlbums.map(a => (
-          <AlbumPreview
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
-            draggable={isPlaylistDrawerOpen}
-          />
+        {libraryAlbums?.map(a => (
+          <AlbumPreview key={a.id} details={a.entity} draggable={isPlaylistDrawerOpen} />
         ))}
       </div>
     </>

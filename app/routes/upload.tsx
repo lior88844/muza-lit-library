@@ -156,7 +156,7 @@ export default function Upload() {
   const isNextDisabled = !validateCurrentStep()
 
   return (
-    <div className='h-screen bg-background font-sans flex flex-col relative'>
+    <div className='bg-background relative flex h-screen flex-col font-sans'>
       <UploadHeader
         title='Album Upload'
         onCancel={handleCancel}
@@ -164,7 +164,7 @@ export default function Upload() {
         onTestModeToggle={handleTestModeToggle}
       />
 
-      <div className='flex-1 flex flex-col lg:flex-row min-h-0 h-full box-border  pb-[84px]'>
+      <div className='box-border flex h-full min-h-0 flex-1 flex-col pb-[84px] lg:flex-row'>
         <div className='h-(calc(100vh-(--upload-header-height)-(--upload-footer-height))) flex-1'>
           {renderStepContent()}
         </div>

@@ -6,8 +6,8 @@ import {
   pgEnum,
   pgTable,
   serial,
+  text,
   timestamp,
-  varchar,
 } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
@@ -17,11 +17,14 @@ export enum StackSelectionTypeEnum {
   Filter = 'filter',
   Hybrid = 'hybrid',
 }
-
-export enum StackEntityTypeEnum {
+export enum StackPageIdEnum {
+  Home = 'home',
+  Explore = 'explore',
+}
+export enum EntityTypeEnum {
   Artist = 'artist',
   Album = 'album',
-  Song = 'song',
+  Track = 'track',
   Playlist = 'playlist',
 }
 
@@ -30,18 +33,24 @@ export const stackSelectionTypeEnum = pgEnum(
   Object.values(StackSelectionTypeEnum) as [StackSelectionTypeEnum, ...StackSelectionTypeEnum[]]
 )
 
-export const stackEntityTypeEnum = pgEnum(
+export const mediaTypeEnum = pgEnum(
   'stack_entity_type',
-  Object.values(StackEntityTypeEnum) as [StackEntityTypeEnum, ...StackEntityTypeEnum[]]
+  Object.values(EntityTypeEnum) as [EntityTypeEnum, ...EntityTypeEnum[]]
+)
+
+export const stackPageIdEnum = pgEnum(
+  'stack_page_id',
+  Object.values(StackPageIdEnum) as [StackPageIdEnum, ...StackPageIdEnum[]]
 )
 
 export const stacks = pgTable(
   'stacks',
   {
     id: serial('id').primaryKey(),
-    pageIdentifier: varchar('page_identifier', { length: 255 }).notNull(),
-    title: varchar('title', { length: 255 }).notNull(),
-    entityType: stackEntityTypeEnum('entity_type').notNull(),
+    pageId: stackPageIdEnum('page_id').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    entityType: mediaTypeEnum('entity_type').notNull(),
     displayOrder: integer('display_order').notNull(),
     selectionType: stackSelectionTypeEnum('selection_type').notNull(),
     filterConfig: jsonb('filter_config').$type<Record<string, unknown>>(),
@@ -50,8 +59,8 @@ export const stacks = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
   },
   table => [
-    index('stacks_page_identifier_display_order_idx').on(table.pageIdentifier, table.displayOrder),
-    index('stacks_page_identifier_idx').on(table.pageIdentifier),
+    index('stacks_page_identifier_display_order_idx').on(table.pageId, table.displayOrder),
+    index('stacks_page_identifier_idx').on(table.pageId),
   ]
 )
 

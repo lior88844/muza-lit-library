@@ -62,88 +62,88 @@ export const AdminUploadTableRow: React.FC<Props> = ({
   return (
     <tr
       key={item.id}
-      className='border-b border-border-light hover:bg-muted transition-all duration-200 ease-in-out'
+      className='border-border-light hover:bg-muted border-b transition-all duration-200 ease-in-out'
     >
-      <td className='py-2 px-2 align-middle border-b border-border-light text-center text-sm text-muted-foreground leading-4'>
+      <td className='border-border-light text-muted-foreground border-b px-2 py-2 text-center align-middle text-sm leading-4'>
         {index + 1}
       </td>
-      <td className='py-2 px-2 align-middle border-b border-border-light text-center'>
+      <td className='border-border-light border-b px-2 py-2 text-center align-middle'>
         <div
           className={cn(
-            'flex justify-center items-center relative h-5',
+            'relative flex h-5 items-center justify-center',
             isSelected &&
-              '[&_.checkmark]:opacity-100 [&_.checkmark]:scale-100 [&_.checkbox-visual]:bg-transparent [&_.checkbox-visual]:border-transparent',
+              '[&_.checkbox-visual]:border-transparent [&_.checkbox-visual]:bg-transparent [&_.checkmark]:scale-100 [&_.checkmark]:opacity-100',
             (item.errorCode === 1001 || !isUploadReady) &&
-              'opacity-50 cursor-not-allowed [&_input]:cursor-not-allowed'
+              'cursor-not-allowed opacity-50 [&_input]:cursor-not-allowed'
           )}
         >
           <input
             type='checkbox'
             checked={isSelected}
             onChange={() => onItemSelect(item.id)}
-            className='w-4 h-4 opacity-0 absolute cursor-pointer z-1'
+            className='absolute z-1 h-4 w-4 cursor-pointer opacity-0'
             disabled={!isUploadReady}
           />
-          <div className='w-4 h-4 border-[1.33px] border-primary rounded-sm bg-background flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative checkbox-visual'>
+          <div className='border-primary bg-background checkbox-visual relative flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm border-[1.33px] transition-all duration-200 ease-in-out'>
             <MuzaIcon
               iconName='CheckmarkSquare'
-              className='w-4 h-4 opacity-0 scale-[0.8] transition-all duration-200 ease-in-out checkmark'
+              className='checkmark h-4 w-4 scale-[0.8] opacity-0 transition-all duration-200 ease-in-out'
             />
           </div>
         </div>
       </td>
-      <td className='py-2 px-2 align-middle border-b border-border-light text-base text-muted-foreground leading-5'>
+      <td className='border-border-light text-muted-foreground border-b px-2 py-2 align-middle text-base leading-5'>
         <div className='flex flex-col gap-1'>
-          <span className='font-medium text-base text-text-primary'>
+          <span className='text-text-primary text-base font-medium'>
             {artistName} {artistName && albumName ? ' - ' : ''} {albumName}
           </span>
-          <div className='flex gap-3 text-sm text-text-secondary'>
-            <span className='text-xs text-text-tertiary'>
+          <div className='text-text-secondary flex gap-3 text-sm'>
+            <span className='text-text-tertiary text-xs'>
               {item.files.flat().length} files
               {item.files.length > 1 && ` (${item.files.length} discs)`}
             </span>
           </div>
         </div>
       </td>
-      <td className='py-2 px-2 pl-2 pr-4 align-middle border-b border-border-light'>
+      <td className='border-border-light border-b px-2 py-2 pr-4 pl-2 align-middle'>
         <div className='flex items-center gap-3'>
           <div
             className={cn(
-              'flex items-center justify-center w-[18px] h-[18px] bg-secondary rounded-full shrink-0 transition-colors duration-300 ease-in-out',
+              'bg-secondary flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full transition-colors duration-300 ease-in-out',
               item.loadingState?.status === 'loaded' && 'bg-[#15803d]',
               isLoading && isSelected && 'bg-border-light'
             )}
           >
             {isLoading ? (
-              <FaSpinner className='w-4 h-4 text-text-secondary animate-spin' />
+              <FaSpinner className='text-text-secondary h-4 w-4 animate-spin' />
             ) : (
               <MuzaIcon
                 iconName={
                   item.loadingState?.status === 'loaded' && item.uploadRes ? 'Check' : 'Clock8'
                 }
                 className={cn(
-                  'w-4 h-4 text-text-dark transition-colors duration-300 ease-in-out',
+                  'text-text-dark h-4 w-4 transition-colors duration-300 ease-in-out',
                   item.loadingState?.status === 'loaded' && 'text-[#f9fafb]'
                 )}
               />
             )}
           </div>
-          <div className='flex-1 flex flex-col gap-1 min-w-0'>
-            <span className='text-base font-bold text-background-dark leading-5'>
+          <div className='flex min-w-0 flex-1 flex-col gap-1'>
+            <span className='text-background-dark text-base leading-5 font-bold'>
               {item.discoverRes?.artistName || ''} {item.discoverRes?.albumName ? ' - ' : ''}{' '}
               {item.discoverRes?.albumName}
             </span>
-            <div className='flex items-center justify-start gap-2 flex-wrap'>
-              <div className='w-5 h-5 text-text-secondary'>
-                <MuzaIcon iconName='folder' className='w-full h-full' />
+            <div className='flex flex-wrap items-center justify-start gap-2'>
+              <div className='text-text-secondary h-5 w-5'>
+                <MuzaIcon iconName='folder' className='h-full w-full' />
               </div>
-              <span className='text-sm text-text-secondary'>{formatFileSize(item.size)}</span>
-              <span className='text-sm text-text-secondary'>- {statusText}</span>
+              <span className='text-text-secondary text-sm'>{formatFileSize(item.size)}</span>
+              <span className='text-text-secondary text-sm'>- {statusText}</span>
             </div>
           </div>
         </div>
       </td>
-      <td className='py-2 px-2 align-middle border-b border-border-light'>
+      <td className='border-border-light border-b px-2 py-2 align-middle'>
         <DataSourceCell
           item={item}
           onManualIdChange={onManualIdChange}
@@ -151,10 +151,10 @@ export const AdminUploadTableRow: React.FC<Props> = ({
           onDiscoverAlbum={onDiscoverAlbum}
         />
       </td>
-      <td className='py-2 px-2 align-middle border-b border-border-light'>
+      <td className='border-border-light border-b px-2 py-2 align-middle'>
         <CoverCell item={item} onCoverUrlChange={onCoverUrlChange} />
       </td>
-      <td className='py-2 px-2 align-middle border-b border-border-light text-right min-w-max'>
+      <td className='border-border-light min-w-max border-b px-2 py-2 text-right align-middle'>
         {errors.length > 0 || item.uploadRes?.success === false ? (
           <ErrorBadge errorCodes={errors} item={item} />
         ) : item.uploadRes ? (
@@ -168,16 +168,16 @@ export const AdminUploadTableRow: React.FC<Props> = ({
 }
 // Success Badge Component
 const SuccessBadge = () => (
-  <div className='flex items-center justify-center gap-1 py-[2px] px-2 pb-1 rounded-sm bg-[#15803d] font-sans text-sm font-normal leading-none text-[#f9fafb] whitespace-nowrap'>
-    <MuzaIcon iconName='Check' className='w-3 h-3 text-[#f9fafb]' />
+  <div className='flex items-center justify-center gap-1 rounded-sm bg-[#15803d] px-2 py-[2px] pb-1 font-sans text-sm leading-none font-normal whitespace-nowrap text-[#f9fafb]'>
+    <MuzaIcon iconName='Check' className='h-3 w-3 text-[#f9fafb]' />
     No Errors
   </div>
 )
 
 // Uploaded Badge Component
 const UploadedBadge = () => (
-  <div className='flex items-center justify-center gap-1 py-[2px] px-2 pb-1 rounded-sm bg-[#7c3aed] font-sans text-sm font-normal leading-none text-[#f9fafb] whitespace-nowrap'>
-    <MuzaIcon iconName='Check' className='w-3 h-3 text-[#f9fafb]' />
+  <div className='flex items-center justify-center gap-1 rounded-sm bg-[#7c3aed] px-2 py-[2px] pb-1 font-sans text-sm leading-none font-normal whitespace-nowrap text-[#f9fafb]'>
+    <MuzaIcon iconName='Check' className='h-3 w-3 text-[#f9fafb]' />
     Uploaded
   </div>
 )
@@ -211,8 +211,8 @@ const ErrorBadge: React.FC<{ errorCodes: UploadErrorCodeEnum[]; item: UploadItem
       }}
       content={errorInfos.map((errorInfo, idx) => (
         <Fragment key={idx}>
-          <p className='text-sm font-medium text-[#f9fafb] mb-1'>{errorInfo.title}</p>
-          <p className='text-[13px] font-normal leading-[1.4] text-[#d1d5db]'>
+          <p className='mb-1 text-sm font-medium text-[#f9fafb]'>{errorInfo.title}</p>
+          <p className='text-[13px] leading-[1.4] font-normal text-[#d1d5db]'>
             {errorInfo.description}
           </p>
         </Fragment>

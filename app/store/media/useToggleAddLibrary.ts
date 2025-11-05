@@ -1,8 +1,9 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
-import type { MediaTypeEnum, UserLibrary } from '../../../server/db/user-library.entity'
-import { useTranslation } from '../../lib/i18n/translations'
+import type { UserLibrary } from '../../../server/db/user-library.entity'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
 import { useMedia } from './mediaContext'
 
@@ -13,28 +14,24 @@ export const useToggleAddLibrary = () => {
   const { t } = useTranslation()
 
   const getIsInLibrary = useCallback(
-    (resourceType: MediaTypeEnum, resourceId: number) => {
-      return library?.some(
-        item => item.resourceId === resourceId && item.resourceType === resourceType
-      )
+    (entityType: EntityTypeEnum, entityId: number) => {
+      return library?.some(item => item.entityId === entityId && item.entityType === entityType)
     },
     [library]
   )
   const toggleAddLibrary = useCallback(
-    async (resourceType: MediaTypeEnum, resourceId: number) => {
-      const isInLibrary = getIsInLibrary(resourceType, resourceId)
+    async (entityType: EntityTypeEnum, entityId: number) => {
+      const isInLibrary = getIsInLibrary(entityType, entityId)
       const originalLibrary = [...library]
       const optimisticLibrary = isInLibrary
-        ? library.filter(
-            item => item.resourceId !== resourceId || item.resourceType !== resourceType
-          )
-        : [...library, { userId: 1, resourceType, resourceId, addedAt: new Date(), id: Date.now() }]
+        ? library.filter(item => item.entityId !== entityId || item.entityType !== entityType)
+        : [...library, { userId: 1, entityType, entityId, addedAt: new Date(), id: Date.now() }]
       data.library = optimisticLibrary
       try {
         const result = await fetcher.submit(
           {
-            resourceType,
-            resourceId: resourceId.toString(),
+            entityType,
+            entityId: entityId.toString(),
           },
           {
             method: 'POST',
@@ -44,16 +41,14 @@ export const useToggleAddLibrary = () => {
 
         if (result?.success && !isInLibrary) {
           data.library = data.library.map(item =>
-            item.resourceId === resourceId && item.resourceType === resourceType
-              ? result.data
-              : item
+            item.entityId === entityId && item.entityType === entityType ? result.data : item
           )
-          // toast(t(`${resourceType}.${isInLibrary ? 'removedFromLibrary' : 'addedToLibrary'}`), {
+          // toast(t(`${entityType}.${isInLibrary ? 'removedFromLibrary' : 'addedToLibrary'}`), {
           //   position: 'bottom-center',
           //   hideProgressBar: true,
           //   autoClose: 1000,
           // })
-        } else {
+        } else if (!result?.success) {
           data.library = originalLibrary
           toast.error(t('failedToAddToLibrary'), {
             position: 'bottom-center',

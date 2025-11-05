@@ -1,16 +1,14 @@
 import '../styles/variables.css'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useLoaderData } from 'react-router'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
-import { useMedia } from '~/store/media/mediaContext'
-import type { SongDetails } from '~/store/models'
 
-import { fetchAlbumById } from '../../server/data'
-import { MediaTypeEnum } from '../../server/db/user-library.entity'
+import { fetchAlbumById } from '../../server/root.service'
 import AlbumInfoModal from '../components/albumDisplays/AlbumInfoModal'
 
 export async function loader({ params }: { params: { id: string } }) {
@@ -42,18 +40,8 @@ export default function AlbumPage() {
     togglePlayPause,
     isPlaylistDrawerOpen,
   } = useCurrentPlayerStore()
-  const library = useMedia()
-  const songs = library.songs
   const [isModalOpen, setModalOpen] = useState(false)
   const { album } = useLoaderData<typeof loader>()
-
-  const albumSongs = useMemo(
-    () =>
-      album.tracks
-        ?.map(track => songs.find((s: SongDetails) => s.id === track.id))
-        .filter(v => v !== undefined) || [],
-    [album.tracks, songs]
-  )
 
   return (
     <>
@@ -66,9 +54,9 @@ export default function AlbumPage() {
           songCount: album.tracks?.length,
         }}
         onInfoClick={() => setModalOpen(true)}
-        songs={albumSongs}
-        mediaType={MediaTypeEnum.Album}
-        resourceId={album.id}
+        songs={album.tracks}
+        mediaType={EntityTypeEnum.Album}
+        entityId={album.id}
         showBackButton={true}
       />
       <div>

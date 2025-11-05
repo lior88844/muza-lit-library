@@ -132,8 +132,8 @@ export default function AdminData() {
   }, [data])
 
   return (
-    <div className='bg-background min-h-screen flex flex-col p-6'>
-      <div className='max-w-[1920px] w-full mx-auto flex flex-col gap-6'>
+    <div className='bg-background flex min-h-screen flex-col p-6'>
+      <div className='mx-auto flex w-full max-w-[1920px] flex-col gap-6'>
         {/* Entity Type Selector */}
         <div className='flex flex-wrap gap-2'>
           {ENTITY_TYPES.map(entity => (

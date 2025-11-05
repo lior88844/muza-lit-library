@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 
 import type { Playlist, PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
-import { useTranslation } from '../../lib/i18n/translations'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
 import type { SongDetails } from '../models'
 import { useMedia } from './mediaContext'

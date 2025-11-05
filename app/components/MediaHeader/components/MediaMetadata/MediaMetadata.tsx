@@ -1,12 +1,11 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+import type { EntityTypeEnum } from 'server/db/stack.entity'
 
-import { useTranslation } from '~/lib/i18n/translations'
-
-import type { MediaTypeEnum } from '../../../../../server/db/user-library.entity'
 import styles from './MediaMetadata.module.css'
 
 export interface MediaMetadataProps {
-  type: MediaTypeEnum
+  type: EntityTypeEnum
   year?: string | number
   songCount?: number
   duration?: string

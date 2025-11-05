@@ -27,29 +27,29 @@ const UploadFooter: React.FC<UploadFooterProps> = ({
   ]
 
   return (
-    <div className='fixed bottom-0 left-0 right-0 bg-background-dark py-[19px] px-5 flex items-center justify-between z-100 h-(--upload-footer-height) box-border'>
-      <div className='flex justify-center flex-1'>
-        <div className='flex items-center gap-0 min-w-[440px]'>
+    <div className='bg-background-dark fixed right-0 bottom-0 left-0 z-100 box-border flex h-(--upload-footer-height) items-center justify-between px-5 py-[19px]'>
+      <div className='flex flex-1 justify-center'>
+        <div className='flex min-w-[440px] items-center gap-0'>
           {steps.map((step, index) => (
             <React.Fragment key={step.number}>
-              <div className='flex flex-col items-center gap-1 w-12'>
+              <div className='flex w-12 flex-col items-center gap-1'>
                 <div
                   className={cn(
-                    'w-[26px] h-[26px] rounded-full flex items-center justify-center text-lg font-medium',
+                    'flex h-[26px] w-[26px] items-center justify-center rounded-full text-lg font-medium',
                     currentStep === step.number
                       ? 'bg-background text-background-dark'
-                      : 'bg-transparent text-muted'
+                      : 'text-muted bg-transparent'
                   )}
                 >
                   {step.number}
                 </div>
-                <div className='text-xs text-muted text-center w-[163px] font-normal'>
+                <div className='text-muted w-[163px] text-center text-xs font-normal'>
                   {step.label}
                 </div>
               </div>
 
               {index < steps.length - 1 && (
-                <div className='flex-1 flex items-start justify-center h-[26px]'>
+                <div className='flex h-[26px] flex-1 items-start justify-center'>
                   <MuzaIcon iconName='line-container' />
                 </div>
               )}
@@ -58,10 +58,10 @@ const UploadFooter: React.FC<UploadFooterProps> = ({
         </div>
       </div>
 
-      <div className='flex gap-4 items-center absolute right-11'>
+      <div className='absolute right-11 flex items-center gap-4'>
         {showBack && (
           <button
-            className='bg-muted-foreground text-background border-none rounded-full py-2 px-8 text-base font-medium cursor-pointer shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-colors duration-200 hover:bg-background-dark'
+            className='bg-muted-foreground text-background hover:bg-background-dark cursor-pointer rounded-full border-none px-8 py-2 text-base font-medium shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-colors duration-200'
             onClick={onPrevious}
           >
             Back
@@ -70,9 +70,9 @@ const UploadFooter: React.FC<UploadFooterProps> = ({
 
         <button
           className={cn(
-            'bg-primary text-muted border-none rounded-full py-2 px-8 text-base font-medium cursor-pointer shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-colors duration-200',
+            'bg-primary text-muted cursor-pointer rounded-full border-none px-8 py-2 text-base font-medium shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-colors duration-200',
             isNextDisabled
-              ? 'opacity-50 cursor-not-allowed hover:bg-primary'
+              ? 'hover:bg-primary cursor-not-allowed opacity-50'
               : 'hover:bg-(--colors_primary_dark)'
           )}
           onClick={onNext}

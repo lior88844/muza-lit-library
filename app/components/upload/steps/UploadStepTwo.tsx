@@ -86,28 +86,28 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'grid grid-cols-[auto_1fr_minmax(200px,1fr)_minmax(150px,1.5fr)_auto_auto] items-center min-h-[54px] border-b border-border-light transition-all duration-200 ease-in-out hover:bg-[var(--colors_muted_light_50_,#f9fafb7f)] lg:grid-cols-[auto_1fr_minmax(150px,1.5fr)_minmax(120px,1fr)_auto_auto]',
-        isDragging && 'opacity-70 bg-secondary shadow-[0_4px_8px_rgba(0,0,0,0.15)] z-1000'
+        'border-border-light grid min-h-[54px] grid-cols-[auto_1fr_minmax(200px,1fr)_minmax(150px,1.5fr)_auto_auto] items-center border-b transition-all duration-200 ease-in-out hover:bg-[var(--colors_muted_light_50_,#f9fafb7f)] lg:grid-cols-[auto_1fr_minmax(150px,1.5fr)_minmax(120px,1fr)_auto_auto]',
+        isDragging && 'bg-secondary z-1000 opacity-70 shadow-[0_4px_8px_rgba(0,0,0,0.15)]'
       )}
     >
       {/* Track Number & Drag Handle */}
-      <div className='flex items-center justify-end py-4 px-4 pr-[56px] gap-2 lg:pl-5 lg:pr-5'>
+      <div className='flex items-center justify-end gap-2 px-4 py-4 pr-[56px] lg:pr-5 lg:pl-5'>
         <button
-          className='bg-none border-none w-6 h-6 rounded-full flex items-center justify-center cursor-grab touch-action-none p-1 bg-transparent text-muted-foreground hover:text-background-dark active:cursor-grabbing transition-all duration-200 ease-in-out'
+          className='touch-action-none text-muted-foreground hover:text-background-dark flex h-6 w-6 cursor-grab items-center justify-center rounded-full border-none bg-transparent bg-none p-1 transition-all duration-200 ease-in-out active:cursor-grabbing'
           {...attributes}
           {...listeners}
         >
           <MuzaIcon iconName='grip-vertical' />
         </button>
-        <span className='text-base font-medium text-muted-foreground w-6 text-center'>
+        <span className='text-muted-foreground w-6 text-center text-base font-medium'>
           {index + 1}
         </span>
       </div>
 
       {/* File Name with Play Button */}
-      <div className='flex items-center py-4 px-4 gap-2.5'>
+      <div className='flex items-center gap-2.5 px-4 py-4'>
         <button
-          className='bg-none border-none w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out bg-secondary hover:bg-border-light [&::after]:hidden [&_svg]:w-4 [&_svg]:h-4'
+          className='bg-secondary hover:bg-border-light flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-none transition-all duration-200 ease-in-out [&_svg]:h-4 [&_svg]:w-4 [&::after]:hidden'
           onClick={() => onPlayPause(track.id)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -115,7 +115,7 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
           {renderPlayButton()}
         </button>
         <span
-          className='flex-1 text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis font-normal'
+          className='text-muted-foreground flex-1 overflow-hidden text-sm font-normal text-ellipsis whitespace-nowrap'
           title={track.fileName}
         >
           {track.fileName}
@@ -123,28 +123,28 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
       </div>
 
       {/* Editable Song Name */}
-      <div className='py-4 px-4'>
-        <span className='w-full border-none bg-none text-sm text-background-dark font-normal p-0 outline-none placeholder:text-muted-foreground focus:text-background-dark'>
+      <div className='px-4 py-4'>
+        <span className='text-background-dark placeholder:text-muted-foreground focus:text-background-dark w-full border-none bg-none p-0 text-sm font-normal outline-none'>
           {track.songName}
         </span>
       </div>
 
       {/* Editable Composer */}
-      <div className='py-4 px-4'>
-        <span className='w-full border-none bg-none text-sm text-background-dark font-normal p-0 outline-none placeholder:text-muted-foreground focus:text-background-dark'>
+      <div className='px-4 py-4'>
+        <span className='text-background-dark placeholder:text-muted-foreground focus:text-background-dark w-full border-none bg-none p-0 text-sm font-normal outline-none'>
           {track.composer}
         </span>
       </div>
 
       {/* Duration (Read-only) */}
-      <div className='py-4 px-4 text-right'>
-        <span className='text-sm text-muted-foreground font-normal'>{track.duration}</span>
+      <div className='px-4 py-4 text-right'>
+        <span className='text-muted-foreground text-sm font-normal'>{track.duration}</span>
       </div>
 
       {/* Delete Button */}
-      <div className='py-4 px-4 flex justify-center'>
+      <div className='flex justify-center px-4 py-4'>
         <button
-          className='bg-none border-none w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out bg-secondary text-muted-foreground hover:bg-destructive hover:text-destructive-foreground'
+          className='bg-secondary text-muted-foreground hover:bg-destructive hover:text-destructive-foreground flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-none transition-all duration-200 ease-in-out'
           onClick={() => onDeleteTrack(track.id)}
           title='Delete track'
         >
@@ -233,15 +233,15 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
   }, [])
 
   return (
-    <div className='h-full flex-1 pb-[108px] overflow-y-auto'>
+    <div className='h-full flex-1 overflow-y-auto pb-[108px]'>
       <div className='max-w-full border-collapse border-spacing-0'>
         {/* Table Header */}
-        <div className='grid grid-cols-[auto_1fr_minmax(200px,1fr)_minmax(150px,1.5fr)_auto_auto] items-center border-b border-border-light text-sm text-muted-foreground font-medium lg:grid-cols-[auto_1fr_minmax(150px,1.5fr)_minmax(120px,1fr)_auto_auto] lg:text-xs'>
-          <div className='w-16 text-right py-4 px-4 pr-[56px] lg:pl-5 lg:pr-5'></div>
-          <div className='py-4 px-4'>File Name (Not displayed)</div>
-          <div className='py-4 px-4'>Song Name</div>
-          <div className='py-4 px-4'>Composer</div>
-          <div className='py-4 px-4 text-right'>Time</div>
+        <div className='border-border-light text-muted-foreground grid grid-cols-[auto_1fr_minmax(200px,1fr)_minmax(150px,1.5fr)_auto_auto] items-center border-b text-sm font-medium lg:grid-cols-[auto_1fr_minmax(150px,1.5fr)_minmax(120px,1fr)_auto_auto] lg:text-xs'>
+          <div className='w-16 px-4 py-4 pr-[56px] text-right lg:pr-5 lg:pl-5'></div>
+          <div className='px-4 py-4'>File Name (Not displayed)</div>
+          <div className='px-4 py-4'>Song Name</div>
+          <div className='px-4 py-4'>Composer</div>
+          <div className='px-4 py-4 text-right'>Time</div>
           <div className='w-6 text-center'></div>
         </div>
 
@@ -269,8 +269,8 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
 
         {/* Empty State */}
         {trackMetadata.length === 0 && (
-          <div className='py-12 px-4 text-center text-muted-foreground'>
-            <p className='text-base m-0'>
+          <div className='text-muted-foreground px-4 py-12 text-center'>
+            <p className='m-0 text-base'>
               No tracks uploaded yet. Please go back to upload audio files.
             </p>
           </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { type FetcherSubmitOptions, useFetcher } from 'react-router'
 
 /**
@@ -82,11 +82,14 @@ export function useFetcherAsync<TData = unknown>() {
     [fetcher]
   )
 
-  return {
-    ...fetcher,
-    submit,
-    load,
-  }
+  return useMemo(
+    () => ({
+      ...fetcher,
+      submit,
+      load,
+    }),
+    [fetcher, submit, load]
+  )
 }
 
 export default useFetcherAsync

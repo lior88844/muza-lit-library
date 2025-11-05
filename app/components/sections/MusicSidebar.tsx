@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useTranslation } from '~/lib/i18n/translations'
+import type { TransKey } from '~/lib/i18n/i18next'
 import type { MenuItem, MusicPlaylist, Section } from '~/store/models'
 
 import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
@@ -79,7 +80,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
     return (
       <a key={index} className={styles['menu-item']} onClick={() => handleItemClick(item)}>
         <MuzaIcon iconName={item.svg} />
-        {!collapsedState && <span>{t(item.text)}</span>}
+        {!collapsedState && <span>{t(item.text as TransKey)}</span>}
       </a>
     )
   }
@@ -87,7 +88,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   const renderSection = (section: Section, index: number) => (
     <div key={index} className={styles.section}>
       {section.title && !collapsedState && (
-        <div className={styles['section-title']}>{t(section.title)}</div>
+        <div className={styles['section-title']}>{t(section.title as TransKey)}</div>
       )}
       {section.items.map(renderMenuItem)}
     </div>

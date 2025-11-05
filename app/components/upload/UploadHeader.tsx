@@ -24,22 +24,22 @@ const UploadHeader: React.FC<UploadHeaderProps> = ({
   }
 
   return (
-    <div className='h-(--upload-header-height) px-10 border-b border-border-light flex items-center justify-between bg-white sticky top-0 z-[100]'>
+    <div className='border-border-light sticky top-0 z-[100] flex h-(--upload-header-height) items-center justify-between border-b bg-white px-10'>
       <Typography
         variant='h3'
         className={cn(
-          'capitalize cursor-pointer transition-all duration-200 ease-in-out select-none flex items-center hover:opacity-70',
+          'flex cursor-pointer items-center capitalize transition-all duration-200 ease-in-out select-none hover:opacity-70',
           isTestMode && 'text-[#667eea]'
         )}
         onClick={handleTitleClick}
         title={isTestMode ? 'Test Mode: ON (click to disable)' : 'Click to enable Test Mode'}
       >
         {title}
-        {isTestMode && <span className='text-[#667eea] font-bold text-sm opacity-80'> • TEST</span>}
+        {isTestMode && <span className='text-sm font-bold text-[#667eea] opacity-80'> • TEST</span>}
       </Typography>
       <div className='flex items-center gap-3'>
         <button
-          className='bg-secondary border-none rounded-full py-2 px-3 text-sm font-medium text-background-dark cursor-pointer transition-colors duration-200 hover:bg-[var(--muza-button-hover-background)]'
+          className='bg-secondary text-background-dark cursor-pointer rounded-full border-none px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-[var(--muza-button-hover-background)]'
           onClick={onCancel}
         >
           Cancel

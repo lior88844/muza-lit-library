@@ -1,11 +1,11 @@
 import '../styles/variables.css'
 
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router'
 
 import PlaylistDetail from '~/components/playlistDisplays/PlaylistDetail'
 import { Typography } from '~/components/ui/typography'
-import { useTranslation } from '~/lib/i18n/translations'
 
 import { useMedia } from '../store/media/mediaContext'
 

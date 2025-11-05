@@ -47,7 +47,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
   return (
     <div className='h-full'>
       <div className='flex h-full'>
-        <div className='flex-1 border-r border-border-light overflow-y-auto h-full'>
+        <div className='border-border-light h-full flex-1 overflow-y-auto border-r'>
           <UploadForm
             formData={formData}
             musicians={musicians}
@@ -59,7 +59,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
           />
         </div>
 
-        <div className='flex-1 py-8 px-10 overflow-y-hidden'>
+        <div className='flex-1 overflow-y-hidden px-10 py-8'>
           <UploadFileArea
             onCoverUpload={onCoverUpload}
             onFileUpload={onFileUpload}

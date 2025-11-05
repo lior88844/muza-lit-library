@@ -48,14 +48,14 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
 
   // Don't show anything for items with critical error 1001 (no FLAC files)
   if (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID) {
-    return <div className='flex justify-center items-center py-2 px-2'>-</div>
+    return <div className='flex items-center justify-center px-2 py-2'>-</div>
   }
 
   // Show loading spinner while looking up
   if (item.isLookingUp || !item.discoverRes) {
     return (
-      <div className='flex justify-center items-center py-2 px-2'>
-        <FaSpinner className='w-4 h-4 text-primary animate-spin' />
+      <div className='flex items-center justify-center px-2 py-2'>
+        <FaSpinner className='text-primary h-4 w-4 animate-spin' />
       </div>
     )
   }
@@ -66,10 +66,10 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
   const hasValidId = !!item.manualAlbumId && item.manualAlbumId.trim().length >= 36
   if (!hasMbId) {
     return (
-      <div className='flex justify-center items-center'>
+      <div className='flex items-center justify-center'>
         <div
           className={cn(
-            'w-full flex items-center justify-center gap-2',
+            'flex w-full items-center justify-center gap-2',
             !hasValidId &&
               !item.isLookingUp &&
               '[&_input]:border-[#dc2626] [&_input]:shadow-[0_0_0_1px_#dc2626]'
@@ -80,7 +80,7 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
             value={inputValue}
             onChange={handleInputChange}
             min='1'
-            className='w-full h-9 py-2 px-3 border border-border-light rounded-full bg-background text-base leading-5 text-background-dark outline-none transition-colors duration-200 ease-in-out font-sans placeholder:text-[#6b7280] placeholder:text-base placeholder:leading-5 placeholder:tracking-[0.25px] focus:border-primary focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)] invalid:border-[#ef4444] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 [[type=number]]:appearance-none'
+            className='border-border-light bg-background text-background-dark focus:border-primary h-9 w-full rounded-full border px-3 py-2 font-sans text-base leading-5 transition-colors duration-200 ease-in-out outline-none placeholder:text-base placeholder:leading-5 placeholder:tracking-[0.25px] placeholder:text-[#6b7280] invalid:border-[#ef4444] focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [[type=number]]:appearance-none'
           />
           <MuzaButton
             disabled={!hasValidId}
@@ -99,8 +99,8 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
         target='_blank'
         rel='noopener noreferrer'
       >
-        <div className='flex items-center gap-1 bg-[#15803d] text-[#f9fafb] py-[2px] px-2 rounded-sm text-sm font-normal leading-none whitespace-nowrap'>
-          <MuzaIcon iconName='Check' className='w-3 h-3' />
+        <div className='flex items-center gap-1 rounded-sm bg-[#15803d] px-2 py-[2px] text-sm leading-none font-normal whitespace-nowrap text-[#f9fafb]'>
+          <MuzaIcon iconName='Check' className='h-3 w-3' />
           MB ID found
         </div>
       </a>
@@ -110,18 +110,18 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
           target='_blank'
           rel='noopener noreferrer'
         >
-          <div className='flex items-center gap-1 bg-[#15803d] text-[#f9fafb] py-[2px] px-2 rounded-sm text-sm font-normal leading-none whitespace-nowrap'>
-            <MuzaIcon iconName='Check' className='w-3 h-3' />
+          <div className='flex items-center gap-1 rounded-sm bg-[#15803d] px-2 py-[2px] text-sm leading-none font-normal whitespace-nowrap text-[#f9fafb]'>
+            <MuzaIcon iconName='Check' className='h-3 w-3' />
             Discogs ID {item.manualDiscogsId ? 'entered' : 'found'}
           </div>
         </a>
       ) : (
-        <div className='flex justify-center items-center'>
+        <div className='flex items-center justify-center'>
           <input
             placeholder='Discogs ID or URL (optional)'
             value={discogsInputValue}
             onChange={handleDiscogsInputChange}
-            className='w-full h-9 py-2 px-3 border border-border-light rounded-full bg-background text-base leading-5 text-background-dark outline-none transition-colors duration-200 ease-in-out font-sans placeholder:text-[#6b7280] placeholder:text-base placeholder:leading-5 placeholder:tracking-[0.25px] focus:border-primary focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)] invalid:border-[#ef4444] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 [[type=number]]:appearance-none'
+            className='border-border-light bg-background text-background-dark focus:border-primary h-9 w-full rounded-full border px-3 py-2 font-sans text-base leading-5 transition-colors duration-200 ease-in-out outline-none placeholder:text-base placeholder:leading-5 placeholder:tracking-[0.25px] placeholder:text-[#6b7280] invalid:border-[#ef4444] focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [[type=number]]:appearance-none'
           />
         </div>
       )}

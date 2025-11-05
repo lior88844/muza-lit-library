@@ -1,12 +1,12 @@
 import type { FC } from 'react'
+import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
-import type { Album, SongDetails } from '~/store/models'
+import type { SongDetails } from '~/store/models'
 import type { TrackMetadata, UploadFormData } from '~/store/uploadStore'
-
-import { MediaTypeEnum } from '../../../../server/db/user-library.entity'
 
 interface UploadStepThreeProps {
   formData: UploadFormData
@@ -34,10 +34,11 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({
   }
 
   // Transform upload data into Album format
-  const transformToAlbum = (): Album => {
+  const transformToAlbum = (): MiniAlbum => {
     return {
       id: Date.now(),
       imageSrc: getCoverImageUrl(),
+      artistId: 0,
       title: formData.albumTitle || 'Untitled Album',
       releaseDate: new Date(formData.recordingDate),
       artist: formData.mainArtist || 'Unknown Artist',
@@ -79,11 +80,11 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({
 
   return (
     <div className='w-full'>
-      <div className='mx-auto py-6 px-[60px]'>
+      <div className='mx-auto px-[60px] py-6'>
         <MediaHeader
           songs={songDetails}
-          mediaType={MediaTypeEnum.Album}
-          resourceId={album.id}
+          mediaType={EntityTypeEnum.Album}
+          entityId={album.id}
           title={album.title}
           imageSrc={album.imageSrc || ''}
           mediaMetadata={{
@@ -95,9 +96,9 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({
           customActions={<div></div>}
         />
 
-        <hr className='my-4 border-none border-t border-border-light' />
+        <hr className='border-border-light my-4 border-t border-none' />
 
-        <div className='flex-1 flex flex-col gap-0 gap-x-2 mt-4 mb-4'>
+        <div className='mt-4 mb-4 flex flex-1 flex-col gap-0 gap-x-2'>
           {songDetails.map((song: SongDetails) => (
             <SongLine
               key={song.id}

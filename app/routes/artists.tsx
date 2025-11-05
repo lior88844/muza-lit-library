@@ -1,25 +1,33 @@
 import '../styles/variables.css'
 
-import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useLoaderData } from 'react-router'
+import { getUserLibrary } from 'server/api/user-library/user-library.service'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import ArtistPreview from '~/components/artistDisplays/ArtistPreview'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
-import { useTranslation } from '~/lib/i18n/translations'
-import { useMedia } from '~/store/media/mediaContext'
+import { userContext } from '~/store/router-context'
 
-import { MediaTypeEnum } from '../../server/db/user-library.entity'
+import type { Route } from './+types/artists'
 
+export async function loader({ context }: Route.LoaderArgs) {
+  const user = context.get(userContext)
+  if (!user) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+    }
+  }
+  const libraryArtists = await getUserLibrary<EntityTypeEnum.Artist>(user.id, EntityTypeEnum.Artist)
+  return {
+    libraryArtists,
+  }
+}
 export default function Artists() {
   const { t } = useTranslation()
-  const { library, artists } = useMedia()
-  const libraryArtists = useMemo(() => {
-    const artistIds = library
-      .filter(item => item.resourceType === MediaTypeEnum.Artist)
-      .map(i => i.resourceId)
-
-    return artists.filter(artist => artistIds.includes(artist.id))
-  }, [artists, library])
+  const { libraryArtists } = useLoaderData<typeof loader>()
   return (
     <>
       <Typography variant='h1' as='h2' className='pb-4'>
@@ -28,8 +36,8 @@ export default function Artists() {
       <Divider />
 
       <div className='artist-list'>
-        {libraryArtists.map(artist => (
-          <ArtistPreview key={artist.id} details={artist} />
+        {libraryArtists?.map(artist => (
+          <ArtistPreview key={artist.id} details={artist.entity} />
         ))}
       </div>
     </>

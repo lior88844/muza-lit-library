@@ -36,13 +36,6 @@
   color: var(--muza-primary-text-color, #333333);
 }
 
-.artist {
-  font-size: 16px;
-  color: var(--muza-secondary-text-color, #5f5f5f);
-  font-weight: 400;
-  line-height: 1.2;
-}
-
 .subtitle {
   display: none;
   font-size: var(--muza-secondary-font-size, 12px);

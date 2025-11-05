@@ -15,7 +15,7 @@ import { formatTrack } from '../track/track.service'
 import type { TrackWithArtists } from '../track/types/TrackWithArtists'
 import type { MiniPlaylistResponse } from './types/MiniPlaylistResponse'
 
-interface PlaylistWithTracks extends Playlist {
+export interface PlaylistWithTracks extends Playlist {
   tracks: (PlaylistTrack & { track: TrackWithArtists })[]
 }
 
@@ -271,7 +271,7 @@ export async function syncPlaylistTracks(
   // Update playlist metadata
   await updatePlaylistMetadata(playlistId)
 }
-const formatMiniPlaylist = (playlist: PlaylistWithTracks): MiniPlaylistResponse => {
+export const formatMiniPlaylist = (playlist: PlaylistWithTracks): MiniPlaylistResponse => {
   return {
     id: playlist.id,
     title: playlist.name,

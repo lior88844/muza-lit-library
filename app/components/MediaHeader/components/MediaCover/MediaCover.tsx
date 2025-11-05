@@ -1,16 +1,16 @@
 import React from 'react'
+import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { generatePlaylistCoverImages } from '~/lib/utils'
 import type { MusicPlaylist } from '~/store/models'
 
-import type { MediaTypeEnum } from '../../../../../server/db/user-library.entity'
 import styles from './MediaCover.module.css'
 
 interface MediaCoverProps {
   imageSrc: string | string[] // Can be string for single image or array for playlist collage
   title: string
-  mediaType?: MediaTypeEnum
+  mediaType?: EntityTypeEnum
   size?: 'small' | 'medium' | 'large'
   playlist?: MusicPlaylist
 }

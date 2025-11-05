@@ -1,49 +1,46 @@
-import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { useLoaderData, useNavigate } from 'react-router'
+import { getStacksByPage, type StackWithEntities } from 'server/api/stack/stack.service'
+import { EntityTypeEnum, StackPageIdEnum } from 'server/db/stack.entity'
 
-import MusicListSectionComponent from '~/components/listsDisplays/MusicListSection'
+import MusicListSectionComponent from '~/components/listsDisplays/StackPreview'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
-import { useTranslation } from '~/lib/i18n/translations'
-import { useMedia } from '~/store/media/mediaContext'
-import type { Album } from '~/store/models'
 
+export async function loader() {
+  try {
+    const stacks = await getStacksByPage(StackPageIdEnum.Explore)
+    return { success: true, stacks }
+  } catch (error) {
+    console.error('Error fetching stacks:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      stacks: [],
+    }
+  }
+}
 export default function Explore() {
   const { t } = useTranslation()
-  const library = useMedia()
-  const { newReleases, featured, recommended } = library.albums
+  const { stacks } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
 
-  const onAlbumClick = (album: Album) => {
-    navigate(`/albums/${album.id}`)
+  const handleShowAll = (stack: StackWithEntities) => {
+    // @TODO handle show all
+    switch (stack.entityType) {
+      case t('section.newReleases'):
+        navigate('/albums')
+        break
+      case t('section.recentlyPlayed'):
+        navigate('/songs')
+        break
+      case t('section.artists'):
+        navigate('/artists')
+        break
+      default:
+        break
+    }
   }
-
-  const handleShowAll = (sectionTitle: string) => {
-    navigate('/albums')
-  }
-
-  // Define sections configuration for the loop
-  const sections = [
-    {
-      title: t('section.newReleases'),
-      albums: newReleases,
-    },
-    {
-      title: t('section.theClassics'),
-      albums: featured,
-    },
-    {
-      title: t('section.uncoveredGems'),
-      albums: recommended,
-    },
-    {
-      title: t('nav.albums'),
-      albums: featured.concat(recommended),
-    },
-    {
-      title: t('section.theOnesYouMissed'),
-      albums: recommended,
-    },
-  ]
 
   return (
     <>
@@ -52,17 +49,12 @@ export default function Explore() {
       </Typography>
       <Divider />
 
-      {sections.map(section => (
-        <div key={section.title}>
-          <MusicListSectionComponent
-            title={section.title}
-            type='album'
-            list={section.albums}
-            onShowAll={handleShowAll}
-            onAlbumClick={onAlbumClick}
-            albums={section.albums}
-          />
-          <Divider />
+      {stacks.map((stack, index) => (
+        <div key={stack.id} className='section-wrapper'>
+          {stack.entityType === EntityTypeEnum.Album && (
+            <MusicListSectionComponent stack={stack} onShowAll={handleShowAll} />
+          )}
+          {index < stacks.length - 1 && <Divider />}
         </div>
       ))}
     </>

@@ -31,12 +31,12 @@ const UploadForm: React.FC<UploadFormProps> = ({
   onFindAlbumDetails,
 }) => {
   return (
-    <div className='bg-muted py-6 px-10 pb-2.5 pr-10 border-r border-border-light overflow-y-auto box-border h-full [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
-      <div className='flex flex-col gap-6 w-full'>
+    <div className='bg-muted border-border-light box-border h-full overflow-y-auto border-r px-10 py-6 pr-10 pb-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
+      <div className='flex w-full flex-col gap-6'>
         {/* General Info Section */}
-        <div className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+        <div className='bg-background border-border-light flex flex-col gap-8 rounded-md border px-4 py-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
           <div className='flex items-center gap-4'>
-            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+            <span className='text-muted-foreground font-sans text-sm leading-4 font-normal whitespace-nowrap'>
               General Info
             </span>
           </div>
@@ -59,24 +59,24 @@ const UploadForm: React.FC<UploadFormProps> = ({
             />
           </div>
 
-          <div className='flex items-center justify-between w-full'>
-            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground flex-1'>
+          <div className='flex w-full items-center justify-between'>
+            <span className='text-muted-foreground flex-1 font-sans text-sm leading-4 font-normal'>
               We add details if we find a match; otherwise fill in manually.
             </span>
             <button
-              className='border-none rounded-full flex items-center justify-center gap-2 font-sans text-sm font-medium leading-4 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap bg-primary text-muted py-2 px-3 opacity-50 hover:bg-[var(--colors_primary_dark)] hover:opacity-100'
+              className='bg-primary text-muted flex cursor-pointer items-center justify-center gap-2 rounded-full border-none px-3 py-2 font-sans text-sm leading-4 font-medium whitespace-nowrap opacity-50 transition-all duration-200 ease-in-out hover:bg-[var(--colors_primary_dark)] hover:opacity-100'
               onClick={onFindAlbumDetails}
             >
-              <MuzaIcon iconName='sparkles' className='w-4 h-4 flex-shrink-0' />
+              <MuzaIcon iconName='sparkles' className='h-4 w-4 flex-shrink-0' />
               <span className='flex-shrink-0'>Find Album Details</span>
             </button>
           </div>
         </div>
 
         {/* Recording Details Section */}
-        <div className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
-          <div className='flex items-center gap-4 w-full'>
-            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+        <div className='bg-background border-border-light flex flex-col gap-8 rounded-md border px-4 py-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <div className='flex w-full items-center gap-4'>
+            <span className='text-muted-foreground font-sans text-sm leading-4 font-normal whitespace-nowrap'>
               Recording Details
             </span>
             <Divider />
@@ -109,10 +109,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
         {musicians.map((musician, index) => (
           <div
             key={index}
-            className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+            className='bg-background border-border-light flex flex-col gap-8 rounded-md border px-4 py-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
           >
-            <div className='flex items-center gap-4 w-full'>
-              <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+            <div className='flex w-full items-center gap-4'>
+              <span className='text-muted-foreground font-sans text-sm leading-4 font-normal whitespace-nowrap'>
                 Additional Musicians
               </span>
               <Divider />
@@ -139,13 +139,13 @@ const UploadForm: React.FC<UploadFormProps> = ({
               </div>
 
               {musicians.length > 1 && index > 0 && (
-                <div className='flex justify-end mt-2'>
+                <div className='mt-2 flex justify-end'>
                   <button
-                    className='border-none rounded-full flex items-center justify-center gap-2 font-sans text-sm font-medium leading-4 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap bg-transparent text-text-dark py-2 px-3 hover:bg-secondary'
+                    className='text-text-dark hover:bg-secondary flex cursor-pointer items-center justify-center gap-2 rounded-full border-none bg-transparent px-3 py-2 font-sans text-sm leading-4 font-medium whitespace-nowrap transition-all duration-200 ease-in-out'
                     onClick={() => onRemoveMusician(index)}
                     type='button'
                   >
-                    <MuzaIcon iconName='trash' className='w-4 h-4 flex-shrink-0' />
+                    <MuzaIcon iconName='trash' className='h-4 w-4 flex-shrink-0' />
                     <span className='flex-shrink-0'>Delete</span>
                   </button>
                 </div>
@@ -155,20 +155,20 @@ const UploadForm: React.FC<UploadFormProps> = ({
         ))}
 
         {/* Add Musician Button - Outside cards */}
-        <div className='flex justify-start w-full'>
+        <div className='flex w-full justify-start'>
           <button
-            className='border-none rounded-full flex items-center justify-center gap-2 font-sans text-sm font-medium leading-4 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap bg-transparent text-text-dark py-2 px-3 hover:bg-secondary'
+            className='text-text-dark hover:bg-secondary flex cursor-pointer items-center justify-center gap-2 rounded-full border-none bg-transparent px-3 py-2 font-sans text-sm leading-4 font-medium whitespace-nowrap transition-all duration-200 ease-in-out'
             onClick={onAddMusician}
           >
-            <MuzaIcon iconName='plus' className='w-4 h-4 flex-shrink-0' />
+            <MuzaIcon iconName='plus' className='h-4 w-4 flex-shrink-0' />
             <span className='flex-shrink-0'>Add Musician</span>
           </button>
         </div>
 
         {/* Notes & Credits Section */}
-        <div className='bg-background border border-border-light rounded-md py-6 px-4 flex flex-col gap-8 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
-          <div className='flex items-center gap-4 w-full'>
-            <span className='font-sans text-sm leading-4 font-normal text-muted-foreground whitespace-nowrap'>
+        <div className='bg-background border-border-light flex flex-col gap-8 rounded-md border px-4 py-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <div className='flex w-full items-center gap-4'>
+            <span className='text-muted-foreground font-sans text-sm leading-4 font-normal whitespace-nowrap'>
               Notes & Credits
             </span>
             <Divider />
@@ -178,7 +178,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
             <div className='flex flex-col gap-2'>
               <label
                 htmlFor='linerNotes'
-                className='font-sans text-sm leading-4 font-medium text-text-dark leading-none'
+                className='text-text-dark font-sans text-sm leading-4 leading-none font-medium'
               >
                 Liner Notes
               </label>
@@ -188,14 +188,14 @@ const UploadForm: React.FC<UploadFormProps> = ({
                 value={formData.linerNotes}
                 onChange={onFormDataChange('linerNotes')}
                 rows={4}
-                className='py-2 px-3 border border-border-light rounded-md font-sans text-base text-text-dark bg-background resize-y min-h-[60px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--colors_primary_light)] placeholder:text-muted-foreground'
+                className='border-border-light text-text-dark bg-background focus:border-primary placeholder:text-muted-foreground min-h-[60px] resize-y rounded-md border px-3 py-2 font-sans text-base shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus:shadow-[0_0_0_1px_var(--colors_primary_light)] focus:outline-none'
               />
             </div>
 
             <div className='flex flex-col gap-2'>
               <label
                 htmlFor='otherCredits'
-                className='font-sans text-sm leading-4 font-medium text-text-dark leading-none'
+                className='text-text-dark font-sans text-sm leading-4 leading-none font-medium'
               >
                 Other Credits
               </label>
@@ -205,7 +205,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
                 value={formData.otherCredits}
                 onChange={onFormDataChange('otherCredits')}
                 rows={4}
-                className='py-2 px-3 border border-border-light rounded-md font-sans text-base text-text-dark bg-background resize-y min-h-[60px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus:outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--colors_primary_light)] placeholder:text-muted-foreground'
+                className='border-border-light text-text-dark bg-background focus:border-primary placeholder:text-muted-foreground min-h-[60px] resize-y rounded-md border px-3 py-2 font-sans text-base shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus:shadow-[0_0_0_1px_var(--colors_primary_light)] focus:outline-none'
               />
             </div>
           </div>

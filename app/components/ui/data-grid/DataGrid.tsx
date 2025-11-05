@@ -1,3 +1,5 @@
+import './ag-grid-theme.css'
+
 import {
   AllCommunityModule,
   type CellClickedEvent,
@@ -27,6 +29,7 @@ ModuleRegistry.registerModules([
   GridStateModule,
 ])
 
+// Use custom Muza theme via CSS class instead of themeAlpine
 const myTheme = themeAlpine.withParams({})
 interface DataGridProps extends AgGridReactProps {
   enableSorting?: boolean
@@ -261,17 +264,17 @@ export const DataGrid = ({
   )
 
   return (
-    <div className={cn('flex flex-col h-full w-full', className)}>
+    <div className={cn('flex h-full w-full flex-col', className)}>
       {/* Toolbar with search, export, and column organizer */}
       {!hideHeader && (
-        <div className='flex items-center gap-3 p-3 border-b border-border-light bg-muted'>
+        <div className='border-border-light bg-muted flex items-center gap-3 border-b p-3'>
           {!hideSearch && (
             <input
               type='text'
               placeholder={searchPlaceholder}
               value={searchText}
               onChange={e => handleSearchChange(e.target.value)}
-              className='flex-1 rounded-2xl border border-border-light px-4 py-2 text-sm font-["Narkis"] text-text-secondary'
+              className='border-border-light text-text-secondary flex-1 rounded-2xl border px-4 py-2 font-["Narkis"] text-sm'
             />
           )}
           {!hideExport && (
@@ -290,11 +293,12 @@ export const DataGrid = ({
         </div>
       )}
 
-      {/* Grid */}
-      <div style={{ height: 'calc(100% - 63px)', overflowY: 'auto' }}>
+      {/* Grid with custom Muza theme */}
+      <div className='ag-theme-muza' style={{ height: 'calc(100% - 63px)', overflowY: 'auto' }}>
         <AgGridReact
           ref={gridRef}
           theme={myTheme}
+          className='border-border-light rounded-lg border'
           {...gridOptions}
           domLayout='autoHeight'
           // loadingOverlayComponent={() => <Spinner animation='border' role='status' size='sm' />}

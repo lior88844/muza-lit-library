@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaEllipsisV, FaPencilAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader/MediaHeader'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
@@ -8,7 +9,6 @@ import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 
 import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
-import { MediaTypeEnum } from '../../../server/db/user-library.entity'
 import { Button, IconButton } from '../ui/button'
 import styles from './PlaylistDetail.module.css'
 
@@ -59,13 +59,13 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
       <div className={styles['playlist-detail__container']}>
         <MediaHeader
           songs={playlistSongs}
-          mediaType={MediaTypeEnum.Playlist}
+          mediaType={EntityTypeEnum.Playlist}
           title={playlist.title}
           imageSrc={playlist.imageSrc || ''}
           mediaMetadata={{
             songCount: playlistSongs.length,
           }}
-          resourceId={playlist.id}
+          entityId={playlist.id}
           visibility={playlist.visibility as PlaylistVisibilityEnum}
           creator={playlist.author}
           showBackButton={true}

@@ -1,8 +1,9 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
+import { SearchInput } from '~/components/ui/SearchInput'
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useTranslation } from '~/lib/i18n/translations'
 import { getUserInfo, useAuth } from '~/store/userContext'
 
 import styles from './MusicTopbar.module.css'
@@ -16,10 +17,6 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
   const { t } = useTranslation()
   const navigate = useNavigate()
   const auth = useAuth()
-
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange?.(e.target.value)
-  }
 
   const handleUploadClick = () => {
     navigate('/upload')
@@ -38,31 +35,10 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
     })
   }
 
-  const handleAdminUploadClick = () => {
-    navigate('/admin-upload')
-  }
-
   return (
     <div className={styles['music-topbar']}>
       <div className={styles.topbar}>
-        <div className={styles['search-container']}>
-          <div className={styles['search-input-wrapper']}>
-            <div className={styles['search-input']}>
-              <div className={styles['search-input-content']}>
-                <div className={styles['search-icon']}>
-                  <MuzaIcon iconName='search' />
-                </div>
-                <input
-                  type='text'
-                  placeholder={t('form.searchPlaceholder')}
-                  onChange={handleSearchInput}
-                  className={styles['search-field']}
-                />
-              </div>
-              <div className={styles['search-border']} aria-hidden='true' />
-            </div>
-          </div>
-        </div>
+        <SearchInput onSearchChange={onSearchChange} />
         <div className={styles.controls}>
           <button className={styles['upload-music-button']} onClick={handleUploadClick}>
             {t('upload.uploadMusic')}

@@ -271,8 +271,8 @@ export default function AdminUpload() {
   // }, [navigate])
 
   return (
-    <div className='flex flex-col h-full bg-background font-sans'>
-      <div className='flex-1 flex flex-col py-4 px-8 gap-0'>
+    <div className='bg-background flex h-full flex-col font-sans'>
+      <div className='flex flex-1 flex-col gap-0 px-8 py-4'>
         {/* Always show drag area - positioned above the table */}
         <div className='flex items-center justify-center py-3'>
           <AdminFileDropArea onFileUpload={handleFileUpload} />
@@ -280,7 +280,7 @@ export default function AdminUpload() {
 
         {/* Show table only when items are uploaded */}
         {uploadedItems.length > 0 && (
-          <div className='flex-1 flex flex-col pt-0 min-h-0'>
+          <div className='flex min-h-0 flex-1 flex-col pt-0'>
             <AdminUploadTable
               items={uploadedItems}
               selectedItemIds={selectedItemIds}

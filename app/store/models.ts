@@ -1,3 +1,6 @@
+import type { StackItemWithEntity } from 'server/api/stack/stack.service'
+import type { Stack } from 'server/db/stack.entity'
+
 import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'
 
 export interface SongDetails {
@@ -22,15 +25,6 @@ export interface MenuItem {
 export interface Section {
   title: string
   items: MenuItem[]
-}
-export interface Album {
-  id: number
-  imageSrc: string
-  title: string
-  releaseDate: Date | null
-  artist: string
-  songs?: number[]
-  genre?: string
 }
 
 export interface AlbumArtist {
@@ -130,4 +124,11 @@ export type PlayerDetails = {
   album?: string
   year?: number
   id?: number
+}
+export type StackItemToEdit = Omit<StackItemWithEntity, 'id' | 'createdAt' | 'updatedAt'> & {
+  id?: number
+}
+export type StackToEdit = Omit<Stack, 'id' | 'createdAt' | 'updatedAt'> & {
+  id?: number
+  items: StackItemToEdit[]
 }

@@ -16,6 +16,7 @@ const english = {
   'page.albums': 'Albums',
   'page.artists': 'Artists',
   'page.playlists': 'Playlists',
+  'page.search': 'Search',
 
   // Section Titles
   'section.newReleases': 'New Releases',
@@ -34,6 +35,7 @@ const english = {
   'common.albums': 'Albums',
   'common.song': 'Song',
   'common.songs': 'Songs',
+  'common.track': 'Track',
   'common.artist': 'Artist',
   'common.artists': 'Artists',
   'common.playlist': 'Playlist',
@@ -44,6 +46,8 @@ const english = {
   'common.follow': 'Follow',
   'common.following': 'Following',
   'common.followers': 'Followers',
+  'common.play': 'Play',
+  'common.saving': 'Saving...',
 
   // Artist Info
   'artistInfo.albumsUploaded': 'Albums uploaded',
@@ -67,8 +71,13 @@ const english = {
   'playlist.enterDescription': 'Enter playlist description',
   'playlist.sort': 'Sort',
   'playlist.filterPlaceholder': 'Filter playlist on song, artist or album',
-  'playlist.dropSongsHere': 'Drop Songs here',
+  'playlist.dropSongsHere': 'Drop {{entityType}} here',
   'playlist.createNew': 'Create New Playlist',
+  'playlist.created': 'Playlist created successfully',
+  'playlist.createFailed': 'Failed to create playlist',
+  'playlist.deleted': 'Playlist deleted successfully',
+  'playlist.deleteFailed': 'Failed to delete playlist',
+  'playlist.updateFailed': 'Failed to update playlist',
 
   // Album Info Modal - Labels
   'albumInfo.tenorSaxophone': 'Tenor Saxophone',
@@ -124,7 +133,7 @@ const english = {
   'common.backToPlaylists': 'Back to Playlists',
 
   // Artist Details
-  'artist.albumsCount': '{count} Albums',
+  'artist.albumsCount': '{{count}} Albums',
 
   // Song and Music Player
   'player.shuffle': 'Shuffle',
@@ -163,6 +172,15 @@ const english = {
   'form.required': '*',
   'form.searchPlaceholder': 'Search for Artists, Albums or Songs',
 
+  // Search
+  'search.resultsFor': 'Results for "{{query}}"',
+  'search.enterQuery': 'Enter a search query to find music',
+  'search.noResults': 'No results found',
+  'search.tryDifferentQuery': 'Try a different search term',
+  'search.albums': 'Albums',
+  'search.artists': 'Artists',
+  'search.tracks': 'Tracks',
+
   // Visibility Options
   'visibility.public': 'Public',
   'visibility.private': 'Private',
@@ -177,6 +195,7 @@ const english = {
 
   // UI Actions
   'action.showAll': 'Show all',
+  'action.showLess': 'Show less',
 
   // Create Playlist Card
   'playlist.createCard': 'Create Playlist',
@@ -189,7 +208,7 @@ const english = {
 
   // Error Messages
   'error.playlistNotFound': 'Playlist not found',
-  'general.errorWithMessage': 'Error: {error}',
+  'general.errorWithMessage': 'Error: {{error}}',
   'general.oops': 'Oops!',
   'general.unexpectedError': 'An unexpected error occurred.',
   'general.pageNotFound': 'The requested page could not be found.',
@@ -222,6 +241,16 @@ const english = {
   'playlist.chillMaster': 'Chill Master',
   'playlist.roadTrip': 'Epic Road Trip Anthems',
   'playlist.roadWarrior': 'Road Warrior',
+
+  // Stack Management
+  'stack.nameRequired': 'Stack name is required',
+  'stack.created': 'Stack created successfully',
+  'stack.updated': 'Stack updated successfully',
+  'stack.createFailed': 'Failed to create stack',
+  'stack.updateFailed': 'Failed to update stack',
+  'stack.saveFailed': 'Failed to save stack',
+  'stack.create': 'Create Stack',
+  'stack.update': 'Update Stack',
 }
 
 export default english

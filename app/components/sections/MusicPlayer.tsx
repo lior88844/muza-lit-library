@@ -1,9 +1,9 @@
 import Hls from 'hls.js'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaSpinner } from 'react-icons/fa'
 
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useTranslation } from '~/lib/i18n/translations'
 import type { PlayerDetails } from '~/store/models'
 
 import VolumeControl from '../../controls/VolumeControl'

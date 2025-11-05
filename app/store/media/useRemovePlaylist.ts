@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 
-import { useTranslation } from '../../lib/i18n/translations'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
 import { useMedia } from './mediaContext'
 

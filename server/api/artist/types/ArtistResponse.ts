@@ -1,7 +1,7 @@
 import type { AlbumArtist } from 'server/db/album-artist.entity'
 import type { Artist } from 'server/db/artist.entity'
 
-export interface ArtistMinimalResponse {
+export interface ArtistMiniResponse {
   id: number
   imageUrl: string | null
   name: string

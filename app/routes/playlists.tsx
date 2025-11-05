@@ -1,13 +1,13 @@
 import '../styles/variables.css'
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import PlaylistGrid from '~/components/listsDisplays/PlaylistGrid'
 import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
-import { useTranslation } from '~/lib/i18n/translations'
 import { useMedia } from '~/store/media/mediaContext'
 import { useAddPlaylist } from '~/store/media/useAddPlaylist'
 import type { MusicPlaylist } from '~/store/models'

@@ -3,7 +3,7 @@ import './artist-page.css'
 
 import { isRouteErrorResponse, useRouteError } from 'react-router'
 import { useLoaderData } from 'react-router'
-import { fetchArtistById } from 'server/data'
+import { fetchArtistById } from 'server/root.service'
 
 import { Typography } from '~/components/ui/typography'
 

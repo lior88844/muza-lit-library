@@ -33,30 +33,30 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   const hasValidCover = !!item.manualCoverImgUrl || !!item.discoverRes?.coverUrl
   // Don't show anything for items with critical error 1001 (no FLAC files)
   if (item.errorCode === UploadErrorCodeEnum.ALL_FILES_INVALID) {
-    return <div className='flex items-center justify-center min-h-[50px]'>-</div>
+    return <div className='flex min-h-[50px] items-center justify-center'>-</div>
   }
 
   // Show loading state while looking up
   if (item.isLookingUp) {
-    return <div className='flex items-center justify-center min-h-[50px]' />
+    return <div className='flex min-h-[50px] items-center justify-center' />
   }
 
   // Show cover image if available from discovery
   if (item.discoverRes?.coverUrl) {
     return (
-      <div className='flex items-center justify-center min-h-[50px]'>
-        <div className='relative w-20 h-20'>
+      <div className='flex min-h-[50px] items-center justify-center'>
+        <div className='relative h-20 w-20'>
           <img
             src={item.discoverRes.coverUrl}
             alt={`${item.name} cover`}
-            className='w-full h-full object-cover rounded-sm border border-border-light'
+            className='border-border-light h-full w-full rounded-sm border object-cover'
           />
           <button
-            className='absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-secondary rounded-full cursor-pointer flex items-center justify-center p-0 transition-all duration-200 ease-in-out hover:bg-muted focus:outline-none focus:shadow-[0_0_0_2px_rgba(239,68,68,0.3)] active:scale-95 [&_i]:flex [&_i]:items-center [&_i]:justify-center'
+            className='bg-secondary hover:bg-muted absolute -top-1.5 -right-1.5 flex h-[18px] w-[18px] cursor-pointer items-center justify-center rounded-full p-0 transition-all duration-200 ease-in-out focus:shadow-[0_0_0_2px_rgba(239,68,68,0.3)] focus:outline-none active:scale-95 [&_i]:flex [&_i]:items-center [&_i]:justify-center'
             onClick={handleRemoveClick}
             aria-label='Remove cover image'
           >
-            <MuzaIcon iconName='Close' className='w-2.5 h-2.5 text-white' />
+            <MuzaIcon iconName='Close' className='h-2.5 w-2.5 text-white' />
           </button>
         </div>
       </div>
@@ -66,12 +66,12 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
   // Show manually entered cover image URL
   if (item.manualCoverImgUrl) {
     return (
-      <div className='flex items-center justify-center min-h-[50px]'>
-        <div className='relative w-20 h-20'>
+      <div className='flex min-h-[50px] items-center justify-center'>
+        <div className='relative h-20 w-20'>
           <img
             src={item.manualCoverImgUrl}
             alt={`${item.name} cover`}
-            className='w-full h-full object-cover rounded-sm border border-border-light'
+            className='border-border-light h-full w-full rounded-sm border object-cover'
             onError={e => {
               console.error('Failed to load cover image from URL:', item.manualCoverImgUrl)
               // Fallback to input field if image fails to load
@@ -79,11 +79,11 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
             }}
           />
           <button
-            className='absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-secondary rounded-full cursor-pointer flex items-center justify-center p-0 transition-all duration-200 ease-in-out hover:bg-muted focus:outline-none focus:shadow-[0_0_0_2px_rgba(239,68,68,0.3)] active:scale-95 [&_i]:flex [&_i]:items-center [&_i]:justify-center'
+            className='bg-secondary hover:bg-muted absolute -top-1.5 -right-1.5 flex h-[18px] w-[18px] cursor-pointer items-center justify-center rounded-full p-0 transition-all duration-200 ease-in-out focus:shadow-[0_0_0_2px_rgba(239,68,68,0.3)] focus:outline-none active:scale-95 [&_i]:flex [&_i]:items-center [&_i]:justify-center'
             onClick={handleRemoveClick}
             aria-label='Remove cover image'
           >
-            <MuzaIcon iconName='Close' className='w-2.5 h-2.5 text-white' />
+            <MuzaIcon iconName='Close' className='h-2.5 w-2.5 text-white' />
           </button>
         </div>
       </div>
@@ -92,7 +92,7 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
 
   // Show input field for manual URL entry (similar to DataSourceCell)
   return (
-    <div className='flex items-center justify-center min-h-[50px]'>
+    <div className='flex min-h-[50px] items-center justify-center'>
       <div
         className={cn(
           'w-full max-w-[180px]',
@@ -106,7 +106,7 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
           placeholder='Img URL'
           value={inputValue}
           onChange={handleInputChange}
-          className='w-full h-9 py-2 px-3 border border-border-light rounded-full bg-background text-base leading-5 text-background-dark outline-none transition-colors duration-200 ease-in-out font-sans placeholder:text-[#6b7280] placeholder:text-base placeholder:leading-5 placeholder:tracking-[0.25px] focus:border-primary focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)] invalid:border-[#ef4444]'
+          className='border-border-light bg-background text-background-dark focus:border-primary h-9 w-full rounded-full border px-3 py-2 font-sans text-base leading-5 transition-colors duration-200 ease-in-out outline-none placeholder:text-base placeholder:leading-5 placeholder:tracking-[0.25px] placeholder:text-[#6b7280] invalid:border-[#ef4444] focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]'
         />
       </div>
     </div>

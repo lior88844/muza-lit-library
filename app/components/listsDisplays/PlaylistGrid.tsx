@@ -1,6 +1,6 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '~/lib/i18n/translations'
 import { generatePlaylistCoverImages } from '~/lib/utils'
 
 import PlaylistCover from '../albumDisplays/PlaylistCover'
