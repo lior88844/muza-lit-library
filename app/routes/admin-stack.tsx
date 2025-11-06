@@ -30,7 +30,7 @@ const PAGE_OPTIONS = [
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url)
-  const pageId = url.searchParams.get('page') as StackPageIdEnum
+  const pageId = (url.searchParams.get('page') as StackPageIdEnum) || StackPageIdEnum.Home
 
   try {
     const stacksWithItems = await getStacksByPage(pageId)

@@ -19,7 +19,6 @@ import styles from './MusicListSection.module.css'
 const MusicListSectionComponent: React.FC<{
   stack: StackWithEntities
   onShowAll: (stack: StackWithEntities) => void
-  // onAlbumClick?: (album: Album) => void
 }> = ({ stack, onShowAll }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
@@ -34,7 +33,7 @@ const MusicListSectionComponent: React.FC<{
   } = useCurrentPlayerStore()
 
   const MAX_ITEMS_TO_SHOW = 5
-  const itemsToShow = stack.items.slice(0, MAX_ITEMS_TO_SHOW)
+  const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, MAX_ITEMS_TO_SHOW)
   const renderContent = () => {
     switch (stack.entityType) {
       case EntityTypeEnum.Album:
@@ -113,7 +112,7 @@ const MusicListSectionComponent: React.FC<{
         <Typography variant='h2' className='mb-3'>
           {stack.title}
         </Typography>
-        {itemsToShow.length !== stack.items.length && (
+        {stack.items.length > MAX_ITEMS_TO_SHOW && (
           <button className={styles['show-all-btn']} onClick={() => setIsExpanded(!isExpanded)}>
             {isExpanded ? t('action.showLess') : t('action.showAll')}
           </button>
