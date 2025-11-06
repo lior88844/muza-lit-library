@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
 import { useMedia } from '~/store/media/mediaContext'
-import type { MusicPlaylist, SongDetails } from '~/store/models'
+import type { SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
-import { useAddAlbumToPlaylist } from '../../store/media/useAddAlbumToPlaylist'
 import { useAddPlaylist } from '../../store/media/useAddPlaylist'
+import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
 import { IconButton } from '../ui/button/icon-button'
 import CreatePlaylistModal from '../ui/CreatePlaylistModal'
 
@@ -27,13 +28,102 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
 }) => {
   const { t } = useTranslation()
   const { playlists } = useMedia()
-  const { addAlbumToPlaylist, loading } = useAddAlbumToPlaylist()
+  const { updatePlaylist, loading } = useUpdatePlaylist()
   const { addPlaylist } = useAddPlaylist()
   const [isCreatePlaylistModalOpen, setIsCreatePlaylistModalOpen] = useState(false)
 
-  const handlePlaylistClick = async (playlist: MusicPlaylist) => {
-    const result = await addAlbumToPlaylist(playlist.id, albumTracks)
-    if (result) {
+  const handlePlaylistClick = async (playlistId: number) => {
+    const playlist = playlists.find(p => p.id === playlistId)
+    if (!playlist) {
+      toast.error('Playlist not found', {
+        position: 'bottom-center',
+        hideProgressBar: true,
+      })
+      return
+    }
+
+    const existingSongs = playlist.songs || []
+
+    // Filter out tracks that already exist in the playlist
+    const newTracks = albumTracks.filter(
+      track =>
+        !existingSongs.some(
+          existingSong =>
+            existingSong.id === track.id ||
+            (existingSong.title === track.title && existingSong.artist === track.artist)
+        )
+    )
+
+    if (newTracks.length === 0) {
+      toast.info('All tracks from this album are already in the playlist', {
+        position: 'bottom-center',
+        hideProgressBar: true,
+        autoClose: 2000,
+      })
+      onClose()
+      return
+    }
+
+    // Add new tracks at the end and reindex
+    const updatedSongs = [...existingSongs, ...newTracks].map((song, idx) => ({
+      ...song,
+      index: idx + 1,
+    }))
+
+    const result = await updatePlaylist(playlistId, {
+      songs: updatedSongs,
+    })
+
+    if (result && result.success) {
+      // Show success toast with revoke button
+      const addedTrackIds = newTracks.map(t => t.id)
+
+      toast(
+        <div className='flex items-center gap-2'>
+          <div className='flex flex-1 flex-col gap-1'>
+            <p className='font-semibold text-foreground'>{t('playlist.albumAdded')}</p>
+            <p className='text-sm text-muted-foreground opacity-90'>
+              {t('playlist.albumAddedToPlaylist')}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              // Remove the added tracks from the playlist
+              const songsWithoutAdded = updatedSongs.filter(
+                song => !addedTrackIds.includes(song.id)
+              )
+              const reindexedSongs = songsWithoutAdded.map((song, idx) => ({
+                ...song,
+                index: idx + 1,
+              }))
+
+              // Update playlist to remove added tracks
+              updatePlaylist(playlistId, {
+                songs: reindexedSongs,
+              })
+
+              toast.dismiss()
+              toast(t('playlist.albumRevoked'), {
+                position: 'bottom-center',
+                hideProgressBar: true,
+                autoClose: 1000,
+              })
+            }}
+            className='flex h-9 items-center justify-center rounded-full border-[0.66px] border-border bg-background/50 px-4 py-2 backdrop-blur-lg transition-colors hover:bg-background/70'
+          >
+            <span className='whitespace-nowrap text-base font-medium leading-none text-foreground'>
+              {t('playlist.revoke')}
+            </span>
+          </button>
+        </div>,
+        {
+          position: 'bottom-center',
+          hideProgressBar: true,
+          autoClose: 5000,
+          closeButton: false,
+        }
+      )
+
       onClose()
     }
   }
@@ -87,7 +177,7 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                 {playlists.map(playlist => (
                   <button
                     key={playlist.id}
-                    onClick={() => handlePlaylistClick(playlist)}
+                    onClick={() => handlePlaylistClick(playlist.id)}
                     disabled={loading}
                     className={cn(
                       'flex h-14 cursor-pointer items-center gap-2 rounded-md bg-background px-2 py-1.5 transition-colors hover:bg-muted',
