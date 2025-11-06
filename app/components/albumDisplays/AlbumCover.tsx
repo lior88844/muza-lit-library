@@ -1,5 +1,6 @@
 import React from 'react'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
@@ -24,7 +25,7 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({
   draggable = true,
 }) => {
   const { isDragging, dragHandlers } = useDraggable({
-    type: 'album',
+    type: EntityTypeEnum.Album,
     data: albumDetails,
     enabled: draggable && !!albumDetails,
   })

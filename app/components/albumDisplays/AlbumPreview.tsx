@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
@@ -20,7 +21,7 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
   const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
   const { dragHandlers } = useDraggable({
-    type: 'album',
+    type: EntityTypeEnum.Album,
     data: details,
     enabled: draggable,
   })

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { useDraggable } from '~/lib/hooks/useDraggable'
 
@@ -16,7 +17,7 @@ const ArtistPreview: React.FC<ArtistDetailsProps> = ({ details, draggable = fals
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { dragHandlers } = useDraggable({
-    type: 'artist',
+    type: EntityTypeEnum.Artist,
     data: details,
     enabled: draggable,
   })
