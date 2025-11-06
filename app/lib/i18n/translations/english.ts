@@ -79,6 +79,12 @@ const english = {
   'playlist.deleted': 'Playlist deleted successfully',
   'playlist.deleteFailed': 'Failed to delete playlist',
   'playlist.updateFailed': 'Failed to update playlist',
+  'playlist.addToPlaylist': 'Add to playlist',
+  'playlist.newPlaylist': 'New Playlist',
+  'playlist.albumAdded': 'Album added',
+  'playlist.albumAddedToPlaylist': 'Album successfully added to your library',
+  'playlist.revoke': 'revoke',
+  'playlist.albumRevoked': 'Album removed from playlist',
 
   // Album Info Modal - Labels
   'albumInfo.tenorSaxophone': 'Tenor Saxophone',

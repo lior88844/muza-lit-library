@@ -30,6 +30,7 @@ interface MediaHeaderProps {
   entityId: number
   // Optional customization
   onInfoClick?: () => void
+  onAddToPlaylistClick?: () => void
   showBackButton?: boolean
   customActions?: React.ReactNode
   // For playlist cover generation
@@ -50,6 +51,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   showBackButton = true,
   customActions,
   onInfoClick,
+  onAddToPlaylistClick,
   playlist,
   onBackClick,
 }) => {
@@ -208,7 +210,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                       <>
                         <MuzaButton
                           iconName={isInLibrary ? 'heart' : 'plus'}
-                          onClick={onToggleAddLibrary}
+                          onClick={onAddToPlaylistClick || onToggleAddLibrary}
                           size='medium'
                           data-name='Add-Download Button'
                         />

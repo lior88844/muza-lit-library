@@ -10,6 +10,7 @@ import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
 import AlbumInfoModal from '../components/albumDisplays/AlbumInfoModal'
+import AddToPlaylistModal from '../components/playlistDisplays/AddToPlaylistModal'
 
 export async function loader({ params }: { params: { id: string } }) {
   const albumId = parseInt(params.id, 10)
@@ -41,6 +42,7 @@ export default function AlbumPage() {
     isPlaylistDrawerOpen,
   } = useCurrentPlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isAddToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false)
   const { album } = useLoaderData<typeof loader>()
 
   return (
@@ -54,6 +56,7 @@ export default function AlbumPage() {
           songCount: album.tracks?.length,
         }}
         onInfoClick={() => setModalOpen(true)}
+        onAddToPlaylistClick={() => setAddToPlaylistModalOpen(true)}
         songs={album.tracks}
         mediaType={EntityTypeEnum.Album}
         entityId={album.id}
@@ -80,6 +83,12 @@ export default function AlbumPage() {
         })}
       </div>
       <AlbumInfoModal album={album} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setAddToPlaylistModalOpen(false)}
+        albumTracks={album.tracks}
+        albumTitle={album.title}
+      />
     </>
   )
 }
