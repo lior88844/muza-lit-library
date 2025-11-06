@@ -1,10 +1,14 @@
-import type { SongDetails } from "~/appData/models";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import { MusicPlayer } from "../sections/MusicPlayer";
+import { useCallback, useMemo } from 'react'
+
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { useMedia } from '~/store/media/mediaContext'
+import type { PlayerDetails, SongDetails } from '~/store/models'
+
+import { MusicPlayer } from '../sections/MusicPlayer'
 
 export default function MuzaMusicPlayer() {
-  const { recentlyPlayed, incrementPlayCount } = useMusicLibraryStore();
+  const library = useMedia()
+  const songs = library.songs
   const {
     selectedSong,
     setSelectedSong,
@@ -12,69 +16,74 @@ export default function MuzaMusicPlayer() {
     setIsPlaying,
     playCountIncremented,
     setPlayCountIncremented,
-  } = useCurrentPlayerStore();
+  } = useCurrentPlayerStore()
 
   const getCurrentSongIndex = () => {
-    if (!selectedSong || !selectedSong.id) return -1;
-    return recentlyPlayed.findIndex(
-      (song: SongDetails) => song.id === selectedSong.id,
-    );
-  };
+    if (!selectedSong || !selectedSong.id) return -1
+    return songs.findIndex((song: SongDetails) => song.id === selectedSong.id)
+  }
 
   const handlePreviousSong = () => {
-    const currentIndex = getCurrentSongIndex();
-    let prevSong;
+    const currentIndex = getCurrentSongIndex()
+    let prevSong
     if (currentIndex <= 0) {
-      prevSong = recentlyPlayed[recentlyPlayed.length - 1];
+      prevSong = songs[songs.length - 1]
     } else {
-      prevSong = recentlyPlayed[currentIndex - 1];
+      prevSong = songs[currentIndex - 1]
     }
     setSelectedSong({
       ...prevSong,
-    });
-  };
+    })
+  }
 
   const handleNextSong = () => {
-    const currentIndex = getCurrentSongIndex();
-    let nextSong;
-    if (currentIndex === -1 || currentIndex === recentlyPlayed.length - 1) {
-      nextSong = recentlyPlayed[0];
+    const currentIndex = getCurrentSongIndex()
+    let nextSong
+    if (currentIndex === -1 || currentIndex === songs.length - 1) {
+      nextSong = songs[0]
     } else {
-      nextSong = recentlyPlayed[currentIndex + 1];
+      nextSong = songs[currentIndex + 1]
     }
     setSelectedSong({
       ...nextSong,
-    });
-  };
+    })
+  }
 
   const handlePlayCountIncrement = () => {
     if (selectedSong?.id && !playCountIncremented) {
-      incrementPlayCount(selectedSong.id);
-      setPlayCountIncremented(true);
+      // TODO: Submit to server action to increment play count
+      setPlayCountIncremented(true)
     }
-  };
+  }
+  const details = useMemo(() => {
+    return {
+      audioUrl: selectedSong?.audioUrl || '',
+      imageSrc: selectedSong?.imageSrc || '',
+      title: selectedSong?.title,
+      artist: selectedSong?.artist || '',
+      album: selectedSong?.album || '',
+      year: selectedSong?.year || new Date().getFullYear(),
+      isPlaying: isPlaying || false,
+      id: selectedSong?.id,
+    }
+  }, [selectedSong, isPlaying])
 
+  const onUpdate = useCallback(
+    (updatedDetails: PlayerDetails) => {
+      setSelectedSong({
+        ...selectedSong!,
+        audioUrl: updatedDetails.audioUrl!,
+      })
+    },
+    [selectedSong, setSelectedSong]
+  )
   return (
     <>
       {selectedSong && (
         <MusicPlayer
-          details={{
-            audioUrl: selectedSong.audioUrl || "",
-            imageSrc: selectedSong.imageSrc || "",
-            title: selectedSong.title,
-            artist: selectedSong.artist || "",
-            album: selectedSong.album || "",
-            year: selectedSong.year || new Date().getFullYear(),
-            isPlaying: isPlaying || false,
-            id: selectedSong.id,
-          }}
+          details={details}
           setIsPlaying={setIsPlaying}
-          onUpdate={(updatedDetails) => {
-            setSelectedSong({
-              ...selectedSong,
-              audioUrl: updatedDetails.audioUrl,
-            });
-          }}
+          onUpdate={onUpdate}
           onPrevious={handlePreviousSong}
           onNext={handleNextSong}
           onSongEnded={handleNextSong}
@@ -82,5 +91,5 @@ export default function MuzaMusicPlayer() {
         />
       )}
     </>
-  );
+  )
 }

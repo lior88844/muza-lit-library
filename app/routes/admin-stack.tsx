@@ -1,0 +1,252 @@
+import type { CellValueChangedEvent, ColDef } from 'ag-grid-community'
+import type { CustomCellRendererProps } from 'ag-grid-react'
+import { useMemo, useState } from 'react'
+import { useLoaderData, useNavigate, useNavigation } from 'react-router'
+import {
+  createStack,
+  deleteStack,
+  getStacksByPage,
+  type StackWithEntities,
+  type StackWithItems,
+  updateStackWithItems,
+} from 'server/api/stack/stack.service'
+import { StackPageIdEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
+import { EntityTypeEnum } from 'server/db/stack.entity'
+
+import { AppSelect } from '~/components/ui/app-select'
+import { Button } from '~/components/ui/button'
+import DataGrid from '~/components/ui/data-grid/DataGrid'
+import useFetcherAsync from '~/lib/useFetcherAsync'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import type { StackToEdit } from '~/store/models'
+
+import type { Route } from './+types/admin-stack'
+
+const PAGE_OPTIONS = [
+  { value: 'home', label: 'Home' },
+  { value: 'explore', label: 'Explore' },
+]
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url)
+  const pageId = url.searchParams.get('page') as StackPageIdEnum
+
+  try {
+    const stacksWithItems = await getStacksByPage(pageId)
+
+    return {
+      success: true,
+      stacks: stacksWithItems,
+      pageId,
+    }
+  } catch (error) {
+    console.error('Error fetching stacks:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      stacks: [],
+      pageId,
+    }
+  }
+}
+interface StackActionData {
+  intent: 'createStack' | 'updateStack' | 'deleteStack'
+  data: StackWithItems
+}
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData()
+  const intent = formData.get('intent') as string
+  const { items, ...stackData } = JSON.parse(
+    formData.get('data') as string
+  ) as StackActionData['data']
+  try {
+    if (intent === 'createStack') {
+      const newStack = await createStack(stackData, items)
+
+      return {
+        success: true,
+        stack: newStack,
+      }
+    }
+
+    if (intent === 'updateStack') {
+      const { id, ...rest } = stackData
+      await updateStackWithItems(id!, rest, items)
+
+      return {
+        success: true,
+      }
+    }
+
+    if (intent === 'deleteStack') {
+      if (!stackData.id) {
+        return {
+          success: false,
+          error: 'Stack ID is required',
+        }
+      }
+      await deleteStack(stackData.id)
+      return {
+        success: true,
+      }
+    }
+
+    return {
+      success: false,
+      error: 'Invalid intent',
+    }
+  } catch (error) {
+    console.error('Stack action error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    }
+  }
+}
+
+export default function AdminStack() {
+  const navigate = useNavigate()
+  const loaderData = useLoaderData<typeof loader>()
+  const removeFetcher = useFetcherAsync<{ success: boolean; error: string }>()
+  const updateFetcher = useFetcherAsync<{ success: boolean; error: string }>()
+  const navigation = useNavigation()
+  const [selectedPage, setSelectedPage] = useState(loaderData.pageId || StackPageIdEnum.Home)
+  const { openStackDrawer } = useCurrentPlayerStore()
+
+  const stacks = loaderData.stacks || []
+  const isLoading = navigation.state === 'loading'
+
+  const handlePageChange = (page: StackPageIdEnum) => {
+    setSelectedPage(page)
+    navigate(`/admin/stack?page=${page}`)
+  }
+  const handleEditStack = (stack: StackWithEntities) => {
+    openStackDrawer(stack)
+    navigate('/')
+  }
+  const handleDeleteStack = (stack: StackWithEntities) => {
+    removeFetcher.submit(
+      {
+        intent: 'deleteStack',
+        data: JSON.stringify({ id: stack.id }),
+      },
+      {
+        method: 'POST',
+        action: '/admin/stack',
+      }
+    )
+  }
+  const columnDefs = useMemo<ColDef<StackWithEntities>[]>(
+    () => [
+      {
+        field: 'displayOrder',
+        headerName: 'Order',
+        valueGetter: params => params.data!.displayOrder + 1,
+        maxWidth: 100,
+      },
+      {
+        field: 'title',
+        headerName: 'Title',
+        editable: true,
+      },
+      {
+        field: 'entityType',
+        headerName: 'Type',
+        valueGetter: params =>
+          params.data!.entityType.charAt(0).toUpperCase() + params.data!.entityType.slice(1),
+      },
+      { field: 'isActive', headerName: 'Active', editable: true, maxWidth: 100 },
+      {
+        field: 'id',
+        headerName: 'Actions',
+        cellRenderer: (params: CustomCellRendererProps<StackWithEntities>) => (
+          <div className='flex items-center gap-4'>
+            <Button
+              variant='ghost'
+              className='bg-secondary'
+              size='icon'
+              onClick={() => handleEditStack(params.data!)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant='ghost'
+              className='bg-secondary'
+              size='icon'
+              onClick={() => handleDeleteStack(params.data!)}
+            >
+              Delete
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    []
+  )
+
+  const handleCellValueChanged = ({
+    colDef,
+    data,
+    newValue,
+  }: CellValueChangedEvent<StackWithEntities>) => {
+    const field = colDef?.field as keyof StackWithEntities
+    const value = newValue as unknown as StackWithEntities[typeof field]
+    updateFetcher.submit(
+      {
+        intent: 'updateStack',
+        data: JSON.stringify({ [field]: value, id: data.id }),
+      },
+      { method: 'POST', action: '/admin/stack' }
+    )
+  }
+  const handleCreateStack = () => {
+    const newStack: StackToEdit = {
+      title: 'New Stack',
+      description: '',
+      entityType: EntityTypeEnum.Album,
+      selectionType: StackSelectionTypeEnum.Manual,
+      displayOrder: 0,
+      filterConfig: null,
+      isActive: true,
+      pageId: selectedPage,
+      items: [],
+    }
+    // Store in global state and navigate to home
+    openStackDrawer(newStack)
+    navigate('/')
+  }
+
+  return (
+    <div className='bg-background relative flex min-h-screen flex-col'>
+      {/* Controls */}
+      <div className='px-8 py-4'>
+        <div className='flex items-center justify-between gap-4'>
+          <AppSelect
+            value={selectedPage}
+            options={PAGE_OPTIONS}
+            onChange={value => handlePageChange(value as StackPageIdEnum)}
+            placeholder='Select page'
+            triggerClassName='w-[180px]'
+          />
+          <Button onClick={handleCreateStack} variant='default'>
+            Create stack
+          </Button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className='flex flex-1 flex-col px-8 pb-4'>
+        <DataGrid
+          hideHeader
+          rowData={stacks}
+          onCellValueChanged={handleCellValueChanged}
+          columnDefs={columnDefs}
+          loading={isLoading}
+          entityName='stacks'
+          className='h-[calc(100vh-var(--admin-header-height)-100px)]'
+          hideExport
+        />
+      </div>
+    </div>
+  )
+}

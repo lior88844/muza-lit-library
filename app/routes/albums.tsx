@@ -1,65 +1,46 @@
-import "../components/sections/MusicSidebar";
-import type { Album, SongDetails } from "~/appData/models";
-import AlbumDetails from "~/components/albumDisplays/AlbumDetails";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useNavigate } from "react-router";
-import { useTranslation } from "~/lib/i18n/translations";
+import '../styles/variables.css'
 
-import "../styles/scrollbar.scss";
-import "../styles/variables.scss";
-import "../styles/main.scss";
+import { useTranslation } from 'react-i18next'
+import { useLoaderData } from 'react-router'
+import { getUserLibrary } from 'server/api/user-library/user-library.service'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
+import { Typography } from '~/components/ui/typography'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { userContext } from '~/store/router-context'
+
+import type { Route } from './+types/albums'
+import styles from './albums.module.css'
+
+export async function loader({ context }: Route.LoaderArgs) {
+  const user = context.get(userContext)
+  if (!user) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+    }
+  }
+  const libraryAlbums = await getUserLibrary<EntityTypeEnum.Album>(user.id, EntityTypeEnum.Album)
+  return {
+    libraryAlbums,
+  }
+}
 export default function Albums() {
-  const { t } = useTranslation();
-  const { setSelectedSong } = useCurrentPlayerStore();
-  const { newReleases, featured, recommended } = useMusicLibraryStore();
-
-  const navigate = useNavigate();
-
-  const onAlbumClick = (album: Album) => {
-    navigate("/routes/album", { state: { album } });
-  };
+  const { t } = useTranslation()
+  const { isPlaylistDrawerOpen } = useCurrentPlayerStore()
+  const { libraryAlbums } = useLoaderData<typeof loader>()
 
   return (
-    <main>
-      <h1>{t("page.albums")}</h1>
-
-      <hr />
-      <h2>{t("section.featuredAlbums")}</h2>
-      <div className="album-list">
-        {featured.map((a: Album) => (
-          <AlbumDetails
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
-          />
+    <>
+      <Typography variant={'h1'} as='h2' className={'px-3 pb-4'}>
+        {t('page.albums')}
+      </Typography>
+      <div className={styles.albumList}>
+        {libraryAlbums?.map(a => (
+          <AlbumPreview key={a.id} details={a.entity} draggable={isPlaylistDrawerOpen} />
         ))}
       </div>
-
-      <hr />
-      <h2>{t("section.newReleases")}</h2>
-      <div className="album-list">
-        {newReleases.map((a: Album) => (
-          <AlbumDetails
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
-          />
-        ))}
-      </div>
-
-      <hr />
-      <h2>{t("section.recommendedAlbums")}</h2>
-      <div className="album-list">
-        {recommended.map((a: Album) => (
-          <AlbumDetails
-            key={a.id}
-            details={a}
-            onAlbumClick={() => onAlbumClick(a)}
-          />
-        ))}
-      </div>
-    </main>
-  );
+    </>
+  )
 }

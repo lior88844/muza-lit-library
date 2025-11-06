@@ -1,0 +1,142 @@
+---
+alwaysApply: true
+---
+
+You are an expert in TypeScript, Node.js, React-Router framework, React, Shadcn UI, Radix UI and Tailwind.
+
+## Component Usage Rules
+
+### Tailwind CSS and Shadcn Components Only
+
+- **ALWAYS use Tailwind CSS classes for styling** - Never use CSS modules (`.module.css` files) or inline styles unless absolutely necessary (e.g., dynamic styles from props)
+- **ALWAYS prefer shadcn/ui components** over custom implementations:
+  - Use `Button` from `~/components/ui/button` instead of `MuzaButton` or custom button components
+  - Use `Typography` from `~/components/ui/typography` for text elements
+  - Check `~/components/ui` directory for existing shadcn components before creating new ones
+  - If a shadcn component doesn't exist, install it using the shadcn CLI pattern before creating a custom version
+- **Use the `cn()` utility** from `~/lib/utils` for merging Tailwind classes with conditional logic
+- **Avoid CSS modules** - When refactoring existing components, migrate from `.module.css` to Tailwind classes
+  Use cannonical class names for tailwind classes. For example, instead of using border-[var(--muza-light-border-color)] use border-(--muza-light-border-color)
+
+### Component Reusability
+
+- **ALWAYS check for existing components** before creating new ones:
+  - Search `~/components/ui` for shadcn components
+  - Search `~/components` for domain-specific reusable components
+  - Check if similar functionality exists in other components that can be extracted
+- **Extract reusable logic into shared components** when the same pattern appears 2+ times
+- **Compose components** rather than duplicating markup - use shadcn components as building blocks
+- **Follow the shadcn component pattern** for new components:
+  - Use `forwardRef` for proper ref forwarding
+  - Use `VariantProps` from `class-variance-authority` for type-safe variants
+  - Export variants separately for reuse
+  - Use Radix UI primitives as the foundation when needed
+
+### Styling Guidelines
+
+- **Use Tailwind utility classes** for all layout, spacing, colors, typography, and responsive design
+- **Leverage CSS variables** defined in `~/app/styles/variables.css` through Tailwind when needed
+- **Use responsive prefixes** (`sm:`, `md:`, `lg:`, etc.) for responsive design
+- **Prefer Tailwind's built-in utilities** over custom CSS (e.g., `flex`, `grid`, `gap-4`, `rounded-lg`)
+- **Use semantic color tokens** from Tailwind config (e.g., `bg-primary`, `text-muted-foreground`) instead of hardcoded colors
+
+### Code Quality
+
+- **TypeScript strict mode** - All components must be fully typed
+- **Follow React best practices** - Use proper hooks, memoization when needed, and avoid unnecessary re-renders
+- **Consistent naming** - Use PascalCase for components, camelCase for props and variables
+- **Accessibility** - Ensure all interactive components are keyboard accessible and properly labeled
+
+## React Router Framework Mode Best Practices
+
+### Data Loading and Mutations
+
+- **ALWAYS use `loader` functions** for data fetching - Never fetch data in component `useEffect` or `useState` for initial load
+- **Use `loader` exports** in route files to fetch data server-side before rendering:
+  ```typescript
+  export async function loader({ params }: Route.LoaderArgs) {
+    // Fetch data here
+    return { data }
+  }
+  ```
+- **Use `action` functions** for mutations (POST, PUT, DELETE) - Handle form submissions and data mutations server-side
+- **Access loader data** with `useLoaderData<typeof loader>()` for type-safe data access
+- **Throw Response objects** for proper HTTP error handling (e.g., `throw new Response('Not found', { status: 404 })`)
+- **Validate params** in loaders before using them (check for NaN, undefined, etc.)
+
+### Type Safety
+
+- **Use type-safe route types** - Import and use `Route` type from `~/app/+types/route-name` for loader/action args
+- **Type loader return values** - Use `useLoaderData<typeof loader>()` to maintain type safety
+- **Use `Route.Config` type** for route configuration in `app/routes.ts`
+
+### Error Handling
+
+- **ALWAYS export `ErrorBoundary`** in route files for error handling:
+  ```typescript
+  export function ErrorBoundary() {
+    const error = useRouteError()
+    // Handle errors appropriately
+  }
+  ```
+- **Use `isRouteErrorResponse()`** to distinguish between route errors and other errors
+- **Provide user-friendly error messages** - Don't expose technical details to users in production
+- **Handle 404 errors** - Throw `new Response('Not found', { status: 404 })` when resources don't exist
+
+### Performance Optimization
+
+- **Use `shouldRevalidate` export** to control when loaders re-run:
+  - Return `false` for static data that doesn't need revalidation
+  - Return `true` only when data mutations occur
+- **Leverage SSR** - React Router is configured with `ssr: true`, so loaders run server-side by default
+- **Use resource routes** for API endpoints - Define resource routes in `app/routes.ts` for pure API endpoints
+- **Avoid unnecessary re-fetches** - Use `shouldRevalidate` to prevent redundant data loading
+
+### Middleware and Context
+
+- **Use middleware** for cross-cutting concerns like authentication:
+  ```typescript
+  export const middleware: MiddlewareFunction[] = [authMiddleware]
+  ```
+- **Set context in middleware** - Use `context.set(key, value)` to share data across routes
+- **Access context in loaders** - Use `context.get(key)` to retrieve shared data
+
+### Route Configuration
+
+- **Define routes in `app/routes.ts`** - Use the `route()` helper from `@react-router/dev/routes`
+- **Use nested routes** for shared layouts - Organize routes hierarchically when they share layouts
+- **Use route parameters** with `:param` syntax (e.g., `route('albums/:id', './routes/album.tsx')`)
+- **Group resource routes** - Keep API/resource routes organized together
+
+### SEO and Meta Tags
+
+- **Export `meta` function** for dynamic meta tags (when needed):
+  ```typescript
+  export const meta: Route.MetaFunction = ({ data }) => {
+    return [{ title: data?.title }]
+  }
+  ```
+- **Use `Links` and `Meta` components** in root layout for global meta tags
+- **Export `links` function** for route-specific stylesheets or other link tags
+
+### File Structure
+
+- **One route per file** - Each route file should export a default component
+- **Co-locate route files** - Keep route files in `app/routes/` directory
+- **Use route groups** - Organize related routes in subdirectories (e.g., `app/routes/artist/`)
+- **Export route functions** - Export `loader`, `action`, `ErrorBoundary`, `meta`, `links` as needed
+
+### Navigation and Links
+
+- **Use `Link` component** for navigation - Never use `<a>` tags for internal navigation
+- **Use `useNavigate` hook** for programmatic navigation
+- **Use `useParams()`** to access route parameters in components
+- **Use `useLocation()`** for location-based logic (e.g., conditional layouts)
+- **Use `useSearchParams()`** for query string handling
+
+### Forms and Mutations
+
+- **Use `Form` component** from `react-router` instead of native `<form>` for mutations
+- **Handle form errors** in `action` functions and return error data
+- **Use `useActionData()`** to access action return values and errors
+- **Use `useNavigation()`** to show loading states during form submissions

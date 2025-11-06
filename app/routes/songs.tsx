@@ -1,60 +1,79 @@
-import { useEffect, useState } from "react";
-import SongDetails from "~/components/songLineDisplays/SongDetails";
-import type { SongDetails as SongDetailsType } from "~/appData/models";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useTranslation } from "~/lib/i18n/translations";
+import '../styles/variables.css'
 
-import "../styles/scrollbar.scss";
-import "../styles/variables.scss";
-import "../styles/main.scss";
-import "./songs.scss";
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useLoaderData } from 'react-router'
+import { getUserLibrary } from 'server/api/user-library/user-library.service'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
+import { Typography } from '~/components/ui/typography'
+import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import type { SongDetails as SongDetailsType } from '~/store/models'
+import { userContext } from '~/store/router-context'
+
+import type { Route } from './+types/songs'
+
+export async function loader({ context }: Route.LoaderArgs) {
+  const user = context.get(userContext)
+  if (!user) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+    }
+  }
+  const libraryTracks = await getUserLibrary<EntityTypeEnum.Track>(user.id, EntityTypeEnum.Track)
+  return {
+    libraryTracks,
+  }
+}
 export default function Songs() {
-  const { t } = useTranslation();
-  const { setSelectedSong, selectedSong } = useCurrentPlayerStore();
-  const { recentlyPlayed } = useMusicLibraryStore();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeSongId, setActiveSongId] = useState<string | null>(null);
-
+  const { t } = useTranslation()
+  const { setSelectedSong, selectedSong, setIsPlaying, isPlaylistDrawerOpen } =
+    useCurrentPlayerStore()
+  const [loading, setLoading] = useState(true)
+  const [error] = useState<string | null>(null)
+  const { libraryTracks } = useLoaderData<typeof loader>()
   useEffect(() => {
     // Simulate loading state
     const timer = setTimeout(() => {
-      setLoading(false);
-    }, 100);
+      setLoading(false)
+    }, 100)
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleSongClick = (song: SongDetailsType) => {
-    setSelectedSong(song);
-    setActiveSongId(song.id || null);
-  };
+    setSelectedSong(song)
+    setIsPlaying(true)
+  }
 
-  if (loading) return <p>{t("general.loading")}</p>;
-  if (error)
-    return <p>{t("general.errorWithMessage").replace("{error}", error)}</p>;
+  const librarySongs = useMemo(() => {
+    return libraryTracks?.map(item => item.entity) || []
+  }, [libraryTracks])
+
+  if (loading) return <p>{t('general.loading')}</p>
+  if (error) return <p>{t('general.errorWithMessage', { error })}</p>
 
   return (
-    <main className="songs-page">
-      <div className="page-header">
-        <h1>{t("page.songs")}</h1>
-      </div>
+    <div className={'flex flex-col gap-3'}>
+      <Typography variant='h1' as='h2' className='px-8 py-4'>
+        {t('page.songs')}
+      </Typography>
 
-      <div className="songs-list-container">
-        <div className="songs-list">
-          {recentlyPlayed.map((song) => (
-            <SongDetails
+      <div className={'px-8 pb-17.5'}>
+        <div className={'flex flex-col gap-2'}>
+          {librarySongs.map(song => (
+            <SongLineWithCover
               key={song.id}
               details={song}
               onClick={() => handleSongClick(song)}
-              isActive={activeSongId === song.id}
               isPlaying={selectedSong?.id === song.id}
+              draggable={isPlaylistDrawerOpen}
             />
           ))}
         </div>
       </div>
-    </main>
-  );
+    </div>
+  )
 }

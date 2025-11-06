@@ -1,23 +1,26 @@
-import React from "react";
-import UploadForm from "../UploadForm";
-import UploadFileArea from "../UploadFileArea";
-import type { UploadFormData, Musician } from "~/appData/uploadStore";
-import "./UploadStepOne.scss";
+import React from 'react'
+
+import type { Musician, UploadFormData } from '~/store/uploadStore'
+
+import UploadFileArea from '../UploadFileArea'
+import UploadForm from '../UploadForm'
 
 interface UploadStepOneProps {
-  formData: UploadFormData;
-  musicians: Musician[];
-  audioFiles: File[]; // Add audioFiles prop
+  formData: UploadFormData
+  musicians: Musician[]
+  audioFiles: File[] // Add audioFiles prop
   onFormDataChange: (
-    field: string,
-  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    field: string
+  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   onMusicianChange: (
     index: number,
-    field: keyof Musician,
-  ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAddMusician: () => void;
-  onCoverUpload: (file: File) => void;
-  onFileUpload: (files: File[]) => void;
+    field: keyof Musician
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => void
+  onAddMusician: () => void
+  onRemoveMusician: (index: number) => void
+  onCoverUpload: (file: File) => void
+  onFileUpload: (files: File[]) => void
+  onFindAlbumDetails?: () => void
 }
 
 const UploadStepOne: React.FC<UploadStepOneProps> = ({
@@ -27,23 +30,36 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
   onFormDataChange,
   onMusicianChange,
   onAddMusician,
+  onRemoveMusician,
   onCoverUpload,
   onFileUpload,
+  onFindAlbumDetails,
 }) => {
+  const handleFindAlbumDetails = () => {
+    if (onFindAlbumDetails) {
+      onFindAlbumDetails()
+    } else {
+      // Default behavior - could show a message or do nothing
+      console.log('Find album details functionality not implemented yet')
+    }
+  }
+
   return (
-    <div className="upload-step-one">
-      <div className="upload-container">
-        <div className="upload-left">
+    <div className='h-full'>
+      <div className='flex h-full'>
+        <div className='border-border-light h-full flex-1 overflow-y-auto border-r'>
           <UploadForm
             formData={formData}
             musicians={musicians}
             onFormDataChange={onFormDataChange}
             onMusicianChange={onMusicianChange}
             onAddMusician={onAddMusician}
+            onRemoveMusician={onRemoveMusician}
+            onFindAlbumDetails={handleFindAlbumDetails}
           />
         </div>
 
-        <div className="upload-right">
+        <div className='flex-1 overflow-y-hidden px-10 py-8'>
           <UploadFileArea
             onCoverUpload={onCoverUpload}
             onFileUpload={onFileUpload}
@@ -52,7 +68,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UploadStepOne;
+export default UploadStepOne

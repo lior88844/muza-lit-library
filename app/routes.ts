@@ -1,64 +1,29 @@
-import {
-  type RouteConfig,
-  type RouteConfigEntry,
-} from "@react-router/dev/routes";
-
-const home = {
-  file: "routes/home.tsx",
-  id: "home",
-  index: true,
-} as RouteConfigEntry;
-
-const album = {
-  file: "routes/album.tsx",
-  path: "routes/album",
-  id: "album",
-  index: true,
-} as RouteConfigEntry;
-
-const albums = {
-  file: "routes/albums.tsx",
-  path: "routes/albums",
-  id: "albums",
-} as RouteConfigEntry;
-
-const artists = {
-  file: "routes/artists.tsx",
-  path: "routes/artists",
-  id: "artists",
-} as RouteConfigEntry;
-
-const songs = {
-  file: "routes/songs.tsx",
-  path: "routes/songs",
-  id: "songs",
-} as RouteConfigEntry;
-
-const explore = {
-  file: "routes/explore.tsx",
-  path: "routes/explore",
-  id: "explore",
-} as RouteConfigEntry;
-
-const upload = {
-  file: "routes/upload.tsx",
-  path: "routes/upload",
-  id: "upload",
-} as RouteConfigEntry;
-
-const playlists = {
-  file: "routes/playlists.tsx",
-  path: "routes/playlists",
-  id: "playlists",
-} as RouteConfigEntry;
+import { index, route, type RouteConfig } from '@react-router/dev/routes'
+const resourcesRoutes = [
+  route('/health', './routes/resources/health.ts'),
+  route('/api/library', './routes/resources/library.ts'),
+  route('/api/playlist', './routes/resources/playlist.ts'),
+  route('/api/search', './routes/resources/search.ts'),
+]
 
 export default [
-  home,
-  album,
-  albums,
-  artists,
-  songs,
-  explore,
-  upload,
-  playlists,
-] satisfies RouteConfig;
+  index('./routes/home.tsx'),
+  route('albums', './routes/albums.tsx'),
+  route('albums/:id', './routes/album.tsx'),
+  route('artists', './routes/artists.tsx'),
+  route('artists/:id', './routes/artist/artist-page.tsx'),
+  route('songs', './routes/songs.tsx'),
+  route('explore', './routes/explore.tsx'),
+  route('upload', './routes/upload.tsx'),
+  route('admin', './routes/admin.tsx', [
+    route('upload', './routes/admin-upload.tsx'),
+    route('stack', './routes/admin-stack.tsx'),
+    route('data', './routes/admin-data.tsx'),
+  ]),
+  route('playlists', './routes/playlists.tsx'),
+  route('playlists/:id', './routes/playlist.tsx'),
+  route('search', './routes/search.tsx'),
+  route('login', './routes/login.tsx'),
+  route('auth/callback', './routes/callback.tsx'),
+  ...resourcesRoutes,
+] satisfies RouteConfig

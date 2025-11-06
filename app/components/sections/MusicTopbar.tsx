@@ -1,51 +1,89 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
-import "./MusicTopbar.scss";
-import { useTranslation } from "~/lib/i18n/translations";
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
+
+import { SearchInput } from '~/components/ui/SearchInput'
+import MuzaIcon from '~/icons/MuzaIcon'
+import { getUserInfo, useAuth } from '~/store/userContext'
+
+import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
-  onSearchChange?: (searchText: string) => void;
-  onUserIconClick?: () => void;
+  onSearchChange?: (searchText: string) => void
+  onUserIconClick?: () => void
 }
 
-const MusicTopbar: React.FC<MusicTopbarProps> = ({
-  onSearchChange,
-  onUserIconClick,
-}) => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange?.(e.target.value);
-  };
+const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconClick }) => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const auth = useAuth()
 
   const handleUploadClick = () => {
-    navigate("/routes/upload");
-  };
+    navigate('/upload')
+  }
+
+  const handleLoginClick = () => {
+    auth.signinRedirect()
+  }
+
+  const handleLogoutClick = () => {
+    auth.signoutRedirect({
+      extraQueryParams: {
+        client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+        logout_uri: `${window.location.origin}/`,
+      },
+    })
+  }
 
   return (
-    <div className="music-topbar">
-      <div className="topbar">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder={t("form.searchPlaceholder")}
-            onChange={handleSearchInput}
-          />
-        </div>
-        <div className="controls">
-          <button className="upload-music-button" onClick={handleUploadClick}>
-            {t("upload.uploadMusic")}
+    <div className={styles['music-topbar']}>
+      <div className={styles.topbar}>
+        <SearchInput onSearchChange={onSearchChange} />
+        <div className={styles.controls}>
+          <button className={styles['upload-music-button']} onClick={handleUploadClick}>
+            {t('upload.uploadMusic')}
+            <MuzaIcon iconName='upload' />
           </button>
-          <div className="user-menu">
-            <div className="user-icon" onClick={onUserIconClick}>
-              <img src="https://picsum.photos/100" alt={t("topbar.user")} />
-            </div>
+          {/* <button
+            className={styles["admin-upload-button"]}
+            onClick={handleAdminUploadClick}
+          >
+            {t("upload.uploadAdmin")}
+            <MuzaIcon iconName="adminUpload" />
+          </button> */}
+          <div className={styles['user-menu']}>
+            {auth.isAuthenticated ? (
+              <div className={styles['user-dropdown']}>
+                <div className={styles['user-icon']} onClick={onUserIconClick}>
+                  <img
+                    src={getUserInfo(auth)?.picture || '/art/logo.jpg'}
+                    alt={getUserInfo(auth)?.name || t('topbar.user')}
+                  />
+                </div>
+                <div className={styles['user-info']}>
+                  <span className={styles['user-name']}>
+                    {getUserInfo(auth)?.name || getUserInfo(auth)?.email}
+                  </span>
+                  <button
+                    className={styles['logout-button']}
+                    onClick={handleLogoutClick}
+                    title='Logout'
+                  >
+                    <MuzaIcon iconName='logout' />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button className={styles['login-button']} onClick={handleLoginClick}>
+                <MuzaIcon iconName='user' />
+                Login
+              </button>
+            )}
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default React.memo(MusicTopbar);
+export default React.memo(MusicTopbar)

@@ -1,0 +1,301 @@
+/* Shared utility classes for grid template */
+.gridTemplate {
+  display: grid;
+  grid-template-columns:
+    auto 1fr minmax(200px, 1fr) minmax(150px, 1.5fr)
+    auto auto;
+  align-items: center;
+}
+
+.uploadStepTwo {
+  /* Local variables with fallbacks */
+  --cell-padding: var(--muza-spacing-lg, 16px);
+  --cell-number-padding: var(--muza-spacing-md, 12px) var(--muza-spacing-lg, 16px)
+    var(--muza-spacing-md, 12px) calc(var(--muza-spacing-xl, 24px) + var(--muza-spacing-lg, 16px));
+  --button-size: var(--muza-spacing-xl, 24px);
+  --icon-size: var(--muza-spacing-lg, 16px);
+  --border-color: var(--muza-light-border-color);
+  --muted-text: var(--colors_muted_foreground_light, #6b7280);
+  --primary-text: var(--colors_background_dark);
+  --secondary-bg: var(--colors_accent_light);
+  --hover-bg: var(--colors_muted_light_50_, #f9fafb7f);
+  --font-regular: var(--muza-font-weight-regular, 400);
+  --font-medium: var(--muza-font-weight-medium, 500);
+  --gap-sm: var(--muza-spacing-sm, 8px);
+  --gap-md: var(--muza-spacing-md, 10px);
+  --transition: all 0.2s ease;
+
+  flex: 1;
+  padding-bottom: 108px; /* Space for fixed footer */
+  overflow-y: auto;
+}
+
+.uploadStepTwo i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadStepTwo .metadataTable {
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.uploadStepTwo .metadataTable .tableHeader {
+  display: grid;
+  grid-template-columns:
+    auto 1fr minmax(200px, 1fr) minmax(150px, 1.5fr)
+    auto auto;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--muza-primary-font-size, 14px);
+  color: var(--muted-text);
+  font-weight: var(--font-medium);
+}
+
+.uploadStepTwo .metadataTable .tableHeader [class*='column-'] {
+  padding: var(--cell-padding);
+}
+
+.uploadStepTwo .metadataTable .tableHeader .columnNumber {
+  width: 64px;
+  text-align: right;
+  padding: var(--cell-number-padding);
+}
+
+.uploadStepTwo .metadataTable .tableHeader .columnTime {
+  text-align: right;
+}
+
+.uploadStepTwo .metadataTable .tableHeader .columnActions {
+  text-align: center;
+  width: var(--button-size);
+}
+
+.uploadStepTwo .metadataTable .tableBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow {
+  display: grid;
+  grid-template-columns:
+    auto 1fr minmax(200px, 1fr) minmax(150px, 1.5fr)
+    auto auto;
+  align-items: center;
+  min-height: 54px;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow:hover {
+  background-color: var(--hover-bg);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow.dragging {
+  opacity: 0.7;
+  background-color: var(--secondary-bg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellNumber {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--cell-number-padding);
+  gap: var(--gap-sm);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellNumber .dragHandle {
+  background: none;
+  border: none;
+  width: var(--button-size);
+  height: var(--button-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  background-color: var(--secondary-bg);
+  color: var(--muted-text);
+  cursor: grab;
+  touch-action: none;
+  padding: 4px;
+  background-color: transparent;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellNumber .dragHandle:hover {
+  color: var(--primary-text);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellNumber .dragHandle:active {
+  cursor: grabbing;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellNumber .trackNumber {
+  font-size: var(--muza-subtitle-font-size);
+  font-weight: var(--font-medium);
+  color: var(--muted-text);
+  width: var(--button-size);
+  text-align: center;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename {
+  display: flex;
+  align-items: center;
+  padding: var(--cell-padding);
+  gap: var(--gap-md);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .playButton {
+  background: none;
+  border: none;
+  width: var(--button-size);
+  height: var(--button-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  background-color: var(--secondary-bg);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .playButton::after {
+  display: none;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .playButton:hover {
+  background-color: var(--border-color);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .playButton svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .playButton .waveContainer {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .playButton .waveContainer .bar {
+  background-color: var(--primary-text);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellFilename .filename {
+  flex: 1;
+  font-size: var(--muza-primary-font-size, 14px);
+  color: var(--muted-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: var(--font-regular);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellSongname,
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellComposer {
+  padding: var(--cell-padding);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellSongname span,
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellComposer span {
+  width: 100%;
+  border: none;
+  background: none;
+  font-size: var(--muza-primary-font-size, 14px);
+  color: var(--primary-text);
+  font-weight: var(--font-regular);
+  padding: 0;
+  outline: none;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellSongname span:focus,
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellComposer span:focus {
+  color: var(--primary-text);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellSongname span::placeholder,
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellComposer span::placeholder {
+  color: var(--muted-text);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellTime {
+  padding: var(--cell-padding);
+  text-align: right;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellTime .duration {
+  font-size: var(--muza-primary-font-size, 14px);
+  color: var(--muted-text);
+  font-weight: var(--font-regular);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellActions {
+  padding: var(--cell-padding);
+  display: flex;
+  justify-content: center;
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellActions .deleteButton {
+  background: none;
+  border: none;
+  width: var(--button-size);
+  height: var(--button-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  background-color: var(--secondary-bg);
+  color: var(--muted-text);
+}
+
+.uploadStepTwo .metadataTable .tableBody .tableRow .cellActions .deleteButton:hover {
+  background-color: var(--colors_destructive_light, #dc2626);
+  color: var(--colors_destructive_foreground_light, white);
+}
+
+.uploadStepTwo .metadataTable .emptyState {
+  padding: calc(var(--muza-spacing-xxl, 32px) + var(--muza-spacing-lg, 16px)) var(--cell-padding);
+  text-align: center;
+  color: var(--muted-text);
+}
+
+.uploadStepTwo .metadataTable .emptyState p {
+  font-size: var(--muza-subtitle-font-size);
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .uploadStepTwo {
+    --cell-padding: var(--muza-spacing-lg, 16px) var(--muza-spacing-lg, 20px);
+    --cell-number-padding-left: var(--muza-spacing-lg, 20px);
+
+    padding: var(--cell-padding);
+    padding-bottom: 108px;
+  }
+
+  .uploadStepTwo .metadataTable .tableHeader {
+    grid-template-columns:
+      auto 1fr minmax(150px, 1.5fr) minmax(120px, 1fr)
+      auto auto;
+    font-size: var(--muza-secondary-font-size, 12px);
+  }
+
+  .uploadStepTwo .metadataTable .tableBody .tableRow {
+    grid-template-columns:
+      auto 1fr minmax(150px, 1.5fr) minmax(120px, 1fr)
+      auto auto;
+  }
+
+  .uploadStepTwo .metadataTable .tableBody .tableRow .cellNumber {
+    padding-left: var(--cell-number-padding-left);
+  }
+}

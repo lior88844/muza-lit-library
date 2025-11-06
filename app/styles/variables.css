@@ -1,0 +1,60 @@
+:root {
+  /* Colors */
+  --muza-primary-text-color: #333333;
+  --muza-secondary-text-color: #5f5f5f;
+  --muza-tertiary-text-color: #aaaaaa;
+  --muza-border-color: #a9a9a9;
+  --muza-light-border-color: #e5e7eb;
+  --muza-hover-background: #eeeeee;
+  --muza-section-background: #f7f7f7;
+  --muza-button-hover-background: #dddddd;
+  --muza-section-scrollbar-track-bg: #c2c2c2;
+  --muza-image-background-color-bg: #d9d9d9;
+  --muza-toggle-active-color: #3b82f6;
+  --colors_muted_light: #f9fafb;
+  --muza-track-title-color: #111827;
+  --colors_muted_foreground_light: #6b7280;
+  --muza-play-button-color: #1f2937;
+  --colors_primary_light: #1d4ed8;
+  --colors_primary_dark: #2563eb;
+  --colors_accent_light: #f3f4f6;
+  --colors_background_light: #ffffff;
+  --colors_background_dark: #030712;
+  --colors_destructive_light: #dc2626;
+  --colors_destructive_foreground_light: #fef2f2;
+  --colors_sidebar_foreground_light: #374151;
+  --colors_muted_light_50_: #f9fafb7f;
+
+  /* Typography */
+  --typography_font_family_font_sans: Founders Grotesk;
+  --muza-primary-font-size: 14px;
+  --muza-title-font-size: 27px;
+  --muza-subtitle-font-size: 16px;
+  --muza-secondary-font-size: 12px;
+  --muza-heading-font-size: 18px;
+  --muza-font-weight-normal: 400;
+  --muza-font-weight-medium: 500;
+  --muza-font-weight-bold: 600;
+  --muza-font-weight-bold-extra: 700;
+
+  /* Spacing and Layout */
+  --muza-spacing-xs: 4px;
+  --muza-spacing-sm: 8px;
+  --muza-spacing-md: 12px;
+  --muza-spacing-lg: 16px;
+  --muza-spacing-xl: 24px;
+  --muza-spacing-xxl: 32px;
+  --muza-sidebar-width: 208px;
+  --muza-topbar-height: 64px;
+  --upload-header-height: 64px;
+  --upload-footer-height: 84px;
+  --admin-header-height: 63px;
+
+  /* Radius */
+  --muza-border-radius-sm: 4px;
+  --muza-border-radius-md: 8px;
+  --muza-border-radius-lg: 20px;
+
+  /* Shadows */
+  --muza-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}

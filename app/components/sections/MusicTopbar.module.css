@@ -1,0 +1,478 @@
+.music-topbar {
+  padding: var(--muza-spacing-md, 12px) var(--muza-spacing-xl, 24px);
+  border-bottom: 1px solid var(--gray-50, #ededed);
+  position: sticky;
+  top: 0;
+  background-color: var(--colors_background_light, #fff);
+  z-index: 100;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--muza-spacing-xl, 24px);
+}
+
+.musicTopbar {
+  padding: var(--muza-spacing-md, 12px) var(--muza-spacing-xl, 24px);
+  border-bottom: 1px solid var(--gray-50, #ededed);
+  position: sticky;
+  top: 0;
+  background-color: var(--colors_background_light, #fff);
+  z-index: 100;
+}
+
+.musicTopbar .topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--muza-spacing-xl, 24px);
+}
+
+.search-container {
+  position: relative;
+  min-width: 200px;
+  flex: 1;
+  max-width: 600px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
+  width: 100%;
+}
+
+.search-input {
+  background: var(--colors_background_light, #ffffff);
+  height: 36px;
+  position: relative;
+  border-radius: 9999px;
+  width: 100%;
+}
+
+.search-input-content {
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--muza-spacing-xs, 4px);
+  height: 36px;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: clip;
+  padding: var(--muza-spacing-xs, 4px) var(--muza-spacing-md, 12px);
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  overflow: clip;
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.search-field {
+  flex: 1;
+  font-family: 'Founders Grotesk', sans-serif;
+  font-weight: var(--muza-font-weight-normal, 400);
+  font-size: var(--muza-subtitle-font-size);
+  line-height: 20px;
+  min-height: 0;
+  min-width: 0;
+  font-style: normal;
+  text-overflow: ellipsis;
+  position: relative;
+  flex-shrink: 0;
+  text-align: left;
+  color: var(--colors_muted_foreground_light, #6b7280);
+  white-space: nowrap;
+  letter-spacing: 0.25px;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+.search-field::placeholder {
+  color: var(--colors_muted_foreground_light, #6b7280);
+  opacity: 1;
+}
+
+.search-field:focus {
+  border: none;
+  box-shadow: none;
+  color: var(--colors_background_dark);
+}
+
+.search-border {
+  position: absolute;
+  border: 1px solid var(--muza-light-border-color);
+  border-radius: 9999px;
+  inset: 0;
+  pointer-events: none;
+}
+
+.musicTopbar .searchContainer {
+  position: relative;
+  min-width: 200px;
+  flex: 1;
+  max-width: 600px;
+}
+
+.musicTopbar .searchContainer .searchInputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--muza-spacing-sm, 8px);
+  width: 100%;
+}
+
+.musicTopbar .searchContainer .searchInputWrapper .searchInput {
+  background: var(--colors_background_light, #ffffff);
+  height: 36px;
+  position: relative;
+  border-radius: 9999px;
+  width: 100%;
+}
+
+.musicTopbar .searchContainer .searchInputWrapper .searchInput .searchInputContent {
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--muza-spacing-xs, 4px);
+  height: 36px;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: clip;
+  padding: var(--muza-spacing-xs, 4px) var(--muza-spacing-md, 12px);
+  position: relative;
+  width: 100%;
+}
+
+.musicTopbar .searchContainer .searchInputWrapper .searchInput .searchInputContent .searchIcon {
+  overflow: clip;
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.musicTopbar .searchContainer .searchInputWrapper .searchInput .searchInputContent .searchField {
+  flex: 1;
+  font-family: 'Founders Grotesk', sans-serif;
+  font-weight: var(--muza-font-weight-normal, 400);
+  font-size: var(--muza-subtitle-font-size);
+  line-height: 20px;
+  min-height: 0;
+  min-width: 0;
+  font-style: normal;
+  text-overflow: ellipsis;
+  position: relative;
+  flex-shrink: 0;
+  text-align: left;
+  color: var(--colors_muted_foreground_light, #6b7280);
+  white-space: nowrap;
+  letter-spacing: 0.25px;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+.musicTopbar
+  .searchContainer
+  .searchInputWrapper
+  .searchInput
+  .searchInputContent
+  .searchField::placeholder {
+  color: var(--colors_muted_foreground_light, #6b7280);
+  opacity: 1;
+}
+
+.musicTopbar
+  .searchContainer
+  .searchInputWrapper
+  .searchInput
+  .searchInputContent
+  .searchField:focus {
+  border: none;
+  box-shadow: none;
+  color: var(--colors_background_dark);
+}
+
+.musicTopbar .searchContainer .searchInputWrapper .searchInput .searchBorder {
+  position: absolute;
+  border: 1px solid var(--muza-light-border-color);
+  border-radius: 9999px;
+  inset: 0;
+  pointer-events: none;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-lg, 16px);
+}
+
+.upload-music-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--muza-spacing-sm, 8px);
+  color: var(--colors_background_dark);
+  border-radius: 999px;
+  font-size: var(--muza-subtitle-font-size);
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: var(--muza-font-weight-medium, 500);
+}
+
+.upload-music-button:hover {
+  background-color: #f3f4f6;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--muza-spacing-sm, 8px);
+  background-color: var(--colors_primary, #3b82f6);
+  color: white;
+  border-radius: 999px;
+  font-size: 14px;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: var(--muza-font-weight-medium, 500);
+}
+
+.login-button:hover {
+  background-color: #2563eb;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.user-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--colors_background_dark);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #f3f4f6;
+}
+
+.musicTopbar .controls {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-lg, 16px);
+}
+
+.musicTopbar .controls .uploadMusicButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--muza-spacing-sm, 8px);
+  color: var(--colors_background_dark);
+  border-radius: 999px;
+  font-size: 16px;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+  font-size: var(--muza-subtitle-font-size);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: var(--muza-font-weight-medium, 500);
+}
+
+.musicTopbar .controls .uploadMusicButton:hover {
+  background-color: #f3f4f6;
+}
+
+.musicTopbar .controls .uploadMusicButton i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.musicTopbar .controls .uploadMusicButton i svg {
+  width: 18px;
+  height: 18px;
+}
+
+.musicTopbar .controls .uploadMusicButton i svg path {
+  stroke: var(--colors_background_dark);
+}
+
+.musicTopbar .controls .userMenu {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.musicTopbar .controls .userMenu .loginButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--muza-spacing-sm, 8px);
+  color: var(--colors_background_dark);
+  background-color: var(--colors_primary, #3b82f6);
+  color: white;
+  border-radius: 999px;
+  font-size: 14px;
+  padding: var(--muza-spacing-sm, 8px) var(--muza-spacing-lg, 16px);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: var(--muza-font-weight-medium, 500);
+}
+
+.musicTopbar .controls .userMenu .loginButton:hover {
+  background-color: #2563eb;
+}
+
+.musicTopbar .controls .userMenu .loginButton i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.musicTopbar .controls .userMenu .loginButton i svg {
+  width: 16px;
+  height: 16px;
+}
+
+.musicTopbar .controls .userMenu .loginButton i svg path {
+  stroke: white;
+}
+
+.musicTopbar .controls .userMenu .userDropdown {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.musicTopbar .controls .userMenu .userDropdown .adminUploadButton {
+  background-color: var(--colors_accent_light, #f3f4f6);
+}
+
+.musicTopbar .controls .userMenu .userDropdown .adminUploadButton:hover {
+  background-color: #dcdee0;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userIcon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--muza-spacing-sm, 8px);
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo .userName {
+  font-size: 14px;
+  font-weight: var(--muza-font-weight-medium, 500);
+  color: var(--colors_background_dark);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo .logoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo .logoutButton:hover {
+  background-color: #f3f4f6;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo .logoutButton i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo .logoutButton i svg {
+  width: 16px;
+  height: 16px;
+}
+
+.musicTopbar .controls .userMenu .userDropdown .userInfo .logoutButton i svg path {
+  stroke: var(--colors_background_dark);
+}

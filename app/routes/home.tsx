@@ -1,100 +1,68 @@
-import "../components/sections/MusicSidebar";
-import type { Album } from "~/appData/models";
-import MusicListSectionComponent from "~/components/listsDisplays/MusicListSection";
-import { useCurrentPlayerStore } from "~/appData/currentPlayerStore";
-import { useMusicLibraryStore } from "~/appData/musicStore";
-import { useNavigate } from "react-router";
-import { useTranslation } from "~/lib/i18n/translations";
+import '../components/sections/MusicSidebar'
+import '../styles/variables.css'
+import './home.css'
 
-import "../styles/scrollbar.scss";
-import "../styles/variables.scss";
-import "../styles/main.scss";
+import { useTranslation } from 'react-i18next'
+import { useLoaderData, useNavigate } from 'react-router'
+import { getStacksByPage, type StackWithEntities } from 'server/api/stack/stack.service'
+import { StackPageIdEnum } from 'server/db/stack.entity'
 
-export default function Home() {
-  const { t } = useTranslation();
-  const { selectedSong, setSelectedSong } = useCurrentPlayerStore();
-  const { recentlyPlayed, newReleases, artists } = useMusicLibraryStore();
+import MusicListSectionComponent from '~/components/listsDisplays/StackPreview'
+import { Divider } from '~/components/ui/divider'
+import { Typography } from '~/components/ui/typography'
 
-  const navigate = useNavigate();
-
-  const onAlbumClick = (album: Album) => {
-    navigate("/routes/album", { state: { album } });
-  };
-
-  const handleShowAll = (sectionTitle: string) => {
-    switch (sectionTitle) {
-      case t("section.newReleases"):
-        navigate("/routes/albums");
-        break;
-      case t("section.recentlyPlayed"):
-        navigate("/routes/songs");
-        break;
-      case t("section.artists"):
-        navigate("/routes/artists");
-        break;
-      default:
-        break;
+export async function loader() {
+  try {
+    const stacks = await getStacksByPage(StackPageIdEnum.Home)
+    return { success: true, stacks }
+  } catch (error) {
+    console.error('Error fetching stacks:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      stacks: [],
     }
-  };
+  }
+}
+export default function Home() {
+  const { stacks } = useLoaderData<typeof loader>()
+  const { t } = useTranslation()
 
-  const sections = [
-    {
-      title: t("section.newReleases"),
-      type: "album" as const,
-      albums: newReleases,
-    },
-    {
-      title: t("section.recentlyPlayed"),
-      type: "song" as const,
-      songs: recentlyPlayed.slice(0, 30),
-    },
-    {
-      title: t("section.artists"),
-      type: "artist" as const,
-      artists: artists.slice(0, 6),
-    },
-  ];
+  const navigate = useNavigate()
+
+  const handleShowAll = (stack: StackWithEntities) => {
+    // @TODO handle show all
+    switch (stack.entityType) {
+      case t('section.newReleases'):
+        navigate('/albums')
+        break
+      case t('section.recentlyPlayed'):
+        navigate('/songs')
+        break
+      case t('section.artists'):
+        navigate('/artists')
+        break
+      default:
+        break
+    }
+  }
 
   return (
-    <main>
-      <h1>{t("page.home")}</h1>
-      <hr />
-
-      {sections.map((section, index) => (
-        <div key={section.title}>
-          {section.type === "album" && (
-            <MusicListSectionComponent
-              title={section.title}
-              type="album"
-              list={section.albums}
-              onShowAll={handleShowAll}
-              onAlbumClick={onAlbumClick}
-              albums={section.albums}
-            />
-          )}
-          {section.type === "artist" && (
-            <MusicListSectionComponent
-              title={section.title}
-              type="artist"
-              list={[]}
-              onShowAll={handleShowAll}
-              artists={section.artists}
-            />
-          )}
-          {section.type === "song" && (
-            <MusicListSectionComponent
-              title={section.title}
-              type="song"
-              list={[]}
-              onShowAll={handleShowAll}
-              songs={section.songs}
-              onSongClick={setSelectedSong}
-              selectedSong={selectedSong || undefined}
-            />
-          )}
-          <hr />
-        </div>
-      ))}
-    </main>
-  );
+    <div className='home-page'>
+      <div className='page-header'>
+        <Typography variant='h1' as='h2' className='pb-4'>
+          {t('page.home')}
+        </Typography>
+      </div>
+      <div className='sections-container'>
+        <Divider />
+        {stacks.map((stack, index) => (
+          <div key={stack.id} className='section-wrapper'>
+            <MusicListSectionComponent stack={stack} onShowAll={handleShowAll} />
+            {index < stacks.length - 1 && <Divider />}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
