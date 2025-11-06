@@ -8,6 +8,14 @@
   align-items: flex-start;
 }
 
+.album-details-card[draggable='true'] {
+  cursor: grab;
+}
+
+.album-details-card[draggable='true']:active {
+  cursor: grabbing;
+}
+
 .image-container {
   width: 155px;
   height: 155px;

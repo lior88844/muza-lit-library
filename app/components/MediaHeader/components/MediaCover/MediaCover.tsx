@@ -31,28 +31,28 @@ const MediaCover: React.FC<MediaCoverProps> = ({
       // null = empty playlist, show empty state
       if (images === null) {
         return (
-          <div className='playlist-empty' data-name='Empty Playlist'>
+          <div className={styles['playlist-empty']} data-name='Empty Playlist'>
             <MuzaIcon iconName='playlist' />
           </div>
         )
       }
 
       return (
-        <div className='playlist-collage' data-name='Playlist Collage'>
+        <div className={styles['playlist-collage']} data-name='Playlist Collage'>
           <div
-            className='collage-item collage-item--top-left'
+            className={`${styles['collage-item']} ${styles['collage-item--top-left']}`}
             style={{ backgroundImage: `url('${images[0]}')` }}
           />
           <div
-            className='collage-item collage-item--top-right'
+            className={`${styles['collage-item']} ${styles['collage-item--top-right']}`}
             style={{ backgroundImage: `url('${images[1]}')` }}
           />
           <div
-            className='collage-item collage-item--bottom-left'
+            className={`${styles['collage-item']} ${styles['collage-item--bottom-left']}`}
             style={{ backgroundImage: `url('${images[2]}')` }}
           />
           <div
-            className='collage-item collage-item--bottom-right'
+            className={`${styles['collage-item']} ${styles['collage-item--bottom-right']}`}
             style={{ backgroundImage: `url('${images[3]}')` }}
           />
         </div>

@@ -1,18 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useFetcher, useNavigate } from 'react-router'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
-import MuzaButton from '~/controls/MuzaButton'
-import MuzaInputField from '~/controls/MuzaInputField'
+import { IconButton } from '~/components/ui/button/icon-button'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { useMedia } from '~/store/media/mediaContext'
 import type { SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
-import styles from './PlaylistDrawer.module.css'
 
 interface PlaylistDrawerProps {
   isOpen: boolean
@@ -22,6 +21,7 @@ interface PlaylistDrawerProps {
 const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const fetcher = useFetcher<{ album: { tracks: SongDetails[] } }>()
   const { songs: allSongs, playlists } = useMedia()
 
   // Get playlist from context
@@ -34,6 +34,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   )
   const [searchQuery, setSearchQuery] = useState('')
   const [isDragOver, setIsDragOver] = useState(false)
+  const [pendingAlbumId, setPendingAlbumId] = useState<number | null>(null)
   const { updatePlaylist } = useUpdatePlaylist()
   // Update playlist name, description and visibility when playlist prop changes
   useEffect(() => {
@@ -97,6 +98,17 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
     [playlist, updatePlaylist]
   )
 
+  // Handle when album data is fetched
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.album && pendingAlbumId) {
+      const tracks = fetcher.data.album.tracks
+      if (tracks && tracks.length > 0) {
+        handleAddSongs(tracks)
+      }
+      setPendingAlbumId(null)
+    }
+  }, [fetcher.data, pendingAlbumId, handleAddSongs])
+
   // Helper function for removing songs from playlist
   const removeSongFromPlaylist = useCallback(
     (songToRemove: SongDetails) => {
@@ -155,16 +167,23 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
                 tracksToAdd = data.album.tracks as SongDetails[]
               }
             }
-            // Case 2: Album only has song IDs (from homepage)
+            // Case 2: Album only has song IDs (from homepage/explore)
             else if (
               data.album.songs &&
               Array.isArray(data.album.songs) &&
               data.album.songs.length > 0
             ) {
-              // Resolve song IDs to full song details
+              // Try to resolve song IDs from local songs first
               tracksToAdd = data.album.songs
                 .map((songId: number) => allSongs.find((song: SongDetails) => song.id === songId))
                 .filter((song: SongDetails | undefined): song is SongDetails => song !== undefined)
+
+              // If no songs found locally, fetch the full album from server using React Router
+              if (tracksToAdd.length === 0 && data.album.id) {
+                setPendingAlbumId(data.album.id)
+                fetcher.load(`/albums/${data.album.id}`)
+                return // Wait for fetcher to load the data
+              }
             }
 
             // Add all tracks from the album at once
@@ -177,7 +196,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
         }
       }
     },
-    [handleAddSongs, allSongs]
+    [handleAddSongs, allSongs, fetcher]
   )
 
   // Note: handleSave is not used in the current UI
@@ -217,106 +236,185 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
     }
   }
 
+  // Filter songs based on search query
+  const filteredSongs = React.useMemo(() => {
+    if (!playlist?.songs) return []
+    
+    if (!searchQuery.trim()) {
+      return playlist.songs
+    }
+
+    const query = searchQuery.toLowerCase().trim()
+    return playlist.songs.filter(song => {
+      const titleMatch = song.title?.toLowerCase().includes(query)
+      const artistMatch = song.artist?.toLowerCase().includes(query)
+      const albumMatch = song.album?.toLowerCase().includes(query)
+      
+      return titleMatch || artistMatch || albumMatch
+    })
+  }, [playlist?.songs, searchQuery])
+
   return (
     <div
-      className={`${styles['playlist-drawer']} ${isOpen ? styles['playlist-drawer--open'] : ''}`}
+      className={cn(
+        'fixed right-0 top-0 z-[99] flex h-screen w-[374px] flex-col border-l border-(--muza-light-border-color) bg-background shadow-[-4px_0_16px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out',
+        'pt-[var(--muza-topbar-height,64px)]',
+        isOpen ? 'translate-x-0' : 'translate-x-full'
+      )}
     >
-      <div className={styles['playlist-drawer__header']}>
-        <div className={styles['playlist-drawer__header-left']}>
-          <div className={styles['playlist-badge']}>
-            <MuzaIcon iconName='playlist' />
-            <span>{t('playlist.playlist')}</span>
+      {/* Header */}
+      <div className='flex items-center justify-between gap-2 border-b border-(--muza-light-border-color) bg-background px-4 py-2'>
+        <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-1 rounded-sm border border-transparent bg-secondary px-2 py-0.5'>
+            <div className='flex h-3 w-3 items-center justify-center'>
+              <MuzaIcon iconName='ListMusic' />
+            </div>
+            <span className='whitespace-nowrap text-sm font-normal leading-none text-[var(--muza-primary-text-color)]'>
+              {t('playlist.playlist')}
+            </span>
           </div>
         </div>
-        <div className={styles['playlist-drawer__header-right']}>
-          <button className={styles['playlist-drawer__button']} onClick={handleClose}>
-            <MuzaIcon iconName='ellipsis' />
-          </button>
-          <button className={styles['playlist-drawer__button']} onClick={handleNavigateToPlaylist}>
-            <MuzaIcon iconName='MoveDiagonal' />
-          </button>
-          <button className={styles['playlist-drawer__button']} onClick={handleClose}>
-            <MuzaIcon iconName='Close' />
-          </button>
+        <div className='flex items-center gap-2'>
+          <IconButton
+            variant='outline'
+            icon={<MuzaIcon iconName='ellipsis' />}
+            onClick={handleClose}
+            className='size-9 border-[0.66px] border-(--muza-light-border-color) bg-background/50 backdrop-blur-lg'
+          />
+          <IconButton
+            variant='outline'
+            icon={<MuzaIcon iconName='MoveDiagonal' />}
+            onClick={handleNavigateToPlaylist}
+            className='size-9 border-[0.66px] border-(--muza-light-border-color) bg-background/50 backdrop-blur-lg'
+          />
+          <IconButton
+            variant='outline'
+            icon={<MuzaIcon iconName='Close' />}
+            onClick={handleClose}
+            className='size-9 border-[0.66px] border-(--muza-light-border-color) bg-background/50 backdrop-blur-lg'
+          />
         </div>
       </div>
 
+      {/* Content */}
       <div
-        className={styles['playlist-drawer__content']}
+        className='flex flex-1 flex-col gap-4 overflow-y-auto px-4'
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className={styles['playlist-drawer__info']}>
-          <div className={styles['playlist-drawer__title-section']}>
-            <MuzaInputField
+        {/* Playlist Info */}
+        <div className='flex flex-col gap-2 pt-4'>
+          <div className='flex flex-col gap-2'>
+            <input
+              type='text'
               value={playlistName}
               onChange={e => setPlaylistName(e.target.value)}
               placeholder={t('playlist.enterName')}
-              className={styles['playlist-drawer__title-input']}
-              name='playlist-name'
+              className='border-none bg-transparent p-0 text-2xl font-semibold leading-7 text-foreground outline-none placeholder:text-muted-foreground'
+              style={{
+                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+              }}
             />
-            <MuzaInputField
+            <input
+              type='text'
               value={playlistDescription}
               onChange={e => setPlaylistDescription(e.target.value)}
               placeholder={t('playlist.enterDescription')}
-              className={styles['playlist-drawer__description-input']}
-              name='playlist-description'
+              className='border-none bg-transparent p-0 text-base leading-6 text-muted-foreground outline-none placeholder:text-muted-foreground'
+              style={{
+                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+              }}
             />
           </div>
 
-          <div className={styles['playlist-drawer__visibility-section']}>
-            <div className={styles['playlist-drawer__visibility-badge']}>
-              <MuzaIcon iconName='globe' />
-              <span>{isPublic ? t('playlist.public') : t('playlist.private')}</span>
+          <div className='mt-4 flex gap-1'>
+            <div className='flex items-center gap-1 rounded-sm border-[0.5px] border-(--muza-light-border-color) bg-background/50 px-2 py-0.5 backdrop-blur-lg'>
+              <div className='flex h-3 w-3 items-center justify-center'>
+                <MuzaIcon iconName='globe' />
+              </div>
+              <span className='whitespace-nowrap text-sm font-normal leading-none text-foreground'>
+                {isPublic ? t('playlist.public') : t('playlist.private')}
+              </span>
             </div>
           </div>
         </div>
 
-        <div className={styles['playlist-drawer__controls']}>
-          <MuzaButton
+        {/* Controls */}
+        <div className='flex items-stretch gap-2'>
+          <button
             onClick={() => {}}
-            className={styles['playlist-drawer__sort-button']}
-            content={t('playlist.sort')}
-            iconName='ArrowUpDown'
-          />
+            className='flex h-9 w-fit items-center gap-2 rounded-full border border-(--muza-light-border-color) bg-background/50 px-4 py-2 backdrop-blur-lg transition-colors hover:bg-background/70'
+          >
+            <div className='flex h-4 w-4 items-center justify-center'>
+              <MuzaIcon iconName='ArrowUpDown' />
+            </div>
+            <span
+              className='whitespace-nowrap text-base font-medium leading-5 text-foreground'
+              style={{
+                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+              }}
+            >
+              {t('playlist.sort')}
+            </span>
+          </button>
 
-          <MuzaInputField
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder={t('playlist.filterPlaceholder')}
-            className={styles['playlist-drawer__search-input']}
-            leadingIcon='search'
-            name='playlist-drawer-search-input'
-          />
+          <div className='relative flex flex-1 items-center'>
+            <div className='pointer-events-none absolute left-3 flex h-4 w-4 items-center justify-center'>
+              <MuzaIcon iconName='search' />
+            </div>
+            <input
+              type='text'
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder={t('playlist.filterPlaceholder')}
+              className='h-9 w-full rounded-full border border-input bg-background px-3 py-1.5 pl-10 text-sm leading-5 text-muted-foreground outline-none placeholder:text-muted-foreground focus:border-(--muza-toggle-active-color)'
+              style={{
+                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+              }}
+            />
+          </div>
         </div>
 
-        <div className={styles['playlist-drawer__song-list']}>
-          {/* Main drop zone - always visible at the top */}
-          {!playlist?.songs.length && (
-            <div
-              className={`${styles['playlist-drawer__drop-zone']} ${isDragOver ? styles['playlist-drawer__drop-zone--active'] : ''}`}
-            >
-              <span>{t('playlist.dropSongsHere')}</span>
-            </div>
-          )}
+        {/* Song List */}
+        <div className='flex flex-1 flex-col gap-2 pb-4'>
+          {/* Main drop zone */}
+          <div
+            className={cn(
+              'flex h-14 items-center justify-center rounded bg-(--colors_muted_light) px-2 py-1 transition-all',
+              isDragOver && 'border border-foreground'
+            )}
+          >
+            <span className='text-sm font-normal leading-4 text-muted-foreground'>
+              {t('playlist.dropSongsHere')}
+            </span>
+          </div>
 
-          {/* Display current playlist songs below the drop zone */}
+          {/* Display current playlist songs */}
           {playlist?.songs && playlist.songs.length > 0 && (
-            <div className={styles['playlist-drawer__songs']}>
-              {playlist.songs.map((song, index) => (
-                <div key={song.id || index} className={styles['playlist-drawer__song-item']}>
-                  <SongLineWithCover
-                    details={{ ...song, index: index + 1 }}
-                    onClick={() => {}}
-                    isPlaying={false}
-                    showHoverActions={false}
-                    playlistMode={true}
-                    draggable={isOpen}
-                    onRemoveSong={removeSongFromPlaylist}
-                  />
+            <div className='mt-4 flex flex-col gap-1'>
+              {filteredSongs.length > 0 ? (
+                filteredSongs.map((song, index) => (
+                  <div key={song.id || index} className='rounded transition-colors hover:bg-hover'>
+                    <SongLineWithCover
+                      details={{ ...song, index: index + 1 }}
+                      onClick={() => {}}
+                      isPlaying={false}
+                      showHoverActions={false}
+                      playlistMode={true}
+                      draggable={false}
+                      onRemoveSong={removeSongFromPlaylist}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className='flex flex-col items-center justify-center gap-2 py-8'>
+                  <MuzaIcon iconName='search' />
+                  <span className='text-sm text-muted-foreground'>
+                    {t('playlist.noSongsFound')}
+                  </span>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>

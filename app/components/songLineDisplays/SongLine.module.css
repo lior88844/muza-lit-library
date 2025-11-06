@@ -12,9 +12,16 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--song-line-padding);
-  cursor: default;
-  border-radius: var(--muza-border-radius-md);
   cursor: pointer;
+  border-radius: var(--muza-border-radius-md);
+}
+
+.song-line-simple[draggable='true'] {
+  cursor: grab;
+}
+
+.song-line-simple[draggable='true']:active {
+  cursor: grabbing;
 }
 
 .song-line-simple:hover,
