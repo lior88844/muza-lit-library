@@ -239,7 +239,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   // Filter songs based on search query
   const filteredSongs = React.useMemo(() => {
     if (!playlist?.songs) return []
-    
+
     if (!searchQuery.trim()) {
       return playlist.songs
     }
@@ -249,7 +249,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
       const titleMatch = song.title?.toLowerCase().includes(query)
       const artistMatch = song.artist?.toLowerCase().includes(query)
       const albumMatch = song.album?.toLowerCase().includes(query)
-      
+
       return titleMatch || artistMatch || albumMatch
     })
   }, [playlist?.songs, searchQuery])
@@ -257,19 +257,19 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   return (
     <div
       className={cn(
-        'fixed right-0 top-0 z-[99] flex h-screen w-[374px] flex-col border-l border-(--muza-light-border-color) bg-background shadow-[-4px_0_16px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out',
+        'bg-background fixed top-0 right-0 z-[99] flex h-screen w-[374px] flex-col border-l border-(--muza-light-border-color) shadow-[-4px_0_16px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out',
         'pt-[var(--muza-topbar-height,64px)]',
         isOpen ? 'translate-x-0' : 'translate-x-full'
       )}
     >
       {/* Header */}
-      <div className='flex items-center justify-between gap-2 border-b border-(--muza-light-border-color) bg-background px-4 py-2'>
+      <div className='bg-background flex items-center justify-between gap-2 border-b border-(--muza-light-border-color) px-4 py-2'>
         <div className='flex items-center gap-2'>
-          <div className='flex items-center gap-1 rounded-sm border border-transparent bg-secondary px-2 py-0.5'>
+          <div className='bg-secondary flex items-center gap-1 rounded-sm border border-transparent px-2 py-0.5'>
             <div className='flex h-3 w-3 items-center justify-center'>
               <MuzaIcon iconName='ListMusic' />
             </div>
-            <span className='whitespace-nowrap text-sm font-normal leading-none text-[var(--muza-primary-text-color)]'>
+            <span className='text-sm leading-none font-normal whitespace-nowrap text-[var(--muza-primary-text-color)]'>
               {t('playlist.playlist')}
             </span>
           </div>
@@ -279,19 +279,19 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
             variant='outline'
             icon={<MuzaIcon iconName='ellipsis' />}
             onClick={handleClose}
-            className='size-9 border-[0.66px] border-(--muza-light-border-color) bg-background/50 backdrop-blur-lg'
+            className='bg-background/50 size-9 border-[0.66px] border-(--muza-light-border-color) backdrop-blur-lg'
           />
           <IconButton
             variant='outline'
             icon={<MuzaIcon iconName='MoveDiagonal' />}
             onClick={handleNavigateToPlaylist}
-            className='size-9 border-[0.66px] border-(--muza-light-border-color) bg-background/50 backdrop-blur-lg'
+            className='bg-background/50 size-9 border-[0.66px] border-(--muza-light-border-color) backdrop-blur-lg'
           />
           <IconButton
             variant='outline'
             icon={<MuzaIcon iconName='Close' />}
             onClick={handleClose}
-            className='size-9 border-[0.66px] border-(--muza-light-border-color) bg-background/50 backdrop-blur-lg'
+            className='bg-background/50 size-9 border-[0.66px] border-(--muza-light-border-color) backdrop-blur-lg'
           />
         </div>
       </div>
@@ -311,9 +311,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
               value={playlistName}
               onChange={e => setPlaylistName(e.target.value)}
               placeholder={t('playlist.enterName')}
-              className='border-none bg-transparent p-0 text-2xl font-semibold leading-7 text-foreground outline-none placeholder:text-muted-foreground'
+              className='text-foreground placeholder:text-muted-foreground border-none bg-transparent p-0 text-2xl leading-7 font-semibold outline-none'
               style={{
-                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+                fontFamily:
+                  "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
               }}
             />
             <input
@@ -321,19 +322,20 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
               value={playlistDescription}
               onChange={e => setPlaylistDescription(e.target.value)}
               placeholder={t('playlist.enterDescription')}
-              className='border-none bg-transparent p-0 text-base leading-6 text-muted-foreground outline-none placeholder:text-muted-foreground'
+              className='text-muted-foreground placeholder:text-muted-foreground border-none bg-transparent p-0 text-base leading-6 outline-none'
               style={{
-                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+                fontFamily:
+                  "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
               }}
             />
           </div>
 
           <div className='mt-4 flex gap-1'>
-            <div className='flex items-center gap-1 rounded-sm border-[0.5px] border-(--muza-light-border-color) bg-background/50 px-2 py-0.5 backdrop-blur-lg'>
+            <div className='bg-background/50 flex items-center gap-1 rounded-sm border-[0.5px] border-(--muza-light-border-color) px-2 py-0.5 backdrop-blur-lg'>
               <div className='flex h-3 w-3 items-center justify-center'>
                 <MuzaIcon iconName='globe' />
               </div>
-              <span className='whitespace-nowrap text-sm font-normal leading-none text-foreground'>
+              <span className='text-foreground text-sm leading-none font-normal whitespace-nowrap'>
                 {isPublic ? t('playlist.public') : t('playlist.private')}
               </span>
             </div>
@@ -344,15 +346,16 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
         <div className='flex items-stretch gap-2'>
           <button
             onClick={() => {}}
-            className='flex h-9 w-fit items-center gap-2 rounded-full border border-(--muza-light-border-color) bg-background/50 px-4 py-2 backdrop-blur-lg transition-colors hover:bg-background/70'
+            className='bg-background/50 hover:bg-background/70 flex h-9 w-fit items-center gap-2 rounded-full border border-(--muza-light-border-color) px-4 py-2 backdrop-blur-lg transition-colors'
           >
             <div className='flex h-4 w-4 items-center justify-center'>
               <MuzaIcon iconName='ArrowUpDown' />
             </div>
             <span
-              className='whitespace-nowrap text-base font-medium leading-5 text-foreground'
+              className='text-foreground text-base leading-5 font-medium whitespace-nowrap'
               style={{
-                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+                fontFamily:
+                  "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
               }}
             >
               {t('playlist.sort')}
@@ -368,9 +371,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={t('playlist.filterPlaceholder')}
-              className='h-9 w-full rounded-full border border-input bg-background px-3 py-1.5 pl-10 text-sm leading-5 text-muted-foreground outline-none placeholder:text-muted-foreground focus:border-(--muza-toggle-active-color)'
+              className='border-input bg-background text-muted-foreground placeholder:text-muted-foreground h-9 w-full rounded-full border px-3 py-1.5 pl-10 text-sm leading-5 outline-none focus:border-(--muza-toggle-active-color)'
               style={{
-                fontFamily: "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
+                fontFamily:
+                  "var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif",
               }}
             />
           </div>
@@ -382,10 +386,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
           <div
             className={cn(
               'flex h-14 items-center justify-center rounded bg-(--colors_muted_light) px-2 py-1 transition-all',
-              isDragOver && 'border border-foreground'
+              isDragOver && 'border-foreground border'
             )}
           >
-            <span className='text-sm font-normal leading-4 text-muted-foreground'>
+            <span className='text-muted-foreground text-sm leading-4 font-normal'>
               {t('playlist.dropSongsHere')}
             </span>
           </div>
@@ -395,7 +399,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
             <div className='mt-4 flex flex-col gap-1'>
               {filteredSongs.length > 0 ? (
                 filteredSongs.map((song, index) => (
-                  <div key={song.id || index} className='rounded transition-colors hover:bg-hover'>
+                  <div key={song.id || index} className='hover:bg-hover rounded transition-colors'>
                     <SongLineWithCover
                       details={{ ...song, index: index + 1 }}
                       onClick={() => {}}
@@ -410,7 +414,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
               ) : (
                 <div className='flex flex-col items-center justify-center gap-2 py-8'>
                   <MuzaIcon iconName='search' />
-                  <span className='text-sm text-muted-foreground'>
+                  <span className='text-muted-foreground text-sm'>
                     {t('playlist.noSongsFound')}
                   </span>
                 </div>
