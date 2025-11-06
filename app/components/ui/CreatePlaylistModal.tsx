@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import MuzaInputField from '~/controls/MuzaInputField'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { Button, IconButton } from './button'
 import styles from './CreatePlaylistModal.module.css'
+import { Input } from './input'
 import { Switch } from './switch'
 import { Typography } from './typography'
 
@@ -79,7 +79,7 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
 
           <div className={styles.modalContentInner}>
             <div className={styles.formGroup}>
-              <MuzaInputField
+              <Input
                 label={t('playlist.title')}
                 placeholder={t('playlist.titlePlaceholder')}
                 value={playlistName}
