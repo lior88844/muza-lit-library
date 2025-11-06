@@ -149,8 +149,8 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
           const data = JSON.parse(dragData)
 
           // Handle songs
-          if (data.type === EntityTypeEnum.Track && data.track) {
-            handleAddSongs([data.track])
+          if (data.type === 'song' && data.song) {
+            handleAddSongs([data.song])
           }
 
           // Handle albums
