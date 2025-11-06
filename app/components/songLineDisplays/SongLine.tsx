@@ -44,7 +44,7 @@ const SongLine: React.FC<SongLineProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
   const { dragHandlers } = useDraggable({
-    type: 'song',
+    type: EntityTypeEnum.Track,
     data: details,
     enabled: draggable,
   })

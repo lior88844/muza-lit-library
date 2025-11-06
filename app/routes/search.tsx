@@ -21,6 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       albums: [],
       artists: [],
       tracks: [],
+      playlists: [],
       total: 0,
       query: '',
     }
@@ -37,6 +38,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       albums: [],
       artists: [],
       tracks: [],
+      playlists: [],
       total: 0,
       query: query.trim(),
     }
@@ -54,6 +56,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       albums: [],
       artists: [],
       tracks: [],
+      playlists: [],
       total: 0,
       query: query.trim(),
     }
@@ -77,7 +80,11 @@ export default function Search() {
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q') || data.query || ''
 
-  const hasResults = data.albums.length > 0 || data.artists.length > 0 || data.tracks.length > 0
+  const hasResults =
+    data.albums.length > 0 ||
+    data.artists.length > 0 ||
+    data.tracks.length > 0 ||
+    data.playlists.length > 0
 
   return (
     <div className='mx-auto max-w-[1400px] px-6 py-8'>
@@ -106,7 +113,12 @@ export default function Search() {
           <Typography className='text-muted-foreground'>{t('search.tryDifferentQuery')}</Typography>
         </div>
       ) : (
-        <SearchResultsList albums={data.albums} artists={data.artists} tracks={data.tracks} />
+        <SearchResultsList
+          albums={data.albums}
+          artists={data.artists}
+          tracks={data.tracks}
+          playlists={data.playlists}
+        />
       )}
     </div>
   )

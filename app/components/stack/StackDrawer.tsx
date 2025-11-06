@@ -2,21 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
-import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import type { Entity } from 'server/api/stack/stack.service'
 
-import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
-import ArtistPreview from '~/components/artistDisplays/ArtistPreview'
-import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Button } from '~/components/ui/button'
 import DropdownMenu from '~/components/ui/DropdownMenu'
 import MuzaInputField from '~/controls/MuzaInputField'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useFetcherAsync } from '~/lib/useFetcherAsync'
 import { cn } from '~/lib/utils'
-import type { Artist, SongDetails, StackItemToEdit, StackToEdit } from '~/store/models'
+import type { StackItemToEdit, StackToEdit } from '~/store/models'
 
 import { EntityTypeEnum, StackSelectionTypeEnum } from '../../../server/db/stack.entity'
+import EntityPreview from './EntityPreview'
 
 interface StackDrawerProps {
   isOpen: boolean
@@ -117,21 +114,22 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
       setIsDragOver(false)
 
       const dragData = e.dataTransfer.getData('application/json')
+
       if (dragData) {
         try {
           const data = JSON.parse(dragData)
           // Handle songs/tracks
-          if (data.type === 'song' && data.song) {
-            handleAddEntity(data.song, EntityTypeEnum.Track)
+          if (data.type === EntityTypeEnum.Track && data.track) {
+            handleAddEntity(data.track, EntityTypeEnum.Track)
           }
 
           // Handle albums
-          if (data.type === 'album' && data.album) {
+          if (data.type === EntityTypeEnum.Album && data.album) {
             handleAddEntity(data.album, EntityTypeEnum.Album)
           }
 
           // Handle artists
-          if (data.type === 'artist' && data.artist) {
+          if (data.type === EntityTypeEnum.Artist && data.artist) {
             handleAddEntity(data.artist, EntityTypeEnum.Artist)
           }
         } catch {
@@ -244,85 +242,21 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
 
   const dropdownItems = [
     {
-      id: 'album',
+      id: EntityTypeEnum.Album,
       title: t('common.albums'),
       onClick: () => handleEntityTypeChange(EntityTypeEnum.Album),
     },
     {
-      id: 'artist',
+      id: EntityTypeEnum.Artist,
       title: t('common.artists'),
       onClick: () => handleEntityTypeChange(EntityTypeEnum.Artist),
     },
     {
-      id: 'song',
+      id: EntityTypeEnum.Track,
       title: t('common.songs'),
       onClick: () => handleEntityTypeChange(EntityTypeEnum.Track),
     },
   ]
-
-  const renderStackItem = (item: StackItemToEdit, index: number) => {
-    if (!item.entity) return null
-
-    switch (item.entityType) {
-      case EntityTypeEnum.Album: {
-        const album = item.entity as MiniAlbum
-        return (
-          <div
-            key={item.entity.id}
-            className='group relative rounded transition-colors hover:bg-[#eeeeee]'
-          >
-            <AlbumPreview details={album} draggable={false} />
-            <button
-              className='absolute top-2 right-2 z-10 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80'
-              onClick={() => handleRemoveEntity(item)}
-              aria-label='Remove item'
-            >
-              <MuzaIcon iconName='Close' />
-            </button>
-          </div>
-        )
-      }
-      case EntityTypeEnum.Artist: {
-        const artist = item.entity as Artist
-        return (
-          <div
-            key={item.entity.id}
-            className='group relative rounded transition-colors hover:bg-[#eeeeee]'
-          >
-            <ArtistPreview details={artist} draggable={false} />
-            <button
-              className='absolute top-2 right-2 z-10 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80'
-              onClick={() => handleRemoveEntity(item)}
-              aria-label='Remove item'
-            >
-              <MuzaIcon iconName='Close' />
-            </button>
-          </div>
-        )
-      }
-      case EntityTypeEnum.Track: {
-        const song = item.entity as SongDetails
-        return (
-          <div
-            key={item.entity.id}
-            className='relative rounded transition-colors hover:bg-[#eeeeee]'
-          >
-            <SongLineWithCover
-              details={{ ...song, index: index + 1 }}
-              onClick={() => {}}
-              isPlaying={false}
-              showHoverActions={false}
-              playlistMode={true}
-              draggable={false}
-              onRemoveSong={() => handleRemoveEntity(item)}
-            />
-          </div>
-        )
-      }
-      default:
-        return null
-    }
-  }
 
   return (
     <div
@@ -408,8 +342,15 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
 
           {/* Display current stack items */}
           {tempStack.items.length > 0 && (
-            <div className='mt-4 flex flex-col gap-3'>
-              {tempStack.items.map((item, index) => renderStackItem(item, index))}
+            <div className='flex flex-col gap-3'>
+              {tempStack.items.map(item => (
+                <EntityPreview
+                  key={item.entity.id}
+                  entity={item.entity}
+                  entityType={item.entityType}
+                  playlistMode
+                />
+              ))}
             </div>
           )}
         </div>

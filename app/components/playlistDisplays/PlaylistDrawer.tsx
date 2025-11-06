@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFetcher, useNavigate } from 'react-router'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { IconButton } from '~/components/ui/button/icon-button'
@@ -148,12 +149,12 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
           const data = JSON.parse(dragData)
 
           // Handle songs
-          if (data.type === 'song' && data.song) {
-            handleAddSongs([data.song])
+          if (data.type === EntityTypeEnum.Track && data.track) {
+            handleAddSongs([data.track])
           }
 
           // Handle albums
-          if (data.type === 'album' && data.album) {
+          if (data.type === EntityTypeEnum.Album && data.album) {
             let tracksToAdd: SongDetails[] = []
 
             // Case 1: Album has full track details (from album detail page)

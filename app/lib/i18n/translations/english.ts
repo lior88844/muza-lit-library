@@ -181,6 +181,7 @@ const english = {
   'search.albums': 'Albums',
   'search.artists': 'Artists',
   'search.tracks': 'Tracks',
+  'search.playlists': 'Playlists',
 
   // Visibility Options
   'visibility.public': 'Public',

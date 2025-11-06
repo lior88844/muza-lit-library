@@ -47,7 +47,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
 
   const { dragHandlers, preventClickWhileDragging } = useDraggable({
-    type: 'song',
+    type: EntityTypeEnum.Track,
     data: details,
     enabled: draggable,
   })

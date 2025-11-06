@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
+import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 interface UseDraggableOptions<T> {
-  type: 'song' | 'album' | 'playlist' | 'artist'
+  type: EntityTypeEnum
   data: T
   enabled: boolean
   onDragStart?: () => void
