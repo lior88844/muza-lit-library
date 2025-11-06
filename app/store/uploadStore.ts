@@ -162,7 +162,7 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
   setAudioFiles: (files: File[]) => {
     set({ audioFiles: files })
     // Auto-generate metadata for new files
-    const { trackMetadata, formData } = get()
+    const { formData } = get()
     get().generateTrackMetadata(files, formData.mainArtist)
   },
 

@@ -35,15 +35,6 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
   onFileUpload,
   onFindAlbumDetails,
 }) => {
-  const handleFindAlbumDetails = () => {
-    if (onFindAlbumDetails) {
-      onFindAlbumDetails()
-    } else {
-      // Default behavior - could show a message or do nothing
-      console.log('Find album details functionality not implemented yet')
-    }
-  }
-
   return (
     <div className='h-full'>
       <div className='flex h-full'>
@@ -55,7 +46,7 @@ const UploadStepOne: React.FC<UploadStepOneProps> = ({
             onMusicianChange={onMusicianChange}
             onAddMusician={onAddMusician}
             onRemoveMusician={onRemoveMusician}
-            onFindAlbumDetails={handleFindAlbumDetails}
+            onFindAlbumDetails={onFindAlbumDetails}
           />
         </div>
 

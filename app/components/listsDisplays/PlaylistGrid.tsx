@@ -8,7 +8,10 @@ import CreatePlaylistCard from './CreatePlaylistCard'
 import styles from './PlaylistGrid.module.css'
 
 interface PlaylistGridProps {
+  // TODO: provide proper type for playlists
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   playlists: any[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onPlaylistClick: (playlist: any) => void
   onCreatePlaylist: () => void
 }

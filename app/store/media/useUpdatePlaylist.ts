@@ -56,7 +56,7 @@ export const useUpdatePlaylist = () => {
           })
         }
         return result
-      } catch (error) {
+      } catch {
         data.playlists = originalPlaylists
         toast.error(t('playlist.updateFailed'), {
           position: 'bottom-center',

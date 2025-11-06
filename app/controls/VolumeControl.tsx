@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import styles from './VolumeControl.module.css'
 
@@ -55,17 +55,20 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
     onVolumeChange?.(steppedValue)
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || !sliderRef.current || disabled) return
-    const rect = sliderRef.current.getBoundingClientRect()
-    const handleRadius = 8
-    const minX = handleRadius
-    const maxX = rect.width - handleRadius
-    const x = Math.max(minX, Math.min(maxX, e.clientX - rect.left))
-    const percentage = ((x - minX) / (maxX - minX)) * 100
-    const steppedValue = Math.round(percentage / volumeStep) * volumeStep
-    onVolumeChange?.(steppedValue)
-  }
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging || !sliderRef.current || disabled) return
+      const rect = sliderRef.current.getBoundingClientRect()
+      const handleRadius = 8
+      const minX = handleRadius
+      const maxX = rect.width - handleRadius
+      const x = Math.max(minX, Math.min(maxX, e.clientX - rect.left))
+      const percentage = ((x - minX) / (maxX - minX)) * 100
+      const steppedValue = Math.round(percentage / volumeStep) * volumeStep
+      onVolumeChange?.(steppedValue)
+    },
+    [isDragging, sliderRef, disabled, volumeStep, onVolumeChange]
+  )
 
   const handleMouseDown = () => {
     if (disabled) return
@@ -88,7 +91,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isDragging])
+  }, [handleMouseMove, isDragging])
 
   const mapValueToPosition = (value: number): number => {
     return 8 + (value * 84) / 100

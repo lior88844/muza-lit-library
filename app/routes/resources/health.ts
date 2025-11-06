@@ -1,11 +1,9 @@
 import { testConnection } from '../../../server/db/connection'
-import type { Route } from '../../+types/root'
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader() {
   try {
-    console.log('Health check started')
     const isDbHealthy = await testConnection()
-    console.log('Health check completed')
+
     const healthStatus = {
       status: isDbHealthy ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),

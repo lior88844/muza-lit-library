@@ -19,7 +19,7 @@ import styles from './MusicListSection.module.css'
 const MusicListSectionComponent: React.FC<{
   stack: StackWithEntities
   onShowAll: (stack: StackWithEntities) => void
-}> = ({ stack, onShowAll }) => {
+}> = ({ stack }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
   const {

@@ -1,5 +1,3 @@
-import '../styles/variables.css'
-
 import { useCallback, useState } from 'react'
 
 import { AdminFileDropArea, AdminUploadTable } from '~/components/adminUpload'
@@ -168,7 +166,6 @@ export default function AdminUpload() {
     const uploadableItems = selectedItemList.filter(item => isItemUploadReady(item))
 
     if (uploadableItems.length === 0) {
-      // eslint-disable-next-line no-console
       console.warn('No uploadable items selected')
       return
     }
@@ -219,7 +216,6 @@ export default function AdminUpload() {
 
           // Remove from selected items
         } catch (error) {
-          // eslint-disable-next-line no-console
           console.error(`Upload failed for item ${item.id}:`, error)
           // Update with error state
           setUploadedItems(prev =>

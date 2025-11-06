@@ -60,7 +60,7 @@ export default function AlbumPage() {
         showBackButton={true}
       />
       <div>
-        {album.tracks.map(({ album, ...track }) => {
+        {album.tracks.map(({ album: _, ...track }) => {
           return (
             <SongLine
               key={track.id}

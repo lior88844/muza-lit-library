@@ -1,6 +1,3 @@
-import '../styles/variables.css'
-
-import React from 'react'
 import { useNavigate } from 'react-router'
 
 import UploadStepOne from '~/components/upload/steps/UploadStepOne'
@@ -37,7 +34,6 @@ export default function Upload() {
     nextStep,
     previousStep,
     resetUpload,
-    getUploadData,
     setTestMode,
     populateTestData,
   } = useUploadStore()
@@ -72,7 +68,7 @@ export default function Upload() {
 
   const handleFindAlbumDetails = () => {
     // TODO: Implement album details search functionality
-    console.log('Finding album details for:', formData.albumTitle, 'by', formData.mainArtist)
+    // Finding album details for: formData.albumTitle by formData.mainArtist
     // This could call an API to search for album information
     // and populate the form fields automatically
   }
@@ -88,8 +84,7 @@ export default function Upload() {
   const handleNext = async () => {
     if (currentStep === 3) {
       // Final submit logic
-      const albumData = getUploadData()
-      console.log('Album data ready for upload:', albumData)
+      //   const albumData = getUploadData()
       alert(`Upload complete! Album: "${formData.albumTitle}" with ${trackMetadata.length} tracks`)
       // Reset test mode if it's currently enabled
       if (isTestMode) {
@@ -140,11 +135,9 @@ export default function Upload() {
             coverImage={coverImage}
             onSave={() => {
               // Handle save functionality if needed
-              console.log('Save album data')
             }}
             onPublish={() => {
               // This will be handled by the footer's publish button
-              console.log('Publish album')
             }}
           />
         )

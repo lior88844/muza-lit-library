@@ -73,8 +73,6 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
             alt={`${item.name} cover`}
             className='border-border-light h-full w-full rounded-sm border object-cover'
             onError={e => {
-              console.error('Failed to load cover image from URL:', item.manualCoverImgUrl)
-              // Fallback to input field if image fails to load
               e.currentTarget.style.display = 'none'
             }}
           />

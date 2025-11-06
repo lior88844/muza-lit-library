@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import MuzaInputField from '~/controls/MuzaInputField'
-import ToggleButton from '~/controls/ToggleButton'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { Button, IconButton } from './button'
 import styles from './CreatePlaylistModal.module.css'
+import { Switch } from './switch'
 import { Typography } from './typography'
 
 interface CreatePlaylistModalProps {
@@ -88,10 +89,20 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
 
             <div className={styles.formGroup}>
               <div className={styles.privacyToggleWrapper}>
-                <ToggleButton
+                <Switch
                   checked={isPrivate}
-                  onChange={handleToggleChange}
-                  label={t('playlist.makePrivate')}
+                  onCheckedChange={handleToggleChange}
+                  label={
+                    <Typography
+                      variant='default'
+                      className={cn(
+                        'ms-2 flex items-center gap-2 font-medium',
+                        styles.privacyToggleLabel
+                      )}
+                    >
+                      {t('playlist.makePrivate')}
+                    </Typography>
+                  }
                 />
                 <p className={styles.privacyExplanation}>{t('playlist.privateExplanation')}</p>
               </div>

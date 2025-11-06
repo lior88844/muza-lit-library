@@ -32,7 +32,7 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { addPlaylist, loading } = useAddPlaylist()
+  const { addPlaylist } = useAddPlaylist()
   const [internalCollapsed, setInternalCollapsed] = useState(false) // Start open by default
   const [isModalOpen, setIsModalOpen] = useState(false)
 

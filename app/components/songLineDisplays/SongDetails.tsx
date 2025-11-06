@@ -22,12 +22,7 @@ const formatPlays = (plays: number): string => {
   return `${plays.toLocaleString()} Plays`
 }
 
-const SongDetails: React.FC<SongDetailsProps> = ({
-  details,
-  onClick,
-  isPlaying = false,
-  isActive = false,
-}) => {
+const SongDetails: React.FC<SongDetailsProps> = ({ details, onClick, isActive = false }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isSelected, setIsSelected] = useState(false)
 

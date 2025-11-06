@@ -386,7 +386,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
           {/* Main drop zone */}
           <div
             className={cn(
-              'flex h-14 items-center justify-center rounded bg-(--colors_muted_light) px-2 py-1 transition-all',
+              'bg-muted flex h-14 items-center justify-center rounded px-2 py-1 transition-all',
               isDragOver && 'border-foreground border'
             )}
           >

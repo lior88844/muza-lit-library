@@ -4,6 +4,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
+import { Divider } from '~/components/ui/divider'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { SongDetails } from '~/store/models'
 import type { TrackMetadata, UploadFormData } from '~/store/uploadStore'
@@ -16,13 +17,7 @@ interface UploadStepThreeProps {
   onPublish?: () => void
 }
 
-const UploadStepThree: FC<UploadStepThreeProps> = ({
-  formData,
-  trackMetadata,
-  coverImage,
-  onSave,
-  onPublish,
-}) => {
+const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, coverImage }) => {
   const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } =
     useCurrentPlayerStore()
 
@@ -96,7 +91,7 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({
           customActions={<div></div>}
         />
 
-        <hr className='border-border-light my-4 border-t border-none' />
+        <Divider />
 
         <div className='mt-4 mb-4 flex flex-1 flex-col gap-0 gap-x-2'>
           {songDetails.map((song: SongDetails) => (

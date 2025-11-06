@@ -53,7 +53,6 @@ interface SortableTrackRowProps {
 const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
   track,
   index,
-  onTrackMetadataChange,
   onDeleteTrack,
   playbackState,
   onPlayPause,
@@ -195,14 +194,9 @@ const UploadStepTwo: React.FC<UploadStepTwoProps> = ({
       audio.src = URL.createObjectURL(track.file)
       audioRef.current = audio
 
-      audio
-        .play()
-        .then(() => {
-          setPlaybackState({ currentTrackId: trackId, isPlaying: true })
-        })
-        .catch(error => {
-          console.error('Error playing audio:', error)
-        })
+      audio.play().then(() => {
+        setPlaybackState({ currentTrackId: trackId, isPlaying: true })
+      })
 
       // Handle audio end
       audio.addEventListener('ended', () => {

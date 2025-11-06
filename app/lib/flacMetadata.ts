@@ -75,7 +75,7 @@ export async function extractFlacMetadata(file: File): Promise<FlacMetadata | nu
         ? metadata.common.musicbrainz_releasegroupid[0]
         : metadata.common.musicbrainz_releasegroupid,
     }
-  } catch (error) {
+  } catch {
     // Error extracting FLAC metadata - could add proper logging here
     return null
   }
@@ -117,8 +117,8 @@ export async function extractDiscoverMetadata(file: File) {
       musicbrainzAlbumId: musicbrainzAlbumId || undefined,
       discNumber: metadata.common.disk?.no || undefined,
     }
-  } catch (error) {
-    console.error('Error extracting discover metadata:', error)
+  } catch {
+    // Error extracting discover metadata - could add proper logging here
     return null
   }
 }

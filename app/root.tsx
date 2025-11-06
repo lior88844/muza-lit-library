@@ -16,8 +16,6 @@ import {
   useLocation,
 } from 'react-router'
 
-import { cn } from '~/lib/utils'
-
 import { fetchAllData } from '../server/root.service'
 import type { Route } from './+types/root'
 import MuzaMusicPlayer from './components/componentsWithLogic/MuzaMusicPlayer'
@@ -26,6 +24,7 @@ import MusicSidebar from './components/sections/MusicSidebar'
 import MusicTopbar from './components/sections/MusicTopbar'
 import StackDrawer from './components/stack/StackDrawer'
 import { Typography } from './components/ui/typography'
+import { cn } from './lib/utils'
 import Providers from './Providers'
 import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'

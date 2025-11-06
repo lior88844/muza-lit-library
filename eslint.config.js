@@ -44,9 +44,15 @@ export default defineConfig([
       ...tseslint.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+
       'react/prop-types': 'off', // Using TypeScript for prop validation
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      'no-console': 'warn',
+      'no-console': ['warn', { allow: ['error', 'warn'] }],
       'prefer-const': 'error',
       'no-var': 'error',
       'no-undef': 'off', // TypeScript handles this

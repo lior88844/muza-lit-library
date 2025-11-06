@@ -135,24 +135,27 @@ export default function AdminStack() {
     setSelectedPage(page)
     navigate(`/admin/stack?page=${page}`)
   }
-  const handleEditStack = (stack: StackWithEntities) => {
-    openStackDrawer(stack)
-    navigate('/')
-  }
-  const handleDeleteStack = (stack: StackWithEntities) => {
-    removeFetcher.submit(
-      {
-        intent: 'deleteStack',
-        data: JSON.stringify({ id: stack.id }),
-      },
-      {
-        method: 'POST',
-        action: '/admin/stack',
-      }
-    )
-  }
-  const columnDefs = useMemo<ColDef<StackWithEntities>[]>(
-    () => [
+
+  const columnDefs = useMemo<ColDef<StackWithEntities>[]>(() => {
+    const handleEditStack = (stack: StackWithEntities) => {
+      openStackDrawer(stack)
+      navigate('/')
+    }
+
+    const handleDeleteStack = (stack: StackWithEntities) => {
+      removeFetcher.submit(
+        {
+          intent: 'deleteStack',
+          data: JSON.stringify({ id: stack.id }),
+        },
+        {
+          method: 'POST',
+          action: '/admin/stack',
+        }
+      )
+    }
+
+    return [
       {
         field: 'displayOrder',
         headerName: 'Order',
@@ -196,9 +199,8 @@ export default function AdminStack() {
           </div>
         ),
       },
-    ],
-    []
-  )
+    ]
+  }, [navigate, openStackDrawer, removeFetcher])
 
   const handleCellValueChanged = ({
     colDef,

@@ -170,7 +170,7 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
         items: [],
       }
 
-      payload.items = tempStack.items.map(({ entity, ...item }) => item)
+      payload.items = tempStack.items.map(({ entity: _, ...item }) => item)
 
       const isNewStack = !tempStack.id
       const result = await fetcher.submit(

@@ -56,7 +56,7 @@ export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLo
     }
   } catch (error) {
     // Log error for debugging purposes
-    // eslint-disable-next-line no-console
+
     console.error('Error discovering album:', error)
     return {
       mbId: null,
