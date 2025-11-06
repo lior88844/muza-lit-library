@@ -1,31 +1,24 @@
-import type { VariantProps } from 'class-variance-authority'
-import { type ComponentPropsWithoutRef, forwardRef } from 'react'
+import { type ElementType, forwardRef, type Ref } from 'react'
 
 import { cn } from '~/lib/utils'
 
 import { VARIANT_ELEMENT_MAP } from './const'
+import type { InferRefType, TypographyProps } from './types'
 import { typographyVariants } from './variants'
 
-type TypographyElementType = (typeof VARIANT_ELEMENT_MAP)[keyof typeof VARIANT_ELEMENT_MAP]
+export const Typography = forwardRef(function Typography<TAs extends ElementType = ElementType>(
+  props: TypographyProps<TAs>,
+  ref: Ref<InferRefType<TAs, NonNullable<TypographyProps<TAs>['variant']>>>
+) {
+  const { as, variant, className, ...restOfProps } = props
 
-export interface TypographyProps
-  extends VariantProps<typeof typographyVariants>,
-    ComponentPropsWithoutRef<'p'> {
-  as?: TypographyElementType
-}
+  const Component = (as ?? VARIANT_ELEMENT_MAP[variant ?? 'default']) as ElementType
 
-export const Typography = forwardRef<HTMLElementTagNameMap[TypographyElementType], TypographyProps>(
-  function Typography(props, ref) {
-    const { as, variant, className, ...restOfProps } = props
-
-    const Component = as ?? VARIANT_ELEMENT_MAP[variant ?? 'default']
-
-    return (
-      <Component
-        ref={ref}
-        className={cn(typographyVariants({ variant }), className)}
-        {...restOfProps}
-      />
-    )
-  }
-)
+  return (
+    <Component
+      ref={ref as Ref<HTMLElement>}
+      className={cn(typographyVariants({ variant }), className)}
+      {...restOfProps}
+    />
+  )
+})
