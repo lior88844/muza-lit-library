@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { FaSpinner } from 'react-icons/fa'
 
 import MuzaIcon from '~/icons/MuzaIcon'
+import { cn } from '~/lib/utils'
 import type { PlayerDetails } from '~/store/models'
 
 import VolumeControl from '../../controls/VolumeControl'
-import styles from './MusicPlayer.module.css'
 
 type MusicPlayerProps = {
   details: PlayerDetails
@@ -242,41 +242,51 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   ])
 
   return (
-    <div className={styles['music-player']}>
+    <div className="fixed bottom-6 left-[calc(var(--muza-sidebar-width,208px)+24px)] right-6 z-[1000] flex overflow-hidden rounded-lg border border-(--muza-light-border-color) bg-white/50 shadow-[0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-[10px] max-md:flex-col">
       <video ref={playerRef} hidden />
 
-      <div className={styles['player-info']}>
+      <div className="flex min-w-[280px] items-start gap-3 border-r border-(--muza-light-border-color) bg-(--colors_muted_light) p-2 max-md:min-w-0 max-md:border-r-0 max-md:border-t">
         <img
-          className={styles['album-art']}
+          className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
           src={details.imageSrc || '/art/imag_1.jpg'}
           alt={`${details.title} album cover`}
         />
-        <div className={styles['track-info']}>
-          <h3 className={styles['track-title']}>{details.title}</h3>
-          <p className={styles['track-artist']}>{details.artist}</p>
-          <div className={styles['track-details']}>
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <h3 className="overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--typography-font-family-font-sans)] text-[length:var(--muza-subtitle-font-size)] font-semibold leading-normal text-(--muza-track-title-color)">
+            {details.title}
+          </h3>
+          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--typography-font-family-font-sans)] text-sm font-normal leading-[100%] text-(--colors_muted_foreground_light)">
+            {details.artist}
+          </p>
+          <div className="flex gap-1 text-xs text-(--colors_muted_foreground_light) max-sm:hidden">
             <span>{details.album}</span>
-            <span className={styles.separator}>•</span>
+            <span className="text-gray-300">•</span>
             <span>{details.year}</span>
           </div>
         </div>
       </div>
 
-      <div className={styles['player-controls']}>
-        <div className={styles['progress-section']}>
-          <div className={styles['progress-bar']} onClick={handleSeek}>
-            <div className={styles['progress-fill']} style={{ width: `${progressPercentage}%` }} />
+      <div className="flex min-w-[400px] flex-1 flex-col gap-2 max-md:min-w-0">
+        <div className="relative p-0">
+          <div className="relative h-2 cursor-pointer bg-gray-100" onClick={handleSeek}>
+            <div
+              className="h-full bg-blue-500 transition-[width] duration-100 ease-linear"
+              style={{ width: `${progressPercentage}%` }}
+            />
           </div>
-          <div className={styles['time-display']}>
+          <div className="absolute left-0 right-0 top-full flex justify-between px-4 pt-2 text-xs text-(--colors_muted_foreground_light)">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration - currentTime)}</span>
           </div>
         </div>
 
-        <div className={styles['controls-row']}>
-          <div className={styles['playback-controls']}>
+        <div className="relative flex items-center px-16 py-1 max-sm:px-3">
+          <div className="flex flex-1 items-center justify-center gap-4 md:gap-6">
             <button
-              className={`${styles['control-btn']} ${styles.shuffle} ${shuffle ? styles.active : ''}`}
+              className={cn(
+                'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
+                shuffle && 'text-blue-500',
+              )}
               onClick={() => setShuffle(!shuffle)}
               aria-label={t('player.shuffle')}
             >
@@ -284,7 +294,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
 
             <button
-              className={`${styles['control-btn']} ${styles.previous}`}
+              className="flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
               onClick={onPrevious}
               aria-label={t('player.previous')}
             >
@@ -292,12 +302,12 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
 
             <button
-              className={`${styles['control-btn']} ${styles.play}`}
+              className="flex h-12 w-12 cursor-pointer items-center justify-center border-none bg-transparent text-2xl text-(--muza-play-button-color) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
               onClick={togglePlayPause}
               aria-label={t('player.playPause')}
             >
               {isLoading ? (
-                <FaSpinner className={styles.spinner} />
+                <FaSpinner className="animate-spin" />
               ) : details.isPlaying ? (
                 <MuzaIcon iconName='pause' />
               ) : (
@@ -306,7 +316,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
 
             <button
-              className={`${styles['control-btn']} ${styles.next}`}
+              className="flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
               onClick={onNext}
               aria-label={t('player.next')}
             >
@@ -314,7 +324,10 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
 
             <button
-              className={`${styles['control-btn']} ${styles.repeat} ${repeat ? styles.active : ''}`}
+              className={cn(
+                'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
+                repeat && 'text-blue-500',
+              )}
               onClick={() => setRepeat(!repeat)}
               aria-label={t('player.repeat')}
             >
@@ -322,7 +335,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             </button>
           </div>
 
-          <div className={styles['volume-section']}>
+          <div className="flex items-center pr-8">
             <VolumeControl noSymbol={true} value={volume} onVolumeChange={handleVolumeChange} />
           </div>
         </div>
