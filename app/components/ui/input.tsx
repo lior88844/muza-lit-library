@@ -1,6 +1,15 @@
 'use client'
 
-import { type ComponentProps, type ReactNode, useLayoutEffect, useRef, useState } from 'react'
+import {
+  cloneElement,
+  type ComponentProps,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import { cn } from '~/lib/utils'
 
@@ -28,6 +37,26 @@ export function Input(props: InputProps) {
     setLabelWidth(Math.round(width))
   }, [label])
 
+  const isInvalid = restOfProps['aria-invalid'] === true || restOfProps['aria-invalid'] === 'true'
+
+  const cloneIconComponent = (icon: ReactNode): ReactNode => {
+    if (!icon || !isValidElement(icon)) return icon
+
+    const iconElement = icon as ReactElement<{ className?: string }>
+    const existingClassName = iconElement.props?.className
+
+    const iconClassName = cn(
+      'shrink-0',
+      isInvalid ? 'text-destructive' : 'text-inherit',
+      existingClassName
+    )
+
+    return cloneElement(iconElement, {
+      ...iconElement.props,
+      className: iconClassName,
+    })
+  }
+
   return (
     <div className={cn('flex flex-col gap-2', containerClassName)}>
       <label className='flex items-center gap-4'>
@@ -51,7 +80,7 @@ export function Input(props: InputProps) {
             'has-disabled:cursor-not-allowed has-disabled:opacity-50'
           )}
         >
-          {iconStart}
+          {iconStart && cloneIconComponent(iconStart)}
 
           <input
             data-slot='input'
@@ -64,7 +93,7 @@ export function Input(props: InputProps) {
             {...restOfProps}
           />
 
-          {iconEnd}
+          {iconEnd && cloneIconComponent(iconEnd)}
         </div>
       </label>
 
