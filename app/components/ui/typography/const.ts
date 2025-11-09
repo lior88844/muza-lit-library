@@ -1,6 +1,6 @@
 import type { ElementType } from 'react'
 
-import type { TypographyProps } from './typography'
+import type { TypographyProps } from './types'
 
 type Variant = NonNullable<TypographyProps['variant']>
 

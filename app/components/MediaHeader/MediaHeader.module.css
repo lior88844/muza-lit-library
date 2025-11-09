@@ -13,25 +13,9 @@
 .back-close-section {
   display: flex;
   position: absolute;
-  left: calc(-1 * var(--muza-spacing-lg, 16px) * 2);
+  left: -38px;
   z-index: 10;
   padding: var(--muza-spacing-lg, 16px) var(--muza-spacing-lg, 16px);
-}
-
-.back-button {
-  cursor: pointer !important;
-}
-
-.back-button svg {
-  transform: rotate(90deg);
-  color: var(--colors_muted_foreground_light, #6b7280);
-  pointer-events: none;
-  cursor: inherit;
-}
-
-.back-button:hover {
-  background: rgba(107, 114, 128, 0.1);
-  cursor: pointer !important;
 }
 
 .media-header {
