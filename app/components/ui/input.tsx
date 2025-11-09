@@ -10,10 +10,13 @@ interface InputProps extends ComponentProps<'input'> {
   label?: ReactNode
   helperText?: ReactNode
   containerClassName?: string
+  iconStart?: ReactNode
+  iconEnd?: ReactNode
 }
 
 export function Input(props: InputProps) {
-  const { className, label, helperText, containerClassName, ...restOfProps } = props
+  const { className, label, helperText, containerClassName, iconStart, iconEnd, ...restOfProps } =
+    props
 
   const labelRef = useRef<HTMLSpanElement>(null)
   const [labelWidth, setLabelWidth] = useState(0)
@@ -39,18 +42,30 @@ export function Input(props: InputProps) {
           </Typography>
         )}
 
-        <input
-          data-slot='input'
+        <div
           className={cn(
-            'text-background-dark placeholder:text-muted-foreground bg-background dark:bg-input/30 border-input h-9 w-[314px] min-w-0 rounded-full border px-3 py-1 text-base/tight font-normal shadow-xs transition-[color,box-shadow] outline-none',
-            'file:text-foreground selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium',
-            'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-            'focus-visible:border-secondary-foreground focus-visible:shadow-sm',
-            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-            className
+            'flex items-center gap-2',
+            'text-background-dark bg-background dark:bg-input/30 border-input h-9 w-[314px] min-w-0 overflow-hidden rounded-full border px-3 transition-[border-color,box-shadow] duration-300',
+            'focus-within:border-secondary-foreground focus-within:shadow-xs',
+            'has-[:aria-invalid]:border-destructive has-[:aria-invalid]:ring-destructive/20 dark:has-[:aria-invalid]:ring-destructive/40',
+            'has-disabled:cursor-not-allowed has-disabled:opacity-50'
           )}
-          {...restOfProps}
-        />
+        >
+          {iconStart}
+
+          <input
+            data-slot='input'
+            className={cn(
+              'placeholder:text-muted-foreground h-full w-full text-base/tight font-normal text-inherit outline-none',
+              'file:text-foreground selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium',
+              'disabled:pointer-events-none',
+              className
+            )}
+            {...restOfProps}
+          />
+
+          {iconEnd}
+        </div>
       </label>
 
       {helperText && (
