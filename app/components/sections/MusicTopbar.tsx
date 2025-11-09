@@ -1,11 +1,12 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { FaSearch } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
 
-import { SearchInput } from '~/components/ui/SearchInput'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { getUserInfo, useAuth } from '~/store/userContext'
 
+import { Input } from '../ui/input'
 import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
@@ -38,7 +39,15 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
   return (
     <div className={styles['music-topbar']}>
       <div className={styles.topbar}>
-        <SearchInput onSearchChange={onSearchChange} />
+        <Input
+          variant='ghost'
+          placeholder={t('form.searchPlaceholder')}
+          iconStart={<FaSearch className='text-muted-foreground' />}
+          className='w-full px-8'
+          inputClassName='text-lg'
+          containerClassName='grow'
+          onChange={e => onSearchChange?.(e.target.value)}
+        />
         <div className={styles.controls}>
           <button className={styles['upload-music-button']} onClick={handleUploadClick}>
             {t('upload.uploadMusic')}
