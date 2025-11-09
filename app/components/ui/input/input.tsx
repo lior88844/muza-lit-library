@@ -1,21 +1,15 @@
 'use client'
 
-import {
-  cloneElement,
-  type ComponentProps,
-  isValidElement,
-  type ReactElement,
-  type ReactNode,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import type { VariantProps } from 'class-variance-authority'
+import type { ComponentProps, ReactElement, ReactNode } from 'react'
+import { cloneElement, isValidElement, useLayoutEffect, useRef, useState } from 'react'
 
 import { cn } from '~/lib/utils'
 
 import { Typography } from '../typography'
+import { inputVariants } from './variants'
 
-interface InputProps extends ComponentProps<'input'> {
+interface InputProps extends ComponentProps<'input'>, VariantProps<typeof inputVariants> {
   label?: ReactNode
   helperText?: ReactNode
   containerClassName?: string
@@ -33,6 +27,7 @@ export function Input(props: InputProps) {
     inputClassName,
     iconStart,
     iconEnd,
+    variant,
     ...restOfProps
   } = props
 
@@ -80,16 +75,7 @@ export function Input(props: InputProps) {
           </Typography>
         )}
 
-        <div
-          className={cn(
-            'flex items-center gap-2',
-            'text-background-dark bg-background dark:bg-input/30 border-input h-9 w-[314px] min-w-0 overflow-hidden rounded-full border px-3 transition-[border-color,box-shadow] duration-300',
-            'focus-within:border-secondary-foreground focus-within:shadow-xs',
-            'has-[:aria-invalid]:border-destructive has-[:aria-invalid]:ring-destructive/20 dark:has-[:aria-invalid]:ring-destructive/40',
-            'has-disabled:cursor-not-allowed has-disabled:opacity-50',
-            className
-          )}
-        >
+        <div className={cn(inputVariants({ variant }), className)}>
           {iconStart && cloneIconComponent(iconStart)}
 
           <input
