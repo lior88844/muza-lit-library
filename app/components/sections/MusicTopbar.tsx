@@ -1,4 +1,5 @@
-import React from 'react'
+import { debounce } from 'lodash-es'
+import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaSearch } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
@@ -10,11 +11,10 @@ import { Input } from '../ui/input'
 import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
-  onSearchChange?: (searchText: string) => void
   onUserIconClick?: () => void
 }
 
-const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconClick }) => {
+const MusicTopbar: React.FC<MusicTopbarProps> = ({ onUserIconClick }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const auth = useAuth()
@@ -36,6 +36,16 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
     })
   }
 
+  const debouncedHandleSearch = useMemo(
+    () =>
+      debounce((searchText: string) => {
+        const newValue = searchText.trim()
+        const redirectTo = newValue ? `/search?q=${encodeURIComponent(newValue)}` : '/'
+        navigate(redirectTo)
+      }, DEBOUNCE_SEARCH_MS),
+    [navigate]
+  )
+
   return (
     <div className={styles['music-topbar']}>
       <div className={styles.topbar}>
@@ -46,7 +56,7 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
           className='w-full px-8'
           inputClassName='text-lg'
           containerClassName='grow'
-          onChange={e => onSearchChange?.(e.target.value)}
+          onChange={e => debouncedHandleSearch(e.target.value)}
         />
         <div className={styles.controls}>
           <button className={styles['upload-music-button']} onClick={handleUploadClick}>
@@ -94,5 +104,7 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
     </div>
   )
 }
+
+const DEBOUNCE_SEARCH_MS = 500
 
 export default React.memo(MusicTopbar)
