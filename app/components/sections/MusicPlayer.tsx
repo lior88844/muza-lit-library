@@ -1,47 +1,39 @@
-import Hls from 'hls.js'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaSpinner } from 'react-icons/fa'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
 import type { PlayerDetails } from '~/store/models'
+import { usePlayerStore } from '~/store/playerStore'
+import type { RepeatMode } from '~/types/player'
 
 import VolumeControl from '../../controls/VolumeControl'
 
 type MusicPlayerProps = {
   details: PlayerDetails
-  onPrevious?: () => void
-  onNext?: () => void
-  onUpdate?: (details: PlayerDetails) => void
-  onSongEnded?: () => void
-  setIsPlaying: (b: boolean) => void
-  onPlayCountIncrement?: () => void
+  seekTo: (seconds: number) => void
 }
 
-export const MusicPlayer: React.FC<MusicPlayerProps> = ({
-  details,
-  onPrevious,
-  onNext,
-  onUpdate,
-  onSongEnded,
-  setIsPlaying,
-  onPlayCountIncrement,
-}) => {
+export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => {
   const { t } = useTranslation()
-  const playerRef = useRef<HTMLVideoElement | null>(null)
-  const hlsRef = useRef<Hls | null>(null)
 
-  // Audio state
-  const [duration, setDuration] = useState(0)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [volume, setVolume] = useState(75)
-  const [isLoading, setIsLoading] = useState(false)
+  // Get store actions and state
+  const {
+    prev,
+    next,
+    playPause,
+    shuffle,
+    repeat,
+    toggleShuffle,
+    setRepeat,
+    volume,
+    setVolume,
+    currentPosition,
+    duration,
+  } = usePlayerStore()
 
-  // Control state
-  const [shuffle, setShuffle] = useState(false)
-  const [repeat, setRepeat] = useState(false)
-  const isFirstLoad = useRef(true)
+  // Local UI state
+  const [isLoading] = useState(false)
 
   // Helper functions
   const formatTime = (seconds: number): string => {
@@ -57,193 +49,37 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     return `${minutes}:${secs}`
   }
 
-  const isHlsUrl = (url: string): boolean => {
-    return url.includes('.m3u8') || url.includes('hls')
-  }
+  const progressPercentage = duration > 0 ? (currentPosition / duration) * 100 : 0
 
-  const initializeHls = (url: string) => {
-    const audio = playerRef.current
-    if (!audio) return
-
-    // Clean up existing HLS instance
-    if (hlsRef.current) {
-      hlsRef.current.destroy()
-      hlsRef.current = null
-    }
-
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: false,
-      })
-
-      hlsRef.current = hls
-      if (audio != null) {
-        hls.attachMedia(audio)
-      }
-      hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        hls.loadSource(url)
-        // hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        //   audio
-        //     ?.play()
-        //     .catch(() =>
-        //       console.log(
-        //         "Unable to autoplay prior to user interaction with the dom."
-        //       )
-        //     );
-        // });
-      })
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              // Fatal network error encountered, try to recover
-              hls.startLoad()
-              break
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              // Fatal media error encountered, try to recover
-              hls.recoverMediaError()
-              break
-            default:
-              // Fatal error, cannot recover
-              hls.destroy()
-              break
-          }
-        }
-      })
-    } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-      // Native HLS support (Safari)
-      audio.src = url
-    } else {
-      // HLS is not supported in this browser
-    }
-  }
-
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
-
-  // Audio control functions
-  const playAudio = useCallback(() => {
-    const audio = playerRef.current
-    if (!audio) return
-
-    audio.play().catch(() => {
-      setIsPlaying(false)
-      onUpdate?.({ ...details })
-    })
-  }, [details, onUpdate, setIsPlaying])
-
+  // UI event handlers
   const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume)
-    if (playerRef.current) {
-      playerRef.current.volume = newVolume / 100
-    }
+    setVolume(newVolume / 100) // Convert from 0-100 to 0-1
   }
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const audio = playerRef.current
-    if (!audio || duration === 0) return
+    if (duration === 0) return
 
     const rect = e.currentTarget.getBoundingClientRect()
     const percentage = (e.clientX - rect.left) / rect.width
     const newTime = percentage * duration
 
-    audio.currentTime = newTime
-    setCurrentTime(newTime)
+    seekTo(newTime)
   }
 
   const togglePlayPause = () => {
-    isFirstLoad.current = false
     if (isLoading) return
-    const newPlayingState = !details.isPlaying
-    setIsPlaying(newPlayingState)
-    if (newPlayingState) {
-      onPlayCountIncrement?.()
-    }
-    onUpdate?.({ ...details })
+    playPause()
   }
 
-  useEffect(() => {
-    const audio = playerRef.current
-    if (!audio || !details.audioUrl || isFirstLoad.current) return
-
-    // Audio event handlers
-    const handleLoadedData = () => {
-      setDuration(audio.duration)
-      setIsLoading(false)
-      if (details.isPlaying) playAudio()
-    }
-
-    const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
-
-    const handleEnded = () => {
-      setIsPlaying(false)
-      onSongEnded?.()
-    }
-
-    // const handlePlay = () => {
-    //   setIsPlaying(true);
-    //   // Trigger play count increment when audio actually starts playing
-    //   onPlayCountIncrement?.();
-    // };
-
-    const handlePause = () => {
-      setIsPlaying(false)
-    }
-
-    const handleLoadStart = () => setIsLoading(true)
-    const handleCanPlay = () => setIsLoading(false)
-
-    // Add event listeners
-    audio.addEventListener('loadeddata', handleLoadedData)
-    audio.addEventListener('timeupdate', handleTimeUpdate)
-    audio.addEventListener('ended', handleEnded)
-    // audio.addEventListener("play", handlePlay);
-    audio.addEventListener('pause', handlePause)
-    audio.addEventListener('loadstart', handleLoadStart)
-    audio.addEventListener('waiting', handleLoadStart)
-    audio.addEventListener('canplay', handleCanPlay)
-
-    // Setup audio - check if it's HLS or regular audio
-    if (isHlsUrl(details.audioUrl)) {
-      initializeHls(details.audioUrl)
-    } else {
-      // Regular audio file
-      audio.src = details.audioUrl
-      audio.load()
-    }
-
-    audio.volume = volume / 100
-
-    // Cleanup
-    return () => {
-      audio.pause()
-      // Clean up HLS instance
-      if (hlsRef.current) {
-        hlsRef.current.destroy()
-        hlsRef.current = null
-      }
-      audio.removeEventListener('loadeddata', handleLoadedData)
-      audio.removeEventListener('timeupdate', handleTimeUpdate)
-      audio.removeEventListener('ended', handleEnded)
-      // audio.removeEventListener("play", handlePlay);
-      audio.removeEventListener('pause', handlePause)
-      audio.removeEventListener('loadstart', handleLoadStart)
-      audio.removeEventListener('waiting', handleLoadStart)
-      audio.removeEventListener('canplay', handleCanPlay)
-    }
-  }, [
-    details.audioUrl,
-    details.isPlaying,
-    onPlayCountIncrement,
-    onSongEnded,
-    playAudio,
-    setIsPlaying,
-    volume,
-  ])
+  const cycleRepeat = () => {
+    const modes: RepeatMode[] = ['off', 'one', 'all']
+    const currentIndex = modes.indexOf(repeat)
+    const nextMode = modes[(currentIndex + 1) % modes.length]
+    setRepeat(nextMode)
+  }
 
   return (
     <div className="fixed bottom-6 left-[calc(var(--muza-sidebar-width,208px)+24px)] right-6 z-[1000] flex overflow-hidden rounded-lg border border-(--muza-light-border-color) bg-white/50 shadow-[0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-[10px] max-md:flex-col">
-      <video ref={playerRef} hidden />
 
       <div className="flex min-w-[280px] items-start gap-3 border-r border-(--muza-light-border-color) bg-(--colors_muted_light) p-2 max-md:min-w-0 max-md:border-r-0 max-md:border-t">
         <img
@@ -275,8 +111,8 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             />
           </div>
           <div className="absolute left-0 right-0 top-full flex justify-between px-4 pt-2 text-xs text-(--colors_muted_foreground_light)">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration - currentTime)}</span>
+            <span>{formatTime(currentPosition)}</span>
+            <span>{formatTime(duration - currentPosition)}</span>
           </div>
         </div>
 
@@ -287,7 +123,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
                 shuffle && 'text-blue-500',
               )}
-              onClick={() => setShuffle(!shuffle)}
+              onClick={toggleShuffle}
               aria-label={t('player.shuffle')}
             >
               <MuzaIcon iconName='shuffle' />
@@ -295,7 +131,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
             <button
               className="flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
-              onClick={onPrevious}
+              onClick={prev}
               aria-label={t('player.previous')}
             >
               <MuzaIcon iconName='skip-back' />
@@ -306,9 +142,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               onClick={togglePlayPause}
               aria-label={t('player.playPause')}
             >
-              {isLoading ? (
-                <FaSpinner className="animate-spin" />
-              ) : details.isPlaying ? (
+              {details.isPlaying ? (
                 <MuzaIcon iconName='pause' />
               ) : (
                 <MuzaIcon iconName='play' />
@@ -317,7 +151,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
             <button
               className="flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
-              onClick={onNext}
+              onClick={next}
               aria-label={t('player.next')}
             >
               <MuzaIcon iconName='skip-forward' />
@@ -326,17 +160,17 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             <button
               className={cn(
                 'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
-                repeat && 'text-blue-500',
+                repeat !== 'off' && 'text-blue-500',
               )}
-              onClick={() => setRepeat(!repeat)}
+              onClick={cycleRepeat}
               aria-label={t('player.repeat')}
             >
-              <MuzaIcon iconName='repeat' />
+              <MuzaIcon iconName={repeat === 'one' ? 'repeat-1' : 'repeat'} />
             </button>
           </div>
 
           <div className="flex items-center pr-8">
-            <VolumeControl noSymbol={true} value={volume} onVolumeChange={handleVolumeChange} />
+            <VolumeControl noSymbol={true} value={volume * 100} onVolumeChange={handleVolumeChange} />
           </div>
         </div>
       </div>

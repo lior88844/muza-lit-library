@@ -1,95 +1,43 @@
-import { useCallback, useMemo } from 'react'
+/**
+ * MuzaMusicPlayer - Main music player wrapper
+ * Initializes the playback engine and renders the UI component
+ */
 
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
-import { useMedia } from '~/store/media/mediaContext'
-import type { PlayerDetails, SongDetails } from '~/store/models'
+import { useEffect, useMemo } from 'react'
+
+import { usePlaybackEngine } from '~/hooks/usePlaybackEngine'
+import { rehydratePlayerStore, usePlayerStore } from '~/store/playerStore'
 
 import { MusicPlayer } from '../sections/MusicPlayer'
 
 export default function MuzaMusicPlayer() {
-  const library = useMedia()
-  const songs = library.songs
-  const {
-    selectedSong,
-    setSelectedSong,
-    isPlaying,
-    setIsPlaying,
-    playCountIncremented,
-    setPlayCountIncremented,
-  } = useCurrentPlayerStore()
+  // Initialize playback engine (manages audio element, HLS, etc.)
+  const { seekTo } = usePlaybackEngine()
 
-  const getCurrentSongIndex = () => {
-    if (!selectedSong || !selectedSong.id) return -1
-    return songs.findIndex((song: SongDetails) => song.id === selectedSong.id)
-  }
+  // Get player state
+  const { current, isPlaying } = usePlayerStore()
 
-  const handlePreviousSong = () => {
-    const currentIndex = getCurrentSongIndex()
-    let prevSong
-    if (currentIndex <= 0) {
-      prevSong = songs[songs.length - 1]
-    } else {
-      prevSong = songs[currentIndex - 1]
-    }
-    setSelectedSong({
-      ...prevSong,
-    })
-  }
+  // Rehydrate persisted state on mount (client-side only)
+  useEffect(() => {
+    rehydratePlayerStore()
+  }, [])
 
-  const handleNextSong = () => {
-    const currentIndex = getCurrentSongIndex()
-    let nextSong
-    if (currentIndex === -1 || currentIndex === songs.length - 1) {
-      nextSong = songs[0]
-    } else {
-      nextSong = songs[currentIndex + 1]
-    }
-    setSelectedSong({
-      ...nextSong,
-    })
-  }
-
-  const handlePlayCountIncrement = () => {
-    if (selectedSong?.id && !playCountIncremented) {
-      // TODO: Submit to server action to increment play count
-      setPlayCountIncremented(true)
-    }
-  }
+  // Prepare player details for UI
   const details = useMemo(() => {
     return {
-      audioUrl: selectedSong?.audioUrl || '',
-      imageSrc: selectedSong?.imageSrc || '',
-      title: selectedSong?.title,
-      artist: selectedSong?.artist || '',
-      album: selectedSong?.album || '',
-      year: selectedSong?.year || new Date().getFullYear(),
+      audioUrl: current?.audioUrl || '',
+      imageSrc: current?.imageSrc || '',
+      title: current?.title,
+      artist: current?.artist || '',
+      album: current?.album || '',
+      year: current?.year || new Date().getFullYear(),
       isPlaying: isPlaying || false,
-      id: selectedSong?.id,
+      id: current?.id,
     }
-  }, [selectedSong, isPlaying])
+  }, [current, isPlaying])
 
-  const onUpdate = useCallback(
-    (updatedDetails: PlayerDetails) => {
-      setSelectedSong({
-        ...selectedSong!,
-        audioUrl: updatedDetails.audioUrl!,
-      })
-    },
-    [selectedSong, setSelectedSong]
-  )
-  return (
-    <>
-      {selectedSong && (
-        <MusicPlayer
-          details={details}
-          setIsPlaying={setIsPlaying}
-          onUpdate={onUpdate}
-          onPrevious={handlePreviousSong}
-          onNext={handleNextSong}
-          onSongEnded={handleNextSong}
-          onPlayCountIncrement={handlePlayCountIncrement}
-        />
-      )}
-    </>
-  )
+  // Only render if there's a current track
+  if (!current) return null
+
+  return <MusicPlayer details={details} seekTo={seekTo} />
 }

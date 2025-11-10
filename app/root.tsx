@@ -26,9 +26,9 @@ import StackDrawer from './components/stack/StackDrawer'
 import { Typography } from './components/ui/typography'
 import { cn } from './lib/utils'
 import Providers from './Providers'
-import { useCurrentPlayerStore } from './store/currentPlayerStore'
 import { MediaContext } from './store/media/mediaContext'
 import type { MusicPlaylist } from './store/models'
+import { usePlayerStore } from './store/playerStore'
 import { userContext } from './store/router-context'
 
 export const authMiddleware: MiddlewareFunction = async ({ context }) => {
@@ -68,7 +68,7 @@ const MINIMAL_LAYOUT_PARENTS = ['/admin']
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
   const location = useLocation()
-  const { setIsPlaying } = useCurrentPlayerStore()
+  const { setIsPlaying } = usePlayerStore()
 
   const data = useLoaderData<typeof loader>()
 
@@ -95,7 +95,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     tempStack,
     closeStackDrawer,
     updateTempStack,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 

@@ -4,8 +4,8 @@ import type { DropdownMenuItem } from '~/components/ui/DropdownMenu'
 import DropdownMenu from '~/components/ui/DropdownMenu'
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import MuzaIcon from '~/icons/MuzaIcon'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist } from '~/store/models'
+import { usePlayerStore } from '~/store/playerStore'
 
 import hoverOverlayStyles from '../ui/HoverOverlay.module.css'
 import styles from './PlaylistCover.module.css'
@@ -32,7 +32,7 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   playlist,
   onSelect,
 }) => {
-  const { setSelectedSong, setIsPlaying } = useCurrentPlayerStore()
+  const { setSelectedSong, setIsPlaying } = usePlayerStore()
 
   const handleClick = () => {
     onSelect?.({ title, songsCount, albumImages, userName })

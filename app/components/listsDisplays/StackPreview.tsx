@@ -7,7 +7,7 @@ import type { StackWithEntities } from 'server/api/stack/stack.service'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
@@ -23,14 +23,13 @@ const MusicListSectionComponent: React.FC<{
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
   const {
-    selectedSong: globalSelectedSong,
-    setSelectedSong,
-    setIsPlaying,
+    current: globalSelectedSong,
+    playQueue,
     isPlaying,
-    togglePlayPause,
+    playPause,
     isPlaylistDrawerOpen,
     isStackDrawerOpen,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
 
   const MAX_ITEMS_TO_SHOW = 5
   const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, MAX_ITEMS_TO_SHOW)
@@ -66,18 +65,26 @@ const MusicListSectionComponent: React.FC<{
           )
         })
       case EntityTypeEnum.Track:
-        return itemsToShow.map(item => {
+        return itemsToShow.map((item, index) => {
           const track = item.entity as TrackResponse
+          const allTracks = stack.items.map(i => i.entity as TrackResponse)
           return (
             <SongLineWithCover
               key={track.id}
               details={track}
               onClick={() => {
                 if (globalSelectedSong?.id === track.id) {
-                  togglePlayPause()
+                  playPause()
                 } else {
-                  setSelectedSong(track)
-                  setIsPlaying(true)
+                  playQueue({
+                    items: allTracks,
+                    startIndex: index,
+                    source: {
+                      type: 'stack',
+                      id: stack.id,
+                      title: stack.title,
+                    },
+                  })
                 }
               }}
               isPlaying={track.id === globalSelectedSong?.id && !!isPlaying}

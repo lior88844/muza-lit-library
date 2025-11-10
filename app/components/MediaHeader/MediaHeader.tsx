@@ -5,9 +5,9 @@ import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaButton from '~/controls/MuzaButton'
 import MuzaIcon from '~/icons/MuzaIcon'
-// Removed unused imports: useSubmit, useActionData
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
+// Removed unused imports: useSubmit, useActionData
+import { usePlayerStore } from '~/store/playerStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
@@ -54,7 +54,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   onBackClick,
 }) => {
   const { t } = useTranslation()
-  const { setSelectedSong, isPlaying, setIsPlaying } = useCurrentPlayerStore()
+  const { playQueue, isPlaying, playPause } = usePlayerStore()
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const isInLibrary = getIsInLibrary(mediaType, entityId)
   const onToggleAddLibrary = () => {
@@ -63,11 +63,19 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   const handlePlayPause = () => {
     if (isPlaying) {
       // If currently playing, pause
-      setIsPlaying(false)
+      playPause(false)
     } else {
       if (songs.length > 0) {
-        setSelectedSong(songs[0])
-        setIsPlaying(true)
+        // Play from start - load entire collection as queue
+        playQueue({
+          items: songs,
+          startIndex: 0,
+          source: {
+            type: mediaType,
+            id: entityId,
+            title: title,
+          },
+        })
       }
     }
   }

@@ -10,8 +10,8 @@ import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
 import { generatePlaylistCoverImages } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
+import { usePlayerStore } from '~/store/playerStore'
 
 export interface SearchResultsListProps {
   albums: MiniAlbum[]
@@ -41,7 +41,7 @@ export function SearchResultsList({
     togglePlayPause,
     isPlaylistDrawerOpen,
     isStackDrawerOpen,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
 
   const hasResults =
     albums.length > 0 || artists.length > 0 || tracks.length > 0 || playlists.length > 0

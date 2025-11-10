@@ -7,7 +7,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import { Typography } from '~/components/ui/typography'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
 import { userContext } from '~/store/router-context'
 
 import type { Route } from './+types/albums'
@@ -28,7 +28,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 export default function Albums() {
   const { t } = useTranslation()
-  const { isPlaylistDrawerOpen } = useCurrentPlayerStore()
+  const { isPlaylistDrawerOpen } = usePlayerStore()
   const { libraryAlbums } = useLoaderData<typeof loader>()
 
   return (

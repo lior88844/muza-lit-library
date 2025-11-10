@@ -6,7 +6,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
 import AlbumInfoModal from '../components/albumDisplays/AlbumInfoModal'
@@ -33,15 +33,38 @@ export async function loader({ params }: { params: { id: string } }) {
 
 export default function AlbumPage() {
   const {
-    selectedSong,
-    setSelectedSong,
-    setIsPlaying,
+    current,
+    playQueue,
     isPlaying,
-    togglePlayPause,
+    playPause,
     isPlaylistDrawerOpen,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
   const { album } = useLoaderData<typeof loader>()
+
+  const handleSongClick = (trackId: number, index: number) => {
+    if (current?.id === trackId) {
+      // Same song - toggle play/pause
+      playPause()
+    } else {
+      // New song - load entire album as queue
+      // Add album property to each track for the queue
+      const tracksWithAlbum = album.tracks.map(track => ({
+        ...track,
+        album: album.title,
+      }))
+      
+      playQueue({
+        items: tracksWithAlbum,
+        startIndex: index,
+        source: {
+          type: 'album',
+          id: album.id,
+          title: album.title,
+        },
+      })
+    }
+  }
 
   return (
     <>
@@ -60,20 +83,13 @@ export default function AlbumPage() {
         showBackButton={true}
       />
       <div>
-        {album.tracks.map(({ album: _, ...track }) => {
+        {album.tracks.map(({ album: _, ...track }, index) => {
           return (
             <SongLine
               key={track.id}
               details={track}
-              onClick={() => {
-                if (selectedSong?.id === track.id) {
-                  togglePlayPause()
-                } else {
-                  setSelectedSong(track)
-                  setIsPlaying(true)
-                }
-              }}
-              isPlaying={track.id === selectedSong?.id && !!isPlaying}
+              onClick={() => handleSongClick(track.id, index)}
+              isPlaying={track.id === current?.id && !!isPlaying}
               draggable={isPlaylistDrawerOpen}
             />
           )

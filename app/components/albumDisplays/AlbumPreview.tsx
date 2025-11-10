@@ -5,7 +5,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import { Image } from '../ui/image'
 import AlbumInfoModal from './AlbumInfoModal'
@@ -18,7 +18,7 @@ interface AlbumPreviewProps {
 
 const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }) => {
   const navigate = useNavigate()
-  const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
+  const { isPlaying, setIsPlaying } = usePlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
   const { dragHandlers } = useDraggable({
     type: EntityTypeEnum.Album,

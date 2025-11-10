@@ -5,8 +5,8 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
 import { Divider } from '~/components/ui/divider'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { SongDetails } from '~/store/models'
+import { usePlayerStore } from '~/store/playerStore'
 import type { TrackMetadata, UploadFormData } from '~/store/uploadStore'
 
 interface UploadStepThreeProps {
@@ -19,7 +19,7 @@ interface UploadStepThreeProps {
 
 const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, coverImage }) => {
   const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } =
-    useCurrentPlayerStore()
+    usePlayerStore()
 
   const getCoverImageUrl = () => {
     if (coverImage) {
