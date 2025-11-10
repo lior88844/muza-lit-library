@@ -25,7 +25,6 @@ function isHlsUrl(url: string): boolean {
 export function usePlaybackEngine() {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const hlsRef = useRef<Hls | null>(null)
-  const playCountTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const {
     current,
@@ -70,12 +69,6 @@ export function usePlaybackEngine() {
     if (hlsRef.current) {
       hlsRef.current.destroy()
       hlsRef.current = null
-    }
-
-    // Clear any pending play count timer
-    if (playCountTimerRef.current) {
-      clearTimeout(playCountTimerRef.current)
-      playCountTimerRef.current = null
     }
 
     // Determine if we need HLS or native audio
@@ -128,13 +121,6 @@ export function usePlaybackEngine() {
 
     // Start tracking this play attempt
     startPlayAttempt(current.id)
-
-    // Cleanup function
-    return () => {
-      if (playCountTimerRef.current) {
-        clearTimeout(playCountTimerRef.current)
-      }
-    }
   }, [current?.audioUrl, current?.id, next, startPlayAttempt])
 
   // ========================================
@@ -212,32 +198,15 @@ export function usePlaybackEngine() {
   }, [next, setCurrentPosition, setDuration])
 
   // ========================================
-  // 6. PLAY COUNT TRACKING (30s rule)
+  // 6. PLAY COUNT TRACKING (on play)
   // ========================================
   useEffect(() => {
-    if (!current || !isPlaying) {
-      // Clear timer if paused or no track
-      if (playCountTimerRef.current) {
-        clearTimeout(playCountTimerRef.current)
-        playCountTimerRef.current = null
-      }
-      return
-    }
+    if (!current || !isPlaying) return
 
-    // Start 30-second timer
-    playCountTimerRef.current = setTimeout(() => {
-      const video = videoRef.current
-      // Only report if still playing after 30s
-      if (video && !video.paused && !video.ended && current) {
-        reportPlay(current.id)
-      }
-    }, 30_000) // 30 seconds
-
-    return () => {
-      if (playCountTimerRef.current) {
-        clearTimeout(playCountTimerRef.current)
-      }
-    }
+    // Report play count immediately when playback starts
+    reportPlay(current.id)
+    
+    // No cleanup needed since we only report once per song
   }, [current?.id, isPlaying, reportPlay])
 
   // ========================================
