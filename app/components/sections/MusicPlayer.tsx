@@ -14,6 +14,61 @@ type MusicPlayerProps = {
   seekTo: (seconds: number) => void
 }
 
+// ScrollingText component for hover marquee effect
+const ScrollingText: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
+  const textRef = React.useRef<HTMLDivElement>(null)
+  const [shouldScroll, setShouldScroll] = useState(false)
+  const [animationDuration, setAnimationDuration] = useState('10s')
+
+  React.useEffect(() => {
+    if (textRef.current) {
+      const element = textRef.current
+      const isOverflowing = element.scrollWidth > element.clientWidth
+      setShouldScroll(isOverflowing)
+
+      if (isOverflowing) {
+        // Calculate duration based on text length (roughly 50px per second)
+        const extraWidth = element.scrollWidth - element.clientWidth
+        const duration = Math.max(3, extraWidth / 50)
+        setAnimationDuration(`${duration}s`)
+      }
+    }
+  }, [children])
+
+  return (
+    <div className='relative overflow-hidden'>
+      <div
+        ref={textRef}
+        className={cn('whitespace-nowrap transition-transform duration-300 ease-linear', className)}
+        style={{
+          animation: shouldScroll ? `marquee ${animationDuration} linear infinite` : 'none',
+          animationPlayState: 'paused',
+        }}
+        onMouseEnter={e => {
+          if (shouldScroll) {
+            e.currentTarget.style.animationPlayState = 'running'
+          }
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.animationPlayState = 'paused'
+          e.currentTarget.style.transform = 'translateX(0)'
+        }}
+      >
+        {children}
+      </div>
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-100% + var(--container-width, 200px))); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => {
   const { t } = useTranslation()
 
@@ -77,49 +132,48 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
   }
 
   return (
-    <div className="fixed bottom-6 left-[calc(var(--muza-sidebar-width,208px)+24px)] right-6 z-[1000] flex overflow-hidden rounded-lg border border-(--muza-light-border-color) bg-white/50 shadow-[0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-[10px] max-md:flex-col">
-
-      <div className="flex min-w-[280px] items-start gap-3 border-r border-(--muza-light-border-color) bg-(--colors_muted_light) p-2 max-md:min-w-0 max-md:border-r-0 max-md:border-t">
+    <div className='fixed right-6 bottom-6 left-[calc(var(--muza-sidebar-width,208px)+24px)] z-[1000] flex overflow-hidden rounded-lg border border-(--muza-light-border-color) bg-white/50 shadow-[0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-[10px] max-md:flex-col'>
+      <div className='flex w-full max-w-[348px] items-start gap-3 border-r border-(--muza-light-border-color) bg-(--colors_muted_light) p-2 max-md:max-w-none max-md:border-t max-md:border-r-0'>
         <img
-          className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
+          className='h-16 w-16 flex-shrink-0 rounded-md object-cover'
           src={details.imageSrc || '/art/imag_1.jpg'}
           alt={`${details.title} album cover`}
         />
-        <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <h3 className="overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--typography-font-family-font-sans)] text-[length:var(--muza-subtitle-font-size)] font-semibold leading-normal text-(--muza-track-title-color)">
+        <div className='flex min-w-0 flex-1 flex-col gap-2'>
+          <ScrollingText className='font-[family-name:var(--typography-font-family-font-sans)] text-[length:var(--muza-subtitle-font-size)] leading-normal font-semibold text-(--muza-track-title-color)'>
             {details.title}
-          </h3>
-          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--typography-font-family-font-sans)] text-sm font-normal leading-[100%] text-(--colors_muted_foreground_light)">
+          </ScrollingText>
+          <ScrollingText className='font-[family-name:var(--typography-font-family-font-sans)] text-sm leading-[100%] font-normal text-(--colors_muted_foreground_light)'>
             {details.artist}
-          </p>
-          <div className="flex gap-1 text-xs text-(--colors_muted_foreground_light) max-sm:hidden">
-            <span>{details.album}</span>
-            <span className="text-gray-300">•</span>
-            <span>{details.year}</span>
+          </ScrollingText>
+          <div className='flex gap-1 overflow-hidden text-xs text-(--colors_muted_foreground_light) max-sm:hidden'>
+            <ScrollingText className='flex gap-1'>
+              {`${details.album} • ${details.year}`}
+            </ScrollingText>
           </div>
         </div>
       </div>
 
-      <div className="flex min-w-[400px] flex-1 flex-col gap-2 max-md:min-w-0">
-        <div className="relative p-0">
-          <div className="relative h-2 cursor-pointer bg-gray-100" onClick={handleSeek}>
+      <div className='flex min-w-[400px] flex-1 flex-col gap-2 max-md:min-w-0'>
+        <div className='relative p-0'>
+          <div className='relative h-2 cursor-pointer bg-gray-100' onClick={handleSeek}>
             <div
-              className="h-full bg-blue-500 transition-[width] duration-100 ease-linear"
+              className='h-full bg-blue-500 transition-[width] duration-100 ease-linear'
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
-          <div className="absolute left-0 right-0 top-full flex justify-between px-4 pt-2 text-xs text-(--colors_muted_foreground_light)">
+          <div className='absolute top-full right-0 left-0 flex justify-between px-4 pt-2 text-xs text-(--colors_muted_foreground_light)'>
             <span>{formatTime(currentPosition)}</span>
             <span>{formatTime(duration - currentPosition)}</span>
           </div>
         </div>
 
-        <div className="relative flex items-center px-16 py-1 max-sm:px-3">
-          <div className="flex flex-1 items-center justify-center gap-4 md:gap-6">
+        <div className='relative flex items-center px-16 py-1 max-sm:px-3'>
+          <div className='flex flex-1 items-center justify-center gap-4 md:gap-6'>
             <button
               className={cn(
                 'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
-                shuffle && 'text-blue-500',
+                shuffle && 'text-blue-500'
               )}
               onClick={toggleShuffle}
               aria-label={t('player.shuffle')}
@@ -128,7 +182,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
             </button>
 
             <button
-              className="flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
+              className='flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95'
               onClick={prev}
               aria-label={t('player.previous')}
             >
@@ -136,19 +190,15 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
             </button>
 
             <button
-              className="flex h-12 w-12 cursor-pointer items-center justify-center border-none bg-transparent text-2xl text-(--muza-play-button-color) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
+              className='flex h-12 w-12 cursor-pointer items-center justify-center border-none bg-transparent text-2xl text-(--muza-play-button-color) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95'
               onClick={togglePlayPause}
               aria-label={t('player.playPause')}
             >
-              {details.isPlaying ? (
-                <MuzaIcon iconName='pause' />
-              ) : (
-                <MuzaIcon iconName='play' />
-              )}
+              {details.isPlaying ? <MuzaIcon iconName='pause' /> : <MuzaIcon iconName='play' />}
             </button>
 
             <button
-              className="flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95"
+              className='flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95'
               onClick={next}
               aria-label={t('player.next')}
             >
@@ -158,17 +208,21 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
             <button
               className={cn(
                 'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
-                repeat !== 'off' && 'text-blue-500',
+                repeat !== 'off' && 'text-blue-500'
               )}
               onClick={cycleRepeat}
               aria-label={t('player.repeat')}
             >
-              <MuzaIcon iconName='repeat'/>
+              <MuzaIcon iconName='repeat' />
             </button>
           </div>
 
-          <div className="flex items-center pr-8">
-            <VolumeControl noSymbol={true} value={volume * 100} onVolumeChange={handleVolumeChange} />
+          <div className='flex items-center pr-8'>
+            <VolumeControl
+              noSymbol={true}
+              value={volume * 100}
+              onVolumeChange={handleVolumeChange}
+            />
           </div>
         </div>
       </div>
