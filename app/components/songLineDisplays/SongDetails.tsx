@@ -1,5 +1,6 @@
 import React, { type MouseEventHandler, useState } from 'react'
 
+import { usePlayCount } from '~/hooks/usePlayCounts'
 import MuzaIcon from '~/icons/MuzaIcon'
 
 import type { SongDetails as SongDetailsType } from '../../store/models'
@@ -25,6 +26,10 @@ const formatPlays = (plays: number): string => {
 const SongDetails: React.FC<SongDetailsProps> = ({ details, onClick, isActive = false }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isSelected, setIsSelected] = useState(false)
+
+  // Get combined play count (mock data + local increments)
+  const localPlayCount = usePlayCount(details.id)
+  const totalPlays = (details.plays || 0) + localPlayCount
 
   const handleMouseEnter = () => setIsHovered(true)
   const handleMouseLeave = () => setIsHovered(false)
@@ -65,7 +70,7 @@ const SongDetails: React.FC<SongDetailsProps> = ({ details, onClick, isActive = 
           <div className={styles['track-metadata']}>
             <span className={styles['track-artist']}>{details.artist}</span>
             <span className={styles.separator}>•</span>
-            <span className={styles['play-count']}>{formatPlays(details.plays || 0)}</span>
+            <span className={styles['play-count']}>{formatPlays(totalPlays)}</span>
           </div>
         </div>
       </div>

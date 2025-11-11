@@ -289,19 +289,20 @@ export const usePlayerStore = create<PlayerState>()(
         attempts.set(songId, { ...attempt, reported: true })
         set({ playAttempts: attempts })
 
-        // Send to backend
+        // Frontend-only play count tracking (no backend call)
+        // Store play counts in localStorage
         try {
-          await fetch('/api/track/increment-play-count', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              trackId: songId,
-              timestamp: attempt.startedAt,
-            }),
-          })
-        } catch (error) {
-          console.error('Failed to report play count:', error)
-          // Don't retry - already marked as reported to avoid duplicates
+          const playCountsKey = 'muza-play-counts'
+          const storedCounts = localStorage.getItem(playCountsKey)
+          const playCounts: Record<number, number> = storedCounts ? JSON.parse(storedCounts) : {}
+          
+          // Increment play count for this track
+          playCounts[songId] = (playCounts[songId] || 0) + 1
+          
+          // Save back to localStorage
+          localStorage.setItem(playCountsKey, JSON.stringify(playCounts))
+        } catch {
+          // Silently fail
         }
       },
 
