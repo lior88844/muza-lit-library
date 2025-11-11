@@ -113,56 +113,6 @@
   margin-right: 60px;
 }
 
-/* Modal-specific input styling to match Figma design */
-.createPlaylistModal .inputWrapper {
-  margin: 0;
-}
-
-.createPlaylistModal .inputWrapper label {
-  margin-bottom: var(--muza-spacing-sm, 8px);
-  font-size: 14px;
-  font-weight: var(--muza-font-weight-medium, 500);
-  color: var(--colors_muted_foreground_light, #6b7280);
-}
-
-.createPlaylistModal .inputWrapper input {
-  padding: 8px 12px;
-  font-size: 16px;
-  color: #030712;
-  background-color: var(--colors_background_light, #ffffff);
-  border: 1px solid var(--muza-light-border-color);
-  border-radius: 9999px;
-  height: 36px;
-  font-family: var(--typography_font_family_font_sans, 'Founders Grotesk'), sans-serif;
-  letter-spacing: 0.25px;
-}
-
-.createPlaylistModal .inputWrapper input::placeholder {
-  color: var(--colors_muted_foreground_light, #6b7280);
-}
-
-.createPlaylistModal .inputWrapper input:focus {
-  outline: none;
-  border-color: var(--muza-secondary-text-color, #6b7280);
-  box-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
-}
-
-.createPlaylistModal .inputWrapper input.success {
-  border-color: var(--muza-light-border-color);
-}
-
-.createPlaylistModal .inputWrapper input.success:focus {
-  border-color: var(--muza-secondary-text-color, #6b7280);
-  box-shadow: 0 0 0 1px var(--muza-secondary-text-color, #6b7280);
-}
-
-.createPlaylistModal .inputWrapper .helperText {
-  margin-top: var(--muza-spacing-sm, 8px);
-  font-size: 14px;
-  color: var(--colors_muted_foreground_light, #6b7280);
-  line-height: 16px;
-}
-
 .createPlaylistModal .modalButtons {
   display: flex;
   gap: var(--muza-spacing-lg, 16px);

@@ -22,6 +22,9 @@ export interface MuzaInputFieldProps
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
+/**
+ * @deprecated Use the Input component instead
+ */
 const MuzaInputField: React.FC<MuzaInputFieldProps> = ({
   label,
   required,
