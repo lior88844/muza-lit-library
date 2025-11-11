@@ -1,5 +1,3 @@
-import 'react-toastify/dist/ReactToastify.css'
-
 import { WebStorageStateStore } from 'oidc-client-ts'
 import { useMemo } from 'react'
 import { AuthProvider, type AuthProviderProps } from 'react-oidc-context'

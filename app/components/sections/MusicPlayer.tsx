@@ -44,7 +44,10 @@ const ScrollingText: React.FC<{
         ref={textRef}
         className={cn('whitespace-nowrap transition-transform duration-300 ease-linear', className)}
         style={{
-          animation: shouldScroll ? `marquee ${animationDuration} linear infinite` : 'none',
+          animationName: shouldScroll ? 'marquee' : 'none',
+          animationDuration: shouldScroll ? animationDuration : '0s',
+          animationTimingFunction: 'linear',
+          animationIterationCount: 'infinite',
           animationPlayState: 'paused',
         }}
         onMouseEnter={e => {
