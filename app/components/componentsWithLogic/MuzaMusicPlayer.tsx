@@ -14,8 +14,9 @@ export default function MuzaMusicPlayer() {
   // Initialize playback engine (manages audio element, HLS, etc.)
   const { seekTo } = usePlaybackEngine()
 
-  // Get player state
-  const { current, isPlaying } = usePlayerStore()
+  // Get player state (use selective subscriptions to avoid unnecessary re-renders)
+  const current = usePlayerStore(state => state.current)
+  const isPlaying = usePlayerStore(state => state.isPlaying)
 
   // Rehydrate persisted state on mount (client-side only)
   useEffect(() => {

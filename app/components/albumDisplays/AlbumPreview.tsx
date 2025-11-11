@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useFetcher, useNavigate } from 'react-router'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
@@ -18,18 +18,56 @@ interface AlbumPreviewProps {
 
 const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }) => {
   const navigate = useNavigate()
-  const { isPlaying, setIsPlaying } = usePlayerStore()
+  const { current, isPlaying, playPause, playQueue } = usePlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
+  const fetcher = useFetcher()
   const { dragHandlers } = useDraggable({
     type: EntityTypeEnum.Album,
     data: details,
     enabled: draggable,
   })
 
-  const handlePlayPause = (e: React.MouseEvent) => {
+  // Check if this album is currently playing
+  const isCurrentAlbumPlaying = 
+    current?.albumId === details.id && isPlaying
+
+  const handlePlayPause = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    setIsPlaying(!isPlaying)
+    
+    // If this album is already playing, just toggle play/pause
+    if (current?.albumId === details.id) {
+      playPause()
+      return
+    }
+
+    // Otherwise, fetch the album data and load it into the queue
+    fetcher.load(`/albums/${details.id}`)
   }
+
+  // When fetcher loads album data, start playing it
+  React.useEffect(() => {
+    if (fetcher.data && fetcher.state === 'idle') {
+      const albumData = fetcher.data.album
+      if (albumData && albumData.tracks) {
+        // Add album property to each track for the queue
+        const tracksWithAlbum = albumData.tracks.map((track: any) => ({
+          ...track,
+          album: albumData.title,
+          albumId: albumData.id,
+        }))
+        
+        playQueue({
+          items: tracksWithAlbum,
+          startIndex: 0,
+          source: {
+            type: 'album',
+            id: albumData.id,
+            title: albumData.title,
+          },
+        })
+      }
+    }
+  }, [fetcher.data, fetcher.state, playQueue])
   const onAlbumClick = () => {
     navigate(`/albums/${details.id}`)
   }
@@ -39,7 +77,7 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
       <div className={styles['image-container']} onClick={onAlbumClick}>
         <Image src={details.imageSrc || '/art/imag_1.jpg'} alt={details.title} />
         <HoverOverlay
-          isPlaying={!!isPlaying}
+          isPlaying={isCurrentAlbumPlaying}
           onPlayPause={handlePlayPause}
           actions={[
             {

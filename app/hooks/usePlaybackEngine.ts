@@ -135,8 +135,14 @@ export function usePlaybackEngine() {
       
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
+          // Ignore AbortErrors - these are expected when play() is interrupted
+          // by pause() or by loading a new track
+          if (error.name === 'AbortError') {
+            return
+          }
+          
+          // Handle real errors (e.g., NotAllowedError for autoplay blocking)
           console.error('Playback failed:', error)
-          // If auto-play is blocked, pause the player
           setIsPlaying(false)
         })
       }
@@ -207,7 +213,7 @@ export function usePlaybackEngine() {
     reportPlay(current.id)
     
     // No cleanup needed since we only report once per song
-  }, [current?.id, isPlaying, reportPlay])
+  }, [current, isPlaying, reportPlay])
 
   // ========================================
   // RETURN API

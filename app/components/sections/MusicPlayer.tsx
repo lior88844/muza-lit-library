@@ -17,20 +17,18 @@ type MusicPlayerProps = {
 export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => {
   const { t } = useTranslation()
 
-  // Get store actions and state
-  const {
-    prev,
-    next,
-    playPause,
-    shuffle,
-    repeat,
-    toggleShuffle,
-    setRepeat,
-    volume,
-    setVolume,
-    currentPosition,
-    duration,
-  } = usePlayerStore()
+  // Get store actions and state (use selective subscriptions to avoid unnecessary re-renders)
+  const prev = usePlayerStore(state => state.prev)
+  const next = usePlayerStore(state => state.next)
+  const playPause = usePlayerStore(state => state.playPause)
+  const shuffle = usePlayerStore(state => state.shuffle)
+  const repeat = usePlayerStore(state => state.repeat)
+  const toggleShuffle = usePlayerStore(state => state.toggleShuffle)
+  const setRepeat = usePlayerStore(state => state.setRepeat)
+  const volume = usePlayerStore(state => state.volume)
+  const setVolume = usePlayerStore(state => state.setVolume)
+  const currentPosition = usePlayerStore(state => state.currentPosition)
+  const duration = usePlayerStore(state => state.duration)
 
   // Local UI state
   const [isLoading] = useState(false)
@@ -165,7 +163,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
               onClick={cycleRepeat}
               aria-label={t('player.repeat')}
             >
-              <MuzaIcon iconName={repeat === 'one' ? 'repeat-1' : 'repeat'} />
+              <MuzaIcon iconName='repeat'/>
             </button>
           </div>
 
