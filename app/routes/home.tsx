@@ -1,6 +1,5 @@
 import '../components/sections/MusicSidebar'
 import '../styles/variables.css'
-import './home.css'
 
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
@@ -24,6 +23,7 @@ export async function loader() {
     }
   }
 }
+
 export default function Home() {
   const { stacks } = useLoaderData<typeof loader>()
   const { t } = useTranslation()
@@ -48,16 +48,15 @@ export default function Home() {
   }
 
   return (
-    <div className='home-page'>
-      <div className='page-header'>
-        <Typography variant='h1' as='h2' className='pb-4'>
-          {t('page.home')}
-        </Typography>
-      </div>
-      <div className='sections-container'>
+    <div className='mx-auto max-w-[1680px]'>
+      <Typography variant='h1' as='h2' className='px-3 pb-12'>
+        {t('page.home')}
+      </Typography>
+
+      <div className='px-3 pb-40'>
         <Divider />
         {stacks.map((stack, index) => (
-          <div key={stack.id} className='section-wrapper'>
+          <div key={stack.id} className='mb-4'>
             <MusicListSectionComponent stack={stack} onShowAll={handleShowAll} />
             {index < stacks.length - 1 && <Divider />}
           </div>

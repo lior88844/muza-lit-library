@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority'
 
 export const inputVariants = cva(
-  'flex items-center gap-2 text-background-dark bg-background dark:bg-input/30 h-9 w-[314px] min-w-0 overflow-hidden rounded-full px-3 transition-[border-color,box-shadow] duration-300 has-disabled:cursor-not-allowed has-disabled:opacity-50',
+  'flex items-center gap-2 text-text-base bg-background dark:bg-input/30 h-9 w-[314px] min-w-0 overflow-hidden rounded-full px-3 transition-[border-color,box-shadow] duration-300 has-disabled:cursor-not-allowed has-disabled:opacity-50',
   {
     variants: {
       variant: {

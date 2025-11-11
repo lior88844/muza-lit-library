@@ -1,13 +1,11 @@
-import { debounce } from 'lodash-es'
-import React, { useMemo } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaSearch } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { getUserInfo, useAuth } from '~/store/userContext'
 
-import { Input } from '../ui/input'
+import { SearchInput } from '../search/search-input'
 import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
@@ -36,40 +34,17 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onUserIconClick }) => {
     })
   }
 
-  const debouncedHandleSearch = useMemo(
-    () =>
-      debounce((searchText: string) => {
-        const newValue = searchText.trim()
-        const redirectTo = newValue ? `/search?q=${encodeURIComponent(newValue)}` : '/'
-        navigate(redirectTo)
-      }, DEBOUNCE_SEARCH_MS),
-    [navigate]
-  )
-
   return (
-    <div className={styles['music-topbar']}>
+    <div className='bg-background-light border-border-light sticky top-0 z-50 border-b pe-6'>
       <div className={styles.topbar}>
-        <Input
-          variant='ghost'
-          placeholder={t('form.searchPlaceholder')}
-          iconStart={<FaSearch className='text-muted-foreground' />}
-          className='w-full px-8'
-          inputClassName='text-lg'
-          containerClassName='grow'
-          onChange={e => debouncedHandleSearch(e.target.value)}
-        />
+        <SearchInput />
+
         <div className={styles.controls}>
           <button className={styles['upload-music-button']} onClick={handleUploadClick}>
             {t('upload.uploadMusic')}
             <MuzaIcon iconName='upload' />
           </button>
-          {/* <button
-            className={styles["admin-upload-button"]}
-            onClick={handleAdminUploadClick}
-          >
-            {t("upload.uploadAdmin")}
-            <MuzaIcon iconName="adminUpload" />
-          </button> */}
+
           <div className={styles['user-menu']}>
             {auth.isAuthenticated ? (
               <div className={styles['user-dropdown']}>
@@ -104,7 +79,5 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onUserIconClick }) => {
     </div>
   )
 }
-
-const DEBOUNCE_SEARCH_MS = 500
 
 export default React.memo(MusicTopbar)

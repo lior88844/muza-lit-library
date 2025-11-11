@@ -8,7 +8,8 @@ import { useDraggable } from '~/lib/hooks/useDraggable'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 
 import { Image } from '../ui/image'
-import AlbumInfoModal from './AlbumInfoModal'
+import { Typography } from '../ui/typography'
+import { AlbumInfoModal } from './album-info-modal'
 import styles from './AlbumPreview.module.css'
 
 interface AlbumPreviewProps {
@@ -50,12 +51,12 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
           ]}
         />
       </div>
-      <div className={styles.info}>
-        <div className={styles.title}>{details.title}</div>
-        <Link to={`/artists/${details.artistId}`} className='text-text-secondary hover:underline'>
-          {details.artist}
+      <div className='mt-1 max-w-full'>
+        <Typography className='truncate font-medium'>{details.title}</Typography>
+
+        <Link to={`/artists/${details.artistId}`}>
+          <Typography className='text-text-muted hover:underline'>{details.artist}</Typography>
         </Link>
-        {/* <div className={styles.subtitle}>{details.genre && `${details.genre} • `}</div> */}
       </div>
       <AlbumInfoModal
         // @ts-expect-error TODO: We need to get all album data always, somehow.

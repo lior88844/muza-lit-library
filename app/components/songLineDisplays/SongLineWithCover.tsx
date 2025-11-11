@@ -7,6 +7,7 @@ import { useDraggable } from '~/lib/hooks/useDraggable'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 import type { SongDetails } from '../../store/models'
+import { Typography } from '../ui/typography'
 import styles from './SongLineWithCover.module.css'
 
 interface SongLineProps {
@@ -89,10 +90,9 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
           )}
         </div>
 
-        {/* Song Info */}
         <div className={styles.songLineWithCoverInfo}>
           <div className={styles.songLineWithCoverTitleRow}>
-            <h3 className={styles.songTitle}>{details.title}</h3>
+            <Typography className='truncate font-medium'>{details.title}</Typography>
           </div>
 
           <div className={styles.songLineWithCoverDetailsRow}>
