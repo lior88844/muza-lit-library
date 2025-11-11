@@ -48,8 +48,10 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
   React.useEffect(() => {
     if (fetcher.data && fetcher.state === 'idle') {
       const albumData = fetcher.data.album
-      if (albumData && albumData.tracks) {
+      // Only process if this is the album data we requested
+      if (albumData && albumData.tracks && albumData.id === details.id) {
         // Add album property to each track for the queue
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const tracksWithAlbum = albumData.tracks.map((track: any) => ({
           ...track,
           album: albumData.title,
@@ -67,7 +69,7 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
         })
       }
     }
-  }, [fetcher.data, fetcher.state, playQueue])
+  }, [fetcher.data, fetcher.state, playQueue, details.id])
   const onAlbumClick = () => {
     navigate(`/albums/${details.id}`)
   }
