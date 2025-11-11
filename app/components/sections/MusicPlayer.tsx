@@ -176,12 +176,12 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
             <button
               className={cn(
                 'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
-                shuffle && 'text-blue-500'
+                shuffle && 'text-(--colors_primary_light)'
               )}
               onClick={toggleShuffle}
               aria-label={t('player.shuffle')}
             >
-              <MuzaIcon iconName='shuffle' />
+              <MuzaIcon iconName='shuffle' className='rotate-180' />
             </button>
 
             <button
