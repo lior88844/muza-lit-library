@@ -6,7 +6,7 @@ import { db } from '../../db/connection'
 import { playlists } from '../../db/playlist.entity'
 import type { CreateStack, Stack, StackPageIdEnum, UpdateStack } from '../../db/stack.entity'
 import { EntityTypeEnum, stacks } from '../../db/stack.entity'
-import type { CreateStackItem, StackItem } from '../../db/stack-item.entity'
+import type { CreateStackItem } from '../../db/stack-item.entity'
 import { stackItems } from '../../db/stack-item.entity'
 import { tracks } from '../../db/track.entity'
 import { type AlbumWithArtistsAndTracks, formatMiniAlbum } from '../album/album.service'
@@ -18,22 +18,7 @@ import type { MiniPlaylistResponse } from '../playlist/types/MiniPlaylistRespons
 import { formatTrack } from '../track/track.service'
 import type { TrackResponse } from '../track/types/TrackResponse'
 import type { TrackWithArtists } from '../track/types/TrackWithArtists'
-
-export type Entity = MiniAlbum | ArtistMiniResponse | TrackResponse | MiniPlaylistResponse
-export interface StackWithEntities extends Stack {
-  items: StackItemWithEntity[]
-}
-export interface StackItemWithEntity extends StackItem {
-  entity: Entity
-}
-export interface StackWithItems extends Stack {
-  items: StackItem[]
-}
-export interface StackItemUpdateData {
-  entityType: EntityTypeEnum
-  entityId: number
-  displayOrder: number
-}
+import type { StackItemUpdateData, StackWithEntities, StackWithItems } from './types'
 
 /**
  * Get stacks by page identifier

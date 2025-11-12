@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
-import type { Entity } from 'server/api/stack/stack.service'
+import type { Entity } from 'server/api/stack/types'
 
 import { Button } from '~/components/ui/button'
 import DropdownMenu from '~/components/ui/DropdownMenu'

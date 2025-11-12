@@ -53,8 +53,4 @@
   /* Radius */
   --muza-border-radius-sm: 4px;
   --muza-border-radius-md: 8px;
-  --muza-border-radius-lg: 20px;
-
-  /* Shadows */
-  --muza-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }

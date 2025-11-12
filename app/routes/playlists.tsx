@@ -1,12 +1,9 @@
-import '../styles/variables.css'
-
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import PlaylistGrid from '~/components/listsDisplays/PlaylistGrid'
 import CreatePlaylistModal from '~/components/ui/CreatePlaylistModal'
-import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
 import { useMedia } from '~/store/media/mediaContext'
 import { useAddPlaylist } from '~/store/media/useAddPlaylist'
@@ -44,7 +41,6 @@ export default function Playlists() {
       <Typography variant='h1' as='h2' className='pb-4'>
         {t('page.playlists')}
       </Typography>
-      <Divider />
 
       <PlaylistGrid
         playlists={playlists}

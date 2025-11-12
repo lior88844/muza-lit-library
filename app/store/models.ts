@@ -1,4 +1,4 @@
-import type { StackItemWithEntity } from 'server/api/stack/stack.service'
+import type { StackItemWithEntity } from 'server/api/stack/types'
 import type { Stack } from 'server/db/stack.entity'
 
 import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'

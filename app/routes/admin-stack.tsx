@@ -6,11 +6,10 @@ import {
   createStack,
   deleteStack,
   getStacksByPage,
-  type StackWithEntities,
-  type StackWithItems,
   updateStack,
   updateStackWithItems,
 } from 'server/api/stack/stack.service'
+import type { StackWithEntities, StackWithItems } from 'server/api/stack/types'
 import { StackPageIdEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
