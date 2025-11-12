@@ -4,13 +4,13 @@ import { useState } from 'react'
 import { useLoaderData } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { AlbumInfoModal } from '~/components/albumDisplays/album-info-modal'
 import MediaHeader from '~/components/MediaHeader'
+import AddToPlaylistModal from '~/components/playlistDisplays/AddToPlaylistModal'
 import SongLine from '~/components/songLineDisplays/SongLine'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
-import AlbumInfoModal from '~/components/albumDisplays/AlbumInfoModal.tsx'
-import AddToPlaylistModal from '~/components/playlistDisplays/AddToPlaylistModal'
 
 export async function loader({ params }: { params: { id: string } }) {
   const albumId = parseInt(params.id, 10)
