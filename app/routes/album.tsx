@@ -10,7 +10,7 @@ import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
-import AlbumInfoModal from '../components/albumDisplays/AlbumInfoModal'
+import { AlbumInfoModal } from '../components/albumDisplays/album-info-modal'
 
 export async function loader({ params }: { params: { id: string } }) {
   const albumId = parseInt(params.id, 10)

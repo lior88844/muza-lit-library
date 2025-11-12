@@ -9,7 +9,7 @@ import { cn } from '~/lib/utils'
 import { Typography } from '../typography'
 import { inputVariants } from './variants'
 
-interface InputProps extends ComponentProps<'input'>, VariantProps<typeof inputVariants> {
+export interface InputProps extends ComponentProps<'input'>, VariantProps<typeof inputVariants> {
   label?: ReactNode
   helperText?: ReactNode
   containerClassName?: string

@@ -13,12 +13,12 @@ export const buttonVariants = cva(
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/90 disabled:hover:bg-secondary',
         ghost:
-          'bg-transparent text-background-dark hover:bg-secondary hover:shadow-none disabled:hover:bg-transparent',
+          'bg-transparent text-text-base hover:bg-secondary hover:shadow-none disabled:hover:bg-transparent',
         link: 'text-primary hover:underline hover:shadow-none disabled:hover:no-underline',
       },
       size: {
         default: 'px-4',
-        sm: 'px-3',
+        sm: 'px-3 text-sm',
         lg: 'px-8',
         icon: 'py-2.5 px-2.5',
       },

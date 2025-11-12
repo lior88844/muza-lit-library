@@ -50,7 +50,7 @@ export default function Explore() {
       <Divider />
 
       {stacks.map((stack, index) => (
-        <div key={stack.id} className='section-wrapper'>
+        <div key={stack.id} className='mb-4'>
           {stack.entityType === EntityTypeEnum.Album && (
             <MusicListSectionComponent stack={stack} onShowAll={handleShowAll} />
           )}

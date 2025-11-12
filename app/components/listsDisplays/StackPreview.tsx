@@ -7,6 +7,7 @@ import type { StackWithEntities } from 'server/api/stack/stack.service'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { cn } from '~/lib/utils'
 import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 
@@ -14,6 +15,7 @@ import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
 import ArtistPreview from '../artistDisplays/ArtistPreview'
 import SongLineWithCover from '../songLineDisplays/SongLineWithCover'
+import { Button } from '../ui/button'
 import { Typography } from '../ui/typography'
 import styles from './MusicListSection.module.css'
 
@@ -33,6 +35,7 @@ const MusicListSectionComponent: React.FC<{
 
   const MAX_ITEMS_TO_SHOW = 5
   const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, MAX_ITEMS_TO_SHOW)
+
   const renderContent = () => {
     switch (stack.entityType) {
       case EntityTypeEnum.Album:
@@ -97,34 +100,53 @@ const MusicListSectionComponent: React.FC<{
     }
   }
 
-  // Determine the appropriate CSS class based on type
   const getContentClass = () => {
     switch (stack.entityType) {
-      case EntityTypeEnum.Album:
-        return styles['album-list']
       case EntityTypeEnum.Artist:
         return styles['artist-list']
-      case EntityTypeEnum.Playlist:
-        return styles['album-list'] // Use album-list styling for playlists
       case EntityTypeEnum.Track:
-        return styles['song-list']
+        return cn('grid gap-2 grid-cols-2 lg:grid-cols-3')
+      case EntityTypeEnum.Album:
+      case EntityTypeEnum.Playlist:
       default:
-        return styles['album-list']
+        return cn(
+          'grid gap-4',
+          'grid-cols-2',
+
+          'md:max-[892px]:grid-cols-3',
+
+          'min-[892px]:max-lg:grid-cols-4',
+
+          'lg:grid-cols-5',
+
+          !isExpanded && [
+            'max-md:[&>*:nth-child(n+3)]:!hidden',
+
+            'md:max-[892px]:[&>*:nth-child(3)]:flex',
+            'md:max-[892px]:[&>*:nth-child(n+4)]:!hidden',
+
+            'min-[892px]:max-lg:[&>*:nth-child(3)]:flex',
+            'min-[892px]:max-lg:[&>*:nth-child(4)]:flex',
+            'min-[892px]:max-lg:[&>*:nth-child(5)]:!hidden',
+
+            'lg:[&>*:nth-child(5)]:flex',
+          ]
+        )
     }
   }
 
   return (
     <div className={styles['music-list-section']}>
-      <div className={styles['music-list-section-header']}>
-        <Typography variant='h2' className='mb-3'>
-          {stack.title}
-        </Typography>
+      <div className='mb-4 flex items-center justify-between'>
+        <Typography variant='h4'>{stack.title}</Typography>
+
         {stack.items.length > MAX_ITEMS_TO_SHOW && (
-          <button className={styles['show-all-btn']} onClick={() => setIsExpanded(!isExpanded)}>
+          <Button variant='ghost' size='sm' onClick={() => setIsExpanded(prev => !prev)}>
             {isExpanded ? t('action.showLess') : t('action.showAll')}
-          </button>
+          </Button>
         )}
       </div>
+
       <div className={getContentClass()}>{renderContent()}</div>
     </div>
   )

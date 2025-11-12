@@ -34,6 +34,7 @@
   --color-ring: var(--muza-toggle-active-color);
 
   /* Semantic Text Colors */
+  --color-text-base: var(--colors_background_dark);
   --color-text-dark: var(--muza-track-title-color);
   --color-text-primary: var(--muza-primary-text-color);
   --color-text-secondary: var(--muza-secondary-text-color);
@@ -53,7 +54,7 @@
       Roboto,
       sans-serif;
 
-    @apply text-foreground text-base/tight antialiased;
+    @apply text-text-base text-base/tight antialiased;
   }
 
   ::-webkit-scrollbar {
