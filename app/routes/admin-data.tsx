@@ -2,16 +2,6 @@ import type { ColDef } from 'ag-grid-community'
 import { useMemo, useState } from 'react'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router'
 import { db } from 'server/db/connection'
-import {
-  albums,
-  artists,
-  labels,
-  playlists,
-  stackItems,
-  stacks,
-  tracks,
-  userLibrary,
-} from 'server/db/schema'
 
 import { Button } from '~/components/ui/button'
 import { DataGrid } from '~/components/ui/data-grid/DataGrid'
@@ -38,31 +28,31 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     switch (entityType) {
       case 'albums':
-        data = await db.select().from(albums)
+        data = await db.query.albums.findMany()
         break
       case 'artists':
-        data = await db.select().from(artists)
+        data = await db.query.artists.findMany()
         break
       case 'tracks':
-        data = await db.select().from(tracks)
+        data = await db.query.tracks.findMany()
         break
       case 'playlists':
-        data = await db.select().from(playlists)
+        data = await db.query.playlists.findMany()
         break
       case 'labels':
-        data = await db.select().from(labels)
+        data = await db.query.labels.findMany()
         break
       case 'stacks':
-        data = await db.select().from(stacks)
+        data = await db.query.stacks.findMany()
         break
       case 'stackItems':
-        data = await db.select().from(stackItems)
+        data = await db.query.stackItems.findMany()
         break
       case 'userLibrary':
-        data = await db.select().from(userLibrary)
+        data = await db.query.userLibrary.findMany()
         break
       default:
-        data = await db.select().from(albums)
+        data = await db.query.albums.findMany()
     }
 
     // Convert dates and arrays to strings for ag-grid compatibility

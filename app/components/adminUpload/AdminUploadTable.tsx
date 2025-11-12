@@ -5,7 +5,6 @@ import type {
   ValueGetterParams,
 } from 'ag-grid-community'
 import { Fragment, useCallback, useMemo } from 'react'
-import { FaSpinner } from 'react-icons/fa'
 
 import { AppTooltip } from '~/components/ui/AppTooltip'
 import { Button } from '~/components/ui/button'
@@ -16,6 +15,7 @@ import { cn } from '~/lib/utils'
 import CoverCell from './CoverCell'
 import DataSourceCell from './DataSourceCell'
 import { isItemUploadReady } from './services/adminUploadService'
+import { StatusCellRenderer } from './StatusCellRenderer'
 import { UPLOAD_ERROR_CODES, UploadErrorCodeEnum } from './types/ErrorCode'
 import type { UploadItem } from './types/UploadItem'
 
@@ -40,11 +40,6 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   onCoverUrlChange,
   onDiscoverAlbum,
 }) => {
-  const isUploading =
-    Array.from(selectedItemIds).some(
-      itemId => items.find(item => item.id === itemId)?.loadingState?.status === 'loading'
-    ) || false
-
   // Format file size helper
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 B'
@@ -55,75 +50,46 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
   }
 
   // Column definitions for AG Grid
+  const selectionColumnDef = useMemo(
+    () => ({
+      minWidth: 250,
+      flex: 1,
+      resizable: true,
+      cellRenderer: (params: { data: UploadItem }) => {
+        const item = params.data
+        const totalFiles = item.files.flat().length
+        const artistName = item.metadata?.artist || item.name
+        const albumName = item.metadata?.album
+        return (
+          <div className='flex flex-col'>
+            <span className='max-w-[300px] text-base leading-5 text-wrap'>
+              {artistName || ''} {albumName ? ' - ' : ''} {albumName}
+            </span>
+            <div className='flex flex-col gap-1'>
+              <div className='flex flex-wrap items-center justify-start gap-2'>
+                <MuzaIcon iconName='folder' />
+                <span className='text-text-tertiary text-xs'>
+                  {totalFiles} files
+                  {item.files.length > 1 && ` (${item.files.length} discs)`}
+                </span>{' '}
+                -<span className='text-text-secondary text-sm'>{formatFileSize(item.size)}</span>
+              </div>
+            </div>
+          </div>
+        )
+      },
+    }),
+    []
+  )
   const columnDefs = useMemo<ColDef<UploadItem>[]>(
     () => [
       {
-        field: 'metadata',
-        headerName: 'Folder',
+        colId: 'folder',
+        headerName: 'Status',
         width: 220,
         minWidth: 180,
         flex: 3,
-        cellRenderer: (params: { data: UploadItem }) => {
-          const item = params.data
-          const isLoading = item.loadingState?.status === 'loading'
-          const errors = item.uploadRes?.errors || (item.errorCode ? [item.errorCode!] : [])
-          let statusText = 'Ready'
-          if (isLoading && !item.discoverRes) {
-            statusText = 'Discovering...'
-          } else if (isLoading && item.discoverRes) {
-            statusText = 'Uploading...'
-          } else if (!isLoading && errors.length) {
-            statusText = 'Error'
-          } else if (!isLoading && item.uploadRes) {
-            statusText = 'Done'
-          } else if (!isLoading && (!item.discoverRes?.discogsId || !item.discoverRes?.mbId)) {
-            statusText = 'No ID found'
-          } else if (!isLoading && item.discoverRes && item.discoverRes.matchedBy === 'ai') {
-            statusText = 'Ready - AI matched'
-          }
-
-          const artistName = item.metadata?.artist || item.name
-          const albumName = item.metadata?.album
-          return (
-            <div className='flex items-center gap-3 py-2'>
-              <div
-                className={cn(
-                  'bg-secondary flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full transition-colors duration-300 ease-in-out',
-                  item.loadingState?.status === 'loaded' && 'bg-[#15803d]',
-                  isLoading && selectedItemIds.has(item.id) && 'bg-border-light'
-                )}
-              >
-                {isLoading ? (
-                  <FaSpinner className='text-text-secondary h-4 w-4 animate-spin' />
-                ) : (
-                  <MuzaIcon
-                    iconName={
-                      item.loadingState?.status === 'loaded' && item.uploadRes ? 'Check' : 'Clock8'
-                    }
-                    className={cn(
-                      'text-text-dark h-4 w-4 transition-colors duration-300 ease-in-out',
-                      item.loadingState?.status === 'loaded' && 'text-[#f9fafb]'
-                    )}
-                  />
-                )}
-              </div>
-              <div className='flex min-w-0 flex-1 flex-col gap-1'>
-                <span className='text-base leading-5'>
-                  {artistName || ''} {albumName ? ' - ' : ''} {albumName}
-                </span>
-                <div className='flex flex-wrap items-center justify-start gap-2'>
-                  <MuzaIcon iconName='folder' />
-                  <span className='text-text-tertiary text-xs'>
-                    {item.files.flat().length} files
-                    {item.files.length > 1 && ` (${item.files.length} discs)`}
-                  </span>{' '}
-                  -<span className='text-text-secondary text-sm'>{formatFileSize(item.size)}</span>
-                  <span className='text-text-secondary text-sm'> - {statusText}</span>
-                </div>
-              </div>
-            </div>
-          )
-        },
+        cellRenderer: StatusCellRenderer,
       },
       {
         field: 'manualAlbumId',
@@ -160,23 +126,29 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         },
       },
       {
-        field: 'uploadRes',
+        field: 'phase',
         headerName: 'Status',
         width: 180,
         minWidth: 150,
         sortable: true,
         valueGetter: (params: ValueGetterParams<UploadItem>) => {
           const item = params.data!
-          const errors = item.uploadRes?.errors || (item.errorCode ? [item.errorCode!] : [])
-          return errors.length > 0 || item.uploadRes?.success === false
+          const errors =
+            item.prepareRes?.errors ||
+            item.uploadErrors ||
+            (item.errorCode ? [item.errorCode!] : [])
+          return errors.length > 0 || item.prepareRes?.success === false || item.phase === 'error'
         },
         cellRenderer: (params: { data: UploadItem }) => {
           const item = params.data
-          const errors = item.uploadRes?.errors || (item.errorCode ? [item.errorCode!] : [])
+          const errors = [
+            ...(item.prepareRes?.errors || []),
+            ...(item.errorCode ? [item.errorCode] : []),
+          ]
 
-          if (errors.length > 0 || item.uploadRes?.success === false) {
-            return <ErrorBadge errorCodes={errors} item={item} />
-          } else if (item.uploadRes) {
+          if (errors.length > 0 || item.phase === 'error') {
+            return <ErrorBadge errorCodes={errors} item={item} uploadErrors={item.uploadErrors} />
+          } else if (item.phase === 'completed') {
             return <UploadedBadge />
           } else {
             return <SuccessBadge />
@@ -184,14 +156,16 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         },
       },
     ],
-    [onManualIdChange, onManualDiscogsIdChange, onCoverUrlChange, onDiscoverAlbum, selectedItemIds]
+    [onManualIdChange, onManualDiscogsIdChange, onCoverUrlChange, onDiscoverAlbum]
   )
 
   // Handle selection change
   const handleSelectionChanged = useCallback(
     (event: SelectionChangedEvent<UploadItem>) => {
-      const selectedRows = event.selectedNodes?.map(node => node.data!.id) || []
-      onSelectionChange(selectedRows)
+      if (event.source !== 'rowDataChanged') {
+        const selectedRows = event.selectedNodes?.map(node => node.data!.id) || []
+        onSelectionChange(selectedRows)
+      }
     },
     [onSelectionChange]
   )
@@ -202,9 +176,7 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
     const discoveredItems = items.filter(
       item => item.discoverRes?.mbId && item.discoverRes?.discogsId
     ).length
-    const uploadedItems = items.filter(
-      item => item.uploadRes && item.uploadRes.success !== false
-    ).length
+    const uploadedItems = items.filter(item => item.phase === 'completed').length
     return { totalItems, discoveredItems, uploadedItems }
   }, [items])
 
@@ -225,16 +197,17 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         <Button
           variant='default'
           onClick={onProcessUpload}
-          disabled={selectedItemIds.size === 0 || isUploading}
+          disabled={selectedItemIds.size === 0}
           className='flex items-center gap-2'
         >
-          <MuzaIcon iconName={isUploading ? 'Clock8' : 'upload'} className='h-4 w-4' />
-          {isUploading ? 'Uploading...' : 'Process & Upload'}
+          <MuzaIcon iconName='upload' className='h-4 w-4' />
+          Process & Upload
         </Button>
       </div>
     ),
-    [selectedItemIds.size, isUploading, onProcessUpload, stats]
+    [selectedItemIds.size, onProcessUpload, stats]
   )
+
   const gridOptions = useMemo(
     (): GridOptions<UploadItem> => ({
       rowSelection: {
@@ -258,7 +231,9 @@ const AdminUploadTable: React.FC<AdminUploadTableProps> = ({
         columnDefs={columnDefs}
         rowSelection='multiple'
         onSelectionChanged={handleSelectionChanged}
+        selectionColumnDef={selectionColumnDef}
         hideSearch={true}
+        getRowId={params => params.data!.id}
         hideExport={true}
         hideColumnOrganizer={true}
         entityName='adminUpload'
@@ -293,18 +268,33 @@ const UploadedBadge = () => (
 )
 
 // Error Badge Component with Tooltip
-const ErrorBadge: React.FC<{ errorCodes: UploadErrorCodeEnum[]; item: UploadItem }> = ({
-  errorCodes,
-  item,
-}) => {
+const ErrorBadge: React.FC<{
+  errorCodes: UploadErrorCodeEnum[]
+  item: UploadItem
+  uploadErrors?: string[]
+}> = ({ errorCodes, item, uploadErrors }) => {
   const errorInfos = errorCodes.map(errorCode => UPLOAD_ERROR_CODES[errorCode]).filter(Boolean)
-  if (!errorInfos.length && item.uploadRes?.success === false) {
-    errorInfos.push({
-      code: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
-      title: 'Upload Service Error',
-      description: item.uploadRes?.message || 'The album was not uploaded successfully.',
+
+  // Add upload errors from S3
+  if (uploadErrors && uploadErrors.length > 0) {
+    uploadErrors.forEach(error => {
+      errorInfos.push({
+        code: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+        title: 'S3 Upload Error',
+        description: error,
+      })
     })
   }
+
+  // Add prepare error
+  if (!errorInfos.length && item.prepareRes?.success === false) {
+    errorInfos.push({
+      code: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+      title: 'Album Preparation Error',
+      description: item.prepareRes?.message || 'Failed to prepare album for upload.',
+    })
+  }
+
   if (errorInfos.length === 0) {
     return null
   }

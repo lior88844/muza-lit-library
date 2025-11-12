@@ -2,8 +2,7 @@ import { index, integer, pgTable, serial, timestamp, uniqueIndex } from 'drizzle
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
-import { stacks } from './stack.entity'
-import { EntityTypeEnum, mediaTypeEnum } from './stack.entity'
+import { EntityTypeEnum, mediaTypeEnum, stacks } from './stack.entity'
 
 export const stackItems = pgTable(
   'stack_items',

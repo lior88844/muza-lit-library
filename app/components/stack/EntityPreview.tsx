@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import type { ArtistMiniResponse } from 'server/api/artist/types/ArtistResponse'
 import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
+import type { Entity } from 'server/api/stack/types'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
@@ -12,8 +13,6 @@ import { cn } from '~/lib/utils'
 import { usePlayerStore } from '~/store/playerStore'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
-
-type Entity = MiniAlbum | ArtistMiniResponse | TrackResponse | MiniPlaylistResponse
 
 interface EntityPreviewProps {
   entity: Entity

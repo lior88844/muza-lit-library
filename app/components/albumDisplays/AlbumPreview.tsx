@@ -6,13 +6,13 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 import useFetcherAsync from '~/lib/useFetcherAsync'
+import { cn } from '~/lib/utils'
 import { usePlayerStore } from '~/store/playerStore'
 import type { QueueItem } from '~/types/player'
 
 import { Image } from '../ui/image'
 import { Typography } from '../ui/typography'
 import { AlbumInfoModal } from './album-info-modal'
-import styles from './AlbumPreview.module.css'
 
 interface AlbumPreviewProps {
   details: MiniAlbum
@@ -32,8 +32,9 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
   const navigate = useNavigate()
   const { current, isPlaying, playPause, playQueue } = usePlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
+
   const fetcher = useFetcherAsync<AlbumLoaderData>()
-  const { dragHandlers } = useDraggable({
+  const { dragHandlers, isDragging } = useDraggable({
     type: EntityTypeEnum.Album,
     data: details,
     enabled: draggable,
@@ -83,9 +84,21 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
   }
 
   return (
-    <div className={styles['album-details-card']} {...dragHandlers}>
-      <div className={styles['image-container']} onClick={onAlbumClick}>
-        <Image src={details.imageSrc || '/art/imag_1.jpg'} alt={details.title} />
+    <div
+      className={cn(
+        'flex flex-col',
+        draggable && 'cursor-grab active:cursor-grabbing',
+        isDragging && 'opacity-50'
+      )}
+      {...dragHandlers}
+    >
+      <div className='relative' onClick={onAlbumClick}>
+        <Image
+          src={details.imageSrc || '/art/imag_1.jpg'}
+          alt={details.title}
+          className='aspect-square w-full rounded-sm object-cover shadow-md'
+        />
+
         <HoverOverlay
           isPlaying={isCurrentAlbumPlaying}
           onPlayPause={handlePlayPause}

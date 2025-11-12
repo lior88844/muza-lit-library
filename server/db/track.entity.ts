@@ -8,7 +8,6 @@ import {
   text,
   timestamp,
   uuid,
-  varchar,
 } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
@@ -32,9 +31,9 @@ export const audioFormatEnum = pgEnum(
 // Tracks table
 export const tracks = pgTable('tracks', {
   id: serial('id').primaryKey(),
-  title: varchar('title', { length: 255 }).notNull(),
-  sortTitle: varchar('sort_title', { length: 255 }),
-  disambiguation: varchar('disambiguation', { length: 255 }),
+  title: text('title').notNull(),
+  sortTitle: text('sort_title'),
+  disambiguation: text('disambiguation'),
   albumId: integer('album_id').references(() => albums.id),
   trackNumber: integer('track_number'),
   discNumber: integer('disc_number'),
@@ -47,7 +46,7 @@ export const tracks = pgTable('tracks', {
   bitrate: numeric('bitrate'),
   sampleRate: integer('sample_rate'),
   channels: integer('channels'),
-  encoding: varchar('encoding', { length: 50 }),
+  encoding: text('encoding'),
   genres: text('genres').array(), // PostgreSQL array
   tags: text('tags').array(), // PostgreSQL array
   explicit: boolean('explicit').default(false),

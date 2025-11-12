@@ -1,22 +1,24 @@
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { useDraggable } from '~/lib/hooks/useDraggable'
+import { cn } from '~/lib/utils'
 
 import type { Artist } from '../../store/models'
-import styles from './ArtistPreview.module.css'
+import { Image } from '../ui/image'
+import { Typography } from '../ui/typography'
 
 interface ArtistDetailsProps {
   details: Artist
   draggable?: boolean
 }
 
-const ArtistPreview: React.FC<ArtistDetailsProps> = ({ details, draggable = false }) => {
+export function ArtistPreview({ details, draggable = false }: ArtistDetailsProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { dragHandlers } = useDraggable({
+
+  const { dragHandlers, isDragging } = useDraggable({
     type: EntityTypeEnum.Artist,
     data: details,
     enabled: draggable,
@@ -25,19 +27,30 @@ const ArtistPreview: React.FC<ArtistDetailsProps> = ({ details, draggable = fals
   const onArtistClick = () => {
     navigate(`/artists/${details.id}`)
   }
+
   return (
-    <div className={styles['artist-details-card']} {...dragHandlers} onClick={onArtistClick}>
-      <div className={styles['image-container']}>
-        <img src={details.imageUrl || ''} alt={details.name} />
-      </div>
-      <div className={styles.info}>
-        <div className={styles.title}>{details.name}</div>
-        <div className={styles.subtitle}>
+    <div
+      className={cn(
+        'flex flex-col items-center gap-1',
+        draggable && 'cursor-grab active:cursor-grabbing',
+        isDragging && 'opacity-50'
+      )}
+      {...dragHandlers}
+      onClick={onArtistClick}
+    >
+      <Image
+        src={details.imageUrl}
+        alt={details.name}
+        className='aspect-square w-full rounded-full object-cover shadow-md'
+      />
+
+      <div>
+        <Typography className='mb-1 font-medium'>{details.name}</Typography>
+
+        <Typography variant='caption' as='p' className='text-text-tertiary w-max'>
           {details.albumsCount} {t('common.albums')}
-        </div>
+        </Typography>
       </div>
     </div>
   )
 }
-
-export default ArtistPreview

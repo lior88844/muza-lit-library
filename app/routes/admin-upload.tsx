@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { AdminFileDropArea, AdminUploadTable } from '~/components/adminUpload'
 import {
@@ -7,52 +7,71 @@ import {
   formatMbId,
   getAlbumsToUpload,
   isItemUploadReady,
+  prepareAlbumUpload,
+  prepareQueue,
   UPLOAD_BLOCKING_ERROR_CODES,
-  uploadAlbum,
+  uploadFilesToS3,
 } from '~/components/adminUpload/services/adminUploadService'
 import { extractAlbumDiscoverMetadata } from '~/lib/flacMetadata'
 
 import { UploadErrorCodeEnum } from '../components/adminUpload/types/ErrorCode'
+import type { FileUploadProgress } from '../components/adminUpload/types/PrepareUploadResponse'
 import type { UploadItem } from '../components/adminUpload/types/UploadItem'
 
 export default function AdminUpload() {
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([])
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set())
 
+  // Warn user before leaving page during uploads
+  useEffect(() => {
+    const hasActiveUploads = uploadedItems.some(
+      item => item.phase === 'waiting' || item.phase === 'preparing' || item.phase === 'uploading'
+    )
+
+    if (hasActiveUploads) {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault()
+        // Modern browsers require returnValue to be set
+        e.returnValue = ''
+        return ''
+      }
+
+      window.addEventListener('beforeunload', handleBeforeUnload)
+      return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [uploadedItems])
+
   const onDiscoverAlbum = useCallback(async (item: UploadItem) => {
     try {
-      // Flatten files array for metadata extraction
-      // Extract complete metadata from all FLAC files
+      // Set discovering phase
+      setUploadedItems(prev =>
+        prev.map(prevItem =>
+          prevItem.id === item.id
+            ? {
+                ...prevItem,
+                phase: 'discovering' as const,
+              }
+            : prevItem
+        )
+      )
 
       if (item.metadata) {
         if (item.manualAlbumId) {
           item.metadata.musicbrainzAlbumId = formatMbId(item.manualAlbumId)
-          setUploadedItems(prev =>
-            prev.map(prevItem =>
-              prevItem.id === item.id
-                ? {
-                    ...prevItem,
-                    isLookingUp: true,
-                  }
-                : prevItem
-            )
-          )
         }
+
         // Discover album in backend
         const discoverRes = await discoverAlbum(item.metadata)
 
-        // Update item with lookup result and remove loading state
+        // Update item with lookup result
         setUploadedItems(prev =>
           prev.map(prevItem =>
             prevItem.id === item.id
               ? {
                   ...prevItem,
                   discoverRes,
-                  isLookingUp: false,
                   errorCode: discoverRes?.error,
-                  loadingState: {
-                    status: 'loaded',
-                  },
+                  phase: discoverRes?.error ? ('error' as const) : ('idle' as const),
                 }
               : prevItem
           )
@@ -63,17 +82,14 @@ export default function AdminUpload() {
       }
     } catch (error) {
       console.error('Error processing album discovery:', error)
-      // Remove loading state on error
+      // Set error phase
       setUploadedItems(prev =>
         prev.map(prevItem =>
           prevItem.id === item.id
             ? {
                 ...prevItem,
                 errorCode: UploadErrorCodeEnum.DISCOVERY_SERVICE_ERROR,
-                isLookingUp: false,
-                loadingState: {
-                  status: 'error',
-                },
+                phase: 'error' as const,
               }
             : prevItem
         )
@@ -134,67 +150,133 @@ export default function AdminUpload() {
       return
     }
 
-    // Process batches sequentially
+    // Deselect items and set them to waiting status
+    setSelectedItemIds(new Set())
+    setUploadedItems(prev =>
+      prev.map(prevItem =>
+        uploadableItems.some(item => item.id === prevItem.id)
+          ? { ...prevItem, phase: 'waiting', errorCode: undefined }
+          : prevItem
+      )
+    )
+
+    // Process items concurrently using p-queue (max 3 at a time)
     await Promise.all(
-      uploadableItems.map(async item => {
-        // Process all items in current batch concurrently
-        try {
-          // Get album ID (from lookup or manual entry)
-          const mbId = item.manualAlbumId ? formatMbId(item.manualAlbumId) : item.discoverRes!.mbId!
-          const discogsId = item.manualDiscogsId
-            ? formatDiscogsId(item.manualDiscogsId)
-            : item.discoverRes!.discogsId!
+      uploadableItems.map(item =>
+        prepareQueue.add(async () => {
+          try {
+            // Get album ID (from lookup or manual entry)
+            const mbId = item.manualAlbumId
+              ? formatMbId(item.manualAlbumId)
+              : item.discoverRes!.mbId!
+            const discogsId = item.manualDiscogsId
+              ? formatDiscogsId(item.manualDiscogsId)
+              : item.discoverRes!.discogsId!
 
-          // Get cover image URL (from lookup or manual entry)
-          const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
+            // Get cover image URL (from lookup or manual entry)
+            const albumCover = item.manualCoverImgUrl?.trim() || item.discoverRes?.coverUrl || ''
 
-          // Set loading state
-          setUploadedItems(prev =>
-            prev.map(prevItem =>
-              prevItem.id === item.id
-                ? {
-                    ...prevItem,
-                    loadingState: {
-                      status: 'loading',
-                    },
-                  }
-                : prevItem
+            // Step 1: Prepare album upload
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? {
+                      ...prevItem,
+                      phase: 'preparing' as const,
+                    }
+                  : prevItem
+              )
             )
-          )
-          setSelectedItemIds(prev => {
-            const newSet = new Set(prev)
-            newSet.delete(item.id)
-            return newSet
-          })
-          // Upload album
-          const res = await uploadAlbum({ mbId, albumCover, discogsId, discFiles: item.files })
 
-          // Update with success
-          setUploadedItems(prev =>
-            prev.map(prevItem =>
-              prevItem.id === item.id
-                ? { ...prevItem, uploadRes: res, loadingState: { status: 'loaded' } }
-                : prevItem
-            )
-          )
+            const prepareRes = await prepareAlbumUpload({
+              mbId,
+              albumCover,
+              discogsId,
+              discFiles: item.files,
+            })
 
-          // Remove from selected items
-        } catch (error) {
-          console.error(`Upload failed for item ${item.id}:`, error)
-          // Update with error state
-          setUploadedItems(prev =>
-            prev.map(prevItem =>
-              prevItem.id === item.id
-                ? {
-                    ...prevItem,
-                    loadingState: { status: 'error' },
-                    errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
-                  }
-                : prevItem
+            if (!prepareRes.success) {
+              // Preparation failed
+              setUploadedItems(prev =>
+                prev.map(prevItem =>
+                  prevItem.id === item.id
+                    ? {
+                        ...prevItem,
+                        phase: 'error' as const,
+                        errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+                        prepareRes,
+                      }
+                    : prevItem
+                )
+              )
+              return
+            }
+
+            // Step 2: Upload files to S3
+            const uploadProgress = new Map<string, FileUploadProgress>()
+
+            // Update state with prepare result and uploading phase
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? {
+                      ...prevItem,
+                      phase: 'uploading' as const,
+                      prepareRes,
+                      uploadProgress,
+                    }
+                  : prevItem
+              )
             )
-          )
-        }
-      })
+
+            const uploadResult = await uploadFilesToS3(
+              prepareRes.trackUploads,
+              item.files,
+              (fileName: string, progress: FileUploadProgress) => {
+                // Update progress for this file
+                uploadProgress.set(fileName, progress)
+                setUploadedItems(prev =>
+                  prev.map(prevItem =>
+                    prevItem.id === item.id
+                      ? {
+                          ...prevItem,
+                          uploadProgress: new Map(uploadProgress),
+                        }
+                      : prevItem
+                  )
+                )
+              }
+            )
+
+            // Update final state
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? {
+                      ...prevItem,
+                      phase: uploadResult.success ? ('completed' as const) : ('error' as const),
+                      uploadErrors: uploadResult.errors.map(e => e.error),
+                    }
+                  : prevItem
+              )
+            )
+          } catch (error) {
+            console.error(`Upload failed for item ${item.id}:`, error)
+            // Update with error state
+            setUploadedItems(prev =>
+              prev.map(prevItem =>
+                prevItem.id === item.id
+                  ? {
+                      ...prevItem,
+                      phase: 'error' as const,
+                      errorCode: UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR,
+                    }
+                  : prevItem
+              )
+            )
+          }
+        })
+      )
     )
   }, [selectedItemIds, uploadedItems])
 
@@ -222,13 +304,6 @@ export default function AdminUpload() {
       prev.map(item => (item.id === itemId ? { ...item, manualCoverImgUrl: url } : item))
     )
   }, [])
-
-  // const handleCancel = useCallback(() => {
-  //   setUploadedItems([])
-  //   setSelectedItemIds(new Set())
-  //   setCurrentPage(1)
-  //   navigate('/admin')
-  // }, [navigate])
 
   return (
     <div className='bg-background flex h-full flex-col font-sans'>

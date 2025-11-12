@@ -51,8 +51,8 @@ const DataSourceCell: React.FC<DataSourceCellProps> = ({
     return <div className='flex items-center justify-center px-2 py-2'>-</div>
   }
 
-  // Show loading spinner while looking up
-  if (item.isLookingUp || !item.discoverRes) {
+  // Show loading spinner while discovering
+  if (item.phase === 'discovering' || !item.discoverRes) {
     return (
       <div className='flex items-center justify-center px-2 py-2'>
         <FaSpinner className='text-primary h-4 w-4 animate-spin' />

@@ -5,7 +5,7 @@ import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylis
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import PlaylistCover from '~/components/albumDisplays/PlaylistCover'
-import ArtistPreview from '~/components/artistDisplays/ArtistPreview'
+import { ArtistPreview } from '~/components/artistDisplays/ArtistPreview'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'

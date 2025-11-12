@@ -1,5 +1,3 @@
-import '../styles/variables.css'
-
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
 import { getUserLibrary } from 'server/api/user-library/user-library.service'
@@ -35,6 +33,7 @@ export default function Albums() {
       <Typography variant={'h1'} as='h2' className={'px-3 pb-4'}>
         {t('page.albums')}
       </Typography>
+
       <div className={styles.albumList}>
         {libraryAlbums?.map(a => (
           <AlbumPreview key={a.id} details={a.entity} draggable={isPlaylistDrawerOpen} />

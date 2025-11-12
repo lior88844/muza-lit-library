@@ -1,3 +1,5 @@
+import AwsS3 from '@uppy/aws-s3'
+import Uppy from '@uppy/core'
 import { AxiosError } from 'axios'
 import PQueue from 'p-queue'
 
@@ -9,12 +11,18 @@ import type {
 import { UploadErrorCodeEnum } from '~/components/adminUpload/types/ErrorCode'
 import type { UploadItem } from '~/components/adminUpload/types/UploadItem'
 import type { DiscoverMetadata } from '~/lib/flacMetadata'
+import { extractFullFileMetadata } from '~/lib/flacMetadata'
 
-import type { AlbumUploadResponse } from '../types/AlbumUploadResponse'
+import type {
+  FileUploadProgress,
+  PrepareUploadResponse,
+  SignedUrlInfo,
+} from '../types/PrepareUploadResponse'
 
 // Create a queue with max 3 concurrent requests
 const discoveryQueue = new PQueue({ concurrency: 3 })
-const uploadQueue = new PQueue({ concurrency: 1 })
+export const prepareQueue = new PQueue({ concurrency: 3 })
+
 export const UPLOAD_BLOCKING_ERROR_CODES = [
   UploadErrorCodeEnum.ALL_FILES_INVALID,
   UploadErrorCodeEnum.ALBUM_ALREADY_EXISTS,
@@ -27,7 +35,7 @@ export const isItemUploadReady = (item: UploadItem): boolean => {
     !!(item.manualCoverImgUrl || item.discoverRes?.coverUrl) &&
     !(item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode)) &&
     totalFiles > 0 &&
-    !item.uploadRes
+    (item.phase === 'idle' || item.phase === 'error')
   )
 }
 
@@ -69,47 +77,6 @@ export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLo
   }
 }
 
-export async function uploadAlbum({
-  mbId,
-  albumCover,
-  discogsId,
-  discFiles,
-}: {
-  mbId: string
-  albumCover: string
-  discogsId: string
-  discFiles: File[][]
-}) {
-  const formData = new FormData()
-
-  // Add album metadata
-  formData.append('mbId', mbId || '')
-  formData.append('albumCover', albumCover || '')
-  formData.append('discogsId', discogsId || '')
-
-  // Add FLAC files only
-  discFiles.forEach(disc => {
-    disc.forEach(file => {
-      formData.append(`files`, file)
-    })
-  })
-  try {
-    // Upload to API
-    const res = await uploadQueue.add(() =>
-      adminApiClient.post<AlbumUploadResponse>('/api/admin/upload-album', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-    )
-    return res.data
-  } catch (error) {
-    if (error instanceof AxiosError && error.response?.data) {
-      return error.response?.data as AlbumUploadResponse
-    }
-    throw error
-  }
-}
 const isFlacFile = (file: File): boolean => {
   const fileName = file.name.toLowerCase()
   return fileName.endsWith('.flac')
@@ -228,10 +195,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       path: parentPath,
       metadata: null,
       errorCode: skippedCount > 0 ? UploadErrorCodeEnum.PARTIAL_UPLOAD : undefined,
-      isLookingUp: true,
-      loadingState: {
-        status: 'loading',
-      },
+      phase: 'discovering',
     }
 
     newItems.push(newItem)
@@ -256,10 +220,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       metadata: null,
       path,
       errorCode: skippedCount > 0 ? UploadErrorCodeEnum.PARTIAL_UPLOAD : undefined,
-      isLookingUp: true, // Start lookup for all items with FLAC files
-      loadingState: {
-        status: 'loading',
-      },
+      phase: 'discovering',
     }
 
     newItems.push(newItem)
@@ -289,9 +250,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       path,
       metadata: null,
       errorCode: UploadErrorCodeEnum.ALL_FILES_INVALID,
-      loadingState: {
-        status: 'error',
-      },
+      phase: 'error',
     })
   })
   return newItems
@@ -308,4 +267,197 @@ export const formatDiscogsId = (discogsIdOrUrl: string) => {
     return discogsIdOrUrl.split('discogs.com/release/').pop()!.split('-')[0]
   }
   return discogsIdOrUrl.trim()
+}
+
+/**
+ * Prepare album upload by extracting metadata and sending to backend
+ * Backend will aggregate data, create entities, and return signed URLs
+ * This is step 1 of the new two-step upload process
+ */
+export async function prepareAlbumUpload({
+  mbId,
+  albumCover,
+  discogsId,
+  discFiles,
+}: {
+  mbId: string
+  albumCover: string
+  discogsId: string
+  discFiles: File[][]
+}): Promise<PrepareUploadResponse> {
+  try {
+    // Extract metadata from all files
+    const allFiles = discFiles.flat()
+    const fileMetadataResults = await Promise.all(
+      allFiles.map(file => extractFullFileMetadata(file))
+    )
+
+    // Filter out any null results (files that failed metadata extraction)
+    const fileMetadata = fileMetadataResults.filter(metadata => metadata !== null) as NonNullable<
+      (typeof fileMetadataResults)[0]
+    >[]
+
+    if (fileMetadata.length === 0) {
+      return {
+        success: false,
+        message: 'Failed to extract metadata from any files',
+        trackUploads: [],
+        errors: [UploadErrorCodeEnum.DISCOVERY_SERVICE_ERROR],
+      }
+    }
+
+    // Send to backend
+    const response = await adminApiClient.post<PrepareUploadResponse>('/api/admin/prepare-upload', {
+      mbId: mbId || undefined,
+      discogsId: discogsId ? parseInt(discogsId) : undefined,
+      albumCover: albumCover || undefined,
+      fileMetadata,
+    })
+
+    return response.data
+  } catch (error) {
+    console.error('Error preparing album upload:', error)
+    if (error instanceof AxiosError && error.response?.data) {
+      return error.response.data as PrepareUploadResponse
+    }
+    return {
+      success: false,
+      message: 'Failed to prepare album upload',
+      trackUploads: [],
+      errors: [UploadErrorCodeEnum.UPLOAD_SERVICE_ERROR],
+    }
+  }
+}
+
+/**
+ * Upload files to S3 using presigned URLs with Uppy AWS S3 plugin
+ * This is step 2 of the new two-step upload process
+ */
+export async function uploadFilesToS3(
+  trackUploads: SignedUrlInfo[],
+  files: File[][],
+  onProgress?: (fileName: string, progress: FileUploadProgress) => void
+): Promise<{
+  success: boolean
+  uploadedFiles: Array<{ fileName: string; trackId: number; fileId: string }>
+  errors: Array<{ fileName: string; error: string }>
+}> {
+  const allFiles = files.flat()
+  const uploadedFiles: Array<{ fileName: string; trackId: number; fileId: string }> = []
+  const errors: Array<{ fileName: string; error: string }> = []
+
+  // Create a map of fileName to trackUpload info
+  const fileNameToTrackUpload = new Map<string, SignedUrlInfo>()
+  trackUploads.forEach(track => {
+    fileNameToTrackUpload.set(track.fileName, track)
+  })
+
+  // Upload files one by one using Uppy with AWS S3 plugin
+  for (const file of allFiles) {
+    const trackUpload = fileNameToTrackUpload.get(file.name)
+
+    if (!trackUpload) {
+      errors.push({
+        fileName: file.name,
+        error: 'No signed URL found for this file',
+      })
+      continue
+    }
+
+    try {
+      // Update progress: pending -> uploading
+      onProgress?.(file.name, {
+        fileName: file.name,
+        progress: 0,
+        status: 'uploading',
+      })
+
+      // Create Uppy instance for this file
+      const uppy = new Uppy({
+        autoProceed: false,
+        allowMultipleUploadBatches: false,
+        restrictions: {
+          maxNumberOfFiles: 1,
+        },
+      })
+
+      // Configure AWS S3 upload with presigned URL
+      uppy.use(AwsS3, {
+        shouldUseMultipart: false, // We're using single presigned URLs, not multipart
+        getUploadParameters: file => {
+          // Return the presigned URL and headers for this file
+          return Promise.resolve({
+            method: 'PUT',
+            url: trackUpload.signedUrl,
+            headers: {
+              'Content-Type': file.type || 'audio/flac',
+            },
+          })
+        },
+      })
+
+      // Track upload progress
+      uppy.on('upload-progress', (uppyFile, progress) => {
+        if (progress.bytesTotal && uppyFile && uppyFile.name) {
+          const percentage = Math.round((progress.bytesUploaded / progress.bytesTotal) * 100)
+          onProgress?.(uppyFile.name, {
+            fileName: uppyFile.name,
+            progress: percentage,
+            status: 'uploading',
+          })
+        }
+      })
+
+      // Add file to Uppy
+      uppy.addFile({
+        name: file.name,
+        type: file.type,
+        data: file,
+      })
+
+      // Start upload
+      const result = await uppy.upload()
+
+      if (result && result.failed && result.failed.length > 0) {
+        throw new Error(`Upload failed: ${result.failed[0].error}`)
+      }
+
+      // Update progress: completed
+      onProgress?.(file.name, {
+        fileName: file.name,
+        progress: 100,
+        status: 'completed',
+      })
+
+      uploadedFiles.push({
+        fileName: file.name,
+        trackId: trackUpload.trackId,
+        fileId: trackUpload.fileId,
+      })
+
+      // Clean up Uppy instance
+      uppy.cancelAll()
+      uppy.clear()
+    } catch (error) {
+      console.error(`Error uploading ${file.name}:`, error)
+
+      onProgress?.(file.name, {
+        fileName: file.name,
+        progress: 0,
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Upload failed',
+      })
+
+      errors.push({
+        fileName: file.name,
+        error: error instanceof Error ? error.message : 'Upload failed',
+      })
+    }
+  }
+
+  return {
+    success: errors.length === 0,
+    uploadedFiles,
+    errors,
+  }
 }

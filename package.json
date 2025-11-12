@@ -32,6 +32,7 @@
     "@react-router/node": "^7.9.4",
     "@react-router/serve": "^7.9.4",
     "@tailwindcss/vite": "4.1.16",
+    "@uppy/aws-s3": "^4.3.2",
     "@uppy/core": "^4.5.3",
     "@uppy/dashboard": "^4.3.2",
     "@uppy/drag-drop": "^4.1.2",
