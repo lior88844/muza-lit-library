@@ -46,11 +46,9 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
   }
 
   const handleShare = () => {
-    // TODO: Implement share functionality
   }
 
   const handleRemoveFromLibrary = () => {
-    // TODO: Implement remove from library functionality
   }
 
   const dropdownMenuItems: DropdownMenuItem[] = [
@@ -68,8 +66,6 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     },
   ]
 
-  // Use albumImages from generatePlaylistCoverImages as single source of truth
-  // null = empty playlist, should show empty state
   const isEmpty = albumImages === null
 
   return (

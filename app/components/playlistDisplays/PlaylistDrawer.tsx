@@ -37,7 +37,6 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const [isDragOver, setIsDragOver] = useState(false)
   const [pendingAlbumId, setPendingAlbumId] = useState<number | null>(null)
   const { updatePlaylist } = useUpdatePlaylist()
-  // Update playlist name, description and visibility when playlist prop changes
   useEffect(() => {
     if (playlist?.title) {
       setPlaylistName(playlist.title)
@@ -58,8 +57,6 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    // Only set isDragOver to false if we're actually leaving the content area
-    // not just moving between child elements
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX
     const y = e.clientY
@@ -69,12 +66,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
     }
   }, [])
 
-  // Helper function for adding songs to playlist
   const handleAddSongs = useCallback(
     (songsToAdd: SongDetails[]) => {
       if (!playlist?.id) return
 
-      // Filter out songs that already exist in the playlist
       const newSongs = songsToAdd.filter(
         song =>
           !playlist.songs?.some(
@@ -86,7 +81,6 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
 
       if (newSongs.length === 0) return
 
-      // Add songs at the start and re-index
       const updatedSongs = [...newSongs, ...(playlist.songs || [])].map((song, idx) => ({
         ...song,
         index: idx + 1,
@@ -99,7 +93,6 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
     [playlist, updatePlaylist]
   )
 
-  // Handle when album data is fetched
   useEffect(() => {
     if (fetcher.data && fetcher.data.album && pendingAlbumId) {
       const tracks = fetcher.data.album.tracks
@@ -110,12 +103,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
     }
   }, [fetcher.data, pendingAlbumId, handleAddSongs])
 
-  // Helper function for removing songs from playlist
   const removeSongFromPlaylist = useCallback(
     (songToRemove: SongDetails) => {
       if (!playlist?.id) return
 
-      // Filter out the removed song and re-index remaining songs
       const updatedSongs =
         playlist.songs
           ?.filter(song => song.id !== songToRemove.id)
@@ -136,72 +127,58 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
       e.preventDefault()
       setIsDragOver(false)
 
-      // Handle dropped files or data
       const files = Array.from(e.dataTransfer.files)
       const dragData = e.dataTransfer.getData('application/json')
 
       if (files.length > 0) {
-        // TODO: Process dropped files and add to playlist
       }
 
       if (dragData) {
         try {
           const data = JSON.parse(dragData)
 
-          // Handle songs
           if (data.type === EntityTypeEnum.Track && data.track) {
             handleAddSongs([data.track])
           }
 
-          // Handle albums
           if (data.type === EntityTypeEnum.Album && data.album) {
             let tracksToAdd: SongDetails[] = []
 
-            // Case 1: Album has full track details (from album detail page)
             if (
               data.album.tracks &&
               Array.isArray(data.album.tracks) &&
               data.album.tracks.length > 0
             ) {
-              // Check if tracks are full SongDetails or just IDs
               if (typeof data.album.tracks[0] === 'object' && 'title' in data.album.tracks[0]) {
                 tracksToAdd = data.album.tracks as SongDetails[]
               }
             }
-            // Case 2: Album only has song IDs (from homepage/explore)
             else if (
               data.album.songs &&
               Array.isArray(data.album.songs) &&
               data.album.songs.length > 0
             ) {
-              // Try to resolve song IDs from local songs first
               tracksToAdd = data.album.songs
                 .map((songId: number) => allSongs.find((song: SongDetails) => song.id === songId))
                 .filter((song: SongDetails | undefined): song is SongDetails => song !== undefined)
 
-              // If no songs found locally, fetch the full album from server using React Router
               if (tracksToAdd.length === 0 && data.album.id) {
                 setPendingAlbumId(data.album.id)
                 fetcher.load(`/albums/${data.album.id}`)
-                return // Wait for fetcher to load the data
+                return
               }
             }
 
-            // Add all tracks from the album at once
             if (tracksToAdd.length > 0) {
               handleAddSongs(tracksToAdd)
             }
           }
         } catch {
-          // Silently handle parsing errors
         }
       }
     },
     [handleAddSongs, allSongs, fetcher]
   )
-
-  // Note: handleSave is not used in the current UI
-  // Playlist updates happen automatically through onSavePlaylist in add/remove song functions
 
   const handleClose = useCallback(() => {
     if (!playlist?.id) {
@@ -209,12 +186,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
       return
     }
 
-    // Check if there are any changes to save
     const nameChanged = playlistName !== playlist.title
     const descriptionChanged = playlistDescription !== (playlist.description || '')
 
     if (nameChanged || descriptionChanged) {
-      // Update the playlist with the new name and/or description
       const updates: { name?: string; description?: string } = {}
       if (nameChanged && playlistName.trim()) {
         updates.name = playlistName.trim()
@@ -223,7 +198,6 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
         updates.description = playlistDescription
       }
 
-      // This will optimistically update the UI and save to backend
       updatePlaylist(playlist.id, updates)
     }
 
@@ -233,11 +207,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const handleNavigateToPlaylist = () => {
     if (playlist) {
       navigate(`/playlists/${playlist.id}`)
-      onClose() // Close the drawer after navigation
+      onClose()
     }
   }
 
-  // Filter songs based on search query
   const filteredSongs = React.useMemo(() => {
     if (!playlist?.songs) return []
 

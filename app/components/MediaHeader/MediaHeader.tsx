@@ -13,7 +13,6 @@ import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
-// Removed unused imports: useSubmit, useActionData
 import { usePlayerStore } from '~/store/playerStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
@@ -63,11 +62,9 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   }
   const handlePlayPause = () => {
     if (isPlaying) {
-      // If currently playing, pause
       playPause(false)
     } else {
       if (songs.length > 0) {
-        // Play from start - load entire collection as queue
         playQueue({
           items: songs,
           startIndex: 0,

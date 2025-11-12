@@ -33,10 +33,9 @@ const MusicSidebar: React.FC<MusicSidebarProps> = ({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { addPlaylist } = useAddPlaylist()
-  const [internalCollapsed, setInternalCollapsed] = useState(false) // Start open by default
+  const [internalCollapsed, setInternalCollapsed] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Use external collapsed state if provided, otherwise use internal state
   const collapsedState = isCollapsed !== undefined ? isCollapsed : internalCollapsed
 
   const handleItemClick = (item: MenuItem) => {

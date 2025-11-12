@@ -15,11 +15,11 @@ interface SongLineProps {
   details: SongDetails
   onClick: MouseEventHandler<Element>
   isPlaying: boolean
-  showPreview?: boolean // Add preview badge option
-  showHoverActions?: boolean // Control hover action visibility
-  draggable?: boolean // Enable drag functionality
-  playlistMode?: boolean // Enable playlist-specific behavior
-  onRemoveSong?: (song: SongDetails) => void // Callback for removing song from playlist
+  showPreview?: boolean
+  showHoverActions?: boolean
+  draggable?: boolean
+  playlistMode?: boolean
+  onRemoveSong?: (song: SongDetails) => void
 }
 
 const formatDuration = (seconds: number): string => {
@@ -48,7 +48,6 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
   
-  // Get combined play count (mock data + local increments)
   const localPlayCount = usePlayCount(details.id)
   const totalPlays = (details.plays || 0) + localPlayCount
 
@@ -70,7 +69,6 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
       {...dragHandlers}
     >
       <div className={styles.songLineWithCoverContent}>
-        {/* Album Cover */}
         <div
           className={styles.songLineWithCoverCover}
           onClick={e => preventClickWhileDragging(e, onClick)}

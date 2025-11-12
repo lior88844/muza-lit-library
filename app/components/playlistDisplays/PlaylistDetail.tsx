@@ -27,15 +27,12 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
   } = usePlayerStore()
   const { openPlaylistDrawer, isPlaylistDrawerOpen } = useDrawerStore()
 
-  // Use the actual playlist songs
   const playlistSongs = playlist?.songs || []
 
   const handleSongClick = (song: SongDetails, index: number) => {
     if (current?.id === song.id) {
-      // If the same song is clicked, toggle play/pause
       playPause()
     } else {
-      // If a different song is clicked, load playlist as queue
       playQueue({
         items: playlistSongs,
         startIndex: index,
@@ -95,7 +92,6 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
 
         <div className={styles['playlist-detail__song-list']} data-name='Song List'>
           {playlistSongs.map((song, index) => {
-            // Show preview badge for first, fourth, sixth, seventh and eighth songs per Figma
             const showPreview = [3].includes(index)
 
             return (

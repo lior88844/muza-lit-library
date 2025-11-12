@@ -1,28 +1,13 @@
-/**
- * Playback Engine Hook
- * Manages audio element, HLS streaming, and syncs playback state with the player store
- * This is the bridge between the browser's media APIs and our application state
- */
-
 import Hls from 'hls.js'
 import { useEffect, useRef } from 'react'
 
 import { useAnalyticsStore } from '~/store/analyticsStore'
 import { usePlayerStore } from '~/store/playerStore'
 
-/**
- * Check if a URL is an HLS stream
- */
 function isHlsUrl(url: string): boolean {
   return url.includes('.m3u8') || url.includes('hls')
 }
 
-/**
- * Main playback engine hook
- * Call this once at the app level to manage audio playback
- * 
- * @returns seekTo function for manual seeking
- */
 export function usePlaybackEngine() {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const hlsRef = useRef<Hls | null>(null)
@@ -39,11 +24,7 @@ export function usePlaybackEngine() {
 
   const { startPlayAttempt, reportPlay } = useAnalyticsStore()
 
-  // ========================================
-  // 1. INITIALIZE AUDIO ELEMENT (once)
-  // ========================================
   useEffect(() => {
-    // Create hidden video element (we use video instead of audio for HLS compatibility)
     const video = document.createElement('video')
     video.style.display = 'none'
     video.playsInline = true
@@ -51,7 +32,6 @@ export function usePlaybackEngine() {
     videoRef.current = video
 
     return () => {
-      // Cleanup on unmount
       video.pause()
       video.src = ''
       document.body.removeChild(video)
@@ -59,22 +39,16 @@ export function usePlaybackEngine() {
     }
   }, [])
 
-  // ========================================
-  // 2. LOAD NEW TRACK WHEN CURRENT CHANGES
-  // ========================================
   useEffect(() => {
     const video = videoRef.current
     if (!video || !current?.audioUrl) return
 
-    // Clean up previous HLS instance
     if (hlsRef.current) {
       hlsRef.current.destroy()
       hlsRef.current = null
     }
 
-    // Determine if we need HLS or native audio
     if (isHlsUrl(current.audioUrl)) {
-      // HLS streaming
       if (Hls.isSupported()) {
         const hls = new Hls({
           enableWorker: false,
@@ -101,48 +75,39 @@ export function usePlaybackEngine() {
               default:
                 console.error('Fatal HLS error, cannot recover')
                 hls.destroy()
-                // Auto-skip to next track on fatal error
                 setTimeout(() => next(), 1000)
                 break
             }
           }
         })
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native HLS support (Safari)
         video.src = current.audioUrl
         video.load()
       } else {
         console.error('HLS not supported in this browser')
       }
     } else {
-      // Regular audio file
       video.src = current.audioUrl
       video.load()
     }
 
-    // Start tracking this play attempt
     startPlayAttempt(current.id)
   }, [current?.audioUrl, current?.id, next, startPlayAttempt])
 
-  // ========================================
-  // 3. SYNC PLAY/PAUSE STATE
-  // ========================================
   useEffect(() => {
     const video = videoRef.current
     if (!video || !current) return
 
     if (isPlaying) {
       const playPromise = video.play()
+
       
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
-          // Ignore AbortErrors - these are expected when play() is interrupted
-          // by pause() or by loading a new track
           if (error.name === 'AbortError') {
             return
           }
           
-          // Handle real errors (e.g., NotAllowedError for autoplay blocking)
           console.error('Playback failed:', error)
           setIsPlaying(false)
         })
@@ -152,45 +117,33 @@ export function usePlaybackEngine() {
     }
   }, [isPlaying, current, setIsPlaying])
 
-  // ========================================
-  // 4. SYNC VOLUME
-  // ========================================
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = volume
     }
   }, [volume])
 
-  // ========================================
-  // 5. ATTACH EVENT LISTENERS
-  // ========================================
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
-    // Duration loaded
     const handleLoadedData = () => {
       setDuration(video.duration)
     }
 
-    // Playback position update
     const handleTimeUpdate = () => {
       setCurrentPosition(video.currentTime)
     }
 
-    // Track ended - advance to next
     const handleEnded = () => {
       next()
     }
 
-    // Error handling
     const handleError = () => {
       console.error('Video element error:', video.error)
-      // Auto-skip on error
       setTimeout(() => next(), 1000)
     }
 
-    // Attach listeners
     video.addEventListener('loadeddata', handleLoadedData)
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('ended', handleEnded)
@@ -204,25 +157,12 @@ export function usePlaybackEngine() {
     }
   }, [next, setCurrentPosition, setDuration])
 
-  // ========================================
-  // 6. PLAY COUNT TRACKING (on play)
-  // ========================================
   useEffect(() => {
     if (!current || !isPlaying) return
 
-    // Report play count immediately when playback starts
     reportPlay(current.id)
-    
-    // No cleanup needed since we only report once per song
   }, [current, isPlaying, reportPlay])
 
-  // ========================================
-  // RETURN API
-  // ========================================
-  
-  /**
-   * Seek to a specific time in the current track
-   */
   const seekTo = (seconds: number) => {
     const video = videoRef.current
     if (!video) return

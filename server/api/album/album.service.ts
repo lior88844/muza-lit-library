@@ -15,16 +15,12 @@ interface AlbumLabelWithLabel extends AlbumLabel {
   label: Label
 }
 
-// Types for transformed data
 export interface AlbumWithArtistsAndTracks extends Album {
   albumArtists: (AlbumArtist & { artist: Artist })[]
   tracks: Omit<TrackWithArtists, 'album'>[]
   albumLabels?: AlbumLabelWithLabel[]
 }
 
-/**
- * Find many albums with pagination
- */
 export async function findManyAlbums(limit = 20, offset = 0) {
   const albumsResult = await db.query.albums.findMany({
     limit,
@@ -41,9 +37,6 @@ export async function findManyAlbums(limit = 20, offset = 0) {
   }
 }
 
-/**
- * Find a single album by ID with full details
- */
 export async function findAlbumById(id: number) {
   const albumResult = await db.query.albums.findFirst({
     where: (albums, { eq }) => eq(albums.id, id),
@@ -71,9 +64,6 @@ export async function findAlbumById(id: number) {
   return transformDetailedAlbumData(albumResult)
 }
 
-/**
- * Transform album data for frontend consumption
- */
 export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[] {
   return albums.map(album => {
     const mainArtist = album.albumArtists[0]
@@ -89,9 +79,6 @@ export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[
   })
 }
 
-/**
- * Transform detailed album data for frontend consumption
- */
 function transformDetailedAlbumData(album: AlbumWithArtistsAndTracks): AlbumResponse {
   return {
     ...album,

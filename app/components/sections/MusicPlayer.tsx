@@ -14,7 +14,6 @@ type MusicPlayerProps = {
   seekTo: (seconds: number) => void
 }
 
-// ScrollingText component for hover marquee effect
 const ScrollingText: React.FC<{
   children: React.ReactNode
   className?: string
@@ -30,7 +29,6 @@ const ScrollingText: React.FC<{
       setShouldScroll(isOverflowing)
 
       if (isOverflowing) {
-        // Calculate duration based on text length (roughly 50px per second)
         const extraWidth = element.scrollWidth - element.clientWidth
         const duration = Math.max(3, extraWidth / 50)
         setAnimationDuration(`${duration}s`)
@@ -75,7 +73,6 @@ const ScrollingText: React.FC<{
 export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => {
   const { t } = useTranslation()
 
-  // Get store actions and state (use selective subscriptions to avoid unnecessary re-renders)
   const prev = usePlayerStore(state => state.prev)
   const next = usePlayerStore(state => state.next)
   const playPause = usePlayerStore(state => state.playPause)

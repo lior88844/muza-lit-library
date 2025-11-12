@@ -40,25 +40,21 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
     enabled: draggable,
   })
 
-  // Check if this album is currently playing
   const isCurrentAlbumPlaying = 
     current?.albumId === details.id && isPlaying
 
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.stopPropagation()
     
-    // If this album is already playing, just toggle play/pause
     if (current?.albumId === details.id) {
       playPause()
       return
     }
 
     try {
-      // Fetch the album data and wait for it
       const data = await fetcher.load(`/albums/${details.id}`)
       const albumData = data.album
 
-      // Add album property to each track for the queue
       const tracksWithAlbum = albumData.tracks.map(track => ({
         ...track,
         album: albumData.title,
@@ -119,7 +115,6 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
         </Link>
       </div>
       <AlbumInfoModal
-        // @ts-expect-error TODO: We need to get all album data always, somehow.
         album={details}
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
