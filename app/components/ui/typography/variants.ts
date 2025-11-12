@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority'
 
-export const typographyVariants = cva('text-foreground', {
+export const typographyVariants = cva('text-text-base', {
   variants: {
     variant: {
       default: 'text-base/tight font-normal',

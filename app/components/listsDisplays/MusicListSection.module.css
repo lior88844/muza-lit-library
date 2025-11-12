@@ -3,63 +3,10 @@
   flex-direction: column;
 }
 
-.music-list-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-inline: var(--muza-spacing-md);
-  padding-bottom: 4px;
-
-  & h2 {
-    margin: 0;
-    font-size: 18px;
-  }
-}
-
-.show-all-btn {
-  display: flex;
-  padding: calc(var(--muza-spacing-md, 12px) * 0.2) var(--muza-spacing-md, 12px);
-  justify-content: center;
-  align-items: center;
-  gap: var(--muza-spacing-2, 8px);
-  transition: background-color 0.2s ease;
-  border-radius: 999px;
-  border: 1px solid var(--muza-track-title-color, #111827);
-  color: var(--muza-track-title-color, #111827);
-  font-size: var(--muza-primary-font-size, 14px);
-  font-weight: var(--muza-font-weight-normal, 400);
-  line-height: var(--muza-subtitle-font-size);
-  cursor: pointer;
-  background: transparent;
-}
-
-.show-all-btn:hover {
-  background-color: var(--muza-hover-background, #f5f5f5);
-}
-
-.album-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--muza-spacing-lg);
-  overflow-x: auto;
-
-  & > * {
-    width: 155px;
-    flex-shrink: 0;
-  }
-}
-
 .artist-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--muza-spacing-md, 12px);
   overflow-x: auto;
-  padding: var(--muza-spacing-md, 12px);
-}
-
-.song-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0 var(--muza-spacing-sm);
   padding: var(--muza-spacing-md, 12px);
 }

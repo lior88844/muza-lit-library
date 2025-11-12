@@ -7,6 +7,7 @@ import {
   CsvExportModule,
   type GridReadyEvent,
   GridStateModule,
+  type ICellRendererParams,
   ModuleRegistry,
   QuickFilterModule,
   type RowClickedEvent,
@@ -31,7 +32,6 @@ ModuleRegistry.registerModules([
 ])
 
 // Use custom Muza theme via CSS class instead of themeAlpine
-const myTheme = themeAlpine.withParams({})
 interface DataGridProps<T> extends Omit<AgGridReactProps, 'rowData'> {
   rowData: T[]
   enableSorting?: boolean
@@ -72,8 +72,9 @@ export const DataGrid = <T,>({
   showRowNumbers,
   hideHeader = false,
   hideColumnOrganizer = false,
+  gridOptions: gridOptionsProps = {},
+  rowHeight = 48,
   actions,
-  ...props
 }: DataGridProps<T>) => {
   const gridRef = useRef<AgGridReact>(null)
   const [searchText, setSearchText] = useState('')
@@ -183,8 +184,8 @@ export const DataGrid = <T,>({
         maxWidth: 80,
         width: 60,
         hide: false,
-        cellRenderer: (params: { node: { rowIndex: number } }) => {
-          return params.node.rowIndex + 1
+        cellRenderer: (params: ICellRendererParams) => {
+          return params.node.rowIndex! + 1
         },
         cellStyle: { textAlign: 'center', fontWeight: 'bold' },
       })
@@ -261,6 +262,7 @@ export const DataGrid = <T,>({
     },
     [onGridReady]
   )
+  const myTheme = useMemo(() => themeAlpine.withParams({ rowHeight }), [rowHeight])
 
   // Grid options
   const gridOptions = useMemo(
@@ -274,7 +276,7 @@ export const DataGrid = <T,>({
       pagination: enablePagination,
       paginationPageSize,
       quickFilterText: searchText,
-      ...props,
+      ...gridOptionsProps,
     }),
     [
       rowData,
@@ -286,7 +288,7 @@ export const DataGrid = <T,>({
       enablePagination,
       paginationPageSize,
       searchText,
-      props,
+      gridOptionsProps,
     ]
   )
 

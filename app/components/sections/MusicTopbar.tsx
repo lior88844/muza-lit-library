@@ -2,18 +2,17 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
-import { SearchInput } from '~/components/ui/SearchInput'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { getUserInfo, useAuth } from '~/store/userContext'
 
+import { SearchInput } from '../search/search-input'
 import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
-  onSearchChange?: (searchText: string) => void
   onUserIconClick?: () => void
 }
 
-const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconClick }) => {
+const MusicTopbar: React.FC<MusicTopbarProps> = ({ onUserIconClick }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const auth = useAuth()
@@ -36,21 +35,16 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onSearchChange, onUserIconCli
   }
 
   return (
-    <div className={styles['music-topbar']}>
+    <div className='bg-background-light border-border-light sticky top-0 z-50 border-b pe-6'>
       <div className={styles.topbar}>
-        <SearchInput onSearchChange={onSearchChange} />
+        <SearchInput />
+
         <div className={styles.controls}>
           <button className={styles['upload-music-button']} onClick={handleUploadClick}>
             {t('upload.uploadMusic')}
             <MuzaIcon iconName='upload' />
           </button>
-          {/* <button
-            className={styles["admin-upload-button"]}
-            onClick={handleAdminUploadClick}
-          >
-            {t("upload.uploadAdmin")}
-            <MuzaIcon iconName="adminUpload" />
-          </button> */}
+
           <div className={styles['user-menu']}>
             {auth.isAuthenticated ? (
               <div className={styles['user-dropdown']}>

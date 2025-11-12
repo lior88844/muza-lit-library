@@ -23,7 +23,7 @@ export const UPLOAD_BLOCKING_ERROR_CODES = [
 export const isItemUploadReady = (item: UploadItem): boolean => {
   const totalFiles = item.files.flat().length
   return (
-    !!(item.discoverRes?.mbId || (item.manualAlbumId && item.manualAlbumId.trim().length >= 36)) &&
+    !!(item.discoverRes?.mbId || item.discoverRes?.discogsId) &&
     !!(item.manualCoverImgUrl || item.discoverRes?.coverUrl) &&
     !(item.errorCode && UPLOAD_BLOCKING_ERROR_CODES.includes(item.errorCode)) &&
     totalFiles > 0 &&
@@ -83,9 +83,9 @@ export async function uploadAlbum({
   const formData = new FormData()
 
   // Add album metadata
-  formData.append('mbId', mbId!)
-  formData.append('albumCover', albumCover!)
-  formData.append('discogsId', discogsId!)
+  formData.append('mbId', mbId || '')
+  formData.append('albumCover', albumCover || '')
+  formData.append('discogsId', discogsId || '')
 
   // Add FLAC files only
   discFiles.forEach(disc => {

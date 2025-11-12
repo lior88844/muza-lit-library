@@ -9,8 +9,8 @@ import SongLine from '~/components/songLineDisplays/SongLine'
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
-import AlbumInfoModal from '../components/albumDisplays/AlbumInfoModal'
-import AddToPlaylistModal from '../components/playlistDisplays/AddToPlaylistModal'
+import AlbumInfoModal from '~/components/albumDisplays/AlbumInfoModal.tsx'
+import AddToPlaylistModal from '~/components/playlistDisplays/AddToPlaylistModal'
 
 export async function loader({ params }: { params: { id: string } }) {
   const albumId = parseInt(params.id, 10)

@@ -1,24 +1,28 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaPause, FaPlay } from 'react-icons/fa'
+import {
+  FaChevronLeft,
+  FaEllipsisH,
+  FaHeart,
+  FaInfo,
+  FaPause,
+  FaPlay,
+  FaPlus,
+} from 'react-icons/fa'
 import type { EntityTypeEnum } from 'server/db/stack.entity'
 
-import MuzaButton from '~/controls/MuzaButton'
 import MuzaIcon from '~/icons/MuzaIcon'
-// Removed unused imports: useSubmit, useActionData
 import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
-import { Button } from '../ui/button'
-// Import remaining sub-components
+import { Button, IconButton } from '../ui/button'
 import MediaCover from './components/MediaCover/MediaCover'
 import MediaMetadata, { type MediaMetadataProps } from './components/MediaMetadata/MediaMetadata'
 import styles from './MediaHeader.module.css'
 
 interface MediaHeaderProps {
-  // Generic media object that works for albums, playlists, etc.
   songs: SongDetails[]
   mediaType: EntityTypeEnum
   title: string
@@ -26,16 +30,12 @@ interface MediaHeaderProps {
   creator?: string
   visibility?: PlaylistVisibilityEnum
   mediaMetadata: Omit<MediaMetadataProps, 'type'>
-  // Resource identification for library operations
   entityId: number
-  // Optional customization
   onInfoClick?: () => void
   onAddToPlaylistClick?: () => void
   showBackButton?: boolean
   customActions?: React.ReactNode
-  // For playlist cover generation
   playlist?: MusicPlaylist
-  // Custom back button handler
   onBackClick?: () => void
 }
 
@@ -64,7 +64,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   }
   const handlePlayPause = () => {
     if (isPlaying) {
-      // If currently playing, pause
       setIsPlaying(false)
     } else {
       if (songs.length > 0) {
@@ -102,12 +101,12 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
       >
         {showBackButton && (
           <div className={styles['back-close-section']} data-name='back & close'>
-            <MuzaButton
-              iconName='ChevronDown'
-              onClick={goBack}
-              size='small'
-              className={styles['back-button']}
+            <IconButton
+              icon={<FaChevronLeft />}
+              className='text-muted-foreground'
+              variant='ghost'
               data-name='back'
+              onClick={goBack}
             />
           </div>
         )}
@@ -126,7 +125,6 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
             <div className={styles['info-section']}>
               <div className={styles['titles-section']} data-name='Titles'>
                 <div className={styles['title-metadata-group']}>
-                  {/* Playlist Badge and Metadata */}
                   {mediaType === 'playlist' && (
                     <div className={styles['playlist-badge-section']}>
                       <div className={styles['playlist-badge']} data-name='Badge'>
@@ -151,13 +149,11 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                     </div>
                   )}
 
-                  {/* Title */}
                   <div className={`${styles['title-info']} ${styles['title-info--left']}`}>
                     <div className={styles['album-title']}>{title}</div>
                     {creator && <div className={styles['playlist-description']}>{creator}</div>}
                   </div>
 
-                  {/* User Info Section for Playlists */}
                   {mediaType === 'playlist' && (
                     <div className={styles['user-info-section']}>
                       <div className={styles['user-info']}>
@@ -179,14 +175,12 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                     </div>
                   )}
 
-                  {/* Non-playlist metadata */}
                   {mediaType !== 'playlist' && (
                     <MediaMetadata type={mediaType} {...mediaMetadata} />
                   )}
                 </div>
 
                 <div className={styles['actions-section']}>
-                  {/* PlayButton content inlined */}
                   <div className={styles['ctas-section']} data-name='CTAs'>
                     <Button
                       variant='outline'
@@ -202,28 +196,26 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                     </Button>
                   </div>
 
-                  {/* ActionButtonGroup content inlined */}
                   <div
                     className={`${styles['action-buttons']} ${styles['action-buttons--end']} ${styles['action-buttons--gap-medium']}`}
                   >
                     {customActions || (
                       <>
-                        <MuzaButton
-                          iconName={isInLibrary ? 'heart' : 'plus'}
-                          onClick={onAddToPlaylistClick || onToggleAddLibrary}
-                          size='medium'
-                          data-name='Add-Download Button'
+                        <IconButton
+                          icon={isInLibrary ? <FaHeart /> : <FaPlus />}
+                          variant='ghost'
+                          data-name='Add-Library Button'
+                          onClick= {onAddToPlaylistClick || onToggleAddLibrary}
                         />
-                        <MuzaButton
-                          iconName='info'
-                          onClick={onInfoClick}
-                          size='medium'
+                        <IconButton
+                          icon={<FaInfo />}
+                          variant='ghost'
                           data-name='Info Button'
+                          onClick={onInfoClick}
                         />
-                        <MuzaButton
-                          iconName='ellipsis'
-                          onClick={() => {}}
-                          size='medium'
+                        <IconButton
+                          icon={<FaEllipsisH />}
+                          variant='ghost'
                           data-name='Menu Button'
                         />
                       </>

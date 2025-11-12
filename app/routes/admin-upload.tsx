@@ -18,8 +18,6 @@ import type { UploadItem } from '../components/adminUpload/types/UploadItem'
 export default function AdminUpload() {
   const [uploadedItems, setUploadedItems] = useState<UploadItem[]>([])
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set())
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   const onDiscoverAlbum = useCallback(async (item: UploadItem) => {
     try {
@@ -121,42 +119,8 @@ export default function AdminUpload() {
     [onDiscoverAlbum]
   )
 
-  const handleItemSelect = useCallback(
-    (itemId: string) => {
-      const item = uploadedItems.find(item => item.id === itemId)
-      // Don't allow selection if item has critical errors, is not upload ready, or is already uploaded
-      if (!item || !isItemUploadReady(item)) {
-        return
-      }
-
-      setSelectedItemIds(prev => {
-        const newSet = new Set(prev)
-        if (newSet.has(item.id)) {
-          newSet.delete(item.id)
-        } else {
-          newSet.add(item.id)
-        }
-        return newSet
-      })
-    },
-    [uploadedItems]
-  )
-
-  const handleSelectAll = useCallback(
-    (selected: boolean) => {
-      if (selected) {
-        // Only select items that don't have error code 1001 (All Files Invalid), are upload ready, and not uploaded
-        const selectableItemIds = uploadedItems.filter(item => isItemUploadReady(item))
-        setSelectedItemIds(new Set(selectableItemIds.map(item => item.id)))
-      } else {
-        setSelectedItemIds(new Set())
-      }
-    },
-    [uploadedItems]
-  )
-
-  const handleCancelSelection = useCallback(() => {
-    setSelectedItemIds(new Set())
+  const handleChangeSelection = useCallback((selectedItemIds: string[]) => {
+    setSelectedItemIds(new Set(selectedItemIds))
   }, [])
 
   const handleProcessUpload = useCallback(async () => {
@@ -280,16 +244,9 @@ export default function AdminUpload() {
             <AdminUploadTable
               items={uploadedItems}
               selectedItemIds={selectedItemIds}
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={uploadedItems.length}
-              onItemSelect={handleItemSelect}
-              onSelectAll={handleSelectAll}
+              onSelectionChange={handleChangeSelection}
               onDiscoverAlbum={onDiscoverAlbum}
-              onCancelSelection={handleCancelSelection}
               onProcessUpload={handleProcessUpload}
-              onPageChange={setCurrentPage}
-              onItemsPerPageChange={setItemsPerPage}
               onManualIdChange={handleManualIdChange}
               onManualDiscogsIdChange={handleManualDiscogsIdChange}
               onCoverUrlChange={handleCoverUrlChange}
