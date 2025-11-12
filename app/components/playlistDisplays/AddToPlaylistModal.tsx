@@ -45,7 +45,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
 
     const existingSongs = playlist.songs || []
 
-    // Filter out tracks that already exist in the playlist
     const newTracks = albumTracks.filter(
       track =>
         !existingSongs.some(
@@ -65,7 +64,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
       return
     }
 
-    // Add new tracks at the end and reindex
     const updatedSongs = [...existingSongs, ...newTracks].map((song, idx) => ({
       ...song,
       index: idx + 1,
@@ -76,7 +74,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
     })
 
     if (result && result.success) {
-      // Show success toast with revoke button
       const addedTrackIds = newTracks.map(t => t.id)
 
       toast(
@@ -89,7 +86,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
           </div>
           <button
             onClick={() => {
-              // Remove the added tracks from the playlist
               const songsWithoutAdded = updatedSongs.filter(
                 song => !addedTrackIds.includes(song.id)
               )
@@ -98,7 +94,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                 index: idx + 1,
               }))
 
-              // Update playlist to remove added tracks
               updatePlaylist(playlistId, {
                 songs: reindexedSongs,
               })
@@ -130,7 +125,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
   }
 
   const handleCreateNewPlaylist = () => {
-    // Close the AddToPlaylistModal and open CreatePlaylistModal
     onClose()
     setIsCreatePlaylistModalOpen(true)
   }
@@ -138,7 +132,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
   const handleCreatePlaylistSubmit = async (name: string, visibility: PlaylistVisibilityEnum) => {
     await addPlaylist(name, visibility)
     setIsCreatePlaylistModalOpen(false)
-    // Continue with normal flow - the useAddPlaylist hook will handle opening the playlist drawer
   }
 
   const formatDuration = (songs: SongDetails[]) => {
@@ -160,7 +153,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
             <DialogTitle className='text-xl'>{t('playlist.addToPlaylist')}</DialogTitle>
           </DialogHeader>
 
-          {/* Playlist Items */}
           <div className='flex max-h-[417px] flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-input'>
             {playlists.map(playlist => {
               const coverImages = generatePlaylistCoverImages(playlist)
@@ -174,7 +166,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                   variant='ghost'
                   className='flex h-14 w-full justify-start gap-2 rounded-[6px] px-2 py-1.5'
                 >
-                  {/* Playlist Cover */}
                   <div className='relative h-11 w-11 shrink-0 overflow-hidden rounded-sm shadow-sm'>
                     {isEmpty ? (
                       <div className='flex h-full w-full items-center justify-center bg-muted'>
@@ -202,7 +193,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                     )}
                   </div>
 
-                  {/* Playlist Info */}
                   <div className='flex min-w-0 flex-1 flex-col items-start gap-1'>
                     <p className='w-full overflow-hidden text-ellipsis whitespace-nowrap text-left text-base font-medium leading-5 text-foreground'>
                       {playlist.title}
@@ -218,7 +208,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
             })}
           </div>
 
-          {/* New Playlist Button */}
           <div className='flex justify-end'>
             <Button
               onClick={handleCreateNewPlaylist}
@@ -232,7 +221,6 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Create Playlist Modal - Render outside AddToPlaylistModal so it persists when AddToPlaylistModal closes */}
       {isCreatePlaylistModalOpen && (
         <CreatePlaylistModal
           isOpen={isCreatePlaylistModalOpen}
