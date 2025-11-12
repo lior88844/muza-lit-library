@@ -179,3 +179,54 @@ const getMostCommonValue = (values: (string | undefined | number)[]): string => 
 
   return Object.keys(valueCounts).reduce((a, b) => (valueCounts[a] > valueCounts[b] ? a : b))
 }
+
+/**
+ * Extract complete metadata from a file for the prepare upload endpoint
+ * Returns all metadata needed by the backend for track matching and creation
+ */
+export async function extractFullFileMetadata(file: File): Promise<{
+  fileName: string
+  fileSize: number
+  mimetype: string
+  title?: string
+  artist?: string
+  trackNumber?: number
+  discNumber?: number
+  duration?: number
+  format?: string
+  bitrate?: number
+  sampleRate?: number
+  channels?: number
+  isrc?: string
+  musicbrainzTrackId?: string
+  mbRecordingId?: string
+} | null> {
+  try {
+    const metadata = await parseBlob(file)
+
+    return {
+      fileName: file.name,
+      fileSize: file.size,
+      mimetype: file.type || 'audio/flac',
+      title: metadata.common.title,
+      artist: metadata.common.artist,
+      trackNumber: metadata.common.track?.no ?? undefined,
+      discNumber: metadata.common.disk?.no ?? undefined,
+      duration: metadata.format.duration ? Math.round(metadata.format.duration) : undefined,
+      format: metadata.format.container?.toUpperCase(),
+      bitrate: metadata.format.bitrate,
+      sampleRate: metadata.format.sampleRate,
+      channels: metadata.format.numberOfChannels,
+      isrc: Array.isArray(metadata.common.isrc) ? metadata.common.isrc[0] : metadata.common.isrc,
+      musicbrainzTrackId: Array.isArray(metadata.common.musicbrainz_trackid)
+        ? metadata.common.musicbrainz_trackid[0]
+        : metadata.common.musicbrainz_trackid,
+      mbRecordingId: Array.isArray(metadata.common.musicbrainz_recordingid)
+        ? metadata.common.musicbrainz_recordingid[0]
+        : metadata.common.musicbrainz_recordingid,
+    }
+  } catch (error) {
+    console.error('Error extracting full file metadata:', error)
+    return null
+  }
+}
