@@ -5,6 +5,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader/MediaHeader'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
+import { useDrawerStore } from '~/store/drawerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
@@ -23,9 +24,8 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     playQueue,
     isPlaying,
     playPause,
-    openPlaylistDrawer,
-    isPlaylistDrawerOpen,
   } = usePlayerStore()
+  const { openPlaylistDrawer, isPlaylistDrawerOpen } = useDrawerStore()
 
   // Use the actual playlist songs
   const playlistSongs = playlist?.songs || []

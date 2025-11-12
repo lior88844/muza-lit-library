@@ -44,16 +44,6 @@ export const usePlayerStore = create<PlayerState>()(
       // Context
       source: null,
 
-      // Analytics
-      playAttempts: new Map(),
-      playCountIncremented: false,
-
-      // Drawer states (legacy compat)
-      isPlaylistDrawerOpen: false,
-      currentPlaylistDrawerId: undefined,
-      isStackDrawerOpen: false,
-      tempStack: null,
-
       // Legacy compat
       selectedSong: null,
       selectedPlaListOrAlbum: null,
@@ -92,7 +82,6 @@ export const usePlayerStore = create<PlayerState>()(
           isPlaying: true,
           source: source || null,
           currentPosition: 0,
-          playCountIncremented: false,
         })
       },
 
@@ -122,7 +111,6 @@ export const usePlayerStore = create<PlayerState>()(
           set({
             currentPosition: 0,
             isPlaying: true,
-            playCountIncremented: false,
           })
           return
         }
@@ -156,7 +144,6 @@ export const usePlayerStore = create<PlayerState>()(
           selectedSong: state.queue[nextIndex], // legacy compat
           isPlaying: true,
           currentPosition: 0,
-          playCountIncremented: false,
         })
       },
 
@@ -202,7 +189,6 @@ export const usePlayerStore = create<PlayerState>()(
           selectedSong: state.queue[prevIndex], // legacy compat
           isPlaying: true,
           currentPosition: 0,
-          playCountIncremented: false,
         })
       },
 
@@ -264,80 +250,6 @@ export const usePlayerStore = create<PlayerState>()(
             queueIndex: 0,
           })
         }
-      },
-
-      // === ANALYTICS ===
-
-      startPlayAttempt: (songId: number) => {
-        const state = get()
-        const attempts = new Map(state.playAttempts)
-        attempts.set(songId, {
-          startedAt: Date.now(),
-          reported: false,
-        })
-        set({ playAttempts: attempts })
-      },
-
-      reportPlay: async (songId: number) => {
-        const state = get()
-        const attempt = state.playAttempts.get(songId)
-
-        if (!attempt || attempt.reported) return
-
-        // Mark as reported immediately to prevent double-counting
-        const attempts = new Map(state.playAttempts)
-        attempts.set(songId, { ...attempt, reported: true })
-        set({ playAttempts: attempts })
-
-        // Frontend-only play count tracking (no backend call)
-        // Store play counts in localStorage
-        try {
-          const playCountsKey = 'muza-play-counts'
-          const storedCounts = localStorage.getItem(playCountsKey)
-          const playCounts: Record<number, number> = storedCounts ? JSON.parse(storedCounts) : {}
-          
-          // Increment play count for this track
-          playCounts[songId] = (playCounts[songId] || 0) + 1
-          
-          // Save back to localStorage
-          localStorage.setItem(playCountsKey, JSON.stringify(playCounts))
-        } catch {
-          // Silently fail
-        }
-      },
-
-      setPlayCountIncremented: (incremented: boolean) => {
-        set({ playCountIncremented: incremented })
-      },
-
-      // === DRAWER MANAGEMENT (Legacy compatibility) ===
-
-      setIsPlaylistDrawerOpen: (isOpen: boolean) => {
-        set({ isPlaylistDrawerOpen: isOpen })
-      },
-
-      setCurrentPlaylistDrawerId: (id: number | undefined) => {
-        set({ currentPlaylistDrawerId: id })
-      },
-
-      openPlaylistDrawer: (playlistId?: number) => {
-        set({ isPlaylistDrawerOpen: true, currentPlaylistDrawerId: playlistId })
-      },
-
-      closePlaylistDrawer: () => {
-        set({ isPlaylistDrawerOpen: false, currentPlaylistDrawerId: undefined })
-      },
-
-      openStackDrawer: (stack: unknown) => {
-        set({ isStackDrawerOpen: true, tempStack: stack })
-      },
-
-      closeStackDrawer: () => {
-        set({ isStackDrawerOpen: false, tempStack: null })
-      },
-
-      updateTempStack: (stack: unknown) => {
-        set({ tempStack: stack })
       },
 
       // === LEGACY COMPATIBILITY ACTIONS ===

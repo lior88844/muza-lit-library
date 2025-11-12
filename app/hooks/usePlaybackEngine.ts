@@ -7,6 +7,7 @@
 import Hls from 'hls.js'
 import { useEffect, useRef } from 'react'
 
+import { useAnalyticsStore } from '~/store/analyticsStore'
 import { usePlayerStore } from '~/store/playerStore'
 
 /**
@@ -34,9 +35,9 @@ export function usePlaybackEngine() {
     setCurrentPosition,
     setDuration,
     setIsPlaying,
-    startPlayAttempt,
-    reportPlay,
   } = usePlayerStore()
+
+  const { startPlayAttempt, reportPlay } = useAnalyticsStore()
 
   // ========================================
   // 1. INITIALIZE AUDIO ELEMENT (once)

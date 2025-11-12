@@ -10,6 +10,7 @@ import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
 import { generatePlaylistCoverImages } from '~/lib/utils'
+import { useDrawerStore } from '~/store/drawerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
@@ -39,9 +40,8 @@ export function SearchResultsList({
     setIsPlaying,
     isPlaying,
     togglePlayPause,
-    isPlaylistDrawerOpen,
-    isStackDrawerOpen,
   } = usePlayerStore()
+  const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
 
   const hasResults =
     albums.length > 0 || artists.length > 0 || tracks.length > 0 || playlists.length > 0

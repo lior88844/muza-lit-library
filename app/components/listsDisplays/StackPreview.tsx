@@ -7,6 +7,7 @@ import type { StackWithEntities } from 'server/api/stack/stack.service'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 
 import AlbumPreview from '../albumDisplays/AlbumPreview'
@@ -27,9 +28,8 @@ const MusicListSectionComponent: React.FC<{
     playQueue,
     isPlaying,
     playPause,
-    isPlaylistDrawerOpen,
-    isStackDrawerOpen,
   } = usePlayerStore()
+  const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
 
   const MAX_ITEMS_TO_SHOW = 5
   const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, MAX_ITEMS_TO_SHOW)

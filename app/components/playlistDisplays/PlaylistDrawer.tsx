@@ -7,9 +7,9 @@ import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { IconButton } from '~/components/ui/button/icon-button'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
+import { useDrawerStore } from '~/store/drawerStore'
 import { useMedia } from '~/store/media/mediaContext'
 import type { SongDetails } from '~/store/models'
-import { useCurrentPlayerStore } from '~/store/playerStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
@@ -26,7 +26,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const { songs: allSongs, playlists } = useMedia()
 
   // Get playlist from context
-  const currentPlaylistDrawerId = useCurrentPlayerStore(state => state.currentPlaylistDrawerId)
+  const currentPlaylistDrawerId = useDrawerStore(state => state.currentPlaylistDrawerId)
   const playlist = playlists.find(p => p.id === currentPlaylistDrawerId)
   const [playlistName, setPlaylistName] = useState(playlist?.title || '')
   const [playlistDescription, setPlaylistDescription] = useState(playlist?.description || '')

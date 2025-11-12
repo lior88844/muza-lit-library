@@ -36,15 +36,6 @@ export interface PlaySourceMeta {
 }
 
 /**
- * Play attempt tracking for accurate play count analytics
- * Ensures we only count plays after 30s and avoid duplicates
- */
-export interface PlayAttempt {
-  startedAt: number // timestamp when playback started
-  reported: boolean // whether this play has been reported to backend
-}
-
-/**
  * Complete player state
  * This is the shape of the Zustand store
  */
@@ -69,16 +60,6 @@ export interface PlayerState {
 
   // Context
   source: PlaySourceMeta | null
-
-  // Analytics
-  playAttempts: Map<number, PlayAttempt>
-  playCountIncremented: boolean // legacy compat
-
-  // Drawer states (legacy compat)
-  isPlaylistDrawerOpen: boolean
-  currentPlaylistDrawerId: number | undefined
-  isStackDrawerOpen: boolean
-  tempStack: unknown | null
 
   // Computed/derived
   hasNext: boolean
@@ -106,20 +87,6 @@ export interface PlayerState {
   // Actions - Playback modes
   setRepeat: (mode: RepeatMode) => void
   toggleShuffle: () => void
-
-  // Actions - Analytics
-  startPlayAttempt: (songId: number) => void
-  reportPlay: (songId: number) => Promise<void>
-  setPlayCountIncremented: (incremented: boolean) => void
-
-  // Actions - Drawer management (legacy compat)
-  setIsPlaylistDrawerOpen: (isOpen: boolean) => void
-  setCurrentPlaylistDrawerId: (id: number | undefined) => void
-  openPlaylistDrawer: (playlistId?: number) => void
-  closePlaylistDrawer: () => void
-  openStackDrawer: (stack: unknown) => void
-  closeStackDrawer: () => void
-  updateTempStack: (stack: unknown) => void
 
   // Legacy compatibility
   selectedSong: QueueItem | null // alias for current

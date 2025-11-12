@@ -26,6 +26,7 @@ import StackDrawer from './components/stack/StackDrawer'
 import { Typography } from './components/ui/typography'
 import { cn } from './lib/utils'
 import Providers from './Providers'
+import { useDrawerStore } from './store/drawerStore'
 import { MediaContext } from './store/media/mediaContext'
 import type { MusicPlaylist } from './store/models'
 import { usePlayerStore } from './store/playerStore'
@@ -95,7 +96,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     tempStack,
     closeStackDrawer,
     updateTempStack,
-  } = usePlayerStore()
+  } = useDrawerStore()
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 

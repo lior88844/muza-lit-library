@@ -6,6 +6,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
+import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
@@ -37,8 +38,8 @@ export default function AlbumPage() {
     playQueue,
     isPlaying,
     playPause,
-    isPlaylistDrawerOpen,
   } = usePlayerStore()
+  const { isPlaylistDrawerOpen } = useDrawerStore()
   const [isModalOpen, setModalOpen] = useState(false)
   const { album } = useLoaderData<typeof loader>()
 

@@ -29,8 +29,8 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 export default function Songs() {
   const { t } = useTranslation()
-  const { playQueue, current, isPlaylistDrawerOpen } =
-    usePlayerStore()
+  const { playQueue, current } = usePlayerStore()
+  const { isPlaylistDrawerOpen } = useDrawerStore()
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
   const { libraryTracks } = useLoaderData<typeof loader>()

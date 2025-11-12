@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { Link, useFetcher, useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
+import useFetcherAsync from '~/lib/useFetcherAsync'
 import { usePlayerStore } from '~/store/playerStore'
+import type { QueueItem } from '~/types/player'
 
 import { Image } from '../ui/image'
 import AlbumInfoModal from './AlbumInfoModal'
@@ -16,11 +18,20 @@ interface AlbumPreviewProps {
   draggable?: boolean
 }
 
+interface AlbumLoaderData {
+  album: {
+    id: number
+    title: string
+    tracks: Array<Record<string, unknown>>
+    [key: string]: unknown
+  }
+}
+
 const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }) => {
   const navigate = useNavigate()
   const { current, isPlaying, playPause, playQueue } = usePlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
-  const fetcher = useFetcher()
+  const fetcher = useFetcherAsync<AlbumLoaderData>()
   const { dragHandlers } = useDraggable({
     type: EntityTypeEnum.Album,
     data: details,
@@ -40,36 +51,32 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
       return
     }
 
-    // Otherwise, fetch the album data and load it into the queue
-    fetcher.load(`/albums/${details.id}`)
+    try {
+      // Fetch the album data and wait for it
+      const data = await fetcher.load(`/albums/${details.id}`)
+      const albumData = data.album
+
+      // Add album property to each track for the queue
+      const tracksWithAlbum = albumData.tracks.map(track => ({
+        ...track,
+        album: albumData.title,
+        albumId: albumData.id,
+      })) as QueueItem[]
+      
+      playQueue({
+        items: tracksWithAlbum,
+        startIndex: 0,
+        source: {
+          type: 'album',
+          id: albumData.id,
+          title: albumData.title,
+        },
+      })
+    } catch (error) {
+      console.error('Failed to load album:', error)
+    }
   }
 
-  // When fetcher loads album data, start playing it
-  React.useEffect(() => {
-    if (fetcher.data && fetcher.state === 'idle') {
-      const albumData = fetcher.data.album
-      // Only process if this is the album data we requested
-      if (albumData && albumData.tracks && albumData.id === details.id) {
-        // Add album property to each track for the queue
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const tracksWithAlbum = albumData.tracks.map((track: any) => ({
-          ...track,
-          album: albumData.title,
-          albumId: albumData.id,
-        }))
-        
-        playQueue({
-          items: tracksWithAlbum,
-          startIndex: 0,
-          source: {
-            type: 'album',
-            id: albumData.id,
-            title: albumData.title,
-          },
-        })
-      }
-    }
-  }, [fetcher.data, fetcher.state, playQueue, details.id])
   const onAlbumClick = () => {
     navigate(`/albums/${details.id}`)
   }
