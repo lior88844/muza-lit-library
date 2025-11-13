@@ -19,7 +19,6 @@ import type {
   SignedUrlInfo,
 } from '../types/PrepareUploadResponse'
 
-// Create a queue with max 3 concurrent requests
 const discoveryQueue = new PQueue({ concurrency: 3 })
 export const prepareQueue = new PQueue({ concurrency: 3 })
 
@@ -39,10 +38,6 @@ export const isItemUploadReady = (item: UploadItem): boolean => {
   )
 }
 
-/**
- * Call the admin discover endpoint to look up album information
- * Uses p-queue to limit concurrent requests to 3
- */
 export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLookupResult> {
   try {
     const response = await discoveryQueue.add(() =>
@@ -63,8 +58,6 @@ export async function discoverAlbum(metadata: DiscoverMetadata): Promise<AlbumLo
       matchedBy: result.matchedBy,
     }
   } catch (error) {
-    // Log error for debugging purposes
-
     console.error('Error discovering album:', error)
     return {
       mbId: null,
@@ -87,14 +80,11 @@ const isAudioFile = (file: File): boolean => {
 export const getAlbumsToUpload = (files: File[]) => {
   const newItems: UploadItem[] = []
   const filesToHandle = files.filter(file => isAudioFile(file))
-  // Filter for FLAC files only
   const flacFiles = filesToHandle.filter(isFlacFile)
 
-  // Group all files by folder path to track folders with no FLAC files
   const allFolderMap = new Map<string, File[]>()
   const flacFolderMap = new Map<string, File[]>()
 
-  // First, group all files by folder
   filesToHandle.forEach(file => {
     const path = file.webkitRelativePath || file.name
     const folderPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : 'root'
@@ -105,7 +95,6 @@ export const getAlbumsToUpload = (files: File[]) => {
     allFolderMap.get(folderPath)!.push(file)
   })
 
-  // Then, group FLAC files by folder
   flacFiles.forEach(file => {
     const path = file.webkitRelativePath || file.name
     const folderPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : 'root'
@@ -116,7 +105,6 @@ export const getAlbumsToUpload = (files: File[]) => {
     flacFolderMap.get(folderPath)!.push(file)
   })
 
-  // Detect and group multi-disc albums (folders starting with "CD " or "Disc ")
   const multiDiscAlbumsMap = new Map<string, string[]>()
   const discFolderPaths = new Set<string>()
 
@@ -125,7 +113,6 @@ export const getAlbumsToUpload = (files: File[]) => {
     const parentPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : ''
     const parentFolderName = parentPath.split('/').pop() || ''
 
-    // Case 1: Match child folders with disc indicators like "CD 1", "CD-1", "Disc 1", "Disc-1", etc.
     if (folderName.match(/.*(CD|Disc)\s*-?\s*\d+/i)) {
       discFolderPaths.add(path)
       if (!multiDiscAlbumsMap.has(parentPath)) {
@@ -133,15 +120,12 @@ export const getAlbumsToUpload = (files: File[]) => {
       }
       multiDiscAlbumsMap.get(parentPath)!.push(path)
     }
-    // Case 2: Check if parent folder has multi-disc indicator like "(2CD)", "(3CD)", etc.
     else if (parentPath && parentFolderName.match(/\((\d+)CD\)/i)) {
-      // Check if there are sibling folders (other folders with the same parent)
       const siblingFolders = Array.from(flacFolderMap.keys()).filter(p => {
         const pParent = p.includes('/') ? p.substring(0, p.lastIndexOf('/')) : ''
         return pParent === parentPath && p !== path
       })
 
-      // If there are sibling folders, treat this as a multi-disc album
       if (siblingFolders.length > 0) {
         discFolderPaths.add(path)
         if (!multiDiscAlbumsMap.has(parentPath)) {
@@ -154,20 +138,15 @@ export const getAlbumsToUpload = (files: File[]) => {
     }
   }
 
-  // Filter out parent folders that have child folders in the list, excluding disc folders
   const allFolderPaths = Array.from(flacFolderMap.keys()).filter(path => !discFolderPaths.has(path))
   const filteredFolderPaths = allFolderPaths.filter(path => {
-    // Keep this folder if no other folder in the list has it as a prefix (i.e., it's not a parent)
     return !allFolderPaths.some(otherPath => otherPath !== path && otherPath.startsWith(path + '/'))
   })
 
-  // Create items for multi-disc albums
   for (const [parentPath, discPaths] of multiDiscAlbumsMap.entries()) {
-    // Organize files by disc - each disc folder becomes an array
     const filesByDisc: File[][] = []
     let totalSize = 0
 
-    // Sort disc paths to maintain disc order
     const sortedDiscPaths = discPaths.sort()
 
     for (const discPath of sortedDiscPaths) {
@@ -178,7 +157,6 @@ export const getAlbumsToUpload = (files: File[]) => {
 
     const albumName = parentPath ? parentPath.split('/').pop() || parentPath : 'Multi-Disc Album'
 
-    // Check for skipped non-FLAC files across all disc folders
     let skippedCount = 0
     for (const discPath of discPaths) {
       const allFilesInFolder = allFolderMap.get(discPath) || []
@@ -201,13 +179,11 @@ export const getAlbumsToUpload = (files: File[]) => {
     newItems.push(newItem)
   }
 
-  // Create items for regular folders with FLAC files (excluding parent folders and disc folders)
   for (const path of filteredFolderPaths) {
     const folderFiles = flacFolderMap.get(path)!
     const totalSize = folderFiles.reduce((sum, file) => sum + file.size, 0)
     const folderName = path === 'root' ? 'Music Folder' : path.split('/').pop() || path
 
-    // Check if this folder has non-FLAC files that were skipped
     const allFilesInFolder = allFolderMap.get(path) || []
     const skippedCount = allFilesInFolder.length - folderFiles.length
 
@@ -216,7 +192,7 @@ export const getAlbumsToUpload = (files: File[]) => {
       name: folderName,
       type: 'folder',
       size: totalSize,
-      files: [folderFiles], // Single disc album - wrap in array
+      files: [folderFiles],
       metadata: null,
       path,
       errorCode: skippedCount > 0 ? UploadErrorCodeEnum.PARTIAL_UPLOAD : undefined,
@@ -226,13 +202,11 @@ export const getAlbumsToUpload = (files: File[]) => {
     newItems.push(newItem)
   }
 
-  // Create error items for folders with no FLAC files (excluding parent folders)
   const allFoldersWithoutFlac = Array.from(allFolderMap.keys()).filter(
     path => !flacFolderMap.has(path)
   )
 
   const filteredErrorFolderPaths = allFoldersWithoutFlac.filter(path => {
-    // Keep this folder if no other folder in allFolderMap has it as a prefix
     return !Array.from(allFolderMap.keys()).some(
       otherPath => otherPath !== path && otherPath.startsWith(path + '/')
     )
@@ -269,11 +243,6 @@ export const formatDiscogsId = (discogsIdOrUrl: string) => {
   return discogsIdOrUrl.trim()
 }
 
-/**
- * Prepare album upload by extracting metadata and sending to backend
- * Backend will aggregate data, create entities, and return signed URLs
- * This is step 1 of the new two-step upload process
- */
 export async function prepareAlbumUpload({
   mbId,
   albumCover,
@@ -286,13 +255,11 @@ export async function prepareAlbumUpload({
   discFiles: File[][]
 }): Promise<PrepareUploadResponse> {
   try {
-    // Extract metadata from all files
     const allFiles = discFiles.flat()
     const fileMetadataResults = await Promise.all(
       allFiles.map(file => extractFullFileMetadata(file))
     )
 
-    // Filter out any null results (files that failed metadata extraction)
     const fileMetadata = fileMetadataResults.filter(metadata => metadata !== null) as NonNullable<
       (typeof fileMetadataResults)[0]
     >[]
@@ -306,7 +273,6 @@ export async function prepareAlbumUpload({
       }
     }
 
-    // Send to backend
     const response = await adminApiClient.post<PrepareUploadResponse>('/api/admin/prepare-upload', {
       mbId: mbId || undefined,
       discogsId: discogsId ? parseInt(discogsId) : undefined,
@@ -329,10 +295,6 @@ export async function prepareAlbumUpload({
   }
 }
 
-/**
- * Upload files to S3 using presigned URLs with Uppy AWS S3 plugin
- * This is step 2 of the new two-step upload process
- */
 export async function uploadFilesToS3(
   trackUploads: SignedUrlInfo[],
   files: File[][],
@@ -346,13 +308,11 @@ export async function uploadFilesToS3(
   const uploadedFiles: Array<{ fileName: string; trackId: number; fileId: string }> = []
   const errors: Array<{ fileName: string; error: string }> = []
 
-  // Create a map of fileName to trackUpload info
   const fileNameToTrackUpload = new Map<string, SignedUrlInfo>()
   trackUploads.forEach(track => {
     fileNameToTrackUpload.set(track.fileName, track)
   })
 
-  // Upload files one by one using Uppy with AWS S3 plugin
   for (const file of allFiles) {
     const trackUpload = fileNameToTrackUpload.get(file.name)
 
@@ -365,14 +325,12 @@ export async function uploadFilesToS3(
     }
 
     try {
-      // Update progress: pending -> uploading
       onProgress?.(file.name, {
         fileName: file.name,
         progress: 0,
         status: 'uploading',
       })
 
-      // Create Uppy instance for this file
       const uppy = new Uppy({
         autoProceed: false,
         allowMultipleUploadBatches: false,
@@ -381,11 +339,9 @@ export async function uploadFilesToS3(
         },
       })
 
-      // Configure AWS S3 upload with presigned URL
       uppy.use(AwsS3, {
-        shouldUseMultipart: false, // We're using single presigned URLs, not multipart
+        shouldUseMultipart: false,
         getUploadParameters: file => {
-          // Return the presigned URL and headers for this file
           return Promise.resolve({
             method: 'PUT',
             url: trackUpload.signedUrl,
@@ -396,7 +352,6 @@ export async function uploadFilesToS3(
         },
       })
 
-      // Track upload progress
       uppy.on('upload-progress', (uppyFile, progress) => {
         if (progress.bytesTotal && uppyFile && uppyFile.name) {
           const percentage = Math.round((progress.bytesUploaded / progress.bytesTotal) * 100)
@@ -408,21 +363,18 @@ export async function uploadFilesToS3(
         }
       })
 
-      // Add file to Uppy
       uppy.addFile({
         name: file.name,
         type: file.type,
         data: file,
       })
 
-      // Start upload
       const result = await uppy.upload()
 
       if (result && result.failed && result.failed.length > 0) {
         throw new Error(`Upload failed: ${result.failed[0].error}`)
       }
 
-      // Update progress: completed
       onProgress?.(file.name, {
         fileName: file.name,
         progress: 100,
@@ -435,7 +387,6 @@ export async function uploadFilesToS3(
         fileId: trackUpload.fileId,
       })
 
-      // Clean up Uppy instance
       uppy.cancelAll()
       uppy.clear()
     } catch (error) {

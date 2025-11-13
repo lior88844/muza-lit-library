@@ -5,8 +5,10 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import { useDraggable } from '~/lib/hooks/useDraggable'
+import useFetcherAsync from '~/lib/useFetcherAsync'
 import { cn } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
+import type { QueueItem } from '~/types/player'
 
 import { Image } from '../ui/image'
 import { Typography } from '../ui/typography'
@@ -17,21 +19,62 @@ interface AlbumPreviewProps {
   draggable?: boolean
 }
 
+interface AlbumLoaderData {
+  album: {
+    id: number
+    title: string
+    tracks: Array<Record<string, unknown>>
+    [key: string]: unknown
+  }
+}
+
 const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }) => {
   const navigate = useNavigate()
-  const { isPlaying, setIsPlaying } = useCurrentPlayerStore()
+  const { current, isPlaying, playPause, playQueue } = usePlayerStore()
   const [isModalOpen, setModalOpen] = useState(false)
 
+  const fetcher = useFetcherAsync<AlbumLoaderData>()
   const { dragHandlers, isDragging } = useDraggable({
     type: EntityTypeEnum.Album,
     data: details,
     enabled: draggable,
   })
 
-  const handlePlayPause = (e: React.MouseEvent) => {
+  const isCurrentAlbumPlaying = 
+    current?.albumId === details.id && isPlaying
+
+  const handlePlayPause = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    setIsPlaying(!isPlaying)
+    
+    if (current?.albumId === details.id) {
+      playPause()
+      return
+    }
+
+    try {
+      const data = await fetcher.load(`/albums/${details.id}`)
+      const albumData = data.album
+
+      const tracksWithAlbum = albumData.tracks.map(track => ({
+        ...track,
+        album: albumData.title,
+        albumId: albumData.id,
+      })) as QueueItem[]
+      
+      playQueue({
+        items: tracksWithAlbum,
+        startIndex: 0,
+        source: {
+          type: 'album',
+          id: albumData.id,
+          title: albumData.title,
+        },
+      })
+    } catch (error) {
+      console.error('Failed to load album:', error)
+    }
   }
+
   const onAlbumClick = () => {
     navigate(`/albums/${details.id}`)
   }
@@ -53,7 +96,7 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
         />
 
         <HoverOverlay
-          isPlaying={!!isPlaying}
+          isPlaying={isCurrentAlbumPlaying}
           onPlayPause={handlePlayPause}
           actions={[
             {
@@ -72,7 +115,6 @@ const AlbumPreview: React.FC<AlbumPreviewProps> = ({ details, draggable = true }
         </Link>
       </div>
       <AlbumInfoModal
-        // @ts-expect-error TODO: We need to get all album data always, somehow.
         album={details}
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}

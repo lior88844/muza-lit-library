@@ -10,7 +10,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 import { cn } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
 
@@ -50,7 +50,7 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
     setSelectedSong,
     setIsPlaying: setGlobalIsPlaying,
     togglePlayPause,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
   const isInLibrary = getIsInLibrary(entityType, entity.id)
 
   const { dragHandlers, preventClickWhileDragging } = useDraggable({

@@ -34,7 +34,6 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
   const [isDragOver, setIsDragOver] = useState(false)
   const fetcher = useFetcherAsync<{ success: boolean; error?: string; stack?: unknown }>()
   const navigate = useNavigate()
-  // Update stack name and description when tempStack changes
   useEffect(() => {
     if (tempStack.title) {
       setStackName(tempStack.title)

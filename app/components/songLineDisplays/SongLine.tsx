@@ -2,6 +2,7 @@ import React, { type MouseEventHandler, useState } from 'react'
 import { Link } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { usePlayCount } from '~/hooks/usePlayCounts'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 
@@ -43,6 +44,11 @@ const SongLine: React.FC<SongLineProps> = ({
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const [isHovered, setIsHovered] = useState(false)
   const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
+  
+  // Get combined play count (mock data + local increments)
+  const localPlayCount = usePlayCount(details.id)
+  const totalPlays = (details.plays || 0) + localPlayCount
+  
   const { dragHandlers } = useDraggable({
     type: EntityTypeEnum.Track,
     data: details,
@@ -110,11 +116,11 @@ const SongLine: React.FC<SongLineProps> = ({
                   </Link>
                 </>
               )}
-              {details.plays && (
+              {totalPlays > 0 && (
                 <>
                   <span className={styles.separator}>•</span>
                   <span className={styles['track-plays']}>
-                    {formatPlayCount(details.plays)} Plays
+                    {formatPlayCount(totalPlays)} Plays
                   </span>
                 </>
               )}

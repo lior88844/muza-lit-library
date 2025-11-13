@@ -17,7 +17,6 @@ import { AppSelect } from '~/components/ui/app-select'
 import { Button } from '~/components/ui/button'
 import DataGrid from '~/components/ui/data-grid/DataGrid'
 import useFetcherAsync from '~/lib/useFetcherAsync'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { StackToEdit } from '~/store/models'
 
 import type { Route } from './+types/admin-stack'
@@ -126,7 +125,7 @@ export default function AdminStack() {
   const [selectedPage, setSelectedPage] = useState(
     (searchParams.get('page') as StackPageIdEnum) || StackPageIdEnum.Home
   )
-  const { openStackDrawer } = useCurrentPlayerStore()
+  const { openStackDrawer } = useDrawerStore()
   const stacks = loaderData.stacks || []
   const isLoading = navigation.state === 'loading'
 

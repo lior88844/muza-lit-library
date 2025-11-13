@@ -8,7 +8,8 @@ import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { cn } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { useDrawerStore } from '~/store/drawerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
@@ -27,14 +28,12 @@ export function StackPreview(props: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
   const {
-    selectedSong: globalSelectedSong,
-    setSelectedSong,
-    setIsPlaying,
+    current: globalSelectedSong,
+    playQueue,
     isPlaying,
-    togglePlayPause,
-    isPlaylistDrawerOpen,
-    isStackDrawerOpen,
-  } = useCurrentPlayerStore()
+    playPause,
+  } = usePlayerStore()
+  const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
 
   const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, maxItems)
 
@@ -70,18 +69,26 @@ export function StackPreview(props: Props) {
           )
         })
       case EntityTypeEnum.Track:
-        return itemsToShow.map(item => {
+        return itemsToShow.map((item, index) => {
           const track = item.entity as TrackResponse
+          const allTracks = stack.items.map(i => i.entity as TrackResponse)
           return (
             <SongLineWithCover
               key={track.id}
               details={track}
               onClick={() => {
                 if (globalSelectedSong?.id === track.id) {
-                  togglePlayPause()
+                  playPause()
                 } else {
-                  setSelectedSong(track)
-                  setIsPlaying(true)
+                  playQueue({
+                    items: allTracks,
+                    startIndex: index,
+                    source: {
+                      type: 'stack',
+                      id: stack.id,
+                      title: stack.title,
+                    },
+                  })
                 }
               }}
               isPlaying={track.id === globalSelectedSong?.id && !!isPlaying}
