@@ -32,6 +32,7 @@ interface MediaHeaderProps {
   mediaMetadata: Omit<MediaMetadataProps, 'type'>
   entityId: number
   onInfoClick?: () => void
+  onAddToPlaylistClick?: () => void
   showBackButton?: boolean
   customActions?: React.ReactNode
   playlist?: MusicPlaylist
@@ -50,6 +51,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
   showBackButton = true,
   customActions,
   onInfoClick,
+  onAddToPlaylistClick,
   playlist,
   onBackClick,
 }) => {
@@ -210,7 +212,7 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                           icon={isInLibrary ? <FaHeart /> : <FaPlus />}
                           variant='ghost'
                           data-name='Add-Library Button'
-                          onClick={onToggleAddLibrary}
+                          onClick= {onAddToPlaylistClick || onToggleAddLibrary}
                         />
                         <IconButton
                           icon={<FaInfo />}

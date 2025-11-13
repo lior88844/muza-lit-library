@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { cn } from '~/lib/utils'
+import MuzaIcon from '~/icons/MuzaIcon'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { Button } from './button'
-import styles from './CreatePlaylistModal.module.css'
 import { Dialog } from './dialog'
 import { Input } from './input'
 import { Switch } from './switch'
@@ -80,11 +79,9 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
             label={
               <Typography
                 variant='default'
-                className={cn(
-                  'ms-2 flex items-center gap-2 font-medium',
-                  styles.privacyToggleLabel
-                )}
+                className='ms-2 flex items-center gap-2 font-medium'
               >
+                <MuzaIcon iconName='lock' className='size-4' />
                 {t('playlist.makePrivate')}
               </Typography>
             }

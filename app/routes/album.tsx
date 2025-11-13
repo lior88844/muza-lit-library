@@ -4,13 +4,14 @@ import { useState } from 'react'
 import { useLoaderData } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { AlbumInfoModal } from '~/components/albumDisplays/album-info-modal'
 import MediaHeader from '~/components/MediaHeader'
+import AddToPlaylistModal from '~/components/playlistDisplays/AddToPlaylistModal'
 import SongLine from '~/components/songLineDisplays/SongLine'
 import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 
 import { fetchAlbumById } from '../../server/root.service'
-import { AlbumInfoModal } from '../components/albumDisplays/album-info-modal'
 
 export async function loader({ params }: { params: { id: string } }) {
   const albumId = parseInt(params.id, 10)
@@ -41,6 +42,7 @@ export default function AlbumPage() {
   } = usePlayerStore()
   const { isPlaylistDrawerOpen } = useDrawerStore()
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isAddToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false)
   const { album } = useLoaderData<typeof loader>()
 
   const handleSongClick = (trackId: number, index: number) => {
@@ -78,6 +80,7 @@ export default function AlbumPage() {
           songCount: album.tracks?.length,
         }}
         onInfoClick={() => setModalOpen(true)}
+        onAddToPlaylistClick={() => setAddToPlaylistModalOpen(true)}
         songs={album.tracks}
         mediaType={EntityTypeEnum.Album}
         entityId={album.id}
@@ -97,6 +100,12 @@ export default function AlbumPage() {
         })}
       </div>
       <AlbumInfoModal album={album} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setAddToPlaylistModalOpen(false)}
+        albumTracks={album.tracks}
+        albumTitle={album.title}
+      />
     </>
   )
 }
