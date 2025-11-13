@@ -131,6 +131,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
       const dragData = e.dataTransfer.getData('application/json')
 
       if (files.length > 0) {
+        // File uploads not yet implemented
       }
 
       if (dragData) {
@@ -174,6 +175,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
             }
           }
         } catch {
+          // Ignore JSON parse errors - invalid drag data is silently discarded
         }
       }
     },

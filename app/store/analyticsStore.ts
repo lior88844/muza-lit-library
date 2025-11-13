@@ -48,6 +48,7 @@ export const useAnalyticsStore = create<AnalyticsState>((set, get) => ({
 
       localStorage.setItem(playCountsKey, JSON.stringify(playCounts))
     } catch {
+      // Ignore localStorage errors - play counts are not critical
     }
   },
 

@@ -87,6 +87,7 @@ export function resetPlayCounts(): void {
   try {
     localStorage.removeItem(PLAY_COUNTS_KEY)
   } catch {
+    // Ignore localStorage errors - play counts are not critical
   }
 }
 
@@ -98,6 +99,7 @@ export function resetPlayCount(trackId: number): void {
     delete counts[trackId]
     localStorage.setItem(PLAY_COUNTS_KEY, JSON.stringify(counts))
   } catch {
+    // Ignore localStorage errors - play counts are not critical
   }
 }
 
