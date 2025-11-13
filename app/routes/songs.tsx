@@ -8,8 +8,8 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Typography } from '~/components/ui/typography'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import type { SongDetails as SongDetailsType } from '~/store/models'
+import { usePlayerStore } from '~/store/playerStore'
 import { userContext } from '~/store/router-context'
 
 import type { Route } from './+types/songs'
@@ -29,8 +29,8 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 export default function Songs() {
   const { t } = useTranslation()
-  const { setSelectedSong, selectedSong, setIsPlaying, isPlaylistDrawerOpen } =
-    useCurrentPlayerStore()
+  const { playQueue, current } = usePlayerStore()
+  const { isPlaylistDrawerOpen } = useDrawerStore()
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
   const { libraryTracks } = useLoaderData<typeof loader>()
@@ -43,9 +43,12 @@ export default function Songs() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleSongClick = (song: SongDetailsType) => {
-    setSelectedSong(song)
-    setIsPlaying(true)
+  const handleSongClick = (song: SongDetailsType, index: number) => {
+    playQueue({
+      items: librarySongs,
+      startIndex: index,
+      source: { type: 'songs', title: 'Songs' },
+    })
   }
 
   const librarySongs = useMemo(() => {
@@ -63,12 +66,12 @@ export default function Songs() {
 
       <div className={'px-8 pb-17.5'}>
         <div className={'flex flex-col gap-2'}>
-          {librarySongs.map(song => (
+          {librarySongs.map((song, index) => (
             <SongLineWithCover
               key={song.id}
               details={song}
-              onClick={() => handleSongClick(song)}
-              isPlaying={selectedSong?.id === song.id}
+              onClick={() => handleSongClick(song, index)}
+              isPlaying={current?.id === song.id}
               draggable={isPlaylistDrawerOpen}
             />
           ))}

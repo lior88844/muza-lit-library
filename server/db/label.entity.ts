@@ -1,25 +1,16 @@
-import {
-  boolean,
-  numeric,
-  pgTable,
-  serial,
-  text,
-  timestamp,
-  uuid,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import { boolean, numeric, pgTable, serial, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
 // Labels table
 export const labels = pgTable('labels', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  sortName: varchar('sort_name', { length: 255 }),
-  disambiguation: varchar('disambiguation', { length: 255 }),
-  labelCode: varchar('label_code', { length: 50 }),
-  country: varchar('country', { length: 2 }),
-  area: varchar('area', { length: 255 }),
+  name: text('name').notNull(),
+  sortName: text('sort_name'),
+  disambiguation: text('disambiguation'),
+  labelCode: text('label_code'),
+  country: text('country'),
+  area: text('area'),
   beginDate: timestamp('begin_date'),
   endDate: timestamp('end_date'),
   mbId: uuid('mb_id'),

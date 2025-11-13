@@ -1,4 +1,4 @@
-import { index, integer, pgTable, serial, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, serial, text, uniqueIndex } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
 
@@ -16,7 +16,7 @@ export const albumLabels = pgTable(
     labelId: integer('label_id')
       .notNull()
       .references(() => labels.id, { onDelete: 'cascade' }),
-    catalogNumber: varchar('catalog_number', { length: 100 }),
+    catalogNumber: text('catalog_number'),
     order: integer('order').notNull(),
   },
   table => [

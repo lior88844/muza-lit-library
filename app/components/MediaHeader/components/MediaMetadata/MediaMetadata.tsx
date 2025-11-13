@@ -27,16 +27,13 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
   const renderMetadataItems = () => {
     const items: React.ReactNode[] = []
 
-    // Add type
     items.push(<span key='type'>{t(`common.${type}`)}</span>)
 
-    // Add year for albums
     if (type === 'album' && year) {
       items.push(<span key='separator1'>{separator}</span>)
       items.push(<span key='year'>{year}</span>)
     }
 
-    // Add song count
     if (songCount) {
       items.push(<span key='separator2'>{separator}</span>)
       items.push(
@@ -46,15 +43,11 @@ const MediaMetadata: React.FC<MediaMetadataProps> = ({
       )
     }
 
-    // Add duration if provided
     if (duration) {
       items.push(<span key='separator3'>{separator}</span>)
       items.push(<span key='duration'>{duration}</span>)
     }
 
-    // Note: Public/private status is now handled as separate badge, not in metadata
-
-    // Add follower count for artists
     if (type === 'artist' && followerCount) {
       items.push(<span key='separator5'>{separator}</span>)
       items.push(

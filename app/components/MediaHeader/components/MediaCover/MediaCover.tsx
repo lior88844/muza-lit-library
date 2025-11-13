@@ -8,7 +8,7 @@ import type { MusicPlaylist } from '~/store/models'
 import styles from './MediaCover.module.css'
 
 interface MediaCoverProps {
-  imageSrc: string | string[] // Can be string for single image or array for playlist collage
+  imageSrc: string | string[]
   title: string
   mediaType?: EntityTypeEnum
   size?: 'small' | 'medium' | 'large'
@@ -22,13 +22,10 @@ const MediaCover: React.FC<MediaCoverProps> = ({
   size = 'large',
   playlist,
 }) => {
-  // Generate playlist collage
   const renderCoverContent = () => {
-    // For playlists, generate cover from songs using single source of truth
     if (mediaType === 'playlist' && playlist) {
       const images = generatePlaylistCoverImages(playlist)
 
-      // null = empty playlist, show empty state
       if (images === null) {
         return (
           <div className={styles['playlist-empty']} data-name='Empty Playlist'>
@@ -59,7 +56,6 @@ const MediaCover: React.FC<MediaCoverProps> = ({
       )
     }
 
-    // Legacy: For array format (backwards compatibility)
     if (Array.isArray(imageSrc) && imageSrc.length >= 4) {
       const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
 
@@ -76,7 +72,6 @@ const MediaCover: React.FC<MediaCoverProps> = ({
       )
     }
 
-    // For single images (albums, artists, or playlists without enough songs)
     const singleImageSrc = Array.isArray(imageSrc)
       ? imageSrc[0] || '/art/imag_1.jpg'
       : imageSrc || '/art/imag_1.jpg'

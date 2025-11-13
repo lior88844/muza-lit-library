@@ -9,7 +9,6 @@ import {
   text,
   timestamp,
   uuid,
-  varchar,
 } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import z from 'zod'
@@ -40,12 +39,12 @@ export const genderEnum = pgEnum('gender', Object.values(GenderEnum) as [string,
 // Artists table
 export const artists = pgTable('artists', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  sortName: varchar('sort_name', { length: 255 }),
-  disambiguation: varchar('disambiguation', { length: 255 }),
+  name: text('name').notNull(),
+  sortName: text('sort_name'),
+  disambiguation: text('disambiguation'),
   type: artistTypeEnum('type'),
   gender: genderEnum('gender'),
-  area: varchar('area', { length: 255 }),
+  area: text('area'),
   beginDate: timestamp('begin_date'),
   endDate: timestamp('end_date'),
   ended: boolean('ended').default(false),

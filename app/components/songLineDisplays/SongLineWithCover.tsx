@@ -2,6 +2,7 @@ import React, { type MouseEventHandler, useState } from 'react'
 import { Link } from 'react-router'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
+import { usePlayCount } from '~/hooks/usePlayCounts'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 
@@ -14,11 +15,11 @@ interface SongLineProps {
   details: SongDetails
   onClick: MouseEventHandler<Element>
   isPlaying: boolean
-  showPreview?: boolean // Add preview badge option
-  showHoverActions?: boolean // Control hover action visibility
-  draggable?: boolean // Enable drag functionality
-  playlistMode?: boolean // Enable playlist-specific behavior
-  onRemoveSong?: (song: SongDetails) => void // Callback for removing song from playlist
+  showPreview?: boolean
+  showHoverActions?: boolean
+  draggable?: boolean
+  playlistMode?: boolean
+  onRemoveSong?: (song: SongDetails) => void
 }
 
 const formatDuration = (seconds: number): string => {
@@ -46,6 +47,9 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
+  
+  const localPlayCount = usePlayCount(details.id)
+  const totalPlays = (details.plays || 0) + localPlayCount
 
   const { dragHandlers, preventClickWhileDragging } = useDraggable({
     type: EntityTypeEnum.Track,
@@ -65,7 +69,6 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
       {...dragHandlers}
     >
       <div className={styles.songLineWithCoverContent}>
-        {/* Album Cover */}
         <div
           className={styles.songLineWithCoverCover}
           onClick={e => preventClickWhileDragging(e, onClick)}
@@ -106,7 +109,7 @@ const SongLineWithCover: React.FC<SongLineProps> = ({
                 {details.album}
               </Link>
               <span className={styles.separator}>•</span>
-              <span>{details.plays ? formatPlayCount(details.plays) : '0'} Plays</span>
+              <span>{formatPlayCount(totalPlays)} Plays</span>
             </div>
           </div>
         </div>

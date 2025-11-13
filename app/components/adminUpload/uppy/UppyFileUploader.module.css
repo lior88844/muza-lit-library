@@ -4,7 +4,7 @@
 
 /* Override Uppy's default styling to match your design */
 .uppyFileUploader .uppyDashboard {
-  border-radius: var(--muza-border-radius-lg, 12px);
+  border-radius: 20px;
   border: 2px dashed var(--muza-color-gray-300, #d1d5db);
   background-color: var(--muza-color-gray-50, #f9fafb);
   font-family: 'Founders Grotesk', sans-serif;

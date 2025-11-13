@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import MuzaIcon from '~/icons/MuzaIcon'
-import { cn } from '~/lib/utils'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
-import { Button, IconButton } from './button'
-import styles from './CreatePlaylistModal.module.css'
+import { Button } from './button'
+import { Dialog } from './dialog'
 import { Input } from './input'
 import { Switch } from './switch'
 import { Typography } from './typography'
@@ -26,7 +25,6 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
   const [playlistName, setPlaylistName] = useState('')
   const [isPrivate, setIsPrivate] = useState(false)
 
-  // Handle ESC key to close modal
   useEffect(() => {
     const handleEscKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -43,8 +41,6 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
     }
   }, [isOpen, onClose])
 
-  // Remove the early return to allow transitions
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (playlistName.trim()) {
@@ -56,77 +52,55 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
     }
   }
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
-  }
-
   const handleToggleChange = (checked: boolean) => {
     setIsPrivate(checked)
   }
 
   return (
-    <div
-      className={`${styles.modalBackdrop} ${isOpen ? styles.modalOpen : ''}`}
-      onClick={handleBackdropClick}
+    <Dialog
+      open={isOpen}
+      onOpenChange={onClose}
+      title={<Typography variant='h3'>{t('playlist.new')}</Typography>}
+      ContentProps={{ className: 'w-[448px]' }}
     >
-      <div className={`${styles.createPlaylistModal} ${isOpen ? styles.modalOpen : ''}`}>
-        <div className={styles.modalContent}>
-          <div className={styles.modalHeader}>
-            <Typography variant='h3'>{t('playlist.new')}</Typography>
-          </div>
+      <div className='flex flex-col gap-4'>
+        <Input
+          value={playlistName}
+          label={t('playlist.title')}
+          placeholder={t('playlist.titlePlaceholder')}
+          className='w-full'
+          onChange={e => setPlaylistName(e.target.value)}
+        />
 
-          <div className={styles.modalContentInner}>
-            <div className={styles.formGroup}>
-              <Input
-                label={t('playlist.title')}
-                placeholder={t('playlist.titlePlaceholder')}
-                value={playlistName}
-                onChange={e => setPlaylistName(e.target.value)}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.privacyToggleWrapper}>
-                <Switch
-                  checked={isPrivate}
-                  onCheckedChange={handleToggleChange}
-                  label={
-                    <Typography
-                      variant='default'
-                      className={cn(
-                        'ms-2 flex items-center gap-2 font-medium',
-                        styles.privacyToggleLabel
-                      )}
-                    >
-                      {t('playlist.makePrivate')}
-                    </Typography>
-                  }
-                />
-                <p className={styles.privacyExplanation}>{t('playlist.privateExplanation')}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.modalButtons}>
-            <Button variant='secondary' type='button' onClick={onClose}>
-              {t('playlist.cancel')}
-            </Button>
-            <Button type='button' onClick={handleSubmit} disabled={!playlistName.trim()}>
-              {t('playlist.create')}
-            </Button>
-          </div>
-
-          <IconButton
-            icon={<MuzaIcon iconName='Close' />}
-            variant='ghost'
-            className={styles.closeButton}
-            onClick={onClose}
+        <div>
+          <Switch
+            checked={isPrivate}
+            onCheckedChange={handleToggleChange}
+            label={
+              <Typography
+                variant='default'
+                className='ms-2 flex items-center gap-2 font-medium'
+              >
+                <MuzaIcon iconName='lock' className='size-4' />
+                {t('playlist.makePrivate')}
+              </Typography>
+            }
           />
+          <Typography className='text-text-muted ms-11 me-15'>
+            {t('playlist.privateExplanation')}
+          </Typography>
         </div>
       </div>
-    </div>
+
+      <div className='flex justify-end gap-4'>
+        <Button variant='secondary' type='button' onClick={onClose}>
+          {t('playlist.cancel')}
+        </Button>
+        <Button type='button' onClick={handleSubmit} disabled={!playlistName.trim()}>
+          {t('playlist.create')}
+        </Button>
+      </div>
+    </Dialog>
   )
 }
 

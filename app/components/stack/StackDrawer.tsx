@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
-import type { Entity } from 'server/api/stack/stack.service'
+import type { Entity } from 'server/api/stack/types'
 
 import { Button } from '~/components/ui/button'
 import DropdownMenu from '~/components/ui/DropdownMenu'
@@ -34,7 +34,6 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
   const [isDragOver, setIsDragOver] = useState(false)
   const fetcher = useFetcherAsync<{ success: boolean; error?: string; stack?: unknown }>()
   const navigate = useNavigate()
-  // Update stack name and description when tempStack changes
   useEffect(() => {
     if (tempStack.title) {
       setStackName(tempStack.title)

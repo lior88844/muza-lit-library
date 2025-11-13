@@ -5,13 +5,14 @@ import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylis
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import PlaylistCover from '~/components/albumDisplays/PlaylistCover'
-import ArtistPreview from '~/components/artistDisplays/ArtistPreview'
+import { ArtistPreview } from '~/components/artistDisplays/ArtistPreview'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
 import { generatePlaylistCoverImages } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { useDrawerStore } from '~/store/drawerStore'
 import type { MusicPlaylist, SongDetails } from '~/store/models'
+import { usePlayerStore } from '~/store/playerStore'
 
 export interface SearchResultsListProps {
   albums: MiniAlbum[]
@@ -39,9 +40,8 @@ export function SearchResultsList({
     setIsPlaying,
     isPlaying,
     togglePlayPause,
-    isPlaylistDrawerOpen,
-    isStackDrawerOpen,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
+  const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
 
   const hasResults =
     albums.length > 0 || artists.length > 0 || tracks.length > 0 || playlists.length > 0

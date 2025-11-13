@@ -1,5 +1,3 @@
-import '../styles/variables.css'
-
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
 import { getUserLibrary } from 'server/api/user-library/user-library.service'
@@ -7,7 +5,6 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import { Typography } from '~/components/ui/typography'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
 import { userContext } from '~/store/router-context'
 
 import type { Route } from './+types/albums'
@@ -28,7 +25,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 export default function Albums() {
   const { t } = useTranslation()
-  const { isPlaylistDrawerOpen } = useCurrentPlayerStore()
+  const { isPlaylistDrawerOpen } = useDrawerStore()
   const { libraryAlbums } = useLoaderData<typeof loader>()
 
   return (
@@ -36,6 +33,7 @@ export default function Albums() {
       <Typography variant={'h1'} as='h2' className={'px-3 pb-4'}>
         {t('page.albums')}
       </Typography>
+
       <div className={styles.albumList}>
         {libraryAlbums?.map(a => (
           <AlbumPreview key={a.id} details={a.entity} draggable={isPlaylistDrawerOpen} />

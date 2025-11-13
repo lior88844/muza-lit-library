@@ -26,13 +26,13 @@ import StackDrawer from './components/stack/StackDrawer'
 import { Typography } from './components/ui/typography'
 import { cn } from './lib/utils'
 import Providers from './Providers'
-import { useCurrentPlayerStore } from './store/currentPlayerStore'
+import { useDrawerStore } from './store/drawerStore'
 import { MediaContext } from './store/media/mediaContext'
 import type { MusicPlaylist } from './store/models'
+import { usePlayerStore } from './store/playerStore'
 import { userContext } from './store/router-context'
 
 export const authMiddleware: MiddlewareFunction = async ({ context }) => {
-  // const user = await getOidcUser();
   context.set(userContext, {
     id: 1,
   })
@@ -45,13 +45,10 @@ export async function loader({ context }: Route.LoaderArgs) {
   return res
 }
 
-// Prevent unnecessary revalidation - only revalidate on explicit actions
 export function shouldRevalidate({ actionStatus }: { actionStatus?: number }) {
-  // Revalidate if there was an action (mutation)
   if (actionStatus) {
     return true
   }
-  // Don't revalidate on navigation
   return false
 }
 
@@ -68,11 +65,10 @@ const MINIMAL_LAYOUT_PARENTS = ['/admin']
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
   const location = useLocation()
-  const { setIsPlaying } = useCurrentPlayerStore()
+  const { setIsPlaying } = usePlayerStore()
 
   const data = useLoaderData<typeof loader>()
 
-  // Process playlists once with useMemo
   const processedData = useMemo(() => {
     return {
       library: data?.library || [],
@@ -95,24 +91,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
     tempStack,
     closeStackDrawer,
     updateTempStack,
-  } = useCurrentPlayerStore()
+  } = useDrawerStore()
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
-  // Check if we're on pages that should hide the main music UI
   const isMinimalLayoutPage = MINIMAL_LAYOUT_PAGES.includes(location.pathname)
   const isMinimalLayoutParent = MINIMAL_LAYOUT_PARENTS.some(parent =>
     location.pathname.startsWith(parent)
   )
 
-  // Stop music when navigating to upload pages
   useEffect(() => {
     if (isMinimalLayoutPage) {
       setIsPlaying(false)
     }
   }, [isMinimalLayoutPage, setIsPlaying])
 
-  // Handle playlist drawer state changes
   const handleOpenPlaylistDrawer = (playlist?: MusicPlaylist) => {
     openPlaylistDrawer(playlist?.id)
     setIsSidebarCollapsed(true)
@@ -132,7 +125,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Collapse sidebar when stack drawer opens
   useEffect(() => {
     if (isStackDrawerOpen) {
       setIsSidebarCollapsed(true)

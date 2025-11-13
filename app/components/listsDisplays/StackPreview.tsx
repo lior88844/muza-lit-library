@@ -1,41 +1,41 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import type { ArtistMiniResponse } from 'server/api/artist/types/ArtistResponse'
 import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
-import type { StackWithEntities } from 'server/api/stack/stack.service'
+import type { StackWithEntities } from 'server/api/stack/types'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { cn } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { useDrawerStore } from '~/store/drawerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
-import ArtistPreview from '../artistDisplays/ArtistPreview'
+import { ArtistPreview } from '../artistDisplays/ArtistPreview'
 import SongLineWithCover from '../songLineDisplays/SongLineWithCover'
 import { Button } from '../ui/button'
 import { Typography } from '../ui/typography'
-import styles from './MusicListSection.module.css'
 
-const MusicListSectionComponent: React.FC<{
+interface Props {
   stack: StackWithEntities
-  onShowAll: (stack: StackWithEntities) => void
-}> = ({ stack }) => {
+  maxItems?: number
+}
+
+export function StackPreview(props: Props) {
+  const { stack, maxItems = DEFAULT_MAX_ITEMS } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
   const {
-    selectedSong: globalSelectedSong,
-    setSelectedSong,
-    setIsPlaying,
+    current: globalSelectedSong,
+    playQueue,
     isPlaying,
-    togglePlayPause,
-    isPlaylistDrawerOpen,
-    isStackDrawerOpen,
-  } = useCurrentPlayerStore()
+    playPause,
+  } = usePlayerStore()
+  const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
 
-  const MAX_ITEMS_TO_SHOW = 5
-  const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, MAX_ITEMS_TO_SHOW)
+  const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, maxItems)
 
   const renderContent = () => {
     switch (stack.entityType) {
@@ -69,18 +69,26 @@ const MusicListSectionComponent: React.FC<{
           )
         })
       case EntityTypeEnum.Track:
-        return itemsToShow.map(item => {
+        return itemsToShow.map((item, index) => {
           const track = item.entity as TrackResponse
+          const allTracks = stack.items.map(i => i.entity as TrackResponse)
           return (
             <SongLineWithCover
               key={track.id}
               details={track}
               onClick={() => {
                 if (globalSelectedSong?.id === track.id) {
-                  togglePlayPause()
+                  playPause()
                 } else {
-                  setSelectedSong(track)
-                  setIsPlaying(true)
+                  playQueue({
+                    items: allTracks,
+                    startIndex: index,
+                    source: {
+                      type: 'stack',
+                      id: stack.id,
+                      title: stack.title,
+                    },
+                  })
                 }
               }}
               isPlaying={track.id === globalSelectedSong?.id && !!isPlaying}
@@ -95,10 +103,9 @@ const MusicListSectionComponent: React.FC<{
 
   const getContentClass = () => {
     switch (stack.entityType) {
-      case EntityTypeEnum.Artist:
-        return styles['artist-list']
       case EntityTypeEnum.Track:
-        return cn('grid gap-2 grid-cols-2 lg:grid-cols-3')
+        return 'grid gap-2 grid-cols-2 lg:grid-cols-3'
+      case EntityTypeEnum.Artist:
       case EntityTypeEnum.Album:
       case EntityTypeEnum.Playlist:
       default:
@@ -129,11 +136,11 @@ const MusicListSectionComponent: React.FC<{
   }
 
   return (
-    <div className={styles['music-list-section']}>
+    <div className='flex flex-col'>
       <div className='mb-4 flex items-center justify-between'>
         <Typography variant='h4'>{stack.title}</Typography>
 
-        {stack.items.length > MAX_ITEMS_TO_SHOW && (
+        {stack.items.length > maxItems && (
           <Button variant='ghost' size='sm' onClick={() => setIsExpanded(prev => !prev)}>
             {isExpanded ? t('action.showLess') : t('action.showAll')}
           </Button>
@@ -145,4 +152,4 @@ const MusicListSectionComponent: React.FC<{
   )
 }
 
-export default MusicListSectionComponent
+const DEFAULT_MAX_ITEMS = 5

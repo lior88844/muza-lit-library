@@ -12,7 +12,6 @@ import {
   QuickFilterModule,
   type RowClickedEvent,
   type RowDragEndEvent,
-  type SelectionChangedEvent,
   themeAlpine,
 } from 'ag-grid-community'
 import { AgGridReact, type AgGridReactProps } from 'ag-grid-react'
@@ -52,7 +51,6 @@ export const DataGrid = <T,>({
   rowData = [],
   columnDefs = [],
   onRowOrderChange,
-  onSelectionChanged,
   onCellClicked,
   onRowClicked,
   onGridReady,
@@ -75,6 +73,7 @@ export const DataGrid = <T,>({
   gridOptions: gridOptionsProps = {},
   rowHeight = 48,
   actions,
+  ...props
 }: DataGridProps<T>) => {
   const gridRef = useRef<AgGridReact>(null)
   const [searchText, setSearchText] = useState('')
@@ -223,16 +222,6 @@ export const DataGrid = <T,>({
     },
     [onRowOrderChange]
   )
-  // Handle row selection change
-  const handleSelectionChanged = useCallback(
-    (event: SelectionChangedEvent) => {
-      if (onSelectionChanged) {
-        onSelectionChanged(event)
-      }
-    },
-    [onSelectionChanged]
-  )
-
   // Handle cell click
   const handleCellClicked = useCallback(
     (event: CellClickedEvent) => {
@@ -331,12 +320,12 @@ export const DataGrid = <T,>({
           {...gridOptions}
           domLayout='autoHeight'
           // loadingOverlayComponent={() => <Spinner animation='border' role='status' size='sm' />}
-          onSelectionChanged={handleSelectionChanged}
           onCellClicked={handleCellClicked}
           onRowClicked={handleRowClicked}
           onGridReady={handleGridReady}
           onRowDragEnd={onRowDragEnd}
           suppressRowDrag={!onRowOrderChange}
+          {...props}
         />
       </div>
     </div>

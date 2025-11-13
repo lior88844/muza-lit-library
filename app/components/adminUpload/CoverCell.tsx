@@ -36,8 +36,8 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
     return <div className='flex min-h-[50px] items-center justify-center'>-</div>
   }
 
-  // Show loading state while looking up
-  if (item.isLookingUp) {
+  // Show loading state while discovering
+  if (item.phase === 'discovering') {
     return <div className='flex min-h-[50px] items-center justify-center' />
   }
 
@@ -94,9 +94,7 @@ const CoverCell: React.FC<CoverCellProps> = ({ item, onCoverUrlChange }) => {
       <div
         className={cn(
           'w-full max-w-[180px]',
-          !hasValidCover &&
-            !item.isLookingUp &&
-            '[&_input]:border-[#dc2626] [&_input]:shadow-[0_0_0_1px_#dc2626]'
+          !hasValidCover && '[&_input]:border-[#dc2626] [&_input]:shadow-[0_0_0_1px_#dc2626]'
         )}
       >
         <input

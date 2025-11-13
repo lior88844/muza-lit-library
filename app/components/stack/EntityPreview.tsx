@@ -3,17 +3,16 @@ import { Link, useNavigate } from 'react-router'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
 import type { ArtistMiniResponse } from 'server/api/artist/types/ArtistResponse'
 import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
+import type { Entity } from 'server/api/stack/types'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 import { cn } from '~/lib/utils'
-import { useCurrentPlayerStore } from '~/store/currentPlayerStore'
+import { usePlayerStore } from '~/store/playerStore'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
-
-type Entity = MiniAlbum | ArtistMiniResponse | TrackResponse | MiniPlaylistResponse
 
 interface EntityPreviewProps {
   entity: Entity
@@ -51,7 +50,7 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
     setSelectedSong,
     setIsPlaying: setGlobalIsPlaying,
     togglePlayPause,
-  } = useCurrentPlayerStore()
+  } = usePlayerStore()
   const isInLibrary = getIsInLibrary(entityType, entity.id)
 
   const { dragHandlers, preventClickWhileDragging } = useDraggable({
