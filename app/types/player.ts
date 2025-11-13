@@ -3,7 +3,7 @@
  * Defines the core types for queue management, playback state, and player controls
  */
 
-export type PlaySourceType = 'album' | 'playlist' | 'songs' | 'artist' | 'stack' | 'custom'
+import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 export type RepeatMode = 'off' | 'one' | 'all'
 
@@ -30,18 +30,21 @@ export interface QueueItem {
  * Tracks what album/playlist/context the user is playing from
  */
 export interface PlaySourceMeta {
-  type: PlaySourceType
+  type: EntityTypeEnum
   id?: number // albumId, playlistId, etc.
   title?: string // "Dark Side of the Moon", "My Playlist", etc.
 }
-
+export enum NextTrackReason {
+  TrackEnd = 'TrackEnd',
+  ButtonClick = 'ButtonClick',
+}
 /**
  * Complete player state
  * This is the shape of the Zustand store
  */
 export interface PlayerState {
   // Current playback
-  current: QueueItem | null
+  currentTrack: QueueItem | null
   isPlaying: boolean
   currentPosition: number // in seconds
   duration: number // in seconds
@@ -59,23 +62,19 @@ export interface PlayerState {
   repeat: RepeatMode
 
   // Context
-  source: PlaySourceMeta | null
+  source: EntityTypeEnum | null
 
   // Computed/derived
   hasNext: boolean
   hasPrev: boolean
 
   // Actions - Playback control
-  playQueue: (opts: {
-    items: QueueItem[]
-    startIndex?: number
-    source?: PlaySourceMeta
-  }) => void
+  playQueue: (opts: { items: QueueItem[]; startIndex?: number; source?: PlaySourceMeta }) => void
   playPause: (force?: boolean) => void
   setIsPlaying: (isPlaying: boolean) => void
-  next: () => void
+  next: (payload: { reason: NextTrackReason }) => void
   prev: () => void
-  
+
   // Actions - Seeking & position
   seekTo: (seconds: number) => void
   setCurrentPosition: (seconds: number) => void
@@ -92,7 +91,4 @@ export interface PlayerState {
   selectedSong: QueueItem | null // alias for current
   setSelectedSong: (song: QueueItem) => void // wrapper for playQueue
   togglePlayPause: () => void // alias for playPause
-  selectedPlaListOrAlbum: unknown | null
-  setSelectedPlaListOrAlbum: (album: unknown) => void
 }
-

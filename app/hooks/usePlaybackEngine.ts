@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 
 import { useAnalyticsStore } from '~/store/analyticsStore'
 import { usePlayerStore } from '~/store/playerStore'
+import { NextTrackReason } from '~/types/player'
 
 function isHlsUrl(url: string): boolean {
   return url.includes('.m3u8') || url.includes('hls')
@@ -13,7 +14,7 @@ export function usePlaybackEngine() {
   const hlsRef = useRef<Hls | null>(null)
 
   const {
-    current,
+    currentTrack: current,
     isPlaying,
     volume,
     next,
@@ -75,7 +76,7 @@ export function usePlaybackEngine() {
               default:
                 console.error('Fatal HLS error, cannot recover')
                 hls.destroy()
-                setTimeout(() => next(), 1000)
+                setTimeout(() => next({ reason: NextTrackReason.TrackEnd }), 1000)
                 break
             }
           }
@@ -101,13 +102,12 @@ export function usePlaybackEngine() {
     if (isPlaying) {
       const playPromise = video.play()
 
-      
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
+        playPromise.catch(error => {
           if (error.name === 'AbortError') {
             return
           }
-          
+
           console.error('Playback failed:', error)
           setIsPlaying(false)
         })
@@ -136,12 +136,17 @@ export function usePlaybackEngine() {
     }
 
     const handleEnded = () => {
-      next()
+      // Record play completion when track ends
+      if (current?.id) {
+        const duration = Math.floor(video.duration || 0)
+        reportPlay(current.id, duration, true)
+      }
+      next({ reason: NextTrackReason.TrackEnd })
     }
 
     const handleError = () => {
       console.error('Video element error:', video.error)
-      setTimeout(() => next(), 1000)
+      setTimeout(() => next({ reason: NextTrackReason.TrackEnd }), 1000)
     }
 
     video.addEventListener('loadeddata', handleLoadedData)
@@ -155,7 +160,7 @@ export function usePlaybackEngine() {
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('error', handleError)
     }
-  }, [next, setCurrentPosition, setDuration])
+  }, [next, setCurrentPosition, setDuration, current, reportPlay])
 
   useEffect(() => {
     if (!current || !isPlaying) return
@@ -176,4 +181,3 @@ export function usePlaybackEngine() {
     seekTo,
   }
 }
-

@@ -1,18 +1,11 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaChevronLeft,
-  FaEllipsisH,
-  FaHeart,
-  FaInfo,
-  FaPause,
-  FaPlay,
-  FaPlus,
-} from 'react-icons/fa'
+import { FaChevronLeft } from 'react-icons/fa'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import type { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MuzaIcon from '~/icons/MuzaIcon'
-import type { MusicPlaylist, SongDetails } from '~/store/models'
+import type { MusicPlaylist } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
@@ -23,7 +16,7 @@ import MediaMetadata, { type MediaMetadataProps } from './components/MediaMetada
 import styles from './MediaHeader.module.css'
 
 interface MediaHeaderProps {
-  songs: SongDetails[]
+  songs: TrackResponse[]
   mediaType: EntityTypeEnum
   title: string
   imageSrc: string
@@ -197,7 +190,11 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                       data-name='Button'
                     >
                       <div className={styles['play-icon']}>
-                        {isPlaying ? <FaPause /> : <FaPlay />}
+                        {isPlaying ? (
+                          <MuzaIcon iconName='pause' className='size-4' />
+                        ) : (
+                          <MuzaIcon iconName='play' className='size-4' />
+                        )}
                       </div>
                       <span className={styles['play-text']}>{getPlayButtonText()}</span>
                     </Button>
@@ -208,23 +205,25 @@ const MediaHeader: React.FC<MediaHeaderProps> = ({
                   >
                     {customActions || (
                       <>
-                        <IconButton
-                          icon={isInLibrary ? <FaHeart /> : <FaPlus />}
+                        <Button
+                          size='icon'
                           variant='ghost'
                           data-name='Add-Library Button'
-                          onClick= {onAddToPlaylistClick || onToggleAddLibrary}
-                        />
-                        <IconButton
-                          icon={<FaInfo />}
+                          onClick={onAddToPlaylistClick || onToggleAddLibrary}
+                        >
+                          <MuzaIcon className='size-4' iconName={isInLibrary ? 'heart' : 'plus'} />
+                        </Button>
+                        <Button
+                          size='icon'
                           variant='ghost'
                           data-name='Info Button'
                           onClick={onInfoClick}
-                        />
-                        <IconButton
-                          icon={<FaEllipsisH />}
-                          variant='ghost'
-                          data-name='Menu Button'
-                        />
+                        >
+                          <MuzaIcon iconName='info' />
+                        </Button>
+                        <Button size='icon' variant='ghost' data-name='Menu Button'>
+                          <MuzaIcon iconName='ellipsis' />
+                        </Button>
                       </>
                     )}
                   </div>

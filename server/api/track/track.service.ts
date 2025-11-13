@@ -13,7 +13,7 @@ function getTrackFilePathFromFileId(fileId: string) {
  * Map database track to Track type
  */
 export function formatTrack(dbTrack: TrackWithArtists): TrackResponse {
-  const mainArtist = dbTrack.trackArtists[0]
+  const mainArtist = dbTrack.trackArtists?.[0]
   return {
     id: dbTrack.id,
     index: dbTrack.trackNumber || 0,
@@ -26,6 +26,7 @@ export function formatTrack(dbTrack: TrackWithArtists): TrackResponse {
     album: dbTrack.album?.title,
     imageSrc: dbTrack.album?.coverArt || 'https://via.placeholder.com/150',
     albumId: dbTrack.albumId!,
+    playCount: dbTrack.playCount || 0,
   }
 }
 

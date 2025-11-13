@@ -33,14 +33,14 @@ export async function findManyArtists(limit = 20, offset = 0) {
     offset,
   })
   return {
-    artists: transformArtistData(artistsResult as ArtistWithAlbums[]),
+    artists: formatArtist(artistsResult as ArtistWithAlbums[]),
   }
 }
 
 /**
  * Transform artist data for frontend consumption
  */
-export function transformArtistData(artists: ArtistWithAlbums[]): ArtistMiniResponse[] {
+export function formatArtist(artists: ArtistWithAlbums[]): ArtistMiniResponse[] {
   return artists
     .filter(artist => artist.name)
     .map(artist => ({

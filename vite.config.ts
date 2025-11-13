@@ -4,7 +4,18 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 // @ts-expect-error No types for vite-plugin-eslint
 import eslint from 'vite-plugin-eslint'
+import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
-  plugins: [reactRouter(), tsconfigPaths(), eslint({ fix: true }), tailwindcss()],
+  plugins: [
+    reactRouter(),
+    tsconfigPaths(),
+    eslint({ fix: true }),
+    tailwindcss(),
+    svgr({
+      svgrOptions: {
+        exportType: 'default',
+      },
+    }),
+  ],
 })

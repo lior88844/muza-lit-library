@@ -1,41 +1,37 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import type { DropdownMenuItem } from '~/components/ui/DropdownMenu'
 import DropdownMenu from '~/components/ui/DropdownMenu'
 import HoverOverlay from '~/components/ui/HoverOverlay'
 import MuzaIcon from '~/icons/MuzaIcon'
+import { useDraggable } from '~/lib/hooks/useDraggable'
+import { cn } from '~/lib/utils'
 import type { MusicPlaylist } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
 import hoverOverlayStyles from '../ui/HoverOverlay.module.css'
 import styles from './PlaylistCover.module.css'
+import { PlaylistImgPreview } from './PlaylistImgPreview'
 
 interface PlaylistCoverProps {
-  albumImages: string[] | null
-  title: string
-  songsCount: string
-  userName: string
-  playlist?: MusicPlaylist
-  onSelect?: (data: {
-    title: string
-    songsCount: string
-    albumImages: string[] | null
-    userName: string
-  }) => void
+  playlist: MusicPlaylist
+  draggable?: boolean
+  onSelect?: (playlist: MusicPlaylist) => void
 }
 
-const PlaylistCover: React.FC<PlaylistCoverProps> = ({
-  albumImages,
-  title,
-  songsCount,
-  userName,
-  playlist,
-  onSelect,
-}) => {
+const PlaylistCover: React.FC<PlaylistCoverProps> = ({ playlist, draggable, onSelect }) => {
   const { setSelectedSong, setIsPlaying } = usePlayerStore()
+  const { t } = useTranslation()
+  const { dragHandlers, isDragging } = useDraggable({
+    type: EntityTypeEnum.Playlist,
+    data: playlist,
+    enabled: !!draggable && !!playlist,
+  })
 
   const handleClick = () => {
-    onSelect?.({ title, songsCount, albumImages, userName })
+    onSelect?.(playlist)
   }
 
   const handlePlayPlaylist = () => {
@@ -45,11 +41,9 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     }
   }
 
-  const handleShare = () => {
-  }
+  const handleShare = () => {}
 
-  const handleRemoveFromLibrary = () => {
-  }
+  const handleRemoveFromLibrary = () => {}
 
   const dropdownMenuItems: DropdownMenuItem[] = [
     {
@@ -66,34 +60,25 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
     },
   ]
 
-  const isEmpty = albumImages === null
+  const isEmpty = playlist.songs.length === 0
 
   return (
-    <div className={styles.playlistCover} onClick={handleClick}>
+    <div
+      className={cn(
+        styles.playlistCover,
+        draggable && 'cursor-grab active:cursor-grabbing',
+        isDragging && 'opacity-50'
+      )}
+      onClick={handleClick}
+      {...dragHandlers}
+    >
       <div className={styles.playlistCoverImageContainer}>
         {isEmpty ? (
           <div className={styles.playlistCoverEmpty}>
             <MuzaIcon iconName='playlist' />
           </div>
         ) : (
-          <div className={styles.playlistCoverCollage}>
-            <div
-              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopLeft}`}
-              style={{ backgroundImage: `url('${albumImages[0]}')` }}
-            />
-            <div
-              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageTopRight}`}
-              style={{ backgroundImage: `url('${albumImages[1]}')` }}
-            />
-            <div
-              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomLeft}`}
-              style={{ backgroundImage: `url('${albumImages[2]}')` }}
-            />
-            <div
-              className={`${styles.playlistCoverImage} ${styles.playlistCoverImageBottomRight}`}
-              style={{ backgroundImage: `url('${albumImages[3]}')` }}
-            />
-          </div>
+          <PlaylistImgPreview playlist={playlist!} />
         )}
         <HoverOverlay
           showPlayButton={true}
@@ -125,11 +110,13 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({
         />
       </div>
       <div className={styles.playlistCoverInfo}>
-        <div className={styles.playlistCoverTitle}>{title}</div>
+        <div className={styles.playlistCoverTitle}>{playlist.title}</div>
         <div className={styles.playlistCoverDetails}>
-          <span className={styles.playlistCoverSongsCount}>{songsCount} Songs</span>
+          <span className={styles.playlistCoverSongsCount}>{playlist.songs.length} Songs</span>
           <span className={styles.playlistCoverSeparator}>•</span>
-          <span className={styles.playlistCoverUserName}>{userName}</span>
+          <span className={styles.playlistCoverUserName}>
+            {playlist.author || t('common.unknown')}
+          </span>
         </div>
       </div>
     </div>

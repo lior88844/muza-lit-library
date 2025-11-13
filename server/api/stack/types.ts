@@ -1,12 +1,12 @@
 import type { EntityTypeEnum, Stack } from 'server/db/stack.entity'
 import { StackEntityTypeEnum, type StackItem } from 'server/db/stack-item.entity'
 
-import type { MiniAlbum } from '../album/types/MiniAlbumResponse'
+import type { AlbumResponse } from '../album/types/AlbumResponse'
 import type { ArtistMiniResponse } from '../artist/types/ArtistResponse'
-import type { MiniPlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
 import type { TrackResponse } from '../track/types/TrackResponse'
 
-export type Entity = MiniAlbum | ArtistMiniResponse | TrackResponse | MiniPlaylistResponse
+export type Entity = AlbumResponse | ArtistMiniResponse | TrackResponse | PlaylistResponse
 
 export interface StackWithEntities<T extends Entity = Entity> extends Stack {
   items: StackItemWithEntity<T>[]

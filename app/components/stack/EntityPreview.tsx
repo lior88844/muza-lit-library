@@ -1,8 +1,8 @@
 import React, { type MouseEventHandler, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import type { AlbumResponse } from 'server/api/album/types/AlbumResponse'
 import type { ArtistMiniResponse } from 'server/api/artist/types/ArtistResponse'
-import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
 import type { Entity } from 'server/api/stack/types'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
@@ -13,6 +13,7 @@ import { cn } from '~/lib/utils'
 import { usePlayerStore } from '~/store/playerStore'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
+import { PlaylistImgPreview } from '../albumDisplays/PlaylistImgPreview'
 
 interface EntityPreviewProps {
   entity: Entity
@@ -46,11 +47,7 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const navigate = useNavigate()
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
-  const {
-    setSelectedSong,
-    setIsPlaying: setGlobalIsPlaying,
-    togglePlayPause,
-  } = usePlayerStore()
+  const { setSelectedSong, setIsPlaying: setGlobalIsPlaying, togglePlayPause } = usePlayerStore()
   const isInLibrary = getIsInLibrary(entityType, entity.id)
 
   const { dragHandlers, preventClickWhileDragging } = useDraggable({
@@ -97,11 +94,11 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
       case EntityTypeEnum.Track:
         return (entity as TrackResponse).imageSrc!
       case EntityTypeEnum.Album:
-        return (entity as MiniAlbum).imageSrc!
+        return (entity as AlbumResponse).coverArt!
       case EntityTypeEnum.Artist:
         return (entity as ArtistMiniResponse).imageUrl!
       case EntityTypeEnum.Playlist:
-        return (entity as MiniPlaylistResponse).imageSrc!
+        return (entity as PlaylistResponse).imageSrc!
       default:
         return '/art/imag_1.jpg'
     }
@@ -112,11 +109,11 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
       case EntityTypeEnum.Track:
         return (entity as TrackResponse).title
       case EntityTypeEnum.Album:
-        return (entity as MiniAlbum).title
+        return (entity as AlbumResponse).title
       case EntityTypeEnum.Artist:
         return (entity as ArtistMiniResponse).name
       case EntityTypeEnum.Playlist:
-        return (entity as MiniPlaylistResponse).title
+        return (entity as PlaylistResponse).title
       default:
         return ''
     }
@@ -146,10 +143,10 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
         )
       }
       case EntityTypeEnum.Album: {
-        const album = entity as MiniAlbum
+        const album = entity as AlbumResponse
         return (
-          <Link className='hover:underline' to={`/artists/${album.artistId}`}>
-            {album.artist}
+          <Link className='hover:underline' to={`/artists/${album.artist.id}`}>
+            {album.artist.name!}
           </Link>
         )
       }
@@ -158,7 +155,7 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
         return <span>{artist.albumsCount} Albums</span>
       }
       case EntityTypeEnum.Playlist: {
-        const playlist = entity as MiniPlaylistResponse
+        const playlist = entity as PlaylistResponse
         return (
           <>
             <span>{playlist.author || 'Unknown'}</span>
@@ -246,11 +243,15 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
           className='relative h-11 w-11 shrink-0 cursor-pointer overflow-hidden rounded-(--muza-border-radius-sm,4px) shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)]'
           onClick={e => preventClickWhileDragging(e, handleClick)}
         >
-          <img
-            src={getImageSrc()}
-            alt={`${getTitle()} cover`}
-            className='h-full w-full bg-(--muza-image-background-color-bg) object-cover'
-          />
+          {entityType === EntityTypeEnum.Playlist ? (
+            <PlaylistImgPreview playlist={entity as PlaylistResponse} />
+          ) : (
+            <img
+              src={getImageSrc()}
+              alt={`${getTitle()} cover`}
+              className='h-full w-full bg-(--muza-image-background-color-bg) object-cover'
+            />
+          )}
           {isHovered && !playlistMode && entityType === EntityTypeEnum.Track && (
             <div className='absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100'>
               <button

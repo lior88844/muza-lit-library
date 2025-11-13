@@ -1,12 +1,13 @@
 import React from 'react'
 import { FaEllipsisV, FaPencilAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader/MediaHeader'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { useDrawerStore } from '~/store/drawerStore'
-import type { MusicPlaylist, SongDetails } from '~/store/models'
+import type { MusicPlaylist } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
 import type { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
@@ -19,17 +20,12 @@ interface PlaylistDetailProps {
 
 const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
   const navigate = useNavigate()
-  const {
-    current,
-    playQueue,
-    isPlaying,
-    playPause,
-  } = usePlayerStore()
+  const { currentTrack: current, playQueue, isPlaying, playPause } = usePlayerStore()
   const { openPlaylistDrawer, isPlaylistDrawerOpen } = useDrawerStore()
 
   const playlistSongs = playlist?.songs || []
 
-  const handleSongClick = (song: SongDetails, index: number) => {
+  const handleSongClick = (song: TrackResponse, index: number) => {
     if (current?.id === song.id) {
       playPause()
     } else {
@@ -37,7 +33,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
         items: playlistSongs,
         startIndex: index,
         source: {
-          type: 'playlist',
+          type: EntityTypeEnum.Playlist,
           id: playlist.id,
           title: playlist.title,
         },
@@ -45,7 +41,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
     }
   }
 
-  const isCurrentSongPlaying = (song: SongDetails) => {
+  const isCurrentSongPlaying = (song: TrackResponse) => {
     return current?.id === song.id && !!isPlaying
   }
 
@@ -100,7 +96,7 @@ const PlaylistDetail: React.FC<PlaylistDetailProps> = ({ playlist }) => {
                 className={`${styles['playlist-detail__song-item']} ${isCurrentSongPlaying(song) ? styles.playing : ''}`}
               >
                 <SongLineWithCover
-                  details={{ ...song, index: index + 1 }}
+                  track={song}
                   onClick={() => handleSongClick(song, index)}
                   isPlaying={isCurrentSongPlaying(song)}
                   showPreview={showPreview}

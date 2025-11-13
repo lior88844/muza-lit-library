@@ -2,6 +2,7 @@ import '../styles/variables.css'
 
 import { useState } from 'react'
 import { useLoaderData } from 'react-router'
+import type { AlbumResponse } from 'server/api/album/types/AlbumResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { AlbumInfoModal } from '~/components/albumDisplays/album-info-modal'
@@ -27,23 +28,18 @@ export async function loader({ params }: { params: { id: string } }) {
       throw new Error('Album not found')
     }
 
-    return { album: albumData }
+    return albumData
   } catch {
     throw new Error('Failed to load album')
   }
 }
 
 export default function AlbumPage() {
-  const {
-    current,
-    playQueue,
-    isPlaying,
-    playPause,
-  } = usePlayerStore()
+  const { currentTrack: current, playQueue, isPlaying, playPause } = usePlayerStore()
   const { isPlaylistDrawerOpen } = useDrawerStore()
   const [isModalOpen, setModalOpen] = useState(false)
   const [isAddToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false)
-  const { album } = useLoaderData<typeof loader>()
+  const album: AlbumResponse = useLoaderData<typeof loader>()
 
   const handleSongClick = (trackId: number, index: number) => {
     if (current?.id === trackId) {
@@ -56,12 +52,12 @@ export default function AlbumPage() {
         ...track,
         album: album.title,
       }))
-      
+
       playQueue({
         items: tracksWithAlbum,
         startIndex: index,
         source: {
-          type: 'album',
+          type: EntityTypeEnum.Album,
           id: album.id,
           title: album.title,
         },
@@ -87,7 +83,7 @@ export default function AlbumPage() {
         showBackButton={true}
       />
       <div>
-        {album.tracks.map(({ album: _, ...track }, index) => {
+        {album.tracks.map((track, index) => {
           return (
             <SongLine
               key={track.id}

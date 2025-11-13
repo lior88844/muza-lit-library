@@ -1,13 +1,12 @@
 import React, { type MouseEventHandler, useState } from 'react'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 
-import { usePlayCount } from '~/hooks/usePlayCounts'
 import MuzaIcon from '~/icons/MuzaIcon'
 
-import type { SongDetails as SongDetailsType } from '../../store/models'
 import styles from './SongDetails.module.css'
 
 interface SongDetailsProps {
-  details: SongDetailsType
+  details: TrackResponse
   onClick: MouseEventHandler<HTMLDivElement>
   isPlaying?: boolean
   isActive?: boolean
@@ -27,18 +26,17 @@ const SongDetails: React.FC<SongDetailsProps> = ({ details, onClick, isActive = 
   const [isHovered, setIsHovered] = useState(false)
   const [isSelected, setIsSelected] = useState(false)
 
-  // Get combined play count (mock data + local increments)
-  const localPlayCount = usePlayCount(details.id)
-  const totalPlays = (details.plays || 0) + localPlayCount
+  // Get combined play count (server playCount from track data + local increments)
+  const totalPlays = details.playCount || 0
 
   const handleMouseEnter = () => setIsHovered(true)
   const handleMouseLeave = () => setIsHovered(false)
 
   const renderPlayButton = () => {
     if (isActive) {
-      return <MuzaIcon iconName='pause' />
+      return <MuzaIcon iconName='pause' className='size-6' />
     }
-    return <MuzaIcon iconName='play' />
+    return <MuzaIcon iconName='play' className='size-6' />
   }
 
   return (

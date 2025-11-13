@@ -1,12 +1,13 @@
 import { createContext, useContext } from 'react'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 
 import type { UserLibrary } from '../../../server/db/user-library.entity'
-import type { MusicPlaylist, Section, SongDetails } from '../models'
+import type { MusicPlaylist, Section } from '../models'
 
 export type MediaData = {
   library: UserLibrary[]
   playlists: MusicPlaylist[]
-  songs: SongDetails[]
+  songs: TrackResponse[]
   sidebar: {
     sections: Section[]
   }

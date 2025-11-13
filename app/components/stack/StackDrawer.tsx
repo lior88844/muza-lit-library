@@ -131,6 +131,10 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
           if (data.type === EntityTypeEnum.Artist && data.artist) {
             handleAddEntity(data.artist, EntityTypeEnum.Artist)
           }
+          // Handle playlists
+          if (data.type === EntityTypeEnum.Playlist && data.playlist) {
+            handleAddEntity(data.playlist, EntityTypeEnum.Playlist)
+          }
         } catch {
           // Silently handle parsing errors
         }
@@ -213,19 +217,6 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
     }
   }, [stackName, t, tempStack, stackDescription, fetcher, onClose, navigate])
 
-  const getEntityTypeLabel = () => {
-    switch (tempStack.entityType) {
-      case EntityTypeEnum.Album:
-        return t('common.albums')
-      case EntityTypeEnum.Artist:
-        return t('common.artists')
-      case EntityTypeEnum.Track:
-        return t('common.songs')
-      default:
-        return 'Items'
-    }
-  }
-
   const handleEntityTypeChange = useCallback(
     (newType: EntityTypeEnum) => {
       if (newType === tempStack.entityType) return
@@ -239,7 +230,7 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
     [tempStack, onTempStackUpdate]
   )
 
-  const dropdownItems = [
+  const dropdownItems: { id: EntityTypeEnum; title: string; onClick: () => void }[] = [
     {
       id: EntityTypeEnum.Album,
       title: t('common.albums'),
@@ -255,8 +246,13 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
       title: t('common.songs'),
       onClick: () => handleEntityTypeChange(EntityTypeEnum.Track),
     },
+    {
+      id: EntityTypeEnum.Playlist,
+      title: t('common.playlists'),
+      onClick: () => handleEntityTypeChange(EntityTypeEnum.Playlist),
+    },
   ]
-
+  const selectedEntity = dropdownItems.find(item => item.id === tempStack.entityType)
   return (
     <div
       className={cn(
@@ -272,7 +268,7 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
             trigger={
               <div className='flex cursor-pointer items-center gap-1 rounded border border-(--muza-light-border-color) bg-(--colors_muted_light,#f9fafb) px-1 py-1 text-sm leading-none font-normal text-(--muza-primary-text-color) transition-colors hover:bg-[#eeeeee]'>
                 <MuzaIcon iconName='playlist' />
-                <span>{getEntityTypeLabel()}</span>
+                <span>{selectedEntity?.title}</span>
                 <MuzaIcon iconName='ChevronDown' className='ml-1 h-3 w-3' />
               </div>
             }
@@ -335,7 +331,9 @@ const StackDrawer: React.FC<StackDrawerProps> = ({
                 isDragOver && 'border border-(--muza-track-title-color,#111827)'
               )}
             >
-              <span>{t('playlist.dropSongsHere', { entityType: getEntityTypeLabel() })}</span>
+              <span>
+                {t('stack.drawerDropZone', { entityType: selectedEntity?.title?.toLowerCase() })}
+              </span>
             </div>
           )}
 

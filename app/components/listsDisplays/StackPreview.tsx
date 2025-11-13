@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import type { AlbumResponse } from 'server/api/album/types/AlbumResponse'
 import type { ArtistMiniResponse } from 'server/api/artist/types/ArtistResponse'
-import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
 import type { StackWithEntities } from 'server/api/stack/types'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { cn } from '~/lib/utils'
-import { useDrawerStore } from '~/store/drawerStore'
+import * as drawerStore from '~/store/drawerStore'
+import type { MusicPlaylist } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
 import AlbumPreview from '../albumDisplays/AlbumPreview'
@@ -27,13 +28,8 @@ export function StackPreview(props: Props) {
   const { stack, maxItems = DEFAULT_MAX_ITEMS } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
-  const {
-    current: globalSelectedSong,
-    playQueue,
-    isPlaying,
-    playPause,
-  } = usePlayerStore()
-  const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
+  const { currentTrack: globalSelectedSong, playQueue, isPlaying, playPause } = usePlayerStore()
+  const { isPlaylistDrawerOpen, isStackDrawerOpen } = drawerStore.useDrawerStore()
 
   const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, maxItems)
 
@@ -43,7 +39,7 @@ export function StackPreview(props: Props) {
         return itemsToShow.map(item => (
           <AlbumPreview
             key={item.id}
-            details={item.entity as MiniAlbum}
+            details={item.entity as AlbumResponse}
             draggable={isPlaylistDrawerOpen || isStackDrawerOpen}
           />
         ))
@@ -57,14 +53,12 @@ export function StackPreview(props: Props) {
         ))
       case EntityTypeEnum.Playlist:
         return itemsToShow.map(item => {
-          const playlist = item.entity as MiniPlaylistResponse
+          const playlist = item.entity as PlaylistResponse
           return (
             <PlaylistCover
               key={item.id}
-              albumImages={playlist.imageSrc ? [playlist.imageSrc] : null}
-              title={playlist.title}
-              songsCount={playlist.trackCount.toString()}
-              userName={playlist.author || t('common.unknown')}
+              draggable={isStackDrawerOpen}
+              playlist={playlist as MusicPlaylist}
             />
           )
         })
@@ -75,7 +69,7 @@ export function StackPreview(props: Props) {
           return (
             <SongLineWithCover
               key={track.id}
-              details={track}
+              track={track}
               onClick={() => {
                 if (globalSelectedSong?.id === track.id) {
                   playPause()
@@ -84,7 +78,7 @@ export function StackPreview(props: Props) {
                     items: allTracks,
                     startIndex: index,
                     source: {
-                      type: 'stack',
+                      type: item.entityType,
                       id: stack.id,
                       title: stack.title,
                     },

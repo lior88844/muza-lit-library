@@ -1,23 +1,25 @@
 import { create } from 'zustand'
 
+import type { StackToEdit } from './models'
+
 export interface DrawerState {
   isPlaylistDrawerOpen: boolean
   currentPlaylistDrawerId: number | undefined
 
   isStackDrawerOpen: boolean
-  tempStack: unknown | null
+  tempStack: StackToEdit | null
 
   setIsPlaylistDrawerOpen: (isOpen: boolean) => void
   setCurrentPlaylistDrawerId: (id: number | undefined) => void
   openPlaylistDrawer: (playlistId?: number) => void
   closePlaylistDrawer: () => void
 
-  openStackDrawer: (stack: unknown) => void
+  openStackDrawer: (stack: StackToEdit) => void
   closeStackDrawer: () => void
-  updateTempStack: (stack: unknown) => void
+  updateTempStack: (stack: StackToEdit) => void
 }
 
-export const useDrawerStore = create<DrawerState>((set) => ({
+export const useDrawerStore = create<DrawerState>(set => ({
   isPlaylistDrawerOpen: false,
   currentPlaylistDrawerId: undefined,
   isStackDrawerOpen: false,
@@ -39,7 +41,7 @@ export const useDrawerStore = create<DrawerState>((set) => ({
     set({ isPlaylistDrawerOpen: false, currentPlaylistDrawerId: undefined })
   },
 
-  openStackDrawer: (stack: unknown) => {
+  openStackDrawer: (stack: StackToEdit) => {
     set({ isStackDrawerOpen: true, tempStack: stack })
   },
 
@@ -47,8 +49,7 @@ export const useDrawerStore = create<DrawerState>((set) => ({
     set({ isStackDrawerOpen: false, tempStack: null })
   },
 
-  updateTempStack: (stack: unknown) => {
+  updateTempStack: (stack: StackToEdit) => {
     set({ tempStack: stack })
   },
 }))
-

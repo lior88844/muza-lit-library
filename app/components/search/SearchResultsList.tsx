@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import type { AlbumResponse } from 'server/api/album/types/AlbumResponse'
 import type { ArtistMiniResponse } from 'server/api/artist/types/ArtistResponse'
-import type { MiniPlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from 'server/api/playlist/types/MiniPlaylistResponse'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import PlaylistCover from '~/components/albumDisplays/PlaylistCover'
@@ -9,16 +10,15 @@ import { ArtistPreview } from '~/components/artistDisplays/ArtistPreview'
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
-import { generatePlaylistCoverImages } from '~/lib/utils'
 import { useDrawerStore } from '~/store/drawerStore'
-import type { MusicPlaylist, SongDetails } from '~/store/models'
+import type { MusicPlaylist } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 
 export interface SearchResultsListProps {
-  albums: MiniAlbum[]
+  albums: AlbumResponse[]
   artists: ArtistMiniResponse[]
-  tracks: SongDetails[]
-  playlists: MiniPlaylistResponse[]
+  tracks: TrackResponse[]
+  playlists: PlaylistResponse[]
   showHeaders?: boolean
   className?: string
   draggable?: boolean
@@ -104,7 +104,7 @@ export function SearchResultsList({
             {tracks.map(track => (
               <SongLineWithCover
                 key={track.id}
-                details={track}
+                track={track}
                 onClick={() => {
                   if (globalSelectedSong?.id === track.id) {
                     togglePlayPause()
@@ -132,11 +132,8 @@ export function SearchResultsList({
           <div className='grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 max-md:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] max-md:gap-3'>
             {playlists.map(playlist => (
               <PlaylistCover
+                draggable={isStackDrawerOpen}
                 key={playlist.id}
-                albumImages={generatePlaylistCoverImages(playlist as MusicPlaylist)}
-                title={playlist.title}
-                songsCount={playlist.trackCount.toString()}
-                userName={playlist.author || t('common.unknown')}
                 playlist={playlist as MusicPlaylist}
               />
             ))}

@@ -72,12 +72,12 @@ const SortableTrackRow: React.FC<SortableTrackRowProps> = ({
     const isPlaying = isCurrentTrack && playbackState.isPlaying
 
     if (isPlaying && isHovered) {
-      return <MuzaIcon iconName='pause' />
+      return <MuzaIcon iconName='pause' className='size-6' />
     }
     if (isPlaying) {
       return <WaveAnimation />
     }
-    return <MuzaIcon iconName='play' />
+    return <MuzaIcon iconName='play' className='size-6' />
   }
 
   return (

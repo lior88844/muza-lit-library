@@ -61,7 +61,7 @@ export async function findAlbumById(id: number) {
   if (!albumResult) {
     return null
   }
-  return transformDetailedAlbumData(albumResult)
+  return formatAlbum(albumResult)
 }
 
 export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[] {
@@ -79,7 +79,7 @@ export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[
   })
 }
 
-function transformDetailedAlbumData(album: AlbumWithArtistsAndTracks): AlbumResponse {
+export function formatAlbum(album: AlbumWithArtistsAndTracks): AlbumResponse {
   return {
     ...album,
     artist: formatAlbumArtist(album.albumArtists[0]),

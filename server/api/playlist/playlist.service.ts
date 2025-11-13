@@ -13,7 +13,7 @@ import { playlistTracks } from '../../db/playlist-tracks.entity'
 import { tracks } from '../../db/track.entity'
 import { formatTrack } from '../track/track.service'
 import type { TrackWithArtists } from '../track/types/TrackWithArtists'
-import type { MiniPlaylistResponse } from './types/MiniPlaylistResponse'
+import type { PlaylistResponse } from './types/MiniPlaylistResponse'
 
 export interface PlaylistWithTracks extends Playlist {
   tracks: (PlaylistTrack & { track: TrackWithArtists })[]
@@ -42,7 +42,7 @@ export async function createPlaylist(
 /**
  * Get playlists for a user
  */
-export async function getUserPlaylists(userId: number): Promise<MiniPlaylistResponse[]> {
+export async function getUserPlaylists(userId: number): Promise<PlaylistResponse[]> {
   // return (await db.select().from(playlists).where(eq(playlists.userId, userId)).orderBy(desc(playlists.createdAt))).map(formatPlaylist)
   const res = await db.query.playlists.findMany({
     where: eq(playlists.userId, userId),
@@ -271,7 +271,7 @@ export async function syncPlaylistTracks(
   // Update playlist metadata
   await updatePlaylistMetadata(playlistId)
 }
-export const formatMiniPlaylist = (playlist: PlaylistWithTracks): MiniPlaylistResponse => {
+export const formatMiniPlaylist = (playlist: PlaylistWithTracks): PlaylistResponse => {
   return {
     id: playlist.id,
     title: playlist.name,

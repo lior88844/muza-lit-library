@@ -39,6 +39,7 @@ const english = {
   'common.artist': 'Artist',
   'common.artists': 'Artists',
   'common.playlist': 'Playlist',
+  'common.playlists': 'Playlists',
   'common.title': 'Title',
   'common.close': '×',
   'common.next': 'Next',
@@ -259,6 +260,7 @@ const english = {
   'stack.saveFailed': 'Failed to save stack',
   'stack.create': 'Create Stack',
   'stack.update': 'Update Stack',
+  'stack.drawerDropZone': 'Drop {{entityType}} here',
 }
 
 export default english

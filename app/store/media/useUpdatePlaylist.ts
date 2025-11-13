@@ -1,17 +1,17 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 
 import type { Playlist, PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useFetcherAsync } from '../../lib/useFetcherAsync'
-import type { SongDetails } from '../models'
 import { useMedia } from './mediaContext'
 
 export interface UpdatePlaylistProps {
   name?: string
   visibility?: PlaylistVisibilityEnum
   description?: string
-  songs?: SongDetails[]
+  songs?: TrackResponse[]
 }
 export const useUpdatePlaylist = () => {
   const fetcher = useFetcherAsync<{ success: boolean; error: string; playlist: Playlist }>()

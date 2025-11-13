@@ -5,6 +5,7 @@ import { albumArtists } from './album-artist.entity'
 import { albumLabels } from './album-label.entity'
 import { artists } from './artist.entity'
 import { labels } from './label.entity'
+import { playHistory } from './play-history.entity'
 import { playlists } from './playlist.entity'
 import { playlistShares } from './playlist-shares.entity'
 import { playlistTracks } from './playlist-tracks.entity'
@@ -29,6 +30,7 @@ export const albumsRelations = relations(albums, ({ many }) => ({
 export const tracksRelations = relations(tracks, ({ one, many }) => ({
   album: one(albums, { fields: [tracks.albumId], references: [albums.id] }),
   trackArtists: many(trackArtists),
+  playHistory: many(playHistory),
 }))
 
 export const trackArtistsRelations = relations(trackArtists, ({ one }) => ({
@@ -99,5 +101,12 @@ export const stackItemsRelations = relations(stackItems, ({ one }) => ({
   stack: one(stacks, {
     fields: [stackItems.stackId],
     references: [stacks.id],
+  }),
+}))
+
+export const playHistoryRelations = relations(playHistory, ({ one }) => ({
+  track: one(tracks, {
+    fields: [playHistory.trackId],
+    references: [tracks.id],
   }),
 }))

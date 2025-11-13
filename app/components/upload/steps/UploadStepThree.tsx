@@ -1,11 +1,11 @@
 import type { FC } from 'react'
 import type { MiniAlbum } from 'server/api/album/types/MiniAlbumResponse'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
 import SongLine from '~/components/songLineDisplays/SongLine'
 import { Divider } from '~/components/ui/divider'
-import type { SongDetails } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
 import type { TrackMetadata, UploadFormData } from '~/store/uploadStore'
 
@@ -42,7 +42,7 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, co
   }
 
   // Transform track metadata into SongDetails format
-  const transformToSongDetails = (): SongDetails[] => {
+  const transformToSongDetails = (): TrackResponse[] => {
     return trackMetadata.map((track, index) => {
       // Parse duration string to seconds
       const parseDuration = (durationStr: string): number => {
@@ -65,7 +65,10 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, co
         time: parseDuration(track.duration),
         year: new Date().getFullYear(),
         imageSrc: getCoverImageUrl(),
-        audioUrl: track.file ? URL.createObjectURL(track.file) : undefined,
+        audioUrl: track.file ? URL.createObjectURL(track.file) : '',
+        artistId: 0,
+        albumId: 0,
+        playCount: 0,
       }
     })
   }
@@ -94,7 +97,7 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, co
         <Divider />
 
         <div className='mt-4 mb-4 flex flex-1 flex-col gap-0 gap-x-2'>
-          {songDetails.map((song: SongDetails) => (
+          {songDetails.map((song: TrackResponse) => (
             <SongLine
               key={song.id}
               details={song}

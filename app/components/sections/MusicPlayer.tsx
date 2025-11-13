@@ -1,18 +1,14 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { usePlaybackEngine } from '~/hooks/usePlaybackEngine'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
-import type { PlayerDetails } from '~/store/models'
 import { usePlayerStore } from '~/store/playerStore'
-import type { RepeatMode } from '~/types/player'
+import { NextTrackReason, type RepeatMode } from '~/types/player'
 
 import VolumeControl from '../../controls/VolumeControl'
-
-type MusicPlayerProps = {
-  details: PlayerDetails
-  seekTo: (seconds: number) => void
-}
+import { Button } from '../ui/button'
 
 const ScrollingText: React.FC<{
   children: React.ReactNode
@@ -69,21 +65,26 @@ const ScrollingText: React.FC<{
     </div>
   )
 }
-
-export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => {
+const twBtn =
+  'transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 hover:bg-transparent p-0'
+export const MusicPlayer = () => {
   const { t } = useTranslation()
-
-  const prev = usePlayerStore(state => state.prev)
-  const next = usePlayerStore(state => state.next)
-  const playPause = usePlayerStore(state => state.playPause)
-  const shuffle = usePlayerStore(state => state.shuffle)
-  const repeat = usePlayerStore(state => state.repeat)
-  const toggleShuffle = usePlayerStore(state => state.toggleShuffle)
-  const setRepeat = usePlayerStore(state => state.setRepeat)
-  const volume = usePlayerStore(state => state.volume)
-  const setVolume = usePlayerStore(state => state.setVolume)
-  const currentPosition = usePlayerStore(state => state.currentPosition)
-  const duration = usePlayerStore(state => state.duration)
+  const { seekTo } = usePlaybackEngine()
+  const {
+    currentTrack,
+    isPlaying,
+    duration,
+    currentPosition,
+    volume,
+    repeat,
+    setVolume,
+    setRepeat,
+    prev,
+    next,
+    playPause,
+    shuffle,
+    toggleShuffle,
+  } = usePlayerStore()
 
   // Local UI state
   const [isLoading] = useState(false)
@@ -130,28 +131,30 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
     const nextMode = modes[(currentIndex + 1) % modes.length]
     setRepeat(nextMode)
   }
-
+  if (!currentTrack) return null
   return (
-    <div className='fixed right-6 bottom-6 left-[calc(var(--muza-sidebar-width,208px)+24px)] z-[1000] flex overflow-hidden rounded-lg border border-(--muza-light-border-color) bg-white/50 shadow-[0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-[10px] max-md:flex-col'>
-      <div className='flex w-full max-w-[348px] items-start gap-3 border-r border-(--muza-light-border-color) bg-(--colors_muted_light) p-2 max-md:max-w-none max-md:border-t max-md:border-r-0'>
+    <div className='fixed right-6 bottom-6 left-[calc(var(--muza-sidebar-width,208px)+24px)] z-1000 flex overflow-hidden rounded-lg border border-(--muza-light-border-color) bg-white/50 shadow-[0_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-[10px] max-md:flex-col'>
+      <div className='bg-muted flex w-full max-w-[348px] items-start gap-3 border-r border-(--muza-light-border-color) p-2 max-md:max-w-none max-md:border-t max-md:border-r-0'>
         <img
-          className='h-16 w-16 flex-shrink-0 rounded-md object-cover'
-          src={details.imageSrc || '/art/imag_1.jpg'}
-          alt={`${details.title} album cover`}
+          className='h-16 w-16 shrink-0 rounded-md object-cover'
+          src={currentTrack?.imageSrc || '/art/imag_1.jpg'}
+          alt={`${currentTrack?.title || ''} album cover`}
         />
-        <div className='flex min-w-0 flex-1 flex-col gap-2'>
-          <ScrollingText className='font-[family-name:var(--typography-font-family-font-sans)] text-[length:var(--muza-subtitle-font-size)] leading-normal font-semibold text-(--muza-track-title-color)'>
-            {details.title}
-          </ScrollingText>
-          <ScrollingText className='font-[family-name:var(--typography-font-family-font-sans)] text-sm leading-[100%] font-normal text-(--colors_muted_foreground_light)'>
-            {details.artist}
-          </ScrollingText>
-          <div className='flex gap-1 overflow-hidden text-xs text-(--colors_muted_foreground_light) max-sm:hidden'>
-            <ScrollingText className='flex gap-1'>
-              {`${details.album} • ${details.year}`}
+        {currentTrack && (
+          <div className='flex min-w-0 flex-1 flex-col gap-2'>
+            <ScrollingText className='font-(family-name:--typography-font-family-font-sans) text-(length:--muza-subtitle-font-size) leading-normal font-semibold text-(--muza-track-title-color)'>
+              {currentTrack.title}
             </ScrollingText>
+            <ScrollingText className='font-(family-name:--typography-font-family-font-sans) text-sm leading-[100%] font-normal text-(--colors_muted_foreground_light)'>
+              {currentTrack.artist}
+            </ScrollingText>
+            <div className='flex gap-1 overflow-hidden text-xs text-(--colors_muted_foreground_light) max-sm:hidden'>
+              <ScrollingText className='flex gap-1'>
+                {`${currentTrack.album} • ${currentTrack.year}`}
+              </ScrollingText>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className='flex min-w-[400px] flex-1 flex-col gap-2 max-md:min-w-0'>
@@ -168,53 +171,61 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ details, seekTo }) => 
           </div>
         </div>
 
-        <div className='relative flex items-center px-16 py-1 max-sm:px-3'>
+        <div className='relative flex grow items-center px-16 py-1 max-sm:px-3'>
           <div className='flex flex-1 items-center justify-center gap-4 md:gap-6'>
-            <button
-              className={cn(
-                'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
-                shuffle && 'text-(--colors_primary_light)'
-              )}
+            <Button
+              size='icon'
+              variant='ghost'
+              className={cn(twBtn, shuffle && 'text-primary')}
               onClick={toggleShuffle}
               aria-label={t('player.shuffle')}
             >
-              <MuzaIcon iconName='shuffle' className='rotate-180' />
-            </button>
+              <MuzaIcon iconName='shuffle' className='size-6' />
+            </Button>
 
-            <button
-              className='flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95'
+            <Button
+              size='icon'
+              variant='ghost'
+              className={twBtn}
               onClick={prev}
               aria-label={t('player.previous')}
             >
-              <MuzaIcon iconName='skip-back' />
-            </button>
+              <MuzaIcon iconName='skip-back' className='size-6' />
+            </Button>
 
-            <button
-              className='flex h-12 w-12 cursor-pointer items-center justify-center border-none bg-transparent text-2xl text-(--muza-play-button-color) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95'
+            <Button
+              size='icon'
+              variant='ghost'
+              className={twBtn}
               onClick={togglePlayPause}
               aria-label={t('player.playPause')}
             >
-              {details.isPlaying ? <MuzaIcon iconName='pause' /> : <MuzaIcon iconName='play' />}
-            </button>
+              {isPlaying ? (
+                <MuzaIcon iconName='pause' className='size-9' />
+              ) : (
+                <MuzaIcon iconName='play' className='size-9' />
+              )}
+            </Button>
 
-            <button
-              className='flex cursor-pointer items-center justify-center border-none bg-transparent p-3 text-xl text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95'
-              onClick={next}
+            <Button
+              size='icon'
+              variant='ghost'
+              className={twBtn}
+              onClick={() => next({ reason: NextTrackReason.ButtonClick })}
               aria-label={t('player.next')}
             >
-              <MuzaIcon iconName='skip-forward' />
-            </button>
+              <MuzaIcon iconName='skip-forward' className='size-7' />
+            </Button>
 
-            <button
-              className={cn(
-                'flex cursor-pointer items-center justify-center border-none bg-transparent p-2 text-[length:var(--muza-subtitle-font-size)] text-(--colors_muted_foreground_light) transition-all duration-200 ease-in-out hover:scale-105 hover:text-gray-700 active:scale-95 max-sm:hidden',
-                repeat !== 'off' && 'text-blue-500'
-              )}
+            <Button
+              size='icon'
+              variant='ghost'
+              className={cn(twBtn, repeat !== 'off' && 'text-primary')}
               onClick={cycleRepeat}
               aria-label={t('player.repeat')}
             >
-              <MuzaIcon iconName='repeat' />
-            </button>
+              <MuzaIcon iconName='repeat' className='size-6' />
+            </Button>
           </div>
 
           <div className='flex items-center pr-8'>

@@ -6,19 +6,19 @@ import { db } from '../../db/connection'
 import { playlists, PlaylistVisibilityEnum } from '../../db/playlist.entity'
 import { playlistTracks } from '../../db/playlist-tracks.entity'
 import { tracks } from '../../db/track.entity'
-import { type AlbumWithArtistsAndTracks, formatMiniAlbum } from '../album/album.service'
-import type { MiniAlbum } from '../album/types/MiniAlbumResponse'
-import { type ArtistWithAlbums, transformArtistData } from '../artist/artist.service'
+import { formatAlbum } from '../album/album.service'
+import type { AlbumResponse } from '../album/types/AlbumResponse'
+import { type ArtistWithAlbums, formatArtist } from '../artist/artist.service'
 import type { ArtistMiniResponse } from '../artist/types/ArtistResponse'
 import { formatMiniPlaylist } from '../playlist/playlist.service'
-import type { MiniPlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
 import { formatTrack } from '../track/track.service'
 
 export interface SearchResults {
-  albums: MiniAlbum[]
+  albums: AlbumResponse[]
   artists: ArtistMiniResponse[]
   tracks: Array<ReturnType<typeof formatTrack>>
-  playlists: MiniPlaylistResponse[]
+  playlists: PlaylistResponse[]
   total: number
 }
 
@@ -36,7 +36,7 @@ export async function searchAll(query: string, limit = 20, offset = 0): Promise<
     offset: Math.ceil(offset / 4),
     with: {
       albumArtists: { with: { artist: true } },
-      tracks: { columns: { id: true } },
+      tracks: { with: { trackArtists: { with: { artist: true } } } },
     },
     orderBy: (albums, { desc }) => [desc(albums.createdAt)],
   })
@@ -96,10 +96,10 @@ export async function searchAll(query: string, limit = 20, offset = 0): Promise<
   })
 
   return {
-    albums: formatMiniAlbum(albumsResult as AlbumWithArtistsAndTracks[]),
-    artists: transformArtistData(artistsResult as ArtistWithAlbums[]),
+    albums: albumsResult.map(formatAlbum),
+    artists: formatArtist(artistsResult as ArtistWithAlbums[]),
     tracks: tracksResult.map(formatTrack),
-    playlists: playlistsResult.map(formatMiniPlaylist) as MiniPlaylistResponse[],
+    playlists: playlistsResult.map(formatMiniPlaylist) as PlaylistResponse[],
     total:
       albumsResult.length + artistsResult.length + tracksResult.length + playlistsResult.length,
   }

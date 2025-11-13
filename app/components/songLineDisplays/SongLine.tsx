@@ -1,13 +1,12 @@
 import React, { type MouseEventHandler, useState } from 'react'
 import { Link } from 'react-router'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
-import { usePlayCount } from '~/hooks/usePlayCounts'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { useDraggable } from '~/lib/hooks/useDraggable'
 
 import { useToggleAddLibrary } from '../../store/media/useToggleAddLibrary'
-import type { SongDetails } from '../../store/models'
 import styles from './SongLine.module.css'
 
 const formatDuration = (seconds: number): string => {
@@ -27,7 +26,7 @@ const formatPlayCount = (plays: number): string => {
 }
 
 interface SongLineProps {
-  details: SongDetails
+  details: TrackResponse
   onClick: MouseEventHandler<HTMLDivElement>
   isPlaying: boolean
   showPreview?: boolean
@@ -44,11 +43,9 @@ const SongLine: React.FC<SongLineProps> = ({
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
   const [isHovered, setIsHovered] = useState(false)
   const isInLibrary = getIsInLibrary(EntityTypeEnum.Track, details.id)
-  
-  // Get combined play count (mock data + local increments)
-  const localPlayCount = usePlayCount(details.id)
-  const totalPlays = (details.plays || 0) + localPlayCount
-  
+
+  const totalPlays = details.playCount || 0
+
   const { dragHandlers } = useDraggable({
     type: EntityTypeEnum.Track,
     data: details,
@@ -63,7 +60,7 @@ const SongLine: React.FC<SongLineProps> = ({
     if (isPlaying && isHovered) {
       return (
         <span className={styles['pause-icon']}>
-          <MuzaIcon iconName='pause' />
+          <MuzaIcon iconName='pause' className='size-6' />
         </span>
       )
     }
@@ -119,9 +116,7 @@ const SongLine: React.FC<SongLineProps> = ({
               {totalPlays > 0 && (
                 <>
                   <span className={styles.separator}>•</span>
-                  <span className={styles['track-plays']}>
-                    {formatPlayCount(totalPlays)} Plays
-                  </span>
+                  <span className={styles['track-plays']}>{formatPlayCount(totalPlays)} Plays</span>
                 </>
               )}
             </div>

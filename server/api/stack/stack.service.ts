@@ -9,12 +9,12 @@ import { EntityTypeEnum, stacks } from '../../db/stack.entity'
 import type { CreateStackItem } from '../../db/stack-item.entity'
 import { stackItems } from '../../db/stack-item.entity'
 import { tracks } from '../../db/track.entity'
-import { type AlbumWithArtistsAndTracks, formatMiniAlbum } from '../album/album.service'
-import type { MiniAlbum } from '../album/types/MiniAlbumResponse'
-import { type ArtistWithAlbums, transformArtistData } from '../artist/artist.service'
+import { formatAlbum } from '../album/album.service'
+import type { AlbumResponse } from '../album/types/AlbumResponse'
+import { type ArtistWithAlbums, formatArtist } from '../artist/artist.service'
 import type { ArtistMiniResponse } from '../artist/types/ArtistResponse'
 import { formatMiniPlaylist, type PlaylistWithTracks } from '../playlist/playlist.service'
-import type { MiniPlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
 import { formatTrack } from '../track/track.service'
 import type { TrackResponse } from '../track/types/TrackResponse'
 import type { TrackWithArtists } from '../track/types/TrackWithArtists'
@@ -196,7 +196,7 @@ const getStacksWithEntities = async (stacks: StackWithItems[]): Promise<StackWit
   return stacks.map(stack => ({
     ...stack,
     items: stack.items.map(item => {
-      let entity: MiniAlbum | ArtistMiniResponse | TrackResponse | MiniPlaylistResponse
+      let entity: AlbumResponse | ArtistMiniResponse | TrackResponse | PlaylistResponse
 
       switch (item.entityType) {
         case EntityTypeEnum.Album:
@@ -230,7 +230,7 @@ export const getEntitiesMap = async (
           where: inArray(albums.id, Array.from(entityIdsByType[EntityTypeEnum.Album])),
           with: {
             albumArtists: { with: { artist: true } },
-            tracks: { columns: { id: true } },
+            tracks: { with: { trackArtists: { with: { artist: true } } } },
           },
         })
       : Promise.resolve([]),
@@ -271,8 +271,8 @@ export const getEntitiesMap = async (
   ])
 
   // Format entities to mini responses
-  const formattedAlbums = formatMiniAlbum(albumsData as AlbumWithArtistsAndTracks[])
-  const formattedArtists = transformArtistData(artistsData as ArtistWithAlbums[])
+  const formattedAlbums = albumsData.map(formatAlbum)
+  const formattedArtists = formatArtist(artistsData as ArtistWithAlbums[])
   const formattedTracks = (tracksData as TrackWithArtists[]).map(formatTrack)
   const formattedPlaylists = (playlistsData as PlaylistWithTracks[]).map(formatMiniPlaylist)
 

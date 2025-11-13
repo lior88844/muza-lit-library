@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { createJSONStorage,persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
-import type { PlayerState,QueueItem, RepeatMode } from '~/types/player'
+import { NextTrackReason, type PlayerState, type QueueItem, type RepeatMode } from '~/types/player'
 
 function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array]
@@ -15,7 +15,7 @@ function shuffleArray<T>(array: T[]): T[] {
 export const usePlayerStore = create<PlayerState>()(
   persist(
     (set, get) => ({
-      current: null,
+      currentTrack: null,
       isPlaying: false,
       currentPosition: 0,
       duration: 0,
@@ -32,7 +32,6 @@ export const usePlayerStore = create<PlayerState>()(
       source: null,
 
       selectedSong: null,
-      selectedPlaListOrAlbum: null,
 
       get hasNext() {
         const state = get()
@@ -56,7 +55,7 @@ export const usePlayerStore = create<PlayerState>()(
           queue: items,
           originalQueue: items,
           queueIndex: validIndex,
-          current: items[validIndex],
+          currentTrack: items[validIndex],
           selectedSong: items[validIndex],
           isPlaying: true,
           source: source || null,
@@ -73,10 +72,9 @@ export const usePlayerStore = create<PlayerState>()(
         set({ isPlaying })
       },
 
-      next: () => {
+      next: ({ reason }: { reason: NextTrackReason }) => {
         const state = get()
-
-        if (state.repeat === 'one') {
+        if (reason === NextTrackReason.TrackEnd && state.repeat === 'one') {
           set({
             currentPosition: 0,
             isPlaying: true,
@@ -105,7 +103,7 @@ export const usePlayerStore = create<PlayerState>()(
 
         set({
           queueIndex: nextIndex,
-          current: state.queue[nextIndex],
+          currentTrack: state.queue[nextIndex],
           selectedSong: state.queue[nextIndex],
           isPlaying: true,
           currentPosition: 0,
@@ -115,14 +113,6 @@ export const usePlayerStore = create<PlayerState>()(
       prev: () => {
         const state = get()
 
-        if (state.repeat === 'one') {
-          set({
-            currentPosition: 0,
-            isPlaying: true,
-          })
-          return
-        }
-
         if (state.currentPosition > 3) {
           set({
             currentPosition: 0,
@@ -131,19 +121,11 @@ export const usePlayerStore = create<PlayerState>()(
           return
         }
 
-        let prevIndex = state.queueIndex - 1
-
-        if (prevIndex < 0) {
-          if (state.repeat === 'all') {
-            prevIndex = state.queue.length - 1
-          } else {
-            prevIndex = 0
-          }
-        }
+        const prevIndex = state.queueIndex - 1
 
         set({
           queueIndex: prevIndex,
-          current: state.queue[prevIndex],
+          currentTrack: state.queue[prevIndex],
           selectedSong: state.queue[prevIndex],
           isPlaying: true,
           currentPosition: 0,
@@ -174,7 +156,7 @@ export const usePlayerStore = create<PlayerState>()(
         const state = get()
 
         if (state.shuffle) {
-          const currentSong = state.current
+          const currentSong = state.currentTrack
           const newIndex = state.originalQueue.findIndex(s => s.id === currentSong?.id)
 
           set({
@@ -183,7 +165,7 @@ export const usePlayerStore = create<PlayerState>()(
             queueIndex: newIndex >= 0 ? newIndex : 0,
           })
         } else {
-          const currentSong = state.current
+          const currentSong = state.currentTrack
           if (!currentSong) return
 
           const remaining = state.queue.filter(s => s.id !== currentSong.id)
@@ -208,17 +190,13 @@ export const usePlayerStore = create<PlayerState>()(
       togglePlayPause: () => {
         get().playPause()
       },
-
-      setSelectedPlaListOrAlbum: (album: unknown) => {
-        set({ selectedPlaListOrAlbum: album })
-      },
     }),
     {
       name: 'muza-player-v1',
       storage: createJSONStorage(() => localStorage),
-      
+
       partialize: state => ({
-        current: state.current,
+        current: state.currentTrack,
         queue: state.queue,
         queueIndex: state.queueIndex,
         originalQueue: state.originalQueue,
@@ -242,4 +220,3 @@ export const rehydratePlayerStore = () => {
 }
 
 export const useCurrentPlayerStore = usePlayerStore
-

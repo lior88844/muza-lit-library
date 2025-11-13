@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFetcher, useNavigate } from 'react-router'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
@@ -9,7 +10,6 @@ import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
 import { useDrawerStore } from '~/store/drawerStore'
 import { useMedia } from '~/store/media/mediaContext'
-import type { SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useUpdatePlaylist } from '../../store/media/useUpdatePlaylist'
@@ -22,7 +22,7 @@ interface PlaylistDrawerProps {
 const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const fetcher = useFetcher<{ album: { tracks: SongDetails[] } }>()
+  const fetcher = useFetcher<{ album: { tracks: TrackResponse[] } }>()
   const { songs: allSongs, playlists } = useMedia()
 
   // Get playlist from context
@@ -67,7 +67,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   }, [])
 
   const handleAddSongs = useCallback(
-    (songsToAdd: SongDetails[]) => {
+    (songsToAdd: TrackResponse[]) => {
       if (!playlist?.id) return
 
       const newSongs = songsToAdd.filter(
@@ -104,12 +104,12 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
   }, [fetcher.data, pendingAlbumId, handleAddSongs])
 
   const removeSongFromPlaylist = useCallback(
-    (songToRemove: SongDetails) => {
+    (trackId: number) => {
       if (!playlist?.id) return
 
       const updatedSongs =
         playlist.songs
-          ?.filter(song => song.id !== songToRemove.id)
+          ?.filter(song => song.id !== trackId)
           .map((song, idx) => ({
             ...song,
             index: idx + 1,
@@ -143,7 +143,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
           }
 
           if (data.type === EntityTypeEnum.Album && data.album) {
-            let tracksToAdd: SongDetails[] = []
+            let tracksToAdd: TrackResponse[] = []
 
             if (
               data.album.tracks &&
@@ -151,18 +151,20 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
               data.album.tracks.length > 0
             ) {
               if (typeof data.album.tracks[0] === 'object' && 'title' in data.album.tracks[0]) {
-                tracksToAdd = data.album.tracks as SongDetails[]
+                tracksToAdd = data.album.tracks as TrackResponse[]
               }
-            }
-            else if (
+            } else if (
               data.album.songs &&
               Array.isArray(data.album.songs) &&
               data.album.songs.length > 0
             ) {
               tracksToAdd = data.album.songs
-                .map((songId: number) => allSongs.find((song: SongDetails) => song.id === songId))
-                .filter((song: SongDetails | undefined): song is SongDetails => song !== undefined)
+                .map((songId: number) => allSongs.find((song: TrackResponse) => song.id === songId))
+                .filter(
+                  (song: TrackResponse | undefined): song is TrackResponse => song !== undefined
+                )
 
+              // @TODO Implement album fetching from the server
               if (tracksToAdd.length === 0 && data.album.id) {
                 setPendingAlbumId(data.album.id)
                 fetcher.load(`/albums/${data.album.id}`)
@@ -377,7 +379,7 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
                 filteredSongs.map((song, index) => (
                   <div key={song.id || index} className='hover:bg-hover rounded transition-colors'>
                     <SongLineWithCover
-                      details={{ ...song, index: index + 1 }}
+                      track={song}
                       onClick={() => {}}
                       isPlaying={false}
                       showHoverActions={false}

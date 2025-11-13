@@ -1,22 +1,8 @@
 import type { StackItemWithEntity } from 'server/api/stack/types'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import type { Stack } from 'server/db/stack.entity'
 
 import type { PlaylistVisibilityEnum } from '../../server/db/playlist.entity'
-
-export interface SongDetails {
-  index?: number
-  title: string
-  time: number | null
-  imageSrc?: string
-  artist?: string
-  artistId?: number
-  audioUrl?: string
-  album?: string
-  albumId?: number
-  year?: number
-  id: number
-  plays?: number
-}
 
 export interface MenuItem {
   svg: string
@@ -111,8 +97,8 @@ export type MusicPlaylist = {
   author?: string
   imageSrc?: string
   description?: string
-  songs: SongDetails[]
-  suggestions?: SongDetails[]
+  songs: TrackResponse[]
+  suggestions?: TrackResponse[]
   visibility?: PlaylistVisibilityEnum
   createdAt?: Date
 }

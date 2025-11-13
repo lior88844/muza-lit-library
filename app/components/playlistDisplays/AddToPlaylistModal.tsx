@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 
 import MuzaIcon from '~/icons/MuzaIcon'
 import { generatePlaylistCoverImages } from '~/lib/utils'
 import { useMedia } from '~/store/media/mediaContext'
-import type { SongDetails } from '~/store/models'
 
 import { PlaylistVisibilityEnum } from '../../../server/db/playlist.entity'
 import { useAddPlaylist } from '../../store/media/useAddPlaylist'
@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog/d
 interface AddToPlaylistModalProps {
   isOpen: boolean
   onClose: () => void
-  albumTracks: SongDetails[]
+  albumTracks: TrackResponse[]
   albumTitle: string
 }
 
@@ -79,8 +79,8 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
       toast(
         <div className='flex items-center gap-2'>
           <div className='flex flex-1 flex-col gap-1'>
-            <p className='font-semibold text-foreground'>{t('playlist.albumAdded')}</p>
-            <p className='text-sm text-muted-foreground opacity-90'>
+            <p className='text-foreground font-semibold'>{t('playlist.albumAdded')}</p>
+            <p className='text-muted-foreground text-sm opacity-90'>
               {t('playlist.albumAddedToPlaylist')}
             </p>
           </div>
@@ -105,9 +105,9 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                 autoClose: 1000,
               })
             }}
-            className='flex h-9 items-center justify-center rounded-full border-[0.66px] border-border bg-background/50 px-4 py-2 backdrop-blur-lg transition-colors hover:bg-background/70'
+            className='border-border bg-background/50 hover:bg-background/70 flex h-9 items-center justify-center rounded-full border-[0.66px] px-4 py-2 backdrop-blur-lg transition-colors'
           >
-            <span className='whitespace-nowrap text-base font-medium leading-none text-foreground'>
+            <span className='text-foreground text-base leading-none font-medium whitespace-nowrap'>
               {t('playlist.revoke')}
             </span>
           </button>
@@ -134,7 +134,7 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
     setIsCreatePlaylistModalOpen(false)
   }
 
-  const formatDuration = (songs: SongDetails[]) => {
+  const formatDuration = (songs: TrackResponse[]) => {
     const totalSeconds = songs.reduce((total, song) => total + (song.time || 0), 0)
     const hours = Math.floor(totalSeconds / 3600)
     const minutes = Math.floor((totalSeconds % 3600) / 60)
@@ -153,7 +153,7 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
             <DialogTitle className='text-xl'>{t('playlist.addToPlaylist')}</DialogTitle>
           </DialogHeader>
 
-          <div className='flex max-h-[417px] flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-input'>
+          <div className='[&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-input flex max-h-[417px] flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:rounded-full'>
             {playlists.map(playlist => {
               const coverImages = generatePlaylistCoverImages(playlist)
               const isEmpty = coverImages === null
@@ -168,8 +168,8 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                 >
                   <div className='relative h-11 w-11 shrink-0 overflow-hidden rounded-sm shadow-sm'>
                     {isEmpty ? (
-                      <div className='flex h-full w-full items-center justify-center bg-muted'>
-                        <MuzaIcon iconName='ListMusic' className='h-5 w-5 text-muted-foreground' />
+                      <div className='bg-muted flex h-full w-full items-center justify-center'>
+                        <MuzaIcon iconName='ListMusic' className='text-muted-foreground h-5 w-5' />
                       </div>
                     ) : (
                       <div className='grid h-full w-full grid-cols-2 grid-rows-2'>
@@ -194,10 +194,10 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
                   </div>
 
                   <div className='flex min-w-0 flex-1 flex-col items-start gap-1'>
-                    <p className='w-full overflow-hidden text-ellipsis whitespace-nowrap text-left text-base font-medium leading-5 text-foreground'>
+                    <p className='text-foreground w-full overflow-hidden text-left text-base leading-5 font-medium text-ellipsis whitespace-nowrap'>
                       {playlist.title}
                     </p>
-                    <div className='flex items-center gap-1 whitespace-pre text-base leading-none text-muted-foreground'>
+                    <div className='text-muted-foreground flex items-center gap-1 text-base leading-none whitespace-pre'>
                       <span>{playlist.songs?.length || 0} Songs</span>
                       <span>•</span>
                       <span>{formatDuration(playlist.songs || [])}</span>
@@ -233,5 +233,3 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
 }
 
 export default AddToPlaylistModal
-
-

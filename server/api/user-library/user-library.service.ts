@@ -3,18 +3,18 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { db } from '../../db/connection'
 import { type CreateUserLibrary, type UserLibrary, userLibrary } from '../../db/user-library.entity'
-import type { MiniAlbum } from '../album/types/MiniAlbumResponse'
+import type { AlbumResponse } from '../album/types/AlbumResponse'
 import type { ArtistMiniResponse } from '../artist/types/ArtistResponse'
-import type { MiniPlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
+import type { PlaylistResponse } from '../playlist/types/MiniPlaylistResponse'
 import { getEntitiesMap } from '../stack/stack.service'
 import type { TrackResponse } from '../track/types/TrackResponse'
 
 // Type mapping from EntityTypeEnum to specific entity types
 type EntityTypeMap = {
-  [EntityTypeEnum.Album]: MiniAlbum
+  [EntityTypeEnum.Album]: AlbumResponse
   [EntityTypeEnum.Artist]: ArtistMiniResponse
   [EntityTypeEnum.Track]: TrackResponse
-  [EntityTypeEnum.Playlist]: MiniPlaylistResponse
+  [EntityTypeEnum.Playlist]: PlaylistResponse
 }
 
 export interface UserLibraryWithEntity<T extends EntityTypeEnum = EntityTypeEnum>

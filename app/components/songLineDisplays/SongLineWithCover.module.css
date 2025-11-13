@@ -4,6 +4,9 @@
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
+  &:hover {
+    background: var(--muza-hover-background, #f9fafb);
+  }
 }
 
 .songLineWithCover.draggable {

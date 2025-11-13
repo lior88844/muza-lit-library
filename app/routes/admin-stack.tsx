@@ -17,6 +17,7 @@ import { AppSelect } from '~/components/ui/app-select'
 import { Button } from '~/components/ui/button'
 import DataGrid from '~/components/ui/data-grid/DataGrid'
 import useFetcherAsync from '~/lib/useFetcherAsync'
+import { useDrawerStore } from '~/store/drawerStore'
 import type { StackToEdit } from '~/store/models'
 
 import type { Route } from './+types/admin-stack'

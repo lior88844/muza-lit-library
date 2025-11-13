@@ -268,7 +268,7 @@
 }
 
 .action-buttons--gap-medium {
-  gap: var(--muza-spacing-lg, 16px);
+  gap: var(--muza-spacing-md, 16px);
 }
 
 /* MediaHeaderLayout styles (consolidated) */

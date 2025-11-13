@@ -5,6 +5,8 @@ const resourcesRoutes = [
   route('/api/playlist', './routes/resources/playlist.ts'),
   route('/api/search', './routes/resources/search.ts'),
   route('/api/track/increment-play-count', './routes/resources/track-play-count.ts'),
+  route('/api/track/record-play', './routes/resources/track-record-play.ts'),
+  route('/api/play-history', './routes/resources/play-history.ts'),
 ]
 
 export default [

@@ -5,6 +5,7 @@ import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import { Typography } from '~/components/ui/typography'
+import { useDrawerStore } from '~/store/drawerStore'
 import { userContext } from '~/store/router-context'
 
 import type { Route } from './+types/albums'

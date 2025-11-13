@@ -18,8 +18,8 @@ import {
 
 import { fetchAllData } from '../server/root.service'
 import type { Route } from './+types/root'
-import MuzaMusicPlayer from './components/componentsWithLogic/MuzaMusicPlayer'
 import PlaylistDrawer from './components/playlistDisplays/PlaylistDrawer'
+import { MusicPlayer } from './components/sections/MusicPlayer'
 import MusicSidebar from './components/sections/MusicSidebar'
 import MusicTopbar from './components/sections/MusicTopbar'
 import StackDrawer from './components/stack/StackDrawer'
@@ -188,7 +188,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </>
                   )}
                 </main>
-                {!isMinimalLayout && <MuzaMusicPlayer />}
+                {!isMinimalLayout && <MusicPlayer />}
               </div>
             </div>
           </MediaContext.Provider>

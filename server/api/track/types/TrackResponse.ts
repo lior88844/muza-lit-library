@@ -10,4 +10,5 @@ export interface TrackResponse {
   artist: string
   album: string | undefined
   imageSrc: string
+  playCount?: number
 }

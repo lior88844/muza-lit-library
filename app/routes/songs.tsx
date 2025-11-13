@@ -3,12 +3,13 @@ import '../styles/variables.css'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
+import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { getUserLibrary } from 'server/api/user-library/user-library.service'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
 import { Typography } from '~/components/ui/typography'
-import type { SongDetails as SongDetailsType } from '~/store/models'
+import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 import { userContext } from '~/store/router-context'
 
@@ -29,7 +30,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 export default function Songs() {
   const { t } = useTranslation()
-  const { playQueue, current } = usePlayerStore()
+  const { playQueue, currentTrack: current } = usePlayerStore()
   const { isPlaylistDrawerOpen } = useDrawerStore()
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
@@ -43,11 +44,11 @@ export default function Songs() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleSongClick = (song: SongDetailsType, index: number) => {
+  const handleSongClick = (song: TrackResponse, index: number) => {
     playQueue({
       items: librarySongs,
       startIndex: index,
-      source: { type: 'songs', title: 'Songs' },
+      source: { type: EntityTypeEnum.Track, title: 'Songs' },
     })
   }
 
@@ -69,7 +70,7 @@ export default function Songs() {
           {librarySongs.map((song, index) => (
             <SongLineWithCover
               key={song.id}
-              details={song}
+              track={song}
               onClick={() => handleSongClick(song, index)}
               isPlaying={current?.id === song.id}
               draggable={isPlaylistDrawerOpen}
