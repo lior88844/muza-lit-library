@@ -84,7 +84,7 @@ const english = {
   'playlist.newPlaylist': 'New Playlist',
   'playlist.albumAdded': 'Album added',
   'playlist.albumAddedToPlaylist': 'Album successfully added to your library',
-  'playlist.revoke': 'revoke',
+  'playlist.undo': 'Undo',
   'playlist.albumRevoked': 'Album removed from playlist',
 
   // Album Info Modal - Labels
@@ -189,6 +189,9 @@ const english = {
   'search.artists': 'Artists',
   'search.tracks': 'Tracks',
   'search.playlists': 'Playlists',
+  'search.recentSearches': 'Your recent searches',
+  'search.clearRecent': 'Clear recent searches',
+  'search.noAutocompleteResults': 'No results found',
 
   // Visibility Options
   'visibility.public': 'Public',

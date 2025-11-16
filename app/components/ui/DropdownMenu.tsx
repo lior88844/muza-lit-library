@@ -17,9 +17,17 @@ export interface DropdownMenuProps {
   trigger: React.ReactNode
   items: DropdownMenuItem[]
   title?: string
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, items, title }) => {
+const DropdownMenu: React.FC<DropdownMenuProps> = ({
+  trigger,
+  items,
+  title,
+  open,
+  onOpenChange,
+}) => {
   const renderItem = (item: DropdownMenuItem, index: number) => {
     // Check if this item should have a separator before it
     const shouldAddSeparator = item.destructive && index > 0 && !items[index - 1]?.destructive
@@ -43,7 +51,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, items, title }) =>
   }
 
   return (
-    <DropdownMenuPrimitive.Root modal={false}>
+    <DropdownMenuPrimitive.Root modal={false} open={open} onOpenChange={onOpenChange}>
       <DropdownMenuPrimitive.Trigger asChild>{trigger}</DropdownMenuPrimitive.Trigger>
 
       <DropdownMenuPrimitive.Portal>

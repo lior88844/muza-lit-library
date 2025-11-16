@@ -4,7 +4,7 @@ import { useFetcher, useNavigate } from 'react-router'
 import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
-import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
+import TrackPreview from '~/components/songLineDisplays/TrackPreview'
 import { IconButton } from '~/components/ui/button/icon-button'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { cn } from '~/lib/utils'
@@ -378,12 +378,10 @@ const PlaylistDrawer: React.FC<PlaylistDrawerProps> = ({ isOpen, onClose }) => {
               {filteredSongs.length > 0 ? (
                 filteredSongs.map((song, index) => (
                   <div key={song.id || index} className='hover:bg-hover rounded transition-colors'>
-                    <SongLineWithCover
+                    <TrackPreview
                       track={song}
-                      onClick={() => {}}
-                      isPlaying={false}
                       showHoverActions={false}
-                      playlistMode={true}
+                      playlistMode
                       draggable={false}
                       onRemoveSong={removeSongFromPlaylist}
                     />

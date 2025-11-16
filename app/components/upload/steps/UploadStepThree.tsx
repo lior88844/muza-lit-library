@@ -4,7 +4,7 @@ import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import MediaHeader from '~/components/MediaHeader'
-import SongLine from '~/components/songLineDisplays/SongLine'
+import TrackPreview from '~/components/songLineDisplays/TrackPreview'
 import { Divider } from '~/components/ui/divider'
 import { usePlayerStore } from '~/store/playerStore'
 import type { TrackMetadata, UploadFormData } from '~/store/uploadStore'
@@ -18,8 +18,7 @@ interface UploadStepThreeProps {
 }
 
 const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, coverImage }) => {
-  const { selectedSong, setSelectedSong, setIsPlaying, isPlaying, togglePlayPause } =
-    usePlayerStore()
+  const { currentTrack, playPause, playQueue, isPlaying } = usePlayerStore()
 
   const getCoverImageUrl = () => {
     if (coverImage) {
@@ -75,7 +74,13 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, co
 
   const album = transformToAlbum()
   const songDetails = transformToSongDetails()
-
+  const onTogglePlay = (song: TrackResponse) => {
+    if (currentTrack?.id === song.id) {
+      playPause()
+    } else {
+      playQueue({ items: [song], startIndex: 0 })
+    }
+  }
   return (
     <div className='w-full'>
       <div className='mx-auto px-[60px] py-6'>
@@ -98,19 +103,7 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, co
 
         <div className='mt-4 mb-4 flex flex-1 flex-col gap-0 gap-x-2'>
           {songDetails.map((song: TrackResponse) => (
-            <SongLine
-              key={song.id}
-              details={song}
-              onClick={() => {
-                if (selectedSong?.id === song.id) {
-                  togglePlayPause()
-                } else {
-                  setSelectedSong(song)
-                  setIsPlaying(true)
-                }
-              }}
-              isPlaying={song.id === selectedSong?.id && !!isPlaying}
-            />
+            <TrackPreview key={song.id} track={song} onClick={onTogglePlay} albumMode />
           ))}
         </div>
       </div>

@@ -15,7 +15,6 @@ function shuffleArray<T>(array: T[]): T[] {
 export const usePlayerStore = create<PlayerState>()(
   persist(
     (set, get) => ({
-      currentTrack: null,
       isPlaying: false,
       currentPosition: 0,
       duration: 0,
@@ -31,7 +30,10 @@ export const usePlayerStore = create<PlayerState>()(
 
       source: null,
 
-      selectedSong: null,
+      get currentTrack() {
+        const state = get()
+        return state.queue[state.queueIndex]
+      },
 
       get hasNext() {
         const state = get()
@@ -45,7 +47,6 @@ export const usePlayerStore = create<PlayerState>()(
         if (state.repeat === 'one') return true
         return state.queueIndex > 0
       },
-
       playQueue: ({ items, startIndex = 0, source }) => {
         if (items.length === 0) return
 
@@ -56,10 +57,22 @@ export const usePlayerStore = create<PlayerState>()(
           originalQueue: items,
           queueIndex: validIndex,
           currentTrack: items[validIndex],
-          selectedSong: items[validIndex],
           isPlaying: true,
           source: source || null,
           currentPosition: 0,
+        })
+      },
+
+      addToQueue: (item: QueueItem) => {
+        const state = get()
+        const newQueue = [...state.queue, item]
+        const newOriginalQueue = [...state.originalQueue, item]
+        console.log(state)
+
+        set({
+          queue: newQueue,
+          originalQueue: newOriginalQueue,
+          isPlaying: state.queue.length === 0 ? true : state.isPlaying,
         })
       },
 
@@ -104,7 +117,6 @@ export const usePlayerStore = create<PlayerState>()(
         set({
           queueIndex: nextIndex,
           currentTrack: state.queue[nextIndex],
-          selectedSong: state.queue[nextIndex],
           isPlaying: true,
           currentPosition: 0,
         })
@@ -126,7 +138,6 @@ export const usePlayerStore = create<PlayerState>()(
         set({
           queueIndex: prevIndex,
           currentTrack: state.queue[prevIndex],
-          selectedSong: state.queue[prevIndex],
           isPlaying: true,
           currentPosition: 0,
         })
@@ -177,18 +188,6 @@ export const usePlayerStore = create<PlayerState>()(
             queueIndex: 0,
           })
         }
-      },
-
-      setSelectedSong: (song: QueueItem) => {
-        get().playQueue({
-          items: [song],
-          startIndex: 0,
-          source: { type: 'custom', title: song.title },
-        })
-      },
-
-      togglePlayPause: () => {
-        get().playPause()
       },
     }),
     {

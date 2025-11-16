@@ -7,7 +7,7 @@ import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import AlbumPreview from '~/components/albumDisplays/AlbumPreview'
 import PlaylistCover from '~/components/albumDisplays/PlaylistCover'
 import { ArtistPreview } from '~/components/artistDisplays/ArtistPreview'
-import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
+import TrackPreview from '~/components/songLineDisplays/TrackPreview'
 import { Divider } from '~/components/ui/divider'
 import { Typography } from '~/components/ui/typography'
 import { useDrawerStore } from '~/store/drawerStore'
@@ -34,20 +34,20 @@ export function SearchResultsList({
   draggable = false,
 }: SearchResultsListProps) {
   const { t } = useTranslation()
-  const {
-    selectedSong: globalSelectedSong,
-    setSelectedSong,
-    setIsPlaying,
-    isPlaying,
-    togglePlayPause,
-  } = usePlayerStore()
   const { isPlaylistDrawerOpen, isStackDrawerOpen } = useDrawerStore()
-
+  const { currentTrack, playPause, playQueue } = usePlayerStore()
   const hasResults =
     albums.length > 0 || artists.length > 0 || tracks.length > 0 || playlists.length > 0
 
   if (!hasResults) {
     return null
+  }
+  const onTogglePlay = (track: TrackResponse) => {
+    if (currentTrack?.id === track.id) {
+      playPause()
+    } else {
+      playQueue({ items: [track], startIndex: 0 })
+    }
   }
   const isDraggable = isPlaylistDrawerOpen || isStackDrawerOpen || draggable
   return (
@@ -102,18 +102,10 @@ export function SearchResultsList({
           )}
           <div className='flex flex-col gap-1'>
             {tracks.map(track => (
-              <SongLineWithCover
+              <TrackPreview
                 key={track.id}
                 track={track}
-                onClick={() => {
-                  if (globalSelectedSong?.id === track.id) {
-                    togglePlayPause()
-                  } else {
-                    setSelectedSong(track)
-                    setIsPlaying(true)
-                  }
-                }}
-                isPlaying={track.id === globalSelectedSong?.id && !!isPlaying}
+                onClick={onTogglePlay}
                 draggable={isDraggable}
               />
             ))}

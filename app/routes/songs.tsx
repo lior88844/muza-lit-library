@@ -7,7 +7,7 @@ import type { TrackResponse } from 'server/api/track/types/TrackResponse'
 import { getUserLibrary } from 'server/api/user-library/user-library.service'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
-import SongLineWithCover from '~/components/songLineDisplays/SongLineWithCover'
+import TrackPreview from '~/components/songLineDisplays/TrackPreview'
 import { Typography } from '~/components/ui/typography'
 import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
@@ -30,7 +30,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 export default function Songs() {
   const { t } = useTranslation()
-  const { playQueue, currentTrack: current } = usePlayerStore()
+  const { playQueue, playPause, currentTrack } = usePlayerStore()
   const { isPlaylistDrawerOpen } = useDrawerStore()
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
@@ -45,11 +45,15 @@ export default function Songs() {
   }, [])
 
   const handleSongClick = (song: TrackResponse, index: number) => {
-    playQueue({
-      items: librarySongs,
-      startIndex: index,
-      source: { type: EntityTypeEnum.Track, title: 'Songs' },
-    })
+    if (currentTrack?.id === song.id) {
+      playPause()
+    } else {
+      playQueue({
+        items: librarySongs,
+        startIndex: index,
+        source: { type: EntityTypeEnum.Track, title: 'Songs' },
+      })
+    }
   }
 
   const librarySongs = useMemo(() => {
@@ -68,11 +72,10 @@ export default function Songs() {
       <div className={'px-8 pb-17.5'}>
         <div className={'flex flex-col gap-2'}>
           {librarySongs.map((song, index) => (
-            <SongLineWithCover
+            <TrackPreview
               key={song.id}
               track={song}
               onClick={() => handleSongClick(song, index)}
-              isPlaying={current?.id === song.id}
               draggable={isPlaylistDrawerOpen}
             />
           ))}

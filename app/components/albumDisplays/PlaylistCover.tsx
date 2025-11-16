@@ -22,7 +22,7 @@ interface PlaylistCoverProps {
 }
 
 const PlaylistCover: React.FC<PlaylistCoverProps> = ({ playlist, draggable, onSelect }) => {
-  const { setSelectedSong, setIsPlaying } = usePlayerStore()
+  const { playQueue } = usePlayerStore()
   const { t } = useTranslation()
   const { dragHandlers, isDragging } = useDraggable({
     type: EntityTypeEnum.Playlist,
@@ -36,8 +36,15 @@ const PlaylistCover: React.FC<PlaylistCoverProps> = ({ playlist, draggable, onSe
 
   const handlePlayPlaylist = () => {
     if (playlist && playlist.songs && playlist.songs.length > 0) {
-      setSelectedSong(playlist.songs[0])
-      setIsPlaying(true)
+      playQueue({
+        items: playlist.songs,
+        startIndex: 0,
+        source: {
+          type: EntityTypeEnum.Playlist,
+          id: playlist.id,
+          title: playlist.title,
+        },
+      })
     }
   }
 

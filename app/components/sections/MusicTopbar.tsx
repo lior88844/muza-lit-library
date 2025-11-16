@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 import MuzaIcon from '~/icons/MuzaIcon'
 import { getUserInfo, useAuth } from '~/store/userContext'
 
-import { SearchInput } from '../search/search-input'
+import { SearchAutocomplete } from '../search/SearchAutocomplete'
 import styles from './MusicTopbar.module.css'
 
 interface MusicTopbarProps {
@@ -37,7 +37,7 @@ const MusicTopbar: React.FC<MusicTopbarProps> = ({ onUserIconClick }) => {
   return (
     <div className='bg-background-light border-border-light sticky top-0 z-50 border-b pe-6'>
       <div className={styles.topbar}>
-        <SearchInput />
+        <SearchAutocomplete />
 
         <div className={styles.controls}>
           <button className={styles['upload-music-button']} onClick={handleUploadClick}>

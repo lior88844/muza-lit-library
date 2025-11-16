@@ -62,7 +62,7 @@ export interface PlayerState {
   repeat: RepeatMode
 
   // Context
-  source: EntityTypeEnum | null
+  source: PlaySourceMeta | null
 
   // Computed/derived
   hasNext: boolean
@@ -70,6 +70,7 @@ export interface PlayerState {
 
   // Actions - Playback control
   playQueue: (opts: { items: QueueItem[]; startIndex?: number; source?: PlaySourceMeta }) => void
+  addToQueue: (item: QueueItem) => void
   playPause: (force?: boolean) => void
   setIsPlaying: (isPlaying: boolean) => void
   next: (payload: { reason: NextTrackReason }) => void
@@ -86,9 +87,4 @@ export interface PlayerState {
   // Actions - Playback modes
   setRepeat: (mode: RepeatMode) => void
   toggleShuffle: () => void
-
-  // Legacy compatibility
-  selectedSong: QueueItem | null // alias for current
-  setSelectedSong: (song: QueueItem) => void // wrapper for playQueue
-  togglePlayPause: () => void // alias for playPause
 }

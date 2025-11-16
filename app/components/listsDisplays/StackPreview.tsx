@@ -15,7 +15,7 @@ import { usePlayerStore } from '~/store/playerStore'
 import AlbumPreview from '../albumDisplays/AlbumPreview'
 import PlaylistCover from '../albumDisplays/PlaylistCover'
 import { ArtistPreview } from '../artistDisplays/ArtistPreview'
-import SongLineWithCover from '../songLineDisplays/SongLineWithCover'
+import TrackPreview from '../songLineDisplays/TrackPreview'
 import { Button } from '../ui/button'
 import { Typography } from '../ui/typography'
 
@@ -28,7 +28,7 @@ export function StackPreview(props: Props) {
   const { stack, maxItems = DEFAULT_MAX_ITEMS } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const { t } = useTranslation()
-  const { currentTrack: globalSelectedSong, playQueue, isPlaying, playPause } = usePlayerStore()
+  const { currentTrack, playQueue, playPause } = usePlayerStore()
   const { isPlaylistDrawerOpen, isStackDrawerOpen } = drawerStore.useDrawerStore()
 
   const itemsToShow = isExpanded ? stack.items : stack.items.slice(0, maxItems)
@@ -67,11 +67,11 @@ export function StackPreview(props: Props) {
           const track = item.entity as TrackResponse
           const allTracks = stack.items.map(i => i.entity as TrackResponse)
           return (
-            <SongLineWithCover
+            <TrackPreview
               key={track.id}
               track={track}
               onClick={() => {
-                if (globalSelectedSong?.id === track.id) {
+                if (currentTrack?.id === track.id) {
                   playPause()
                 } else {
                   playQueue({
@@ -85,7 +85,6 @@ export function StackPreview(props: Props) {
                   })
                 }
               }}
-              isPlaying={track.id === globalSelectedSong?.id && !!isPlaying}
               draggable={isPlaylistDrawerOpen || isStackDrawerOpen}
             />
           )

@@ -47,7 +47,7 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const navigate = useNavigate()
   const { toggleAddLibrary, getIsInLibrary } = useToggleAddLibrary()
-  const { setSelectedSong, setIsPlaying: setGlobalIsPlaying, togglePlayPause } = usePlayerStore()
+  const { currentTrack, playPause, playQueue } = usePlayerStore()
   const isInLibrary = getIsInLibrary(entityType, entity.id)
 
   const { dragHandlers, preventClickWhileDragging } = useDraggable({
@@ -68,11 +68,10 @@ const EntityPreview: React.FC<EntityPreviewProps> = ({
       switch (entityType) {
         case EntityTypeEnum.Track: {
           const track = entity as TrackResponse
-          if (isPlaying) {
-            togglePlayPause()
+          if (currentTrack?.id === track.id) {
+            playPause()
           } else {
-            setSelectedSong(track)
-            setGlobalIsPlaying(true)
+            playQueue({ items: [track], startIndex: 0 })
           }
           break
         }

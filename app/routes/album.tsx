@@ -1,14 +1,14 @@
 import '../styles/variables.css'
 
-import { useState } from 'react'
-import { useLoaderData } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { useLoaderData, useLocation } from 'react-router'
 import type { AlbumResponse } from 'server/api/album/types/AlbumResponse'
 import { EntityTypeEnum } from 'server/db/stack.entity'
 
 import { AlbumInfoModal } from '~/components/albumDisplays/album-info-modal'
 import MediaHeader from '~/components/MediaHeader'
 import AddToPlaylistModal from '~/components/playlistDisplays/AddToPlaylistModal'
-import SongLine from '~/components/songLineDisplays/SongLine'
+import TrackPreview from '~/components/songLineDisplays/TrackPreview'
 import { useDrawerStore } from '~/store/drawerStore'
 import { usePlayerStore } from '~/store/playerStore'
 
@@ -35,14 +35,31 @@ export async function loader({ params }: { params: { id: string } }) {
 }
 
 export default function AlbumPage() {
-  const { currentTrack: current, playQueue, isPlaying, playPause } = usePlayerStore()
+  const { currentTrack, playQueue, playPause } = usePlayerStore()
   const { isPlaylistDrawerOpen } = useDrawerStore()
   const [isModalOpen, setModalOpen] = useState(false)
   const [isAddToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false)
   const album: AlbumResponse = useLoaderData<typeof loader>()
+  const location = useLocation()
+  const trackId = location.state?.trackId ? parseInt(location.state.trackId, 10) : undefined
+  const trackIndex = trackId ? album.tracks.findIndex(track => track.id === trackId) : undefined
+  const hasAutoPlayed = useRef(false)
+
+  useEffect(() => {
+    // Only autoplay once when trackId is in location state (from navigation)
+    if (trackId && trackIndex !== undefined && trackIndex !== -1 && !hasAutoPlayed.current) {
+      hasAutoPlayed.current = true
+      playQueue({
+        items: album.tracks,
+        startIndex: trackIndex,
+        source: { type: EntityTypeEnum.Album, id: album.id, title: album.title },
+      })
+      history.replaceState(null, '', location.pathname)
+    }
+  }, [trackId, trackIndex, album.tracks, album.id, album.title, playQueue, location.pathname])
 
   const handleSongClick = (trackId: number, index: number) => {
-    if (current?.id === trackId) {
+    if (currentTrack?.id === trackId) {
       // Same song - toggle play/pause
       playPause()
     } else {
@@ -85,11 +102,11 @@ export default function AlbumPage() {
       <div>
         {album.tracks.map((track, index) => {
           return (
-            <SongLine
+            <TrackPreview
               key={track.id}
-              details={track}
+              track={track}
+              albumMode
               onClick={() => handleSongClick(track.id, index)}
-              isPlaying={track.id === current?.id && !!isPlaying}
               draggable={isPlaylistDrawerOpen}
             />
           )
@@ -99,8 +116,7 @@ export default function AlbumPage() {
       <AddToPlaylistModal
         isOpen={isAddToPlaylistModalOpen}
         onClose={() => setAddToPlaylistModalOpen(false)}
-        albumTracks={album.tracks}
-        albumTitle={album.title}
+        tracksToAdd={album.tracks}
       />
     </>
   )

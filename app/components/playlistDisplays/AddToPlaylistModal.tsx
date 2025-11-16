@@ -17,15 +17,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog/d
 interface AddToPlaylistModalProps {
   isOpen: boolean
   onClose: () => void
-  albumTracks: TrackResponse[]
-  albumTitle: string
+  tracksToAdd: TrackResponse[]
 }
 
 const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
   isOpen,
   onClose,
-  albumTracks,
-  albumTitle,
+  tracksToAdd,
 }) => {
   const { t } = useTranslation()
   const { playlists } = useMedia()
@@ -45,7 +43,7 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
 
     const existingSongs = playlist.songs || []
 
-    const newTracks = albumTracks.filter(
+    const newTracks = tracksToAdd.filter(
       track =>
         !existingSongs.some(
           existingSong =>
@@ -108,7 +106,7 @@ const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({
             className='border-border bg-background/50 hover:bg-background/70 flex h-9 items-center justify-center rounded-full border-[0.66px] px-4 py-2 backdrop-blur-lg transition-colors'
           >
             <span className='text-foreground text-base leading-none font-medium whitespace-nowrap'>
-              {t('playlist.revoke')}
+              {t('playlist.undo')}
             </span>
           </button>
         </div>,
