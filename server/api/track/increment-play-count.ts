@@ -11,7 +11,7 @@ import { tracks } from '../../db/track.entity'
 /**
  * Simple in-memory cache for play count idempotency
  * In production, this should use Redis or similar persistent cache
- * 
+ *
  * Key format: `${trackId}-${timestamp}`
  * Expires after 1 hour automatically
  */
@@ -35,7 +35,7 @@ setInterval(
 /**
  * Increment play count for a track
  * Uses idempotency key to prevent duplicate counts
- * 
+ *
  * @param trackId - ID of the track
  * @param timestamp - When the play started (for idempotency)
  * @returns Success status
@@ -84,7 +84,7 @@ export async function incrementPlayCount(
 /**
  * HTTP handler for incrementing play count
  * POST /api/track/increment-play-count
- * 
+ *
  * Body: { trackId: number, timestamp: number }
  */
 export async function handleIncrementPlayCount(request: Request): Promise<Response> {
@@ -127,4 +127,3 @@ export async function handleIncrementPlayCount(request: Request): Promise<Respon
     )
   }
 }
-

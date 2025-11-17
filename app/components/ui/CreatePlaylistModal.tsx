@@ -77,10 +77,7 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
             checked={isPrivate}
             onCheckedChange={handleToggleChange}
             label={
-              <Typography
-                variant='default'
-                className='ms-2 flex items-center gap-2 font-medium'
-              >
+              <Typography variant='default' className='ms-2 flex items-center gap-2 font-medium'>
                 <MuzaIcon iconName='lock' className='size-4' />
                 {t('playlist.makePrivate')}
               </Typography>

@@ -119,8 +119,7 @@ export const getAlbumsToUpload = (files: File[]) => {
         multiDiscAlbumsMap.set(parentPath, [])
       }
       multiDiscAlbumsMap.get(parentPath)!.push(path)
-    }
-    else if (parentPath && parentFolderName.match(/\((\d+)CD\)/i)) {
+    } else if (parentPath && parentFolderName.match(/\((\d+)CD\)/i)) {
       const siblingFolders = Array.from(flacFolderMap.keys()).filter(p => {
         const pParent = p.includes('/') ? p.substring(0, p.lastIndexOf('/')) : ''
         return pParent === parentPath && p !== path

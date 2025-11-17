@@ -1,5 +1,5 @@
 import './app.css'
-import './lib/i18n/i18n.config' // Initialize i18next
+import './lib/i18n/i18n.config'
 
 import { useEffect, useState } from 'react'
 import { useMemo } from 'react'
@@ -46,10 +46,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 
 export function shouldRevalidate({ actionStatus }: { actionStatus?: number }) {
-  if (actionStatus) {
-    return true
-  }
-  return false
+  return Boolean(actionStatus)
 }
 
 export const links: Route.LinksFunction = () => [
@@ -135,8 +132,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
     setIsSidebarCollapsed(!isSidebarCollapsed)
   }
 
-  const content = null
   const isMinimalLayout = isMinimalLayoutPage || isMinimalLayoutParent
+
   return (
     <html lang='en' suppressHydrationWarning>
       <head>
@@ -170,7 +167,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       : 'relative h-[calc(100vh-var(--muza-topbar-height))] overflow-y-auto p-6 pb-40'
                   )}
                 >
-                  {content || children}
+                  {children}
+
                   {!isMinimalLayout && (
                     <>
                       <PlaylistDrawer

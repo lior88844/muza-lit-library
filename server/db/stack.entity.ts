@@ -20,6 +20,7 @@ export enum StackSelectionTypeEnum {
 export enum StackPageIdEnum {
   Home = 'home',
   Explore = 'explore',
+  Artist = 'artist',
 }
 export enum EntityTypeEnum {
   Artist = 'artist',

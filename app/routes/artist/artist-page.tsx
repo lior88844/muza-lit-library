@@ -1,10 +1,12 @@
-import '../../styles/variables.css'
-import './artist-page.css'
-
-import { isRouteErrorResponse, useRouteError } from 'react-router'
-import { useLoaderData } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { isRouteErrorResponse, useLoaderData, useRouteError } from 'react-router'
+import type { AlbumResponse } from 'server/api/album/types/AlbumResponse'
+import { formatArtistAlbum } from 'server/api/artist/artist.service'
+import type { StackItemWithEntity } from 'server/api/stack/types'
+import { EntityTypeEnum, StackPageIdEnum, StackSelectionTypeEnum } from 'server/db/stack.entity'
 import { fetchArtistById } from 'server/root.service'
 
+import { StackPreview } from '~/components/listsDisplays/StackPreview'
 import { Typography } from '~/components/ui/typography'
 
 import { ArtistDetails } from './components/artist-details'
@@ -12,26 +14,59 @@ import { ArtistDetails } from './components/artist-details'
 export async function loader({ params }: { params: { id: string } }) {
   const artistId = +params.id
 
-  if (isNaN(artistId)) {
+  if (Number.isNaN(artistId)) {
     throw new Response('Invalid artist ID', { status: 400 })
   }
 
-  const artistData = await fetchArtistById(artistId)
+  const artist = await fetchArtistById(artistId)
 
-  if (!artistData) {
+  if (!artist) {
     throw new Response('Artist not found', { status: 404 })
   }
 
-  return { artist: artistData }
+  const stackItems: StackItemWithEntity<AlbumResponse>[] = artist.albumArtists.map(
+    (albumArtist, index) => ({
+      id: index + 1,
+      stackId: 1,
+      entityType: EntityTypeEnum.Album,
+      entityId: albumArtist.album.id,
+      displayOrder: index,
+      entity: formatArtistAlbum(albumArtist),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+  )
+
+  return { artist, stackItems }
 }
 
 export default function ArtistPage() {
-  const { artist } = useLoaderData<typeof loader>()
+  const { artist, stackItems } = useLoaderData<typeof loader>()
+  const { t } = useTranslation()
 
   return (
-    <div className='artist-page'>
+    <>
       <ArtistDetails artist={artist} />
-    </div>
+
+      <section className='mt-44'>
+        <StackPreview
+          stack={{
+            id: 1,
+            title: t('common.albums'),
+            pageId: StackPageIdEnum.Artist,
+            entityType: EntityTypeEnum.Album,
+            items: stackItems,
+            description: null,
+            displayOrder: 1,
+            selectionType: StackSelectionTypeEnum.Manual,
+            filterConfig: null,
+            isActive: null,
+            createdAt: null,
+            updatedAt: null,
+          }}
+        />
+      </section>
+    </>
   )
 }
 

@@ -8,4 +8,3 @@ import { handleIncrementPlayCount } from '../../../server/api/track/increment-pl
 export async function action({ request }: { request: Request }) {
   return handleIncrementPlayCount(request)
 }
-

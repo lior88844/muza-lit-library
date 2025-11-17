@@ -1,26 +1,21 @@
 import { desc } from 'drizzle-orm'
-import type { AlbumLabel } from 'server/db/album-label.entity'
-import type { Label } from 'server/db/label.entity'
 
-import { type Album, albums } from '../../db/album.entity'
+import { albums } from '../../db/album.entity'
 import type { AlbumArtist } from '../../db/album-artist.entity'
 import type { Artist } from '../../db/artist.entity'
 import { db } from '../../db/connection'
 import { formatTrack } from '../track/track.service'
-import type { TrackWithArtists } from '../track/types/TrackWithArtists'
-import type { AlbumResponse, LabelResponse } from './types/AlbumResponse'
+import type {
+  AlbumLabelWithLabel,
+  AlbumResponse,
+  AlbumWithArtistsAndTracks,
+  LabelResponse,
+} from './types/AlbumResponse'
 import type { MiniAlbum } from './types/MiniAlbumResponse'
 
-interface AlbumLabelWithLabel extends AlbumLabel {
-  label: Label
-}
-
-export interface AlbumWithArtistsAndTracks extends Album {
-  albumArtists: (AlbumArtist & { artist: Artist })[]
-  tracks: Omit<TrackWithArtists, 'album'>[]
-  albumLabels?: AlbumLabelWithLabel[]
-}
-
+/**
+ * Find many albums with pagination
+ */
 export async function findManyAlbums(limit = 20, offset = 0) {
   const albumsResult = await db.query.albums.findMany({
     limit,
@@ -64,18 +59,35 @@ export async function findAlbumById(id: number) {
   return formatAlbum(albumResult)
 }
 
+export function toMiniAlbum(
+  album: {
+    id: number
+    title: string
+    coverArt: string | null
+    releaseDate: Date | null
+    tracks: Array<{ id: number }>
+  },
+  artist: { name?: string; id?: number }
+): MiniAlbum {
+  return {
+    id: album.id,
+    imageSrc: album.coverArt || '',
+    title: album.title,
+    releaseDate: album.releaseDate,
+    artist: artist.name ?? '',
+    artistId: artist.id ?? 0,
+    songs: album.tracks.map(track => track.id),
+  }
+}
+
 export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[] {
   return albums.map(album => {
     const mainArtist = album.albumArtists[0]
-    return {
-      id: album.id,
-      imageSrc: album.coverArt || '',
-      title: album.title,
-      releaseDate: album.releaseDate,
-      artist: mainArtist?.artist.name,
-      artistId: mainArtist?.artist.id,
-      songs: album.tracks.map(track => track.id),
-    }
+
+    return toMiniAlbum(album, {
+      name: mainArtist?.artist.name,
+      id: mainArtist?.artist.id,
+    })
   })
 }
 
@@ -88,6 +100,7 @@ export function formatAlbum(album: AlbumWithArtistsAndTracks): AlbumResponse {
     labels: (album.albumLabels || []).map(formatAlbumLabel),
   }
 }
+
 const formatAlbumArtist = (albumArtist: AlbumArtist & { artist: Artist }) => {
   return {
     ...albumArtist,
@@ -95,6 +108,7 @@ const formatAlbumArtist = (albumArtist: AlbumArtist & { artist: Artist }) => {
     artist: undefined,
   }
 }
+
 const formatAlbumLabel = (albumLabel: AlbumLabelWithLabel): LabelResponse => {
   return {
     ...albumLabel.label,

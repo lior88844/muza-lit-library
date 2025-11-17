@@ -1,29 +1,45 @@
 import { eq } from 'drizzle-orm'
 
-import type { AlbumArtist } from '../../db/album-artist.entity'
-import { type Artist, artists } from '../../db/artist.entity'
+import { artists } from '../../db/artist.entity'
 import { db } from '../../db/connection'
-import type { ArtistMiniResponse, ArtistResponse } from './types/ArtistResponse'
+import type { AlbumResponse } from '../album/types/AlbumResponse'
+import type {
+  AlbumArtistFormatted,
+  ArtistAlbumWithDetails,
+  ArtistMiniResponse,
+  ArtistWithAlbums,
+} from './types/ArtistResponse'
 
-// Types for transformed data
-export interface ArtistWithAlbums extends Artist {
-  albumArtists: AlbumArtist[]
-}
-
-export async function findArtistById(id: number): Promise<ArtistResponse> {
+export async function findArtistById(id: number) {
   const artist = await db.query.artists.findFirst({
     where: eq(artists.id, id),
     with: {
-      albumArtists: true,
+      albumArtists: {
+        with: {
+          album: {
+            with: {
+              tracks: {
+                columns: {
+                  id: true,
+                },
+              },
+              albumArtists: {
+                with: {
+                  artist: true,
+                },
+                orderBy: (albumArtists, { asc }) => [asc(albumArtists.order)],
+              },
+            },
+          },
+        },
+        orderBy: (albumArtists, { asc }) => [asc(albumArtists.order)],
+      },
     },
   })
 
-  return artist as ArtistResponse
+  return artist
 }
 
-/**
- * Find many artists with pagination
- */
 export async function findManyArtists(limit = 20, offset = 0) {
   const artistsResult = await db.query.artists.findMany({
     with: {
@@ -49,4 +65,29 @@ export function formatArtist(artists: ArtistWithAlbums[]): ArtistMiniResponse[] 
       name: artist.name,
       albumsCount: artist.albumArtists.length,
     }))
+}
+
+export function formatArtistAlbum(albumArtist: ArtistAlbumWithDetails): AlbumResponse {
+  const { album } = albumArtist
+
+  const formatAlbumArtist = (aa: AlbumArtistFormatted) => ({
+    ...aa,
+    ...aa.artist,
+    artist: undefined,
+  })
+
+  if (!album.albumArtists || album.albumArtists.length === 0) {
+    throw new Error('Album must have at least one artist')
+  }
+
+  const mainArtist = formatAlbumArtist(album.albumArtists[0])
+  const otherArtists = album.albumArtists.slice(1).map(formatAlbumArtist)
+
+  return {
+    ...album,
+    artist: mainArtist,
+    otherArtists,
+    tracks: [],
+    labels: [],
+  } as AlbumResponse
 }

@@ -142,6 +142,9 @@ const english = {
 
   // Artist Details
   'artist.albumsCount': '{{count}} Albums',
+  'artist.readAllBio': 'Read more',
+  'artist.artistBioDialogTitle': 'Artist Bio',
+  'artist.artistBioDialogDesc': 'Read more about the artist',
 
   // Song and Music Player
   'player.shuffle': 'Shuffle',
