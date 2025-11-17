@@ -1,11 +1,10 @@
 import { desc } from 'drizzle-orm'
 
 import { albums } from '../../db/album.entity'
-import type { AlbumArtist } from '../../db/album-artist.entity'
-import type { Artist } from '../../db/artist.entity'
 import { db } from '../../db/connection'
 import { formatTrack } from '../track/track.service'
 import type {
+  AlbumArtistResponse,
   AlbumLabelWithLabel,
   AlbumResponse,
   AlbumWithArtistsAndTracks,
@@ -44,7 +43,7 @@ export async function findAlbumById(id: number) {
         with: {
           trackArtists: { with: { artist: true } },
         },
-        orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
+        orderBy: (tracks, { asc }) => [asc(tracks.discNumber), asc(tracks.trackNumber)],
       },
       albumLabels: {
         with: { label: true },
@@ -92,20 +91,36 @@ export function formatMiniAlbum(albums: AlbumWithArtistsAndTracks[]): MiniAlbum[
 }
 
 export function formatAlbum(album: AlbumWithArtistsAndTracks): AlbumResponse {
+  const artists = album.albumArtists.map<AlbumArtistResponse>(({ role, ...a }) => {
+    return {
+      ...a.artist,
+      ...a,
+      roles: role ? [role] : [],
+    }
+  })
+
+  album.tracks.forEach(track => {
+    track.trackArtists.forEach(({ role, ...a }) => {
+      const otherArtist = artists.find(o => o.artistId === a.artist.id)
+      if (otherArtist) {
+        if (role) {
+          otherArtist.roles.push(role)
+        }
+      } else {
+        artists.push({
+          ...a.artist,
+          ...a,
+          roles: role ? [role] : [],
+        })
+      }
+    })
+  })
   return {
     ...album,
-    artist: formatAlbumArtist(album.albumArtists[0]),
-    otherArtists: album.albumArtists.slice(1).map(formatAlbumArtist),
+    artist: artists[0],
+    otherArtists: artists.slice(1),
     tracks: album.tracks.map(track => formatTrack({ ...track, album: album })),
     labels: (album.albumLabels || []).map(formatAlbumLabel),
-  }
-}
-
-const formatAlbumArtist = (albumArtist: AlbumArtist & { artist: Artist }) => {
-  return {
-    ...albumArtist,
-    ...albumArtist.artist,
-    artist: undefined,
   }
 }
 

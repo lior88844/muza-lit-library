@@ -22,6 +22,7 @@ export function formatTrack(dbTrack: TrackWithArtists): TrackResponse {
     audioUrl: dbTrack.fileId ? getTrackFilePathFromFileId(dbTrack.fileId) : '',
     year: dbTrack.createdAt?.getFullYear() || 0,
     artistId: mainArtist?.artistId,
+    discNumber: dbTrack.discNumber ?? undefined,
     artist: mainArtist?.artist.name,
     album: dbTrack.album?.title,
     imageSrc: dbTrack.album?.coverArt || 'https://via.placeholder.com/150',

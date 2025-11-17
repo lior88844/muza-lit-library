@@ -61,6 +61,7 @@ const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, co
         title: track.songName || 'Untitled',
         artist: track.composer || formData.mainArtist || 'Unknown Artist',
         album: formData.albumTitle || 'Untitled Album',
+        discNumber: 1,
         time: parseDuration(track.duration),
         year: new Date().getFullYear(),
         imageSrc: getCoverImageUrl(),

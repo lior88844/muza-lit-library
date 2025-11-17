@@ -44,14 +44,17 @@ export async function loader({ request }: Route.LoaderArgs) {
             },
           },
         })
-        data = data.map(album => ({
-          ...album,
-          artist: album.albumArtists[0].artist.name,
-          otherArtists: album.albumArtists
-            .slice(1)
-            .map((artist: any) => ({ name: artist.artist.name, role: artist.artist.role })),
-        }))
-        delete data.albumArtists
+        data = data.map(album => {
+          const albumArtists = [...album.albumArtists]
+          delete album.albumArtists
+          return {
+            ...album,
+            artist: albumArtists[0].artist.name,
+            otherArtists: albumArtists
+              .slice(1)
+              .map((artist: any) => ({ name: artist.artist.name, role: artist.artist.role })),
+          }
+        })
         break
       case 'artists':
         data = await db.query.artists.findMany()
@@ -187,7 +190,6 @@ export default function AdminData() {
       baseColumns.push({
         colId: 'actions',
         headerName: '',
-        // pinned: 'right' as const,
         sortable: false,
         filter: false,
         resizable: false,

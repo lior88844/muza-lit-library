@@ -10,6 +10,10 @@ import type { TrackResponse } from '../../track/types/TrackResponse'
 export interface AlbumLabelWithLabel extends AlbumLabel {
   label: Label
 }
+export type AlbumArtistResponse = Artist &
+  Omit<AlbumArtist, 'artist' | 'role' | 'albumId' | 'join'> & {
+    roles: string[]
+  }
 
 export interface AlbumWithArtistsAndTracks extends Album {
   albumArtists: (AlbumArtist & { artist: Artist })[]
@@ -23,8 +27,8 @@ export interface LabelResponse extends Label {
 }
 
 export type AlbumResponse = Album & {
-  artist: Artist & AlbumArtist
+  artist: AlbumArtistResponse
   tracks: TrackResponse[]
-  otherArtists: (Artist & AlbumArtist)[]
+  otherArtists: AlbumArtistResponse[]
   labels?: LabelResponse[]
 }

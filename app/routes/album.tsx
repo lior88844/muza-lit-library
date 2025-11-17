@@ -45,6 +45,14 @@ export default function AlbumPage() {
   const trackIndex = trackId ? album.tracks.findIndex(track => track.id === trackId) : undefined
   const hasAutoPlayed = useRef(false)
 
+  // Check if album has multiple discs
+  const uniqueDiscNumbers = new Set(
+    album.tracks
+      .map(track => track.discNumber)
+      .filter((discNumber): discNumber is number => discNumber !== undefined)
+  )
+  const hasMultipleDiscs = uniqueDiscNumbers.size > 1
+
   useEffect(() => {
     // Only autoplay once when trackId is in location state (from navigation)
     if (trackId && trackIndex !== undefined && trackIndex !== -1 && !hasAutoPlayed.current) {
@@ -101,14 +109,34 @@ export default function AlbumPage() {
       />
       <div>
         {album.tracks.map((track, index) => {
+          const prevTrack = index > 0 ? album.tracks[index - 1] : null
+          const isFirstTrack = index === 0
+          const showDiscSeparator =
+            hasMultipleDiscs &&
+            track.discNumber !== undefined &&
+            (isFirstTrack ||
+              (prevTrack &&
+                prevTrack.discNumber !== undefined &&
+                prevTrack.discNumber !== track.discNumber))
+
           return (
-            <TrackPreview
-              key={track.id}
-              track={track}
-              albumMode
-              onClick={() => handleSongClick(track.id, index)}
-              draggable={isPlaylistDrawerOpen}
-            />
+            <div key={track.id}>
+              {showDiscSeparator && (
+                <div className='flex items-center gap-3 px-3 py-4'>
+                  <div className='h-px flex-1 bg-(--muza-light-border-color)' />
+                  <span className='text-sm font-medium whitespace-nowrap text-(--colors_muted_foreground_light)'>
+                    Disc {track.discNumber}
+                  </span>
+                  <div className='h-px flex-1 bg-(--muza-light-border-color)' />
+                </div>
+              )}
+              <TrackPreview
+                track={track}
+                albumMode
+                onClick={() => handleSongClick(track.id, index)}
+                draggable={isPlaylistDrawerOpen}
+              />
+            </div>
           )
         })}
       </div>

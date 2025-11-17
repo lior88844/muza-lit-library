@@ -1,7 +1,11 @@
 import { XCircleIcon } from 'lucide-react'
-import type { FC } from 'react'
+import { type FC, Fragment } from 'react'
 import { Link } from 'react-router'
-import type { AlbumResponse, LabelResponse } from 'server/api/album/types/AlbumResponse'
+import type {
+  AlbumArtistResponse,
+  AlbumResponse,
+  LabelResponse,
+} from 'server/api/album/types/AlbumResponse'
 
 import { Dialog } from '~/components/ui/dialog'
 import { Typography } from '~/components/ui/typography'
@@ -22,7 +26,7 @@ export const AlbumInfoModal: FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =
 
   const infoItems = [
     {
-      key: 'Release Date',
+      key: 'Recording Date',
       value: formatDate(album.releaseDate),
     },
     {
@@ -68,7 +72,19 @@ export const AlbumInfoModal: FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =
 
     return parts.join(' • ')
   }
-
+  const otherArtistsByRoles = album.otherArtists.reduce(
+    (acc, artist) => {
+      artist.roles.forEach(role => {
+        const roleToShow = role || 'Member'
+        if (!acc[roleToShow]) {
+          acc[roleToShow] = []
+        }
+        acc[roleToShow].push(artist)
+      })
+      return acc
+    },
+    {} as Record<string, AlbumArtistResponse[]>
+  )
   return (
     <Dialog
       open={isOpen}
@@ -99,7 +115,7 @@ export const AlbumInfoModal: FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =
       }}
       HeaderProps={{
         className:
-          'pb-6 pt-19 ps-17 gap-1 bg-no-repeat bg-cover bg-top shadow-md relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-transparent before:to-black/95 before:z-0',
+          'pb-6 pt-19 ps-17 gap-1 bg-no-repeat bg-cover bg-top shadow-md relative before:absolute before:inset-0 before:bg-linear-to-b before:from-transparent before:to-black/95 before:z-0',
         style: {
           backgroundImage: `url(${album.coverArt})`,
         },
@@ -108,11 +124,27 @@ export const AlbumInfoModal: FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =
       <div className='max-h-99.5 overflow-y-auto p-10 pt-6'>
         <div className='flex flex-col gap-9.5'>
           <AlbumInfo
-            info={album.otherArtists}
+            info={[album.artist]}
             getReactKey={artist => artist.id.toString()}
-            renderKey={artist => artist.role || 'Member'}
+            renderKey={artist => artist.roles.join(', ') || 'Main Artist'}
             renderValue={artist => <Link to={`/artists/${artist.id}`}>{artist.name}</Link>}
           />
+          <div className='grid grid-cols-2 gap-x-16 gap-y-2'>
+            {Object.entries(otherArtistsByRoles).map(([role, artists]) => (
+              <Fragment key={role}>
+                <Typography as='span' className='text-text-muted'>
+                  {role}
+                </Typography>
+                <Typography as='span'>
+                  {artists.map(a => (
+                    <Link key={a.artistId} to={`/artists/${a.artistId}`}>
+                      {a.name}
+                    </Link>
+                  ))}
+                </Typography>
+              </Fragment>
+            ))}
+          </div>
 
           <AlbumInfo
             info={infoItems}
@@ -136,21 +168,21 @@ export const AlbumInfoModal: FC<AlbumInfoProps> = ({ isOpen, album, onClose }) =
           />
 
           <AlbumInfo
-            info={album.genres ? [{ key: 'Genres', value: album.genres }] : []}
+            info={album.genres?.length ? [{ key: 'Genres', value: album.genres }] : []}
             getReactKey={genre => genre.key.toString()}
             renderKey={genre => genre.key}
-            renderValue={genre => genre.value.join(', ')}
+            renderValue={genre => genre.value?.join(', ')}
           />
 
           <AlbumInfo
-            info={album.tags ? [{ key: 'Tags', value: album.tags }] : []}
+            info={album.tags?.length ? [{ key: 'Tags', value: album.tags }] : []}
             getReactKey={tag => tag.key.toString()}
             renderKey={tag => tag.key}
             renderValue={tag => tag.value.join(', ')}
           />
 
           <AlbumInfo
-            info={album.notes ? [{ key: 'Notes', value: album.notes }] : []}
+            info={album.notes?.length ? [{ key: 'Notes', value: album.notes }] : []}
             getReactKey={note => note.key.toString()}
             renderKey={note => note.key}
             renderValue={note => note.value}
