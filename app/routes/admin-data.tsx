@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ColDef, ICellRendererParams, RowClickedEvent } from 'ag-grid-community'
 import { useCallback, useMemo, useState } from 'react'
 import { useLoaderData, useNavigate, useNavigation, useRevalidator } from 'react-router'
@@ -32,11 +33,25 @@ export async function loader({ request }: Route.LoaderArgs) {
   const entityType = ENTITY_TYPES.find(entity => entity.value === entityTypeEnum)
 
   try {
-    let data: unknown[] = []
+    let data: any[] = []
 
     switch (entityTypeEnum) {
       case 'albums':
-        data = await db.query.albums.findMany()
+        data = await db.query.albums.findMany({
+          with: {
+            albumArtists: {
+              with: { artist: true },
+            },
+          },
+        })
+        data = data.map(album => ({
+          ...album,
+          artist: album.albumArtists[0].artist.name,
+          otherArtists: album.albumArtists
+            .slice(1)
+            .map((artist: any) => ({ name: artist.artist.name, role: artist.artist.role })),
+        }))
+        delete data.albumArtists
         break
       case 'artists':
         data = await db.query.artists.findMany()
@@ -172,7 +187,7 @@ export default function AdminData() {
       baseColumns.push({
         colId: 'actions',
         headerName: '',
-        pinned: 'right' as const,
+        // pinned: 'right' as const,
         sortable: false,
         filter: false,
         resizable: false,
@@ -241,6 +256,7 @@ export default function AdminData() {
           loading={loading}
           className='h-[calc(100vh-var(--admin-header-height)-100px)]'
           hideExport
+          paginationPageSize={50}
         />
       </div>
     </div>

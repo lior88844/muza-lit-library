@@ -18,7 +18,7 @@ interface UploadStepThreeProps {
 }
 
 const UploadStepThree: FC<UploadStepThreeProps> = ({ formData, trackMetadata, coverImage }) => {
-  const { currentTrack, playPause, playQueue, isPlaying } = usePlayerStore()
+  const { currentTrack, playPause, playQueue } = usePlayerStore()
 
   const getCoverImageUrl = () => {
     if (coverImage) {

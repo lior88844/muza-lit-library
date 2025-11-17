@@ -171,6 +171,7 @@ export const DataGrid = <T,>({
         ...colMap.get(field),
         hide: false,
       }))
+      .filter(col => col.colId !== 'actions')
 
     // Add row number column if enabled
     if (showRowNumbers) {
